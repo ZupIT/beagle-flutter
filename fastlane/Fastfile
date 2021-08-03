@@ -1,0 +1,46 @@
+###
+###  Flutter
+###
+
+platform :flutter do
+
+  desc "Pull Request verification"
+  lane :pull_request_verification do
+    sh "cd #{ENV['PWD']} && fastlane/flutter/tests.sh"
+    sh "cd #{ENV['PWD']} && flutter analyze > flutter_analyze_report.txt || true"
+  end
+
+end
+
+lane :run_danger do |options|
+  danger_id = options[:danger_id] || lane_context[SharedValues::PLATFORM_NAME].to_s
+  danger_file_path = options[:danger_file_path] || lane_context[SharedValues::PLATFORM_NAME].to_s
+  danger(
+    danger_id: danger_id,
+    dangerfile: "danger/#{danger_file_path}/Dangerfile",
+    github_api_token: ENV[
+      "GITHUB_TOKEN"],
+    verbose: true,
+  )
+end
+
+private_lane :danger_token_available? do
+  danger = ENV["GITHUB_TOKEN"]
+  !(danger.nil? || danger.empty?)
+end
+
+after_all do |lane, options|
+  if lane == :pull_request_verification
+    if danger_token_available?
+      run_danger
+    end
+  end
+end
+
+error do |lane, exception, options|
+  if lane == :pull_request_verification
+    if danger_token_available?
+      run_danger
+    end
+  end
+end

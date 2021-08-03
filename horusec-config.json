@@ -1,0 +1,20 @@
+{
+  "horusecCliFilesOrPathsToIgnore": [
+    "**/sample/**",
+    "**/.gradle/**",
+    "**/automatedTests/**",
+    "**/automated-tests/**",
+    "**/iOS/Tests/**",
+    "**/flutter/beagle/assets/**",
+    "**/tests/appium/**",
+    "**/**/gradlew.bat",
+    "**/flutter/tests.sh",
+    "**/Gemfile.lock"
+  ],
+  "horusecCliFalsePositiveHashes": [],
+  "horusecCliRiskAcceptHashes": [
+    "28545d29030ae6514da40b7fab3c6b3aeb5469474a6d54fc6bb4af9f68c31fa6",
+    "1e42422c7ea0f4e016bacef4d43e3dd6384f99730b80b5ba56ec556e0d443515",
+    "df3da2289c484ca316eb9c824429054c312e604500f751fa58a3603cfe38d843"
+  ]
+}
