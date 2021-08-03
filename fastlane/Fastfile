@@ -7,7 +7,7 @@ platform :flutter do
   desc "Pull Request verification"
   lane :pull_request_verification do
     sh "cd #{ENV['PWD']} && fastlane/flutter/tests.sh"
-    sh "cd #{ENV['PWD']}/flutter && flutter analyze > flutter_analyze_report.txt || true"
+    sh "cd #{ENV['PWD']} && flutter analyze > flutter_analyze_report.txt || true"
   end
 
 end
