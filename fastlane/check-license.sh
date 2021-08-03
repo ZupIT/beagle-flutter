@@ -1,3 +1,6 @@
+#!/bin/bash
+
+#
 # Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +16,10 @@
 # limitations under the License.
 #
 
+# https://github.com/kt3k/deno_license_checker
+# Please install deno at https://github.com/denoland/deno to run the command below
+# You can run this file from the root of the repository with: bash fastlane/check-license.sh $(pwd)
+echo "Running check licenses for folder: $1"
+deno run --unstable --allow-read https://deno.land/x/license_checker@v3.1.4/main.ts "$1"
 
-name: beagle_components
-description: Beagle Components is a set of tools and components to be used with the Beagle package.
-version: 0.9.2-alpha
-homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle_components
-
-environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.22.5"
-
-dependencies:
-  beagle: ^0.9.2-alpha
-  flutter:
-    sdk: flutter
-  webview_flutter: ^2.0.10
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  lints: ^1.0.1
-  mockito: ^5.0.12
-
-flutter:
-  uses-material-design: true
-  assets:
-    - images/
+exit $?
