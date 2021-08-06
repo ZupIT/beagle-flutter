@@ -30,6 +30,7 @@ import 'beagle_text_input.dart';
 import 'beagle_touchable.dart';
 import 'beagle_webview.dart';
 import 'text_input_type.dart';
+import 'beagle_pull_to_refresh.dart';
 
 final Map<String, ComponentBuilder> defaultComponents = {
   'custom:loading': beagleLoadingBuilder(),
@@ -46,6 +47,7 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:touchable': beagleTouchableBuilder(),
   'beagle:webView': beagleWebViewBuilder(),
   'beagle:screenComponent': beagleScreenComponentBuilder(),
+  'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
 };
 
@@ -205,4 +207,16 @@ ComponentBuilder beagleScreenComponentBuilder() {
         key: element.getKey(),
         child: children[0],
       );
+}
+
+
+ComponentBuilder beaglePullToRefreshBuilder() {
+  return (element, children, view) {
+    return PullToRefresh(
+        key: element.getKey(),
+        onPull: element.getAttributeValue('onPull'),
+        isRefreshing: element.getAttributeValue('isRefreshing'),
+        color: element.getAttributeValue('color'),
+        child: children.isEmpty ? null : children[0]);
+  };
 }
