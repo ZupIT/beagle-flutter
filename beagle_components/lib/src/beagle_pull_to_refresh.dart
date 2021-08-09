@@ -1,3 +1,7 @@
+import 'package:beagle/beagle.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 class PullToRefresh extends StatefulWidget {
@@ -24,9 +28,42 @@ class PullToRefresh extends StatefulWidget {
 
 class _BeaglePullToRefresh extends State<PullToRefresh> {
 
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+
+
+    final refresh = RefreshIndicator(
+      key: _refreshIndicatorKey,
+      color: HexColor(widget.color),
+      child: _buildScrollableContent(),
+      onRefresh: _onRefreshHandler,
+    );
+
+    //TODO test this scenario
+    SchedulerBinding.instance.addPostFrameCallback((_){
+      if(widget.isRefreshing) {
+        _refreshIndicatorKey.currentState?.show();
+      } else {
+        _refreshIndicatorKey.currentState?.deactivate();
+      }
+    });
+
+    return refresh;
+  }
+
+  Widget _buildScrollableContent() {
+    return isScrollable(widget.child) ? widget.child : ListView(
+        children: [widget.child],
+        scrollDirection: Axis.vertical
+    );
+  }
+
+  bool isScrollable(Widget widget) => widget is ScrollView || widget is SingleChildScrollView;
+
+  Future<void> _onRefreshHandler() async {
+    print("onPull");
+    widget.onPull();
   }
 }
-
