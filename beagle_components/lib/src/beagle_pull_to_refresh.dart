@@ -33,15 +33,10 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
   @override
   Widget build(BuildContext context) {
 
-
-    final refresh = RefreshIndicator(
-      key: _refreshIndicatorKey,
-      color: HexColor(widget.color),
-      child: _buildScrollableContent(),
-      onRefresh: _onRefreshHandler,
-    );
-
-    //TODO test this scenario
+    /*
+      FIXME https://github.com/flutter/flutter/issues/40235
+      The method show is calling the onRefresh callback
+     */
     SchedulerBinding.instance.addPostFrameCallback((_){
       if(widget.isRefreshing) {
         _refreshIndicatorKey.currentState?.show();
@@ -50,7 +45,12 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
       }
     });
 
-    return refresh;
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      color: HexColor(widget.color),
+      child: _buildScrollableContent(),
+      onRefresh: _onRefreshHandler,
+    );
   }
 
   Widget _buildScrollableContent() {
