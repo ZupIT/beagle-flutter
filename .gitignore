@@ -30,13 +30,9 @@ schema/gradle*
 
 ### VS Code ###
 .vscode/
-=======
-*.iml
 .gradle
 gradle.deps
 local.properties
-.DS_Store
-build/
 /captures
 .externalNativeBuild
 .cxx
@@ -76,62 +72,62 @@ Pods/
 
 ### Flutter/Dart/Pub related
 
-flutter/**/doc/api/
-flutter/**/.dart_tool/
-flutter/**/.flutter-plugins
-flutter/**/.flutter-plugins-dependencies
-flutter/**/.packages
-flutter/**/.pub-cache/
-flutter/**/.pub/
-flutter/**/build/
-flutter/**/test/failures
-flutter/**/pubspec.lock
+**/doc/api/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/build/
+**/test/failures
+**/pubspec.lock
 flutter_analyze_report.txt
 coverage/
 lcov.info
 
 # Android related
-flutter/**/android/**/gradle-wrapper.jar
-flutter/**/android/.gradle
-flutter/**/android/captures/
-flutter/**/android/gradlew
-flutter/**/android/gradlew.bat
-flutter/**/android/local.properties
-flutter/**/android/.gitignore
-flutter/**/android/**/GeneratedPluginRegistrant.java
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/.gitignore
+**/android/**/GeneratedPluginRegistrant.java
 
 # iOS/XCode related
-flutter/**/ios/**/*.mode1v3
-flutter/**/ios/**/*.mode2v3
-flutter/**/ios/**/*.moved-aside
-flutter/**/ios/**/*.pbxuser
-flutter/**/ios/**/*.perspectivev3
-flutter/**/ios/**/*sync/
-flutter/**/ios/**/.sconsign.dblite
-flutter/**/ios/**/.tags*
-flutter/**/ios/**/.vagrant/
-flutter/**/ios/**/DerivedData/
-flutter/**/ios/**/Icon?
-flutter/**/ios/**/Pods/
-flutter/**/ios/**/.symlinks/
-flutter/**/ios/**/profile
-flutter/**/ios/**/xcuserdata
-flutter/**/ios/.generated/
-flutter/**/ios/Flutter/App.framework
-flutter/**/ios/Flutter/Flutter.framework
-flutter/**/ios/Flutter/Flutter.podspec
-flutter/**/ios/Flutter/Generated.xcconfig
-flutter/**/ios/Flutter/app.flx
-flutter/**/ios/Flutter/app.zip
-flutter/**/ios/Flutter/.last_build_id
-flutter/**/ios/Flutter/flutter_assets/
-flutter/**/ios/Flutter/flutter_export_environment.sh
-flutter/**/ios/ServiceDefinitions.json
-flutter/**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
 
 # Exceptions to above rules.
-!flutter/**/ios/**/default.mode1v3
-!flutter/**/ios/**/default.mode2v3
-!flutter/**/ios/**/default.pbxuser
-!flutter/**/ios/**/default.perspectivev3
-!flutter/**/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+!**/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
