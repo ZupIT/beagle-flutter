@@ -8,13 +8,29 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+// The over-scroll distance that moves the indicator to its maximum
+// displacement, as a percentage of the scrollable's container extent.
+const double _kDragContainerExtentPercentage = 0.25;
+
+// How much the scroll's drag gesture can overshoot the RefreshIndicator's
+// displacement; max displacement = _kDragSizeFactorLimit * displacement.
+const double _kDragSizeFactorLimit = 1.5;
+
+// When the scroll ends, the duration of the refresh indicator's animation
+// to the RefreshIndicator's displacement.
+const Duration _kIndicatorSnapDuration = Duration(milliseconds: 150);
+
+// The duration of the ScaleTransition that starts when the refresh action
+// has completed.
+const Duration _kIndicatorScaleDuration = Duration(milliseconds: 200);
+
 /// The signature for a function that's called when the user has dragged a
-/// [CustomRefreshIndicator] far enough to demonstrate that they want the app to
+/// [BeagleRefreshIndicator] far enough to demonstrate that they want the app to
 /// refresh. The returned [Future] must complete when the refresh operation is
 /// finished.
 ///
-/// Used by [CustomRefreshIndicator.onRefresh].
-// typedef RefreshCallback = Future<void> Function();
+/// Used by [BeagleRefreshIndicator.onRefresh].
+typedef RefreshCallback = Future<void> Function();
 
 // The state machine moves through these modes only when the scrollable
 // identified by scrollableKey has been scrolled to its min or max limit.
@@ -26,48 +42,122 @@ enum _RefreshIndicatorMode {
   done,     // Animating the indicator's fade-out after refreshing.
   canceled, // Animating the indicator's fade-out after not arming.
 }
-// How much the scroll's drag gesture can overshoot the RefreshIndicator's
-// displacement; max displacement = _kDragSizeFactorLimit * displacement.
-const double _kDragSizeFactorLimit = 1.5;
 
-// The over-scroll distance that moves the indicator to its maximum
-// displacement, as a percentage of the scrollable's container extent.
-const double _kDragContainerExtentPercentage = 0.25;
-
-// The duration of the ScaleTransition that starts when the refresh action
-// has completed.
-const Duration _kIndicatorScaleDuration = Duration(milliseconds: 200);
-
-// When the scroll ends, the duration of the refresh indicator's animation
-// to the RefreshIndicator's displacement.
-const Duration _kIndicatorSnapDuration = Duration(milliseconds: 150);
-
-class CustomRefreshIndicator extends RefreshIndicator {
-  const CustomRefreshIndicator({
+/// A widget that supports the Material "swipe to refresh" idiom.
+///
+/// When the child's [Scrollable] descendant overscrolls, an animated circular
+/// progress indicator is faded into view. When the scroll ends, if the
+/// indicator has been dragged far enough for it to become completely opaque,
+/// the [onRefresh] callback is called. The callback is expected to update the
+/// scrollable's contents and then complete the [Future] it returns. The refresh
+/// indicator disappears after the callback's [Future] has completed.
+///
+///
+/// ## Troubleshooting
+///
+/// ### Refresh indicator does not show up
+///
+/// The [BeagleRefreshIndicator] will appear if its scrollable descendant can be
+/// overscrolled, i.e. if the scrollable's content is bigger than its viewport.
+/// To ensure that the [BeagleRefreshIndicator] will always appear, even if the
+/// scrollable's content fits within its viewport, set the scrollable's
+/// [Scrollable.physics] property to [AlwaysScrollableScrollPhysics]:
+///
+/// ```dart
+/// ListView(
+///   physics: const AlwaysScrollableScrollPhysics(),
+///   children: ...
+/// )
+/// ```
+///
+/// A [BeagleRefreshIndicator] can only be used with a vertical scroll view.
+///
+/// See also:
+///
+///  * <https://material.io/design/platform-guidance/android-swipe-to-refresh.html>
+///  * [BeagleRefreshIndicatorState], can be used to programmatically show the refresh indicator.
+///  * [RefreshProgressIndicator], widget used by [BeagleRefreshIndicator] to show
+///    the inner circular progress spinner during refreshes.
+///  * [CupertinoSliverRefreshControl], an iOS equivalent of the pull-to-refresh pattern.
+///    Must be used as a sliver inside a [CustomScrollView] instead of wrapping
+///    around a [ScrollView] because it's a part of the scrollable instead of
+///    being overlaid on top of it.
+class BeagleRefreshIndicator extends StatefulWidget {
+  /// Creates a refresh indicator.
+  ///
+  /// The [onRefresh], [child], and [notificationPredicate] arguments must be
+  /// non-null. The default
+  /// [displacement] is 40.0 logical pixels.
+  ///
+  /// The [semanticsLabel] is used to specify an accessibility label for this widget.
+  /// If it is null, it will be defaulted to [MaterialLocalizations.refreshIndicatorSemanticLabel].
+  /// An empty string may be passed to avoid having anything read by screen reading software.
+  /// The [semanticsValue] may be used to specify progress on the widget.
+  const BeagleRefreshIndicator({
     Key key,
-    Widget child,
-    RefreshCallback onRefresh,
-    Color color,
-  }) : super(key: key, child: child, onRefresh: onRefresh, color:  color);
+    @required this.child,
+    @required this.onRefresh,
+    this.displacement = 40.0,
+    this.edgeOffset = 0.0,
+    this.color,
+    this.isRefreshing
+  }) : assert(child != null),
+        assert(onRefresh != null),
+        super(key: key);
 
-  // @override
-  // Future<void> show({ bool atTop = true }) {
-  //   // if (_mode != _RefreshIndicatorMode.refresh &&
-  //   //     _mode != _RefreshIndicatorMode.snap) {
-  //   //   if (_mode == null)
-  //   //     _start(atTop ? AxisDirection.down : AxisDirection.up);
-  //   //   _show();
-  //   // }
-  //   return Future.delayed(Duration(seconds: 3));
-  // }
+  /// The widget below this widget in the tree.
+  ///
+  /// The refresh indicator will be stacked on top of this child. The indicator
+  /// will appear when child's Scrollable descendant is over-scrolled.
+  ///
+  /// Typically a [ListView] or [CustomScrollView].
+  final Widget child;
+
+  /// A function that's called when the user has dragged the refresh indicator
+  /// far enough to demonstrate that they want the app to refresh. The returned
+  /// [Future] must complete when the refresh operation is finished.
+  final RefreshCallback onRefresh;
+
+  /// The offset where [RefreshProgressIndicator] starts to appear on drag start.
+  ///
+  /// Depending whether the indicator is showing on the top or bottom, the value
+  /// of this variable controls how far from the parent's edge the progress
+  /// indicator starts to appear. This may come in handy when, for example, the
+  /// UI contains a top [Widget] which covers the parent's edge where the progress
+  /// indicator would otherwise appear.
+  ///
+  /// By default, the edge offset is set to 0.
+  ///
+  /// See also:
+  ///
+  ///  * [displacement], can be used to change the distance from the edge that
+  ///    the indicator settles.
+  final double edgeOffset;
+
+  /// The distance from the child's top or bottom [edgeOffset] where
+  /// the refresh indicator will settle. During the drag that exposes the refresh
+  /// indicator, its actual displacement may significantly exceed this value.
+  ///
+  /// In most cases, [displacement] distance starts counting from the parent's
+  /// edges. However, if [edgeOffset] is larger than zero then the [displacement]
+  /// value is calculated from that offset instead of the parent's edge.
+  final double displacement;
+
+  /// The progress indicator's foreground color. The current theme's
+  /// [ColorScheme.primary] by default.
+  final Color color;
+
+  /// Defines if the RefreshProgressIndicator should be running
+  /// Defaults to not running.
+  final bool isRefreshing;
 
   @override
-  CustomRefreshIndicatorState createState() => CustomRefreshIndicatorState();
+  BeagleRefreshIndicatorState createState() => BeagleRefreshIndicatorState();
 }
 
-/// Contains the state for a [RefreshIndicator]. This class can be used to
+/// Contains the state for a [BeagleRefreshIndicator]. This class can be used to
 /// programmatically show the refresh indicator, see the [show] method.
-class CustomRefreshIndicatorState extends RefreshIndicatorState {
+class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator> with TickerProviderStateMixin<BeagleRefreshIndicator> {
   AnimationController _positionController;
   AnimationController _scaleController;
   Animation<double> _positionFactor;
@@ -76,7 +166,6 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
   Animation<Color> _valueColor;
 
   _RefreshIndicatorMode _mode;
-  Future<void> _pendingRefreshFuture;
   bool _isIndicatorAtTop;
   double _dragOffset;
 
@@ -103,14 +192,14 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
         begin: (widget.color ?? theme.colorScheme.primary).withOpacity(0.0),
         end: (widget.color ?? theme.colorScheme.primary).withOpacity(1.0),
       ).chain(CurveTween(
-        curve: Interval(0.0, 1.0 / _kDragSizeFactorLimit),
+        curve: const Interval(0.0, 1.0 / _kDragSizeFactorLimit),
       )),
     );
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(covariant RefreshIndicator oldWidget) {
+  void didUpdateWidget(covariant BeagleRefreshIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.color != widget.color) {
       final ThemeData theme = Theme.of(context);
@@ -137,14 +226,14 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
     // user dragging. It may be a result of ScrollController.jumpTo or ballistic scroll.
     // In this case, we don't want to trigger the refresh indicator.
     return ((notification is ScrollStartNotification && notification.dragDetails != null)
-        || (notification is ScrollUpdateNotification && notification.dragDetails != null && widget.triggerMode == RefreshIndicatorTriggerMode.anywhere))
+        || (notification is ScrollUpdateNotification && notification.dragDetails != null))
         && notification.metrics.extentBefore == 0.0
         && _mode == null
         && _start(notification.metrics.axisDirection);
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
-    if (!widget.notificationPredicate(notification))
+    if (!defaultScrollNotificationPredicate(notification))
       return false;
     if (_shouldStart(notification)) {
       setState(() {
@@ -181,7 +270,7 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
         // On iOS start the refresh when the Scrollable bounces back from the
         // overscroll (ScrollNotification indicating this don't have dragDetails
         // because the scroll activity is not directly triggered by a drag).
-        _show(shouldStopLoading: false);
+        _show();
       }
     } else if (notification is OverscrollNotification) {
       if (_mode == _RefreshIndicatorMode.drag || _mode == _RefreshIndicatorMode.armed) {
@@ -191,7 +280,7 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
     } else if (notification is ScrollEndNotification) {
       switch (_mode) {
         case _RefreshIndicatorMode.armed:
-          _show(shouldStopLoading: false);
+          _show();
           break;
         case _RefreshIndicatorMode.drag:
           _dismiss(_RefreshIndicatorMode.canceled);
@@ -276,27 +365,9 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
     }
   }
 
-  Future<void> showProgress({ bool atTop = true }) {
-    if (_mode != _RefreshIndicatorMode.refresh &&
-        _mode != _RefreshIndicatorMode.snap) {
-      if (_mode == null) {
-        _start(atTop ? AxisDirection.down : AxisDirection.up);
-      }
-      _show(shouldCallOnRefresh: false);
-    }
-    return _pendingRefreshFuture;
-  }
-
-  void hideProgress() {
-    deactivate();
-    _dismiss(_RefreshIndicatorMode.done);
-  }
-
-  void _show({bool shouldCallOnRefresh = true, bool shouldStopLoading: true}) {
+  void _show() {
     assert(_mode != _RefreshIndicatorMode.refresh);
     assert(_mode != _RefreshIndicatorMode.snap);
-    final Completer<void> completer = Completer<void>();
-    _pendingRefreshFuture = completer.future;
     _mode = _RefreshIndicatorMode.snap;
     _positionController
         .animateTo(1.0 / _kDragSizeFactorLimit, duration: _kIndicatorSnapDuration)
@@ -308,33 +379,27 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
           _mode = _RefreshIndicatorMode.refresh;
         });
 
+        final Future<void> refreshResult = widget.onRefresh();
+        assert(() {
+          if (refreshResult == null)
+            FlutterError.reportError(FlutterErrorDetails(
+              exception: FlutterError(
+                'The onRefresh callback returned null.\n'
+                    'The RefreshIndicator onRefresh callback must return a Future.',
+              ),
+              context: ErrorDescription('when calling onRefresh'),
+              library: 'material library',
+            ));
+          return true;
+        }());
+        if (refreshResult == null)
+          return;
+        refreshResult.whenComplete(() {
+          if (mounted && _mode == _RefreshIndicatorMode.refresh) {
 
-        if(shouldCallOnRefresh) {
-          final Future<void> refreshResult = widget.onRefresh();
-          assert(() {
-            if (refreshResult == null) {
-              FlutterError.reportError(FlutterErrorDetails(
-                exception: FlutterError(
-                  'The onRefresh callback returned null.\n'
-                      'The RefreshIndicator onRefresh callback must return a Future.',
-                ),
-                context: ErrorDescription('when calling onRefresh'),
-                library: 'material library',
-              ));
-            }
-            return true;
-          }());
-          if (refreshResult == null) {
-            return;
+            _dismiss(_RefreshIndicatorMode.done);
           }
-          refreshResult.whenComplete(() {
-            if (mounted && _mode == _RefreshIndicatorMode.refresh) {
-              completer.complete();
-              if(shouldStopLoading)
-                _dismiss(_RefreshIndicatorMode.done);
-            }
-          });
-        }
+        });
       }
     });
   }
@@ -349,9 +414,28 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
         child: widget.child,
       ),
     );
+    assert(() {
+      if (_mode == null) {
+        assert(_dragOffset == null);
+        assert(_isIndicatorAtTop == null);
+      } else {
+        assert(_dragOffset != null);
+        assert(_isIndicatorAtTop != null);
+      }
+      return true;
+    }());
 
     final bool showIndeterminateIndicator =
-        _mode == _RefreshIndicatorMode.refresh || _mode == _RefreshIndicatorMode.done;
+        _mode == _RefreshIndicatorMode.refresh || _mode == _RefreshIndicatorMode.done
+            || widget.isRefreshing != null && widget.isRefreshing;
+
+    if(showIndeterminateIndicator) {
+      if(_canStartProgress()) {
+        _showProgressIndicator();
+      } else {
+        _hideProgressIndicator();
+      }
+    }
 
     return Stack(
       children: <Widget>[
@@ -377,12 +461,11 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
                   animation: _positionController,
                   builder: (BuildContext context, Widget child) {
                     return RefreshProgressIndicator(
-                      semanticsLabel: widget.semanticsLabel ?? MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
-                      semanticsValue: widget.semanticsValue,
+                      semanticsLabel: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
                       value: showIndeterminateIndicator ? null : _value.value,
                       valueColor: _valueColor,
-                      backgroundColor: widget.backgroundColor,
-                      strokeWidth: widget.strokeWidth,
+                      backgroundColor: ThemeData.light().canvasColor,
+                      strokeWidth: 2.0,
                     );
                   },
                 ),
@@ -393,4 +476,21 @@ class CustomRefreshIndicatorState extends RefreshIndicatorState {
       ],
     );
   }
+
+  void _hideProgressIndicator() {
+    if (mounted && _mode == _RefreshIndicatorMode.refresh)
+      _dismiss(_RefreshIndicatorMode.done);
+  }
+
+  void _showProgressIndicator() {
+    _isIndicatorAtTop = true;
+    _dragOffset = 0.0;
+    _scaleController.value = 0.0;
+    // _positionController.value = 0.0;
+    _positionController
+        .animateTo(1.0 / _kDragSizeFactorLimit, duration: _kIndicatorSnapDuration);
+    _mode = _RefreshIndicatorMode.refresh;
+  }
+
+  bool _canStartProgress() => _mode == null || _isIndicatorAtTop == null || _dragOffset == null;
 }

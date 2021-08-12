@@ -15,30 +15,37 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle_components/src/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'internal/beagle_refresh_indicator.dart';
 
+/// Defines a pull down to refresh for its child
+/// You can define a child content for this widget and
+/// whenever the user scrolls down, calls the function "onPull" to update the child content
 class PullToRefresh extends StatefulWidget {
   const PullToRefresh({
     Key key,
-    this.onPull,
+    @required this.onPull,
     this.isRefreshing,
     this.color,
-    this.child,
+    @required this.child,
   }) : super(key: key);
 
+  /// Function called when the user scrolls down the content
+  /// This is required
   final Function onPull;
 
+  /// Defines if the the refresh indicator should be running
   final bool isRefreshing;
 
+  /// The progress indicator's foreground color. The current theme's
+  /// [ColorScheme.primary] by default.
   final String color;
 
+  /// The content to be rendered
   final Widget child;
 
   @override
@@ -48,27 +55,19 @@ class PullToRefresh extends StatefulWidget {
 
 class _BeaglePullToRefresh extends State<PullToRefresh> {
 
-  final GlobalKey<CustomRefreshIndicatorState> _refreshIndicatorKey = GlobalKey<CustomRefreshIndicatorState>();
   @override
   Widget build(BuildContext context) {
-
     /*
-      FIXME https://github.com/flutter/flutter/issues/40235
-      The method show is calling the onRefresh callback
+      We had to implement the component below based on flutters´s RefreshIndicator widget.
+      The reason is that Beagle needed the isRefreshing property below
+      @see https://github.com/flutter/flutter/issues/40235
+      FIXME change the component below once the mentioned issue is closed
      */
-    SchedulerBinding.instance.addPostFrameCallback((_){
-      if(widget.isRefreshing) {
-          _refreshIndicatorKey.currentState?.showProgress();
-      } else {
-        _refreshIndicatorKey.currentState?.hideProgress();
-      }
-    });
-
-    return CustomRefreshIndicator(
-      key: _refreshIndicatorKey,
+    return BeagleRefreshIndicator(
       color: HexColor(widget.color),
       child: _buildScrollableContent(),
       onRefresh: _onRefreshHandler,
+      isRefreshing: widget.isRefreshing,
     );
   }
 
