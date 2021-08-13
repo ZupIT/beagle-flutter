@@ -24,15 +24,15 @@ environment:
   flutter: ">=1.22.5"
 
 dependencies:
-  beagle:
-    path: ../beagle
-  beagle_components:
-    path: ../beagle_components
   cupertino_icons: ^1.0.3
   flutter:
     sdk: flutter
 
 dev_dependencies:
+  beagle:
+    path: ../beagle
+  beagle_components:
+    path: ../beagle_components
   flutter_test:
     sdk: flutter
   lints: ^1.0.1
