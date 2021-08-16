@@ -81,26 +81,26 @@ class BeagleSampleApp extends StatelessWidget {
         ),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Beagle Sample'),
-          actions: [
-            PopupMenuButton(
-              onSelected: (MenuOption result) {
-                _handleAppBarMenuOption(result, context);
-              },
-              itemBuilder: (BuildContext context) {
-                return _appBarMenuOptions.map((menuOption) {
-                  return PopupMenuItem<MenuOption>(
-                    value: menuOption,
-                    child: Text(menuOption.title),
-                  );
-                }).toList();
-              },
-            ),
-          ],
-        ),
+        // appBar: AppBar(
+        //   title: const Text('Beagle Sample'),
+        //   actions: [
+        //     PopupMenuButton(
+        //       onSelected: (MenuOption result) {
+        //         _handleAppBarMenuOption(result, context);
+        //       },
+        //       itemBuilder: (BuildContext context) {
+        //         return _appBarMenuOptions.map((menuOption) {
+        //           return PopupMenuItem<MenuOption>(
+        //             value: menuOption,
+        //             child: Text(menuOption.title),
+        //           );
+        //         }).toList();
+        //       },
+        //     ),
+        //   ],
+        // ),
         body: BeagleWidget(
-          screenRequest: BeagleScreenRequest('components'),
+          screenRequest: BeagleScreenRequest('navigation/bar'),
           onCreateView: (view) => {
             view.addErrorListener((errors) {
               //TODO

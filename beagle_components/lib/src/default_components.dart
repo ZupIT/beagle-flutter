@@ -15,21 +15,8 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-
-import 'beagle_button.dart';
-import 'beagle_container.dart';
-import 'beagle_image.dart';
-import 'beagle_lazy_component.dart';
-import 'beagle_page_indicator.dart';
-import 'beagle_page_view.dart';
-import 'beagle_scroll_view.dart';
-import 'beagle_tab_bar.dart';
-import 'beagle_text.dart';
-import 'beagle_text_input.dart';
-import 'beagle_touchable.dart';
-import 'beagle_webview.dart';
-import 'text_input_type.dart';
 
 final Map<String, ComponentBuilder> defaultComponents = {
   'custom:loading': beagleLoadingBuilder(),
@@ -47,6 +34,7 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:webView': beagleWebViewBuilder(),
   'beagle:screenComponent': beagleScreenComponentBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
+  'beagle:navigationBarItem': beagleNavigationBarItemBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -201,8 +189,42 @@ ComponentBuilder beagleWebViewBuilder() {
 }
 
 ComponentBuilder beagleScreenComponentBuilder() {
-  return (element, children, __) => Container(
-        key: element.getKey(),
-        child: children[0],
-      );
+  return (element, children, view) {
+    final Map<String, dynamic> safeArea = element.getAttributeValue('safeArea') ?? {};
+    final Map<String, dynamic> navigationBar = element.getAttributeValue('navigationBar') ?? {};
+
+    // this wont work because js will pass twice thought this method and the second pass will have only one child
+    if (children.length == 1) {
+      for (var item in navigationBar['navigationBarItems']) {
+        final component = BeagleUIElement(item);
+        view
+            .getRenderer()
+            .doPartialRender(component, element.getId(), TreeUpdateMode.append);
+      }
+    }
+
+    final beagleNavigationBar = BeagleNavigationBar(
+        title: navigationBar['title'],
+        showBackButton: navigationBar['showBackButton'],
+        styleId: navigationBar['styleId'],
+        navigationBarItems: children.length > 1 ? children.sublist(1) : [],
+    );
+
+    return BeagleScreen(
+      key: element.getKey(),
+      identifier: element.getAttributeValue('identifier'),
+      safeArea: safeArea.isNotEmpty ? BeagleSafeArea.fromJson(safeArea) : null,
+      navigationBar: beagleNavigationBar,
+      child: children[0],
+    );
+  };
+}
+
+ComponentBuilder beagleNavigationBarItemBuilder() {
+  return (element, _, __) => BeagleNavigationBarItem(
+    key: element.getKey(),
+    text: element.getAttributeValue('text'),
+    image: ImagePath.fromJson(element.getAttributeValue('image')),
+    action: element.getAttributeValue('action'),
+  );
 }

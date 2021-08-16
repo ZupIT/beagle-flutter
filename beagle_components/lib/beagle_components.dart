@@ -23,6 +23,7 @@ export 'package:beagle_components/src/beagle_image.dart';
 export 'package:beagle_components/src/beagle_lazy_component.dart';
 export 'package:beagle_components/src/beagle_page_indicator.dart';
 export 'package:beagle_components/src/beagle_page_view.dart';
+export 'package:beagle_components/src/beagle_screen.dart';
 export 'package:beagle_components/src/beagle_scroll_view.dart';
 export 'package:beagle_components/src/beagle_tab_bar.dart';
 export 'package:beagle_components/src/beagle_text.dart';
