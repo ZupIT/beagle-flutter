@@ -52,6 +52,7 @@ void main() {
         loadingComponent: 'custom:loading',
       ),
     },
+    logger: DefaultLogger(),
     designSystem: AppDesignSystem(),
   );
 
