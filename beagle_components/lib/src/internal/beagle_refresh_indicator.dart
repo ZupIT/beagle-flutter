@@ -148,7 +148,7 @@ class BeagleRefreshIndicator extends StatefulWidget {
   final Color color;
 
   /// Defines if the RefreshProgressIndicator should be running
-  /// Defaults to not running.
+  /// Not running by default
   final bool isRefreshing;
 
   @override
@@ -426,16 +426,10 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator> with Tic
     }());
 
     final bool showIndeterminateIndicator =
-        _mode == _RefreshIndicatorMode.refresh || _mode == _RefreshIndicatorMode.done
-            || widget.isRefreshing != null && widget.isRefreshing;
+        _checkIsRefreshing(widget.isRefreshing)     ||
+            _mode == _RefreshIndicatorMode.refresh  ||
+            _mode == _RefreshIndicatorMode.done;
 
-    if(showIndeterminateIndicator) {
-      if(_canStartProgress()) {
-        _showProgressIndicator();
-      } else {
-        _hideProgressIndicator();
-      }
-    }
 
     return Stack(
       children: <Widget>[
@@ -477,20 +471,34 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator> with Tic
     );
   }
 
+  bool _checkIsRefreshing(bool isRefreshing) {
+    if(isRefreshing != null) {
+      if (isRefreshing) {
+        _showProgressIndicator();
+      } else {
+        _hideProgressIndicator();
+      }
+
+      return isRefreshing;
+    }
+
+    return false;
+  }
+
   void _hideProgressIndicator() {
-    if (mounted && _mode == _RefreshIndicatorMode.refresh)
+    if (mounted && _mode == _RefreshIndicatorMode.refresh) {
       _dismiss(_RefreshIndicatorMode.done);
+    }
   }
 
   void _showProgressIndicator() {
-    _isIndicatorAtTop = true;
-    _dragOffset = 0.0;
-    _scaleController.value = 0.0;
-    // _positionController.value = 0.0;
-    _positionController
-        .animateTo(1.0 / _kDragSizeFactorLimit, duration: _kIndicatorSnapDuration);
-    _mode = _RefreshIndicatorMode.refresh;
+    if (_mode == null || _isIndicatorAtTop == null || _dragOffset == null) {
+      _isIndicatorAtTop = true;
+      _dragOffset = 0.0;
+      _scaleController.value = 0.0;
+      _positionController.animateTo(1.0 / _kDragSizeFactorLimit,
+          duration: _kIndicatorSnapDuration);
+      _mode = _RefreshIndicatorMode.refresh;
+    }
   }
-
-  bool _canStartProgress() => _mode == null || _isIndicatorAtTop == null || _dragOffset == null;
 }
