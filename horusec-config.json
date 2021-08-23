@@ -10,7 +10,7 @@
     "**/**/gradlew.bat",
     "**/flutter/tests.sh",
     "**/Gemfile.lock",
-    "./beagle/assets/js/beagle.js"
+    "**/beagle/assets/js/beagle.js"
   ],
   "horusecCliFalsePositiveHashes": [],
   "horusecCliRiskAcceptHashes": [
