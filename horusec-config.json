@@ -9,7 +9,8 @@
     "**/tests/appium/**",
     "**/**/gradlew.bat",
     "**/flutter/tests.sh",
-    "**/Gemfile.lock"
+    "**/Gemfile.lock",
+    "./beagle/assets/js/beagle.js"
   ],
   "horusecCliFalsePositiveHashes": [],
   "horusecCliRiskAcceptHashes": [
