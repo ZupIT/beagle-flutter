@@ -46,7 +46,7 @@ class BeagleScreen extends StatelessWidget with YogaWidget {
             leading: _navigationBarStyle?.leading,
             automaticallyImplyLeading: navigationBar.showBackButton,
             title: Text(navigationBar.title),
-            actions: navigationBar.navigationBarItems,
+            actions: navigationBar.navigationBarItems.map((e) => ItemComponent(item: e)).toList(growable: false),
             elevation: _navigationBarStyle?.elevation,
             shadowColor: _navigationBarStyle?.shadowColor,
             backgroundColor: _navigationBarStyle?.backgroundColor,
@@ -103,6 +103,26 @@ class BeagleSafeArea {
         trailing = json['trailing'] ?? false;
 }
 
+class NavigationBarItem {
+  NavigationBarItem({
+    this.text,
+    this.image,
+    this.action,
+  });
+
+  final String text;
+  final String image;
+  final Function action;
+
+  factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
+    return NavigationBarItem(
+      text: json['text'],
+      image: json['image'],
+      action: json['action'],
+    );
+  }
+}
+
 class BeagleNavigationBar {
   BeagleNavigationBar({
     this.title,
@@ -114,31 +134,41 @@ class BeagleNavigationBar {
   final String title;
   final bool showBackButton;
   final String styleId;
-  final List<Widget> navigationBarItems;
+  final List<NavigationBarItem> navigationBarItems;
+
+  factory BeagleNavigationBar.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> itemsJsonArray = json['navigationBarItems'];
+    final List<NavigationBarItem> items = itemsJsonArray == null
+      ? []
+      : itemsJsonArray.map((e) => NavigationBarItem.fromJson(e)).toList();
+    return BeagleNavigationBar(
+      title: json['title'],
+      showBackButton: json['showBackButton'],
+      styleId: json['styleId'],
+      navigationBarItems: items,
+    );
+  }
 }
 
-class BeagleNavigationBarItem extends StatelessWidget {
-  const BeagleNavigationBarItem({Key key, this.text, this.image, this.action})
+class ItemComponent extends StatelessWidget {
+  const ItemComponent({Key key, this.item})
       : super(key: key);
 
-  final String text;
-  final LocalImagePath image;
-  final Function action;
+  final NavigationBarItem item;
+
+  static final style = BeagleStyle(
+      size: BeagleSize(
+          width: UnitValue(value: 32, type: UnitType.REAL),
+          height: UnitValue(value: 32, type: UnitType.REAL),
+      )
+  );
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: action,
-      icon: _getLocalImage(image.mobileId),
-      tooltip: text,
+      onPressed: item.action,
+      icon: BeagleImage(path: ImagePath.local(item.image), style: style),
+      tooltip: item.text,
     );
-  }
-
-  Image _getLocalImage(String mobileId) {
-    final image = beagleServiceLocator<BeagleDesignSystem>()?.image(mobileId);
-    if (image != null) {
-      return Image.asset(image);
-    }
-    return Image.asset('images/beagle.png');
   }
 }

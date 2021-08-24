@@ -34,7 +34,6 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:webView': beagleWebViewBuilder(),
   'beagle:screenComponent': beagleScreenComponentBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
-  'beagle:navigationBarItem': beagleNavigationBarItemBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -191,40 +190,15 @@ ComponentBuilder beagleWebViewBuilder() {
 ComponentBuilder beagleScreenComponentBuilder() {
   return (element, children, view) {
     final Map<String, dynamic> safeArea = element.getAttributeValue('safeArea') ?? {};
-    final Map<String, dynamic> navigationBar = element.getAttributeValue('navigationBar') ?? {};
-
-    // this wont work because js will pass twice thought this method and the second pass will have only one child
-    if (children.length == 1) {
-      for (var item in navigationBar['navigationBarItems']) {
-        final component = BeagleUIElement(item);
-        view
-            .getRenderer()
-            .doPartialRender(component, element.getId(), TreeUpdateMode.append);
-      }
-    }
-
-    final beagleNavigationBar = BeagleNavigationBar(
-        title: navigationBar['title'],
-        showBackButton: navigationBar['showBackButton'],
-        styleId: navigationBar['styleId'],
-        navigationBarItems: children.length > 1 ? children.sublist(1) : [],
-    );
+    final Map<String, dynamic> navigationBarMap = element.getAttributeValue('navigationBar');
+    final BeagleNavigationBar navigationBar = navigationBarMap == null ? null : BeagleNavigationBar.fromJson(navigationBarMap);
 
     return BeagleScreen(
       key: element.getKey(),
       identifier: element.getAttributeValue('identifier'),
       safeArea: safeArea.isNotEmpty ? BeagleSafeArea.fromJson(safeArea) : null,
-      navigationBar: beagleNavigationBar,
+      navigationBar: navigationBar,
       child: children[0],
     );
   };
-}
-
-ComponentBuilder beagleNavigationBarItemBuilder() {
-  return (element, _, __) => BeagleNavigationBarItem(
-    key: element.getKey(),
-    text: element.getAttributeValue('text'),
-    image: ImagePath.fromJson(element.getAttributeValue('image')),
-    action: element.getAttributeValue('action'),
-  );
 }
