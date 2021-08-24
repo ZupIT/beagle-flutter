@@ -18,7 +18,6 @@ import 'dart:io' show Platform;
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sample/app_design_system.dart';
@@ -43,7 +42,8 @@ void main() {
 
   BeagleSdk.init(
     baseUrl: 'http://$localhost:8080',
-    environment: kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
+    environment:
+        kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
     components: {...defaultComponents, ...myCustomComponents},
     actions: myCustomActions,
     navigationControllers: {
@@ -60,7 +60,6 @@ void main() {
 }
 
 class BeagleSampleApp extends StatelessWidget {
-
   const BeagleSampleApp({Key key}) : super(key: key);
 
   static final _appBarMenuOptions = [

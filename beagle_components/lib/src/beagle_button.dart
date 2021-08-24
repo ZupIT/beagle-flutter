@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -48,28 +47,6 @@ class BeagleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _platform = Theme.of(context).platform;
-
-    return _platform == TargetPlatform.iOS
-        ? buildCupertinoWidget()
-        : buildMaterialWidget();
-  }
-
-  Widget buildCupertinoWidget() {
-    return CupertinoButton(
-      color: _buttonStyle?.iosButtonStyle?.color,
-      disabledColor: _buttonStyle?.iosButtonStyle?.disabledColor ??
-          CupertinoColors.quaternarySystemFill,
-      padding: _buttonStyle?.iosButtonStyle?.padding,
-      borderRadius: _buttonStyle?.iosButtonStyle?.borderRadius ??
-          const BorderRadius.all(Radius.circular(8)),
-      pressedOpacity: _buttonStyle?.iosButtonStyle?.pressedOpacity ?? 0.4,
-      onPressed: getOnPressedFunction(),
-      child: buildButtonChild(),
-    );
-  }
-
-  Widget buildMaterialWidget() {
     return ElevatedButton(
       style: _buttonStyle?.androidButtonStyle,
       onPressed: getOnPressedFunction(),
