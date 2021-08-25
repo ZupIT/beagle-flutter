@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -65,12 +64,12 @@ void main() {
     });
 
     group('When the widget is created and platform is iOS', () {
-      testWidgets('Then it should have a CupertinoButton child',
+      testWidgets('Then it should have a ElevatedButton child',
           (WidgetTester tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         await tester.pumpWidget(createWidget());
 
-        final buttonFinder = find.byType(CupertinoButton);
+        final buttonFinder = find.byType(ElevatedButton);
 
         expect(buttonFinder, findsOneWidget);
 
@@ -152,22 +151,20 @@ void main() {
         await tester.pumpWidget(createWidget(styleId: 'button-one'));
 
         // THEN
-        final buttonFinder = find.byType(CupertinoButton);
+        final buttonFinder = find.byType(ElevatedButton);
         final textFinder = find.text(buttonText);
 
-        final buttonCreated = tester.widget<CupertinoButton>(buttonFinder);
+        final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
         final textCreated = tester.widget<Text>(textFinder);
 
         final buttonOne = ButtonOneStyle();
 
+        expect(buttonFinder, findsOneWidget);
         expect(
-            buttonCreated.borderRadius, buttonOne.iosButtonStyle.borderRadius);
-        expect(buttonCreated.disabledColor,
-            buttonOne.iosButtonStyle.disabledColor);
-        expect(buttonCreated.padding, buttonOne.iosButtonStyle.padding);
-        expect(buttonCreated.pressedOpacity,
-            buttonOne.iosButtonStyle.pressedOpacity);
-        expect(buttonCreated.color, buttonOne.iosButtonStyle.color);
+            buttonCreated.style.backgroundColor
+                .resolve({MaterialState.pressed}),
+            buttonOne.androidButtonStyle.backgroundColor
+                .resolve({MaterialState.pressed}));
 
         expect(textCreated.style, buttonOne.buttonTextStyle);
 
@@ -241,20 +238,14 @@ void main() {
         await tester.pumpWidget(createWidget());
 
         // THEN
-        final buttonFinder = find.byType(CupertinoButton);
+        final buttonFinder = find.byType(ElevatedButton);
         final textFinder = find.text(buttonText);
 
-        final buttonCreated = tester.widget<CupertinoButton>(buttonFinder);
+        final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
         final textCreated = tester.widget<Text>(textFinder);
 
         expect(buttonFinder, findsOneWidget);
-        expect(buttonCreated.borderRadius,
-            const BorderRadius.all(Radius.circular(8)));
-        expect(
-            buttonCreated.disabledColor, CupertinoColors.quaternarySystemFill);
-        expect(buttonCreated.padding, null);
-        expect(buttonCreated.pressedOpacity, 0.4);
-        expect(buttonCreated.color, null);
+        expect(buttonCreated.style, null);
 
         expect(textCreated.style, null);
 
