@@ -22,7 +22,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sample/app_design_system.dart';
-import 'package:sample/beagle_sample_screen.dart';
 
 Map<String, ComponentBuilder> myCustomComponents = {
   'custom:loading': (element, _, __) {
@@ -62,13 +61,6 @@ class BeagleSampleApp extends StatelessWidget {
 
   const BeagleSampleApp({Key key}) : super(key: key);
 
-  static final _appBarMenuOptions = [
-    MenuOption(title: 'Tab Bar', route: 'tab-bar'),
-    MenuOption(title: 'Page View', route: 'page-view-screen'),
-    MenuOption(title: 'Touchable', route: 'touchable'),
-    MenuOption(title: 'Web View', route: 'web-view'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,26 +73,8 @@ class BeagleSampleApp extends StatelessWidget {
         ),
       ),
       home: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('Beagle Sample'),
-        //   actions: [
-        //     PopupMenuButton(
-        //       onSelected: (MenuOption result) {
-        //         _handleAppBarMenuOption(result, context);
-        //       },
-        //       itemBuilder: (BuildContext context) {
-        //         return _appBarMenuOptions.map((menuOption) {
-        //           return PopupMenuItem<MenuOption>(
-        //             value: menuOption,
-        //             child: Text(menuOption.title),
-        //           );
-        //         }).toList();
-        //       },
-        //     ),
-        //   ],
-        // ),
         body: BeagleWidget(
-          screenRequest: BeagleScreenRequest('navigation/bar'),
+          screenRequest: BeagleScreenRequest('components'),
           onCreateView: (view) => {
             view.addErrorListener((errors) {
               //TODO
@@ -110,23 +84,4 @@ class BeagleSampleApp extends StatelessWidget {
       ),
     );
   }
-
-  void _handleAppBarMenuOption(MenuOption menuOption, BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute<BeagleSampleScreen>(
-        builder: (buildContext) => BeagleSampleScreen(
-          title: menuOption.title,
-          route: menuOption.route,
-        ),
-      ),
-    );
-  }
-}
-
-class MenuOption {
-  MenuOption({this.title, this.route});
-
-  final String title;
-  final String route;
 }
