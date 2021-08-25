@@ -393,7 +393,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
 
         final Future<void> refreshResult = widget.onRefresh();
         assert(() {
-          if (refreshResult == null)
+          if (refreshResult == null) {
             FlutterError.reportError(FlutterErrorDetails(
               exception: FlutterError(
                 'The onRefresh callback returned null.\n'
@@ -402,6 +402,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
               context: ErrorDescription('when calling onRefresh'),
               library: 'material library',
             ));
+          }
           return true;
         }());
         if (refreshResult == null) return;
