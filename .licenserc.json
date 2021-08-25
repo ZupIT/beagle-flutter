@@ -13,6 +13,7 @@
       "limitations under the License."
       ],
   "ignore": [
+    "beagle_refresh_indicator.dart",
     ".github",
     ".git",
     "\\.gradle",

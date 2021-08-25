@@ -31,3 +31,4 @@ export 'package:beagle_components/src/beagle_text_input.dart';
 export 'package:beagle_components/src/beagle_touchable.dart';
 export 'package:beagle_components/src/beagle_webview.dart';
 export 'package:beagle_components/src/text_input_type.dart';
+export 'package:beagle_components/src/beagle_pull_to_refresh.dart';

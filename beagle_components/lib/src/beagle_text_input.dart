@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'text_input_type.dart';
 
 /// Defines a text field that lets the user enter text.
@@ -110,7 +108,13 @@ class _BeagleTextInput extends State<BeagleTextInput> {
     super.dispose();
   }
 
-  Widget _buildMaterialWidget() {
+  @override
+  Widget build(BuildContext context) {
+    if (_controller != null &&
+        widget.value != null &&
+        widget.value != _controller.text) {
+      _controller.text = widget.value;
+    }
     return TextField(
       controller: _controller,
       focusNode: _focus,
@@ -124,43 +128,5 @@ class _BeagleTextInput extends State<BeagleTextInput> {
         labelText: widget.placeholder,
       ),
     );
-  }
-
-  Widget _buildCupertinoWidget() {
-    final hasError = widget.showError == true &&
-        widget.error != null &&
-        widget.error.isNotEmpty;
-    final textField = CupertinoTextField(
-      controller: _controller,
-      focusNode: _focus,
-      enabled: widget.enabled != false,
-      keyboardType: getMaterialInputType(widget.type),
-      obscureText: widget.type == BeagleTextInputType.PASSWORD,
-      readOnly: widget.readOnly == true,
-      placeholder: widget.placeholder,
-      decoration: BoxDecoration(
-          border: hasError ? Border.all(color: Colors.red) : null),
-    );
-    return hasError
-        ? Column(
-            children: [
-              textField,
-              Text(widget.error, style: TextStyle(color: Colors.red)),
-            ],
-          )
-        : textField;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_controller != null &&
-        widget.value != null &&
-        widget.value != _controller.text) {
-      _controller.text = widget.value;
-    }
-    final platform = Theme.of(context).platform;
-    return platform == TargetPlatform.iOS
-        ? _buildCupertinoWidget()
-        : _buildMaterialWidget();
   }
 }

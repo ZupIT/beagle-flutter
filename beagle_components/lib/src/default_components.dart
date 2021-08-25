@@ -33,6 +33,7 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:touchable': beagleTouchableBuilder(),
   'beagle:webView': beagleWebViewBuilder(),
   'beagle:screenComponent': beagleScreenComponentBuilder(),
+  'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
 };
 
@@ -188,10 +189,12 @@ ComponentBuilder beagleWebViewBuilder() {
 }
 
 ComponentBuilder beagleScreenComponentBuilder() {
-  return (element, children, view) {
+  return (element, children, _) {
     final Map<String, dynamic> safeArea = element.getAttributeValue('safeArea') ?? {};
     final Map<String, dynamic> navigationBarMap = element.getAttributeValue('navigationBar');
-    final BeagleNavigationBar navigationBar = navigationBarMap == null ? null : BeagleNavigationBar.fromJson(navigationBarMap);
+    final BeagleNavigationBar navigationBar = navigationBarMap == null
+        ? null
+        : BeagleNavigationBar.fromJson(navigationBarMap);
 
     return BeagleScreen(
       key: element.getKey(),
@@ -200,5 +203,16 @@ ComponentBuilder beagleScreenComponentBuilder() {
       navigationBar: navigationBar,
       child: children[0],
     );
+  };
+}
+
+ComponentBuilder beaglePullToRefreshBuilder() {
+  return (element, children, view) {
+    return PullToRefresh(
+        key: element.getKey(),
+        onPull: element.getAttributeValue('onPull'),
+        isRefreshing: element.getAttributeValue('isRefreshing'),
+        color: element.getAttributeValue('color'),
+        child: children.isEmpty ? null : children[0]);
   };
 }

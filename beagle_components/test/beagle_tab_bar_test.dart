@@ -16,7 +16,6 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -108,15 +107,12 @@ void main() {
     });
 
     group('When the platform is iOS', () {
-      testWidgets('Then it should have a CupertinoTabBar child',
+      testWidgets('Then it should have a TabBar child',
           (WidgetTester tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        await tester.pumpWidget(await createWidget(
-          designSystem: designSystemMock,
-          items: tabBarItems,
-        ));
+        await tester.pumpWidget(await createWidget(items: tabBarItems));
 
-        final tabBarFinder = find.byType(CupertinoTabBar);
+        final tabBarFinder = find.byType(TabBar);
 
         expect(tabBarFinder, findsOneWidget);
         debugDefaultTargetPlatformOverride = null;
@@ -125,14 +121,11 @@ void main() {
       testWidgets('Then it should have correct number of tabs',
           (WidgetTester tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        await tester.pumpWidget(await createWidget(
-            designSystem: designSystemMock, items: tabBarItems));
+        await tester.pumpWidget(await createWidget(items: tabBarItems));
 
-        // CupertinoTabBar does not have a specific Widget to define a tab item
-        // so, we are checking for the quantity of Text widgets
-        final textFinder = find.byType(Text);
+        final tabFinder = find.byType(Tab);
 
-        expect(textFinder, findsNWidgets(tabBarItems.length));
+        expect(tabFinder, findsNWidgets(tabBarItems.length));
 
         debugDefaultTargetPlatformOverride = null;
       });
