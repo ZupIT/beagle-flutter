@@ -17,6 +17,7 @@
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/utils/analytics_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 
@@ -56,6 +57,8 @@ class BeagleJSEngine {
   final _viewUpdateChannelName = 'beagleView.update';
   final _navigatorChannelName = 'beagleNavigator';
   final _loggerChannelName = 'logger';
+  final _analyticsCreateRecordChannelName = 'analytics.createRecord';
+  final _analyticsGetConfigChannelName = 'analytics.getConfig';
 
   HttpListener _httpListener;
   final Map<String, List<ActionListener>> _viewActionListenerMap = {};
@@ -130,6 +133,7 @@ class BeagleJSEngine {
     _setupStorageMessages();
     _setupOperationMessages();
     _setupLoggerMessage();
+    _setupAnalyticsMessage();
   }
 
   void _setupHttpMessages() {
@@ -156,6 +160,30 @@ class BeagleJSEngine {
       _loggerChannelName,
       _notifyLoggerListener,
     );
+  }
+
+  void _setupAnalyticsMessage() {
+    // Handles createRecord
+    _jsRuntime.onMessage(
+      _analyticsCreateRecordChannelName,
+      _notifyAnalyticsCreateRecordListener,
+    );
+
+    // Handles getConfig
+    _jsRuntime.onMessage(
+      _analyticsGetConfigChannelName, (dynamic args) {
+        final functionId = args["functionId"];
+        _notifyAnalyticsGetConfigListener(functionId);
+      }
+    );
+  }
+
+  void _notifyAnalyticsCreateRecordListener(dynamic analyticsRecord) {
+    if(beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
+      final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
+      AnalyticsRecord record = formatRecord(analyticsRecord);
+      analyticsProvider.createRecord(record);
+    }
   }
 
   void _notifyLoggerListener(dynamic loggerMessage) {
@@ -397,6 +425,13 @@ class BeagleJSEngine {
   void respondHttpRequest(String id, Response response) {
     _jsRuntime.evaluate(
         'global.beagle.httpClient.respond($id, ${response.toJson()})');
+  }
+
+  void _notifyAnalyticsGetConfigListener(String functionId) {
+    if(beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
+      final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
+      callJsFunction(functionId, analyticsProvider.getConfig().toMap());
+    }
   }
 }
 
