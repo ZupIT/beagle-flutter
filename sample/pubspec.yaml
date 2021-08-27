@@ -26,6 +26,7 @@ environment:
 dependencies:
   beagle: ^0.9.3-alpha
   beagle_components: ^0.9.3-alpha
+  cupertino_icons: ^1.0.3
   flutter:
     sdk: flutter
 
