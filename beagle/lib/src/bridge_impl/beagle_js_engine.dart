@@ -179,10 +179,16 @@ class BeagleJSEngine {
     );
   }
 
-  void _notifyAnalyticsCreateRecordListener(dynamic analyticsRecord) {
+  void _notifyAnalyticsCreateRecordListener(dynamic analyticsRecordMap) {
     if(beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
       final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
-      analyticsProvider.createRecord(AnalyticsRecord().fromMap(analyticsRecord));
+      final record = AnalyticsRecord().fromMap(analyticsRecordMap);
+      /*
+       * TODO find a way to find x,y of the component that triggered the event. Example:
+       *  final componentId = analyticsRecord[analytics.component['id']];
+       *  final position = findPositionByComponentId(componentId); // position.x, position.y
+       */
+      analyticsProvider.createRecord(record);
     }
   }
 
