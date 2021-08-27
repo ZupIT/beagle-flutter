@@ -56,4 +56,60 @@ class AnalyticsRecord {
 
   /// screen is a String that contains the screen url/id
   String screen;
+
+  AnalyticsRecord fromMap(Map<String, dynamic> map) {
+    return AnalyticsRecord(
+        type: map['type'],
+        platform: map['platform'],
+        timestamp: map['timestamp'],
+        screen:  map['screen'],
+        event: map['event'],
+        component: map['component'],
+        beagleAction: map['beagleAction'],
+        additionalEntries: map['additionalEntries'],
+        attributes: map['attributes']
+    );
+  }
+
+  /// Creates a map with the attributes of this class
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type,
+      'platform': platform,
+      'attributes': attributes,
+      'component': component,
+      'beagleAction': beagleAction,
+      'event': event,
+      'additionalEntries': additionalEntries,
+      'timestamp': timestamp,
+      'screen': screen,
+    };
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AnalyticsRecord &&
+          runtimeType == other.runtimeType &&
+          type == other.type &&
+          platform == other.platform &&
+          attributes == other.attributes &&
+          component == other.component &&
+          beagleAction == other.beagleAction &&
+          event == other.event &&
+          additionalEntries == other.additionalEntries &&
+          timestamp == other.timestamp &&
+          screen == other.screen;
+
+  @override
+  int get hashCode =>
+      type.hashCode ^
+      platform.hashCode ^
+      attributes.hashCode ^
+      component.hashCode ^
+      beagleAction.hashCode ^
+      event.hashCode ^
+      additionalEntries.hashCode ^
+      timestamp.hashCode ^
+      screen.hashCode;
 }

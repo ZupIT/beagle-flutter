@@ -182,8 +182,7 @@ class BeagleJSEngine {
   void _notifyAnalyticsCreateRecordListener(dynamic analyticsRecord) {
     if(beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
       final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
-      AnalyticsRecord record = formatRecord(analyticsRecord);
-      analyticsProvider.createRecord(record);
+      analyticsProvider.createRecord(AnalyticsRecord().fromMap(analyticsRecord));
     }
   }
 

@@ -27,6 +27,10 @@ class AnalyticsConfig {
   /// screen. The value for each key is a list of attributes that you would like to be reported.
   Map<String, List<String>> actions;
 
+  AnalyticsConfig fromMap(Map<String, dynamic> map) {
+    return AnalyticsConfig(enableScreenAnalytics: map['map'],
+    actions: map['actions']);
+  }
 
   /// Creates a map with the attributes of this class
   Map<String, dynamic> toMap() {

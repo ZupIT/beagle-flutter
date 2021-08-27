@@ -29,17 +29,7 @@ class MockJavascriptRuntimeWrapper extends Mock
 
 class MockStorage extends Mock implements Storage {}
 
-AnalyticsConfig analyticsConfig;
-class AnalyticsProviderMock implements AnalyticsProvider {
-  @override
-  void createRecord(AnalyticsRecord record) {
-  }
-
-  @override
-  AnalyticsConfig getConfig() {
-    return analyticsConfig;
-  }
-}
+class AnalyticsProviderMock extends Mock implements AnalyticsProvider {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +38,6 @@ void main() {
   final analyticsProviderMock = AnalyticsProviderMock();
 
   setUp(() {
-    analyticsConfig = null;
     beagleServiceLocator.reset();
     reset(jsRuntimeMock);
   });
@@ -541,8 +530,10 @@ void main() {
         final expectedActions = {"beagle:setContext" : ["contextId", "path", "value"]};
 
         //Configures mocks
-        analyticsConfig = AnalyticsConfig(enableScreenAnalytics: expectedEnableScreenAnalytics,
+        final analyticsConfig = AnalyticsConfig(enableScreenAnalytics: expectedEnableScreenAnalytics,
             actions: expectedActions);
+
+        when(analyticsProviderMock.getConfig()).thenReturn(analyticsConfig);
 
         beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProviderMock);
 
@@ -556,6 +547,32 @@ void main() {
 
         verify(beagleJSEngine.callJsFunction(functionId, {"enableScreenAnalytics" : expectedEnableScreenAnalytics,
           "actions" : expectedActions}));
+      });
+    });
+
+    group('When a analytics.createRecord message is received', () {
+      test('Then should call createRecord on analyticsProvider', () async {
+        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock, storageMock);
+        await beagleJSEngine.start();
+
+        beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProviderMock);
+
+        final message = {
+          "type": "action",
+          "platform": "Flutter",
+          "event": "onPress",
+          "component": {"type": "beagle:button", "id": "_beagle_37"},
+          "beagleAction": "beagle:setContext",
+          "attributes": {"contextId": "refreshContext", "value": true},
+          "timestamp": 1629854771847,
+          "screen": "/pull-to-refresh-simple"
+        };
+
+        await verify(jsRuntimeMock.onMessage('analytics.createRecord', captureAny))
+            .captured
+            .single(message);
+
+        verify(analyticsProviderMock.createRecord(AnalyticsRecord().fromMap(message)));
       });
     });
 
