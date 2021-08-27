@@ -34,13 +34,13 @@ class BeagleButton extends StatelessWidget {
 
   /// References a [BeagleButtonStyle] declared natively and locally in [BeagleDesignSystem]
   /// to be applied to this widget.
-  final String styleId;
+  final String? styleId = null;
 
   /// Defines the actions that will be performed when this component is pressed.
-  final Function onPress;
+  final Function? onPress = null;
 
   /// Whether button will be enabled.
-  final bool enabled;
+  final bool? enabled = null;
 
   BeagleButtonStyle get _buttonStyle =>
       beagleServiceLocator<BeagleDesignSystem>()?.buttonStyle(styleId);

@@ -85,7 +85,7 @@ class BeagleJSEngine {
 
   BeagleJSEngineState get state => _engineState;
 
-  dynamic _deserializeJsFunctions(dynamic value, [String viewId]) {
+  dynamic _deserializeJsFunctions(dynamic value, [String? viewId]) {
     if (value.runtimeType.toString() == 'String' &&
         value.toString().startsWith('__beagleFn:')) {
       return ([dynamic argument]) {
@@ -201,7 +201,7 @@ class BeagleJSEngine {
 
   bool _hasActionListenerForView(String viewId) {
     return _viewActionListenerMap.containsKey(viewId) &&
-        _viewActionListenerMap[viewId].isNotEmpty;
+        (_viewActionListenerMap[viewId]?.isNotEmpty ?? false);
   }
 
   void _setupOperationMessages() {
@@ -273,31 +273,26 @@ class BeagleJSEngine {
   }
 
   void _setupStorageMessages() {
+    void evaluateOnJSRuntime(String promiseId, String? result) =>
+        _jsRuntime.evaluate(
+            "global.beagle.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
+
     _jsRuntime
       ..onMessage('storage.set', (dynamic args) async {
-        final key = args['key'];
-        final value = args['value'];
-        final promiseId = args['promiseId'];
-        await _storage.setItem(key, value);
-        _jsRuntime.evaluate("global.beagle.promise.resolve('$promiseId')");
+        await _storage.setItem(args['key'], args['value']);
+        evaluateOnJSRuntime(args['promiseId'], null);
       })
       ..onMessage('storage.get', (dynamic args) async {
-        final key = args['key'];
-        final promiseId = args['promiseId'];
-        final result = await _storage.getItem(key);
-        _jsRuntime.evaluate(
-            "global.beagle.promise.resolve('$promiseId', ${jsonEncode(result)})");
+        final result = await _storage.getItem(args['key']);
+        evaluateOnJSRuntime(args['promiseId'], result);
       })
       ..onMessage('storage.remove', (dynamic args) async {
-        final key = args['key'];
-        final promiseId = args['promiseId'];
-        await _storage.removeItem(key);
-        _jsRuntime.evaluate("global.beagle.promise.resolve('$promiseId')");
+        await _storage.removeItem(args['key']);
+        evaluateOnJSRuntime(args['promiseId'], null);
       })
       ..onMessage('storage.clear', (dynamic args) async {
-        final promiseId = args['promiseId'];
         await _storage.clear();
-        _jsRuntime.evaluate("global.beagle.promise.resolve('$promiseId')");
+        evaluateOnJSRuntime(args['promiseId'], null);
       });
   }
 
@@ -325,8 +320,8 @@ class BeagleJSEngine {
 
   /// Creates a new BeagleView and returns the created view id.
   String createBeagleView({
-    BeagleNetworkOptions networkOptions,
-    String initialControllerId,
+    required BeagleNetworkOptions networkOptions,
+    String? initialControllerId,
   }) {
     final params = [BeagleNetworkOptions.toJsonEncode(networkOptions)];
     if (initialControllerId != null) {
@@ -339,15 +334,6 @@ class BeagleJSEngine {
   }
 
   // ignore: use_setters_to_change_properties
-  RemoveListener onAction(String viewId, ActionListener listener) {
-    _viewActionListenerMap[viewId] = _viewActionListenerMap[viewId] ?? [];
-    _viewActionListenerMap[viewId].add(listener);
-    return () {
-      _viewActionListenerMap[viewId].remove(listener);
-    };
-  }
-
-  // ignore: use_setters_to_change_properties
   void onHttpRequest(HttpListener listener) {
     _httpListener = listener;
   }
@@ -357,28 +343,30 @@ class BeagleJSEngine {
     _operationListener = listener;
   }
 
-  RemoveListener onViewUpdate(String viewId, ViewUpdateListener listener) {
-    _viewUpdateListenerMap[viewId] = _viewUpdateListenerMap[viewId] ?? [];
-    _viewUpdateListenerMap[viewId].add(listener);
+  RemoveListener handleListenerRemoval(
+      String viewId, Map<String, dynamic> map, dynamic listener) {
+    map[viewId] = _viewUpdateListenerMap[viewId] ?? [];
+    map[viewId]?.add(listener);
     return () {
-      _viewUpdateListenerMap[viewId].remove(listener);
+      map[viewId]?.remove(listener);
     };
+  }
+
+  // ignore: use_setters_to_change_properties
+  RemoveListener onAction(String viewId, ActionListener listener) {
+    return handleListenerRemoval(viewId, _viewActionListenerMap, listener);
+  }
+
+  RemoveListener onViewUpdate(String viewId, ViewUpdateListener listener) {
+    return handleListenerRemoval(viewId, _viewUpdateListenerMap, listener);
   }
 
   RemoveListener onViewUpdateError(String viewId, ViewErrorListener listener) {
-    _viewErrorListenerMap[viewId] = _viewErrorListenerMap[viewId] ?? [];
-    _viewErrorListenerMap[viewId].add(listener);
-    return () {
-      _viewErrorListenerMap[viewId].remove(listener);
-    };
+    return handleListenerRemoval(viewId, _viewErrorListenerMap, listener);
   }
 
   RemoveListener onNavigate(String viewId, NavigationListener listener) {
-    _navigationListenerMap[viewId] = _navigationListenerMap[viewId] ?? [];
-    _navigationListenerMap[viewId].add(listener);
-    return () {
-      _navigationListenerMap[viewId].remove(listener);
-    };
+    return handleListenerRemoval(viewId, _navigationListenerMap, listener);
   }
 
   void removeViewListeners(String viewId) {
@@ -387,7 +375,7 @@ class BeagleJSEngine {
     _viewActionListenerMap.remove(viewId);
   }
 
-  void callJsFunction(String functionId, [Map<String, dynamic> argumentsMap]) {
+  void callJsFunction(String functionId, [Map<String, dynamic>? argumentsMap]) {
     final args = argumentsMap == null
         ? "'$functionId'"
         : "'$functionId', ${json.encode(argumentsMap)}";

@@ -15,6 +15,10 @@
  */
 
 extension StringUtils on String {
+  bool isNullEmptyOrInvalid(String? string) {
+    return ['', null, false, 0].contains(string);
+  }
+
   String toKebabCase() {
     final words = RegExp(
             r'[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+')
@@ -26,6 +30,6 @@ extension StringUtils on String {
       return '';
     }
 
-    return words.map((word) => word.toLowerCase()).toList().join('-');
+    return words.map((word) => word?.toLowerCase()).toList().join('-');
   }
 }

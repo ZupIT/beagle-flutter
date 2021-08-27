@@ -19,9 +19,9 @@ import 'package:flutter/material.dart';
 class BeagleAlert {
   static void showAlertDialog(
     BuildContext context, {
-    String title,
-    String message,
-    Function onPressOk,
+    String title = '',
+    String message = '',
+    Function? onPressOk,
   }) {
     showDialog(
       context: context,

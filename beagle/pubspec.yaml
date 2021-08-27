@@ -19,7 +19,7 @@ version: 0.9.3-alpha
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
   flutter: ">=1.22.5"
 
 dependencies:
