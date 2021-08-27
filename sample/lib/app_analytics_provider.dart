@@ -44,8 +44,8 @@ class AppAnalyticsProvider implements AnalyticsProvider {
 
   @override
   AnalyticsConfig getConfig() {
-    // Configures enable/disable for analytics, which actions + attributes of the actions to be emitted on events
-    return AnalyticsConfig(enableScreenAnalytics: false, actions: {
+    // Configures enable/disable for screen analytics, actions/attributes to be emitted on events
+    return AnalyticsConfig(enableScreenAnalytics: true, actions: {
       "beagle:setContext": ["contextId", "path", "value"]
     });
   }
