@@ -20,6 +20,7 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle/src/utils/analytics_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:get_it/get_it.dart';
 
 import '../service_locator.dart';
 import 'beagle_js_request_message.dart';

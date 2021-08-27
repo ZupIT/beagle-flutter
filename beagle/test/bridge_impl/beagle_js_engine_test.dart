@@ -29,12 +29,27 @@ class MockJavascriptRuntimeWrapper extends Mock
 
 class MockStorage extends Mock implements Storage {}
 
+AnalyticsConfig analyticsConfig;
+class AnalyticsProviderMock implements AnalyticsProvider {
+  @override
+  void createRecord(AnalyticsRecord record) {
+  }
+
+  @override
+  AnalyticsConfig getConfig() {
+    return analyticsConfig;
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final jsRuntimeMock = MockJavascriptRuntimeWrapper();
   final storageMock = MockStorage();
+  final analyticsProviderMock = AnalyticsProviderMock();
 
   setUp(() {
+    analyticsConfig = null;
+    beagleServiceLocator.reset();
     reset(jsRuntimeMock);
   });
 
@@ -178,6 +193,26 @@ void main() {
         const expectedChannelName = 'storage.clear';
         verify(jsRuntimeMock.onMessage(expectedChannelName, any));
       });
+
+      test('Then should register for javascript analytics.createRecord messages',
+              () async {
+            final beagleJSEngine = BeagleJSEngine(jsRuntimeMock, storageMock);
+
+            await beagleJSEngine.start();
+
+            const expectedChannelName = 'analytics.createRecord';
+            verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+          });
+
+      test('Then should register for javascript analytics.getConfig messages',
+              () async {
+            final beagleJSEngine = BeagleJSEngine(jsRuntimeMock, storageMock);
+
+            await beagleJSEngine.start();
+
+            const expectedChannelName = 'analytics.getConfig';
+            verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+          });
     });
   });
 
@@ -492,6 +527,35 @@ void main() {
 
         verify(jsRuntimeMock
             .evaluate("global.beagle.promise.resolve('$promiseId')"));
+      });
+    });
+
+    group('When a analytics.getConfig message is received', () {
+      test('Then should call callJsFunction on beagle_js_engine', () async {
+        const functionId = 'functionId';
+        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock, storageMock);
+        await beagleJSEngine.start();
+
+        //Expected values
+        final expectedEnableScreenAnalytics = true;
+        final expectedActions = {"beagle:setContext" : ["contextId", "path", "value"]};
+
+        //Configures mocks
+        analyticsConfig = AnalyticsConfig(enableScreenAnalytics: expectedEnableScreenAnalytics,
+            actions: expectedActions);
+
+        beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProviderMock);
+
+        final message = {
+          'functionId': functionId,
+        };
+
+        await verify(jsRuntimeMock.onMessage('analytics.getConfig', captureAny))
+            .captured
+            .single(message);
+
+        verify(beagleJSEngine.callJsFunction(functionId, {"enableScreenAnalytics" : expectedEnableScreenAnalytics,
+          "actions" : expectedActions}));
       });
     });
 
