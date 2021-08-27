@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BeagleButtonStyle {
@@ -53,17 +52,9 @@ class BeagleIosButtonStyle {
   /// The color of the button's background.
   ///
   /// Defaults to null which produces a button with no background or border.
-  ///
-  /// Defaults to the [CupertinoTheme]'s `primaryColor` when the
-  /// [CupertinoButton.filled] constructor is used.
   final Color color;
 
   /// The color of the button's background when the button is disabled.
-  ///
-  /// Ignored if the [CupertinoButton] doesn't also have a [color].
-  ///
-  /// Defaults to [CupertinoColors.quaternarySystemFill] when [color] is
-  /// specified. Must not be null.
   final Color disabledColor;
 
   /// The radius of the button's corners when it has a background color.

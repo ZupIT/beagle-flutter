@@ -15,9 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'beagle_image.dart';
 
 /// Defines a widget that displays a horizontal row of tabs, that will be
@@ -84,44 +82,18 @@ class _BeagleTabBarState extends State<BeagleTabBar>
 
   @override
   Widget build(BuildContext context) {
-    final _platform = Theme.of(context).platform;
-    return _platform == TargetPlatform.iOS
-        ? buildCupertinoWidget()
-        : buildMaterialWidget();
-  }
-
-  Widget buildCupertinoWidget() {
-    return CupertinoTabBar(
-      currentIndex: widget.currentTab ?? 0,
-      onTap: widget.onTabSelection,
-      items: buildCupertinoTabs(),
-    );
-  }
-
-  List<BottomNavigationBarItem> buildCupertinoTabs() {
-    return widget.items.map((tabBarItem) {
-      return BottomNavigationBarItem(
-        label: tabBarItem.title ?? '',
-        icon: tabBarItem.icon == null
-            ? Container()
-            : BeagleImage(path: tabBarItem.icon, style: imageStyle),
-      );
-    }).toList();
-  }
-
-  Widget buildMaterialWidget() {
     return Container(
       // TODO: check if its viable to maintain this
       color: Theme.of(context).primaryColor,
       child: TabBar(
         controller: _tabController,
         onTap: widget.onTabSelection,
-        tabs: buildMaterialTabs(),
+        tabs: buildTabs(),
       ),
     );
   }
 
-  List<Widget> buildMaterialTabs() {
+  List<Widget> buildTabs() {
     return widget.items
         .map(
           (tabBarItem) => Tab(
