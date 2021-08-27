@@ -184,7 +184,7 @@ class BeagleJSEngine {
       final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
       final record = AnalyticsRecord().fromMap(analyticsRecordMap);
       /*
-       * TODO find a way to find x,y of the component that triggered the event. Example:
+       * TODO find a way to extract x,y of the component that triggered the event. Example:
        *  final componentId = analyticsRecord[analytics.component['id']];
        *  final position = findPositionByComponentId(componentId); // position.x, position.y
        */
