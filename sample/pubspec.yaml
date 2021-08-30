@@ -27,7 +27,6 @@ dependencies:
     path: ../beagle
   beagle_components:
     path: ../beagle_components
-  cupertino_icons: ^1.0.3
   flutter:
     sdk: flutter
 
