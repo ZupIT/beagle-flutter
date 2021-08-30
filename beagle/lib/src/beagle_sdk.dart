@@ -47,6 +47,7 @@ class BeagleSdk {
     /// [BeagleLogger] interface that provides logger to beagle use in application.
     BeagleLogger logger,
     Map<String, Operation> operations,
+    AnalyticsProvider analyticsProvider
   }) {
     Yoga.init();
 
@@ -85,6 +86,7 @@ class BeagleSdk {
       strategy: strategy,
       logger: logger,
       operations: operations,
+      analyticsProvider: analyticsProvider
     );
   }
 }

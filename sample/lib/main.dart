@@ -22,6 +22,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sample/app_design_system.dart';
 import 'package:sample/beagle_sample_screen.dart';
+import 'package:sample/app_analytics_provider.dart';
 
 Map<String, ComponentBuilder> myCustomComponents = {
   'custom:loading': (element, _, __) {
@@ -52,12 +53,14 @@ void main() {
         loadingComponent: 'custom:loading',
       ),
     },
+    analyticsProvider: AppAnalyticsProvider(),
     logger: DefaultLogger(),
     designSystem: AppDesignSystem(),
   );
 
   runApp(const MaterialApp(home: BeagleSampleApp()));
 }
+
 
 class BeagleSampleApp extends StatelessWidget {
   const BeagleSampleApp({Key key}) : super(key: key);
