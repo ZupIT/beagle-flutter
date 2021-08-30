@@ -71,3 +71,6 @@ export 'package:beagle/src/beagle_sdk.dart';
 export 'package:beagle/src/beagle_widget.dart';
 
 export 'package:beagle/src/service_locator.dart' show beagleServiceLocator;
+export 'package:beagle/src/analytics/analytics_config.dart';
+export 'package:beagle/src/analytics/analytics_provider.dart';
+export 'package:beagle/src/analytics/analytics_record.dart';

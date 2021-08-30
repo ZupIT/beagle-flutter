@@ -20,6 +20,7 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sample/app_analytics_provider.dart';
 import 'package:sample/app_design_system.dart';
 
 Map<String, ComponentBuilder> myCustomComponents = {
@@ -51,6 +52,7 @@ void main() {
         loadingComponent: 'custom:loading',
       ),
     },
+    analyticsProvider: AppAnalyticsProvider(),
     logger: DefaultLogger(),
     designSystem: AppDesignSystem(),
   );
