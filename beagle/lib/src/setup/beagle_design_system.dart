@@ -24,4 +24,6 @@ abstract class BeagleDesignSystem {
   BeagleButtonStyle buttonStyle(String id);
 
   TextStyle textStyle(String id);
+
+  BeagleNavigationBarStyle navigationBarStyle(String id);
 }

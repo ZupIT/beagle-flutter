@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-
 name: sample
 description: A sample Beagle Flutter application.
 version: 1.0.0
@@ -24,8 +23,10 @@ environment:
   flutter: ">=1.22.5"
 
 dependencies:
-  beagle: ^0.9.3-alpha
-  beagle_components: ^0.9.3-alpha
+  beagle:
+    path: ../beagle
+  beagle_components:
+    path: ../beagle_components
   flutter:
     sdk: flutter
 
