@@ -17,7 +17,7 @@
 import 'package:flutter/material.dart';
 
 class BeagleConfirm {
-  static void showAlertDialog(
+  static Future<void> showAlertDialog(
     BuildContext context, {
     String title,
     String message,
@@ -25,8 +25,8 @@ class BeagleConfirm {
     Function onPressOk,
     String labelCancel,
     Function onPressCancel,
-  }) {
-    showDialog(
+  }) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         title = title ?? '';

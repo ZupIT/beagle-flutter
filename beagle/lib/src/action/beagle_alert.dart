@@ -17,14 +17,14 @@
 import 'package:flutter/material.dart';
 
 class BeagleAlert {
-  static void showAlertDialog(
+  static Future<void> showAlertDialog(
     BuildContext context, {
     String title,
     String message,
     String labelOk,
     Function onPressOk,
-  }) {
-    showDialog(
+  }) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         title = title ?? '';
