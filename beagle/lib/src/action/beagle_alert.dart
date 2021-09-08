@@ -24,7 +24,7 @@ class BeagleAlert {
     String labelOk,
     Function onPressOk,
   }) async {
-    await showDialog(
+    await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         title = title ?? '';

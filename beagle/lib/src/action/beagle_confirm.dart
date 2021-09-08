@@ -26,7 +26,7 @@ class BeagleConfirm {
     String labelCancel,
     Function onPressCancel,
   }) async {
-    await showDialog(
+    await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         title = title ?? '';
