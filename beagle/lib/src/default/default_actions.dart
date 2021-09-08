@@ -15,13 +15,26 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/action/beagle_confirm.dart';
 
 final Map<String, ActionHandler> defaultActions = {
+  'beagle:confirm': ({action, view, element, context}) {
+    BeagleConfirm.showAlertDialog(
+      context,
+      title: action.getAttributeValue('title'),
+      message: action.getAttributeValue('message'),
+      labelOk: action.getAttributeValue('labelOk'),
+      onPressOk: action.getAttributeValue('onPressOk'),
+      labelCancel: action.getAttributeValue('labelCancel'),
+      onPressCancel: action.getAttributeValue('onPressCancel'),
+    );
+  },
   'beagle:alert': ({action, view, element, context}) {
     BeagleAlert.showAlertDialog(
       context,
       message: action.getAttributeValue('message'),
-      onPressOk: action.getAttributeValue('onPressOk', () {}),
+      labelOk: action.getAttributeValue('labelOk'),
+      onPressOk: action.getAttributeValue('onPressOk'),
       title: action.getAttributeValue('title', 'Alert'),
     );
   },
