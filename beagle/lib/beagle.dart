@@ -17,6 +17,7 @@
 library beagle;
 
 export 'package:beagle/src/action/beagle_alert.dart';
+export 'package:beagle/src/action/beagle_confirm.dart';
 export 'package:beagle/src/action/beagle_open_external_url.dart';
 export 'package:beagle/src/action/beagle_open_native_route.dart';
 

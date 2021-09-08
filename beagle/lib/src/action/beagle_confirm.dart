@@ -16,20 +16,23 @@
 
 import 'package:flutter/material.dart';
 
-class BeagleAlert {
+class BeagleConfirm {
   static void showAlertDialog(
     BuildContext context, {
     String title,
     String message,
     String labelOk,
     Function onPressOk,
+    String labelCancel,
+    Function onPressCancel,
   }) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         title = title ?? '';
         message = message ?? '';
-        final label = labelOk ?? 'OK';
+        labelOk = labelOk ?? 'OK';
+        labelCancel = labelCancel ?? 'Cancel';
 
         return AlertDialog(
           title: Text(title),
@@ -42,8 +45,17 @@ class BeagleAlert {
                   onPressOk();
                 }
               },
-              child: Text(label),
+              child: Text(labelOk),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (onPressCancel != null) {
+                  onPressCancel();
+                }
+              },
+              child: Text(labelCancel),
+            )
           ],
         );
       },
