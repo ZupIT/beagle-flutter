@@ -31,6 +31,4 @@ class BeagleSubmitForm {
       }
   }
 
-  _searchErrorInHierarchy(BuildContext buildContext) {
-  }
 }
