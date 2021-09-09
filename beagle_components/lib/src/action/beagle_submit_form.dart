@@ -22,13 +22,18 @@ import 'package:flutter/widgets.dart';
 class BeagleSubmitForm {
   static void submit(BuildContext buildContext, BeagleUIElement element) {
       final BuildContext buildContextOrigin = buildContext.findBuildContextForWidgetKey(element.getId());
-      final BeagleSimpleForm beagleSimpleForm = buildContextOrigin.findAncestorWidgetOfExactType();
-      final beagleSimpleFormState = BeagleSimpleForm.of(buildContextOrigin);
-      if(beagleSimpleForm != null && beagleSimpleFormState != null) {
-        beagleSimpleFormState.submit();
+      if(buildContextOrigin != null) {
+        final BeagleSimpleForm beagleSimpleForm = buildContextOrigin.findAncestorWidgetOfExactType();
+        final beagleSimpleFormState = BeagleSimpleForm.of(buildContextOrigin);
+        if (beagleSimpleForm != null && beagleSimpleFormState != null) {
+          beagleSimpleFormState.submit();
+        } else {
+          beagleServiceLocator<BeagleLogger>()
+              .error('Not found simple form in the parents');
+        }
       } else {
         beagleServiceLocator<BeagleLogger>()
-            .error('Not found simple form in the parents');
+            .error('Not found buildContext for element with id ${element.getId()}');
       }
   }
 
