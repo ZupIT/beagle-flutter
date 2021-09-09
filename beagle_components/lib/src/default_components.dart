@@ -223,6 +223,7 @@ ComponentBuilder beagleSimpleFormBuilder() {
     return BeagleSimpleForm(
         key: element.getKey(),
         onSubmit: element.getAttributeValue('onSubmit'),
+        onValidationError: element.getAttributeValue('onValidationError'),
         children: children);
   };
 }

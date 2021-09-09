@@ -17,6 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import '../beagle_components.dart';
 
 /// This component defines a submit handler for a form request.
 class BeagleSimpleForm extends StatefulWidget with YogaWidget {
@@ -59,14 +60,30 @@ class _BeagleSimpleForm extends State<BeagleSimpleForm> {
   void submit() {
     final hasError = _searchErrorInHierarchy();
     if (hasError) {
-      widget.onValidationError();
+      if (widget.onValidationError != null) {
+        widget.onValidationError();
+      }
     } else {
       widget.onSubmit();
     }
   }
 
   bool _searchErrorInHierarchy() {
-    //TODO
-    return false;
+    bool hasError = false;
+
+    void visitor(Element element) {
+      if (element.widget is BeagleTextInput) {
+        final errorMsg = (element.widget as BeagleTextInput).error;
+        if(errorMsg != null && errorMsg.isNotEmpty) {
+         hasError = true;
+        }
+      } else {
+        element.visitChildElements(visitor);
+      }
+    }
+
+    context.visitChildElements(visitor);
+
+    return hasError;
   }
 }
