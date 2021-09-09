@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
+import 'package:beagle/src/action/beagle_confirm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const showAlertButtonText = 'Show Alert';
+const showAlertButtonText = 'Show Confirm Alert';
 
 MaterialApp _buildApp({
   String title,
   String message,
-  Function onPressOk,
   String labelOk,
+  Function onPressOk,
+  String labelCancel,
+  Function onPressCancel,
 }) {
   return MaterialApp(
     home: Builder(
@@ -32,12 +34,14 @@ MaterialApp _buildApp({
         return Center(
           child: ElevatedButton(
             onPressed: () {
-              BeagleAlert.showAlertDialog(
+              BeagleConfirm.showAlertDialog(
                 context,
                 title: title,
                 message: message,
-                onPressOk: onPressOk,
                 labelOk: labelOk,
+                onPressOk: onPressOk,
+                labelCancel: labelCancel,
+                onPressCancel: onPressCancel,
               );
             },
             child: const Text(showAlertButtonText),
@@ -49,7 +53,7 @@ MaterialApp _buildApp({
 }
 
 void main() {
-  group('Given a BeagleAlert', () {
+  group('Given a BeagleConfirm', () {
     group('When I call showAlertDialog', () {
       testWidgets('Then it should show an AlertDialog widget',
           (WidgetTester tester) async {
@@ -67,8 +71,10 @@ void main() {
         const expectedTitle = 'Title';
         const expectedMessage = 'This is a message.';
 
-        await tester.pumpWidget(
-            _buildApp(title: expectedTitle, message: expectedMessage));
+        await tester.pumpWidget(_buildApp(
+          title: expectedTitle,
+          message: expectedMessage,
+        ));
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 
@@ -79,30 +85,38 @@ void main() {
         expect(messageFinder, findsOneWidget);
       });
 
-      testWidgets('Then it should have a button with OK text',
+      testWidgets('Then it should have default buttons',
           (WidgetTester tester) async {
-        const buttonText = 'OK';
+        const buttonTextOk = 'OK';
+        const buttonTextCancel = 'Cancel';
         await tester.pumpWidget(_buildApp());
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 
-        final textFinder = find.text(buttonText);
+        final textOkFinder = find.text(buttonTextOk);
+        final textCancelFinder = find.text(buttonTextCancel);
 
-        expect(textFinder, findsOneWidget);
+        expect(textOkFinder, findsOneWidget);
+        expect(textCancelFinder, findsOneWidget);
       });
 
-      testWidgets('Then it should have a button with Yes text',
+      testWidgets('Then it should have default buttons with custom text',
           (WidgetTester tester) async {
-        const buttonText = 'Yes';
-        await tester.pumpWidget(_buildApp(labelOk: buttonText));
+        const buttonTextOk = 'OkTest';
+        const buttonTextCancel = 'CancelTest';
+        await tester.pumpWidget(
+            _buildApp(labelOk: buttonTextOk, labelCancel: buttonTextCancel));
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 
-        final textFinder = find.text(buttonText);
+        final textOkFinder = find.text(buttonTextOk);
+        final textCancelFinder = find.text(buttonTextCancel);
 
-        expect(textFinder, findsOneWidget);
+        expect(textOkFinder, findsOneWidget);
+        expect(textCancelFinder, findsOneWidget);
       });
     });
+
     group('When I press the OK button', () {
       testWidgets('Then it should call onPress callback',
           (WidgetTester tester) async {
@@ -122,6 +136,27 @@ void main() {
 
         expect(didPressOk, true);
       });
+    });
+
+    group('When I press the Cancel button', () {
+      testWidgets('Then it should call onPress callback',
+              (WidgetTester tester) async {
+            const buttonText = 'Cancel';
+            var didPressCancel = false;
+            void onPressCancel() {
+              didPressCancel = true;
+            }
+
+            await tester.pumpWidget(_buildApp(onPressCancel: onPressCancel));
+            await tester.tap(find.text(showAlertButtonText));
+            await tester.pumpAndSettle();
+
+            expect(didPressCancel, false);
+
+            await tester.tap(find.text(buttonText));
+
+            expect(didPressCancel, true);
+          });
     });
   });
 }

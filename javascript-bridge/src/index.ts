@@ -29,6 +29,7 @@ import { httpClient, respondHttpRequest } from './http-client'
 import { resolvePromise, rejectPromise } from './promise'
 import { createCustomOperationMap } from './operation'
 import logToFlutter from './utils/flutter-js-logger'
+import { analytics } from './analytics'
 
 interface StartParams {
   baseUrl: string,
@@ -42,7 +43,9 @@ interface StartParams {
 // @ts-ignore
 window.beagle = (() => {
   let service: BeagleService
-
+  const analyticsProvider = analytics()
+  //Calls here to initialize the config before the first events 
+  analyticsProvider.getConfig()
   const api = {
     start: ({ actionKeys, customOperations, ...other }: StartParams) => {
       service = createBeagleService({
@@ -52,9 +55,11 @@ window.beagle = (() => {
         customStorage: storage,
         customActions: createCustomActionMap(actionKeys),
         customOperations: createCustomOperationMap(customOperations),
+        analyticsProvider: analyticsProvider,
+        platform: "flutter",
         ...other,
       })
-
+      
       logger.setCustomLogFunction(logToFlutter)
     },
     createBeagleView: (networkOptions?: NetworkOptions, initialControllerId?: string) => createBeagleView(service, networkOptions, initialControllerId),

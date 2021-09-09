@@ -32,4 +32,9 @@ class DefaultEmptyDesignSystem extends BeagleDesignSystem {
   TextStyle textStyle(String id) {
     return null;
   }
+
+  @override
+  BeagleNavigationBarStyle navigationBarStyle(String id) {
+    return null;
+  }
 }

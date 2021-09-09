@@ -17,6 +17,7 @@
 library beagle;
 
 export 'package:beagle/src/action/beagle_alert.dart';
+export 'package:beagle/src/action/beagle_confirm.dart';
 export 'package:beagle/src/action/beagle_open_external_url.dart';
 export 'package:beagle/src/action/beagle_open_native_route.dart';
 
@@ -47,6 +48,7 @@ export 'package:beagle/src/logger/beagle_logger.dart';
 export 'package:beagle/src/model/beagle_action.dart';
 export 'package:beagle/src/model/beagle_button_style.dart';
 export 'package:beagle/src/model/beagle_environment.dart';
+export 'package:beagle/src/model/beagle_navigation_bar_style.dart';
 export 'package:beagle/src/model/beagle_style.dart';
 export 'package:beagle/src/model/beagle_ui_element.dart';
 export 'package:beagle/src/model/response.dart';
@@ -70,3 +72,6 @@ export 'package:beagle/src/beagle_sdk.dart';
 export 'package:beagle/src/beagle_widget.dart';
 
 export 'package:beagle/src/service_locator.dart' show beagleServiceLocator;
+export 'package:beagle/src/analytics/analytics_config.dart';
+export 'package:beagle/src/analytics/analytics_provider.dart';
+export 'package:beagle/src/analytics/analytics_record.dart';
