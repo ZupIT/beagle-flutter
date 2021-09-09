@@ -18,9 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/build_context_utils.dart';
 import 'package:flutter/widgets.dart';
-
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
 
@@ -91,7 +89,7 @@ class _BeagleWidget extends State<BeagleWidget> {
           action: action,
           view: view,
           element: element,
-          context: context.findBuildContextForWidgetKey(element.getId()),
+          context: context,
         );
       });
 

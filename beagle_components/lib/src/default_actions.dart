@@ -19,6 +19,6 @@ import 'package:beagle_components/src/action/beagle_submit_form.dart';
 
 final Map<String, ActionHandler> defaultActions = {
   'beagle:submitForm': ({action, view, element, context}) {
-    BeagleSubmitForm.submit(context);
+    BeagleSubmitForm.submit(context, element);
   }
 };

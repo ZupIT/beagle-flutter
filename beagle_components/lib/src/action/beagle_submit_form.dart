@@ -16,14 +16,15 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
+import 'package:beagle_components/src/utils/build_context_utils.dart';
 import 'package:flutter/widgets.dart';
 
 class BeagleSubmitForm {
-  static void submit(BuildContext buildContext) {
-      final BeagleSimpleForm beagleSimpleForm = buildContext.findAncestorWidgetOfExactType();
-
-      if(beagleSimpleForm != null) {
-        final beagleSimpleFormState = BeagleSimpleForm.of(buildContext);
+  static void submit(BuildContext buildContext, BeagleUIElement element) {
+      final BuildContext buildContextOrigin = buildContext.findBuildContextForWidgetKey(element.getId());
+      final BeagleSimpleForm beagleSimpleForm = buildContextOrigin.findAncestorWidgetOfExactType();
+      final beagleSimpleFormState = BeagleSimpleForm.of(buildContextOrigin);
+      if(beagleSimpleForm != null && beagleSimpleFormState != null) {
         beagleSimpleFormState.submit();
       } else {
         beagleServiceLocator<BeagleLogger>()
