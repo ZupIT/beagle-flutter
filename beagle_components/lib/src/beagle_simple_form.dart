@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import 'dart:ffi';
-
 import 'package:beagle/beagle.dart';
-import 'internal/widget_metadata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -43,7 +40,17 @@ class BeagleSimpleForm extends StatefulWidget with YogaWidget {
   _BeagleSimpleForm createState() => _BeagleSimpleForm();
 
   void submit() {
-    onSubmit();
+    final hasError = _searchErrorInHierarchy();
+    if (hasError) {
+      onValidationError();
+    } else {
+      onSubmit();
+    }
+  }
+
+  bool _searchErrorInHierarchy() {
+
+    return false;
   }
 }
 
@@ -52,12 +59,10 @@ class _BeagleSimpleForm extends State<BeagleSimpleForm> {
 
   @override
   Widget build(BuildContext context) {
-    Widget resultWidget = beagleYogaFactory.createYogaLayout(
+    return beagleYogaFactory.createYogaLayout(
       style: BeagleStyle(),
       children: widget.children,
     );
-
-    return MetaData(child: resultWidget, metaData: WidgetMetadata(widget: widget));
   }
 
 }

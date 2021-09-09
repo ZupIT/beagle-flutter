@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
-import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/widgets.dart';
 
-class BeagleSubmitForm {
-  static void submit(BuildContext buildContext) {
-      final BeagleSimpleForm beagleSimpleForm = buildContext.findAncestorWidgetOfExactType();
+extension BuildContextUtils on BuildContext {
+  BuildContext findBuildContextForWidgetKey(String widgetKey) {
+    if (_compareWidgetKey(this, widgetKey)) {
+      return this;
+    }
 
-      if(beagleSimpleForm != null) {
-          beagleSimpleForm.submit();
+    BuildContext widgetContext;
+
+    void visitor(Element element) {
+      if (_compareWidgetKey(element, widgetKey)) {
+        widgetContext = element;
       } else {
-        beagleServiceLocator<BeagleLogger>()
-            .error('Not found simple form in the parents');
+        element.visitChildElements(visitor);
       }
+    }
+
+    visitChildElements(visitor);
+
+    return widgetContext;
   }
 
-  _searchErrorInHierarchy(BuildContext buildContext) {
+  bool _compareWidgetKey(BuildContext context, String widgetKey) {
+    final ValueKey<String> key = (context.widget.key is ValueKey<String>) ? context.widget.key : null;
+    return key != null && key.value == widgetKey;
   }
 }

@@ -19,7 +19,6 @@ import 'package:beagle_components/src/action/beagle_submit_form.dart';
 
 final Map<String, ActionHandler> defaultActions = {
   'beagle:submitForm': ({action, view, element, context}) {
-    //TODO make it really work and understand how to pass here the widget tree
-    BeagleSubmitForm.submit(action.getAttributeValue('url'));
+    BeagleSubmitForm.submit(context);
   }
 };
