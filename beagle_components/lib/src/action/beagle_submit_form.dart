@@ -23,7 +23,8 @@ class BeagleSubmitForm {
       final BeagleSimpleForm beagleSimpleForm = buildContext.findAncestorWidgetOfExactType();
 
       if(beagleSimpleForm != null) {
-          beagleSimpleForm.submit();
+        final beagleSimpleFormState = BeagleSimpleForm.of(buildContext);
+        beagleSimpleFormState.submit();
       } else {
         beagleServiceLocator<BeagleLogger>()
             .error('Not found simple form in the parents');

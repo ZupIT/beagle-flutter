@@ -39,19 +39,10 @@ class BeagleSimpleForm extends StatefulWidget with YogaWidget {
   @override
   _BeagleSimpleForm createState() => _BeagleSimpleForm();
 
-  void submit() {
-    final hasError = _searchErrorInHierarchy();
-    if (hasError) {
-      onValidationError();
-    } else {
-      onSubmit();
-    }
-  }
+  static _BeagleSimpleForm of(BuildContext context, {bool root = false}) => root
+      ? context.findRootAncestorStateOfType<_BeagleSimpleForm>()
+      : context.findAncestorStateOfType<_BeagleSimpleForm>();
 
-  bool _searchErrorInHierarchy() {
-
-    return false;
-  }
 }
 
 class _BeagleSimpleForm extends State<BeagleSimpleForm> {
@@ -65,4 +56,17 @@ class _BeagleSimpleForm extends State<BeagleSimpleForm> {
     );
   }
 
+  void submit() {
+    final hasError = _searchErrorInHierarchy();
+    if (hasError) {
+      widget.onValidationError();
+    } else {
+      widget.onSubmit();
+    }
+  }
+
+  bool _searchErrorInHierarchy() {
+    //TODO
+    return false;
+  }
 }
