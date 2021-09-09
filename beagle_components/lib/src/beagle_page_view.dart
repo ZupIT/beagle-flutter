@@ -21,17 +21,17 @@ import 'package:flutter/widgets.dart';
 /// displayed horizontally.
 class BeaglePageView extends StatefulWidget {
   const BeaglePageView({
-    Key key,
-    this.children,
+    Key? key,
+    required this.children,
     this.onPageChange,
-    this.currentPage,
+    required this.currentPage,
   }) : super(key: key);
 
   /// A List of widgets that will be showed as pages in this widget.
   final List<Widget> children;
 
   /// Action that will be performed when a page is changed.
-  final void Function(int) onPageChange;
+  final void Function(int)? onPageChange;
 
   /// Current selected page.
   final int currentPage;
@@ -41,12 +41,12 @@ class BeaglePageView extends StatefulWidget {
 }
 
 class _BeaglePageViewState extends State<BeaglePageView> {
-  PageController _pageController;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.currentPage ?? 0);
+    _pageController = PageController(initialPage: widget.currentPage);
   }
 
   @override
@@ -68,7 +68,7 @@ class _BeaglePageViewState extends State<BeaglePageView> {
     return PageView(
       controller: _pageController,
       onPageChanged: (page) {
-        if (widget.onPageChange != null) widget.onPageChange(page);
+        if (widget.onPageChange != null) widget.onPageChange!(page);
       },
       children: widget.children,
     );

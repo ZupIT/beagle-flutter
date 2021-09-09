@@ -33,18 +33,18 @@ const textStyle = TextStyle(
 
 Widget createWidget({
   Key key = textKey,
-  String text = text,
-  String textColor = textColor,
-  TextAlignment alignment = alignment,
-  String styleId,
+  String? text = text,
+  String? textColor = textColor,
+  TextAlignment? alignment = alignment,
+  String? styleId,
 }) {
   return MaterialApp(
     home: BeagleText(
       key: key,
       text: text,
       textColor: textColor,
-      alignment: alignment,
-      styleId: styleId,
+      alignment: alignment!,
+      styleId: styleId!,
     ),
   );
 }
@@ -71,7 +71,7 @@ void main() {
 
         final expectedTextColor = HexColor(textColor);
 
-        expect(tester.widget<Text>(find.text(text)).style.color,
+        expect(tester.widget<Text>(find.text(text)).style!.color,
             expectedTextColor);
       });
 
@@ -91,7 +91,7 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(textColor: null));
 
-        expect(tester.widget<Text>(find.text(text)).style.color, null);
+        expect(tester.widget<Text>(find.text(text)).style!.color, null);
       });
     });
 
@@ -116,8 +116,8 @@ void main() {
         final textCreated = tester.widget<Text>(find.text(text));
 
         expect(textFinder, findsOneWidget);
-        expect(textCreated.style.color, textStyle.color);
-        expect(textCreated.style.backgroundColor, textStyle.backgroundColor);
+        expect(textCreated.style!.color, textStyle.color);
+        expect(textCreated.style!.backgroundColor, textStyle.backgroundColor);
       });
     });
   });
@@ -134,8 +134,8 @@ void main() {
       final expectedTextColor = HexColor(textColor);
 
       expect(textFinder, findsOneWidget);
-      expect(textCreated.style.color, expectedTextColor);
-      expect(textCreated.style.backgroundColor, textStyle.backgroundColor);
+      expect(textCreated.style!.color, expectedTextColor);
+      expect(textCreated.style!.backgroundColor, textStyle.backgroundColor);
     });
   });
 

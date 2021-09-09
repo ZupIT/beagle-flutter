@@ -33,7 +33,7 @@ void main() {
   final designSystemMock = MockDesignSystem();
   final beagleLoggerMock = MockBeagleLogger();
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  when(designSystemMock.image(any)).thenReturn('images/beagle.png');
+  when(designSystemMock.image(any as String)).thenReturn('images/beagle.png');
 
   const tabBarKey = Key('BeagleTabBar');
   final tabBarItems = <TabBarItem>[
@@ -44,10 +44,10 @@ void main() {
 
   Future<Widget> createWidget({
     Key key = tabBarKey,
-    BeagleDesignSystem designSystem,
+    BeagleDesignSystem? designSystem,
     List<TabBarItem> items = const [],
     int currentTab = 0,
-    void Function(int) onTabSelection,
+    void Function(int)? onTabSelection,
   }) async {
     await testSetupServiceLocator(
       designSystem: designSystem,
@@ -57,7 +57,7 @@ void main() {
 
     when(beagleYogaFactoryMock.createYogaLayout(
       style: anyNamed('style'),
-      children: anyNamed('children'),
+      children: anyNamed('children') ?? [],
     )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
@@ -69,7 +69,7 @@ void main() {
           key: tabBarKey,
           items: items,
           currentTab: currentTab,
-          onTabSelection: onTabSelection,
+          onTabSelection: onTabSelection!,
         ),
       ),
     );

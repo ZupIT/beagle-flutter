@@ -19,21 +19,21 @@ import 'package:beagle/beagle.dart';
 /// BeagleRequest is used to do requests.
 class BeagleRequest {
   BeagleRequest(this.url,
-      {BeagleHttpMethod method, Map<String, String> headers, String body}) {
+      {BeagleHttpMethod? method, Map<String, String>? headers, String? body}) {
     this.method = method ?? BeagleHttpMethod.get;
     this.headers = headers ?? {};
     this.body = body ?? '';
   }
 
   /// Server URL
-  String url;
+  late String url;
 
   /// HTTP method
-  BeagleHttpMethod method;
+  late BeagleHttpMethod method;
 
   /// Header items for the request.
-  Map<String, String> headers;
+  late Map<String, String> headers;
 
   /// Content that will be deliver with the request.
-  String body;
+  late String body;
 }

@@ -32,7 +32,7 @@ class RendererJS implements Renderer {
   }
 
   void _doRender(bool isFull, BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]) {
+      [String? anchor, TreeUpdateMode? mode]) {
     final method = isFull ? 'doFullRender' : 'doPartialRender';
     final jsonTree = jsonEncode(tree.properties);
     final anchorArg = anchor == null ? '' : ", '$anchor'";
@@ -43,13 +43,13 @@ class RendererJS implements Renderer {
 
   @override
   void doFullRender(BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]) {
+      [String? anchor, TreeUpdateMode? mode]) {
     _doRender(true, tree, anchor, mode);
   }
 
   @override
   void doPartialRender(BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]) {
+      [String? anchor, TreeUpdateMode? mode]) {
     _doRender(false, tree, anchor, mode);
   }
 }

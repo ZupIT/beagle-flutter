@@ -23,11 +23,11 @@ import 'package:beagle/src/utils/network_strategy.dart';
 class BeagleNetworkOptions {
   BeagleNetworkOptions({this.method, this.headers, this.strategy});
 
-  BeagleHttpMethod method;
-  Map<String, String> headers;
-  BeagleNetworkStrategy strategy;
+  BeagleHttpMethod? method;
+  Map<String, String>? headers;
+  BeagleNetworkStrategy? strategy;
 
-  static String toJsonEncode(BeagleNetworkOptions networkOptions) {
+  static String toJsonEncode(BeagleNetworkOptions? networkOptions) {
     final params = <String, dynamic>{};
 
     if (networkOptions == null) {

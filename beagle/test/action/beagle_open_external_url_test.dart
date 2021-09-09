@@ -32,8 +32,8 @@ void main() {
       test(
           'Then it should call launch library method with given URL as argument',
           () async {
-        String url;
-        String method;
+        String url = '';
+        String method = '';
         const expectedUrl = 'http://example.com';
 
         channel.setMockMethodCallHandler((MethodCall methodCall) async {

@@ -23,45 +23,45 @@ typedef ComponentBuilder = Widget Function(
 
 ///TODO: NEEDS ADD DOCUMENTATION
 typedef ActionHandler = void Function({
-  BeagleAction action,
-  BeagleView view,
-  BeagleUIElement element,
-  BuildContext context,
+  BeagleAction? action,
+  BeagleView? view,
+  BeagleUIElement? element,
+  BuildContext? context,
 });
 
 typedef Operation = void Function(List<dynamic> args);
 
 abstract class BeagleService {
   /// URL to the backend providing the views (JSON) for Beagle.
-  String baseUrl;
+  String? baseUrl;
 
   /// Custom client to make HTTP requests. You can use this to implement your own HTTP client,
   /// calculating your own headers, cookies, response transformation, etc. The client provided
   /// here must implement the HttpClient interface. By default, the DefaultHttpClient will be
   /// used.
-  HttpClient httpClient;
+  HttpClient? httpClient;
 
   /// The map of components to be used when rendering a view. The key must be the
   /// `_beagleComponent_` identifier and the value must be a ComponentBuilder, which is a function
   /// that transforms a BeagleUIElement into a Widget. The key must always start with `beagle:` or
   /// `custom:`.
-  Map<String, ComponentBuilder> components;
+  Map<String, ComponentBuilder>? components;
 
   /// Wether or not to send specific beagle headers in the requests to fetch a view. Default is
   /// true.
-  bool useBeagleHeaders;
+  bool? useBeagleHeaders;
 
   /// The map of custom actions. The key must be the `_beagleAction_` identifier and the value
   /// must be the action handler. The key must always start with `beagle:` or `custom:`.
-  Map<String, ActionHandler> actions;
+  Map<String, ActionHandler>? actions;
 
   /// The default cache strategy for fetching views from the backend. By default uses
   /// `beagle-with-fallback-to-cache`.
-  BeagleNetworkStrategy strategy;
+  BeagleNetworkStrategy? strategy;
 
   /// Options for the visual feedback when navigating from a view to another. To set the default
   /// options, use `default: true` in the navigation controller.
-  Map<String, NavigationController> navigationControllers;
+  Map<String, NavigationController>? navigationControllers;
 
   /*
    * The map of custom operations that can be used to extend the capability of the Beagle expressions and are called like functions, 
@@ -71,7 +71,7 @@ abstract class BeagleService {
    * it also must contain at least one letter or _.
    * Note: If you create custom operations using the same name of a default from Beagle, the default will be overwritten by the custom one
    */
-  Map<String, Operation> operations;
+  Map<String, Operation>? operations;
 
   // todo:
   /*Analytics analytics;

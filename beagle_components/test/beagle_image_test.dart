@@ -58,7 +58,7 @@ void main() {
 
   when(beagleYogaFactoryMock.createYogaLayout(
     style: anyNamed('style'),
-    children: anyNamed('children'),
+    children: anyNamed('children') ?? [],
   )).thenAnswer((realInvocation) {
     final List<Widget> children = realInvocation.namedArguments.values.last;
     return children.first;
@@ -67,7 +67,7 @@ void main() {
   when(designSystemMock.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');
 
-  when(designSystemMock.image(invalidPlaceholder)).thenReturn(null);
+  when(designSystemMock.image(invalidPlaceholder)).thenReturn('');
 
   when(imageDownloaderMock.downloadImage(imageUrl)).thenAnswer((invocation) {
     return Future<Uint8List>.value(mockedBeagleImageData);
@@ -80,9 +80,9 @@ void main() {
 
   Widget createWidget({
     Key key = imageKey,
-    BeagleImageDownloader imageDownloader,
-    ImagePath path,
-    ImageContentMode mode,
+    BeagleImageDownloader? imageDownloader,
+    required ImagePath path,
+    required ImageContentMode mode,
   }) {
     return MaterialApp(
       home: BeagleImage(
@@ -95,7 +95,7 @@ void main() {
 
   Widget createLocalWidget({
     String placeholder = defaultPlaceholder,
-    ImageContentMode mode,
+    ImageContentMode mode = ImageContentMode.FIT_CENTER,
   }) {
     return createWidget(
       path: ImagePath.local(placeholder),
@@ -106,13 +106,13 @@ void main() {
   Widget createRemoteWidget({
     String url = imageUrl,
     String placeholder = defaultPlaceholder,
-    ImageContentMode mode,
+    ImageContentMode mode = ImageContentMode.FIT_CENTER,
   }) {
     return createWidget(
       imageDownloader: imageDownloaderMock,
       path: ImagePath.remote(
         url,
-        ImagePath.local(placeholder),
+        ImagePath.local(placeholder) as LocalImagePath,
       ),
       mode: mode,
     );
@@ -122,7 +122,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final element = tester.element(find.byType(Image));
-    final Image widget = element.widget;
+    final Image widget = element.widget as Image;
     final image = widget.image;
     await precacheImage(image, element);
     await tester.pumpAndSettle();

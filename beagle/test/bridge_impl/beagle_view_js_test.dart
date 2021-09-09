@@ -29,7 +29,9 @@ class BuildContextMock extends Mock implements BuildContext {}
 void main() {
   const createdViewId = 'viewId';
   final jsEngineMock = BeagleJSEngineMock();
-  when(jsEngineMock.createBeagleView()).thenReturn(createdViewId);
+  when(jsEngineMock.createBeagleView(
+          networkOptions: null as BeagleNetworkOptions))
+      .thenReturn(createdViewId);
 
   setUp(() {
     reset(jsEngineMock);
@@ -102,7 +104,9 @@ void main() {
       test('Then should register the view action listener at BeagleJSEngine',
           () {
         void onActionListener(
-            {BeagleAction action, BeagleView view, BeagleUIElement element}) {}
+            {BeagleAction? action,
+            BeagleView? view,
+            BeagleUIElement? element}) {}
 
         beagleView.onAction(onActionListener);
 

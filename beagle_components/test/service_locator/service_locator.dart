@@ -19,25 +19,25 @@ import 'package:beagle/beagle.dart';
 import '../objects_fake/fake_design_system.dart';
 
 Future<void> testSetupServiceLocator({
-  String baseUrl,
-  BeagleEnvironment environment,
-  HttpClient httpClient,
-  Map<String, ComponentBuilder> components,
-  Storage storage,
-  bool useBeagleHeaders,
-  Map<String, ActionHandler> actions,
-  BeagleNetworkStrategy strategy,
-  Map<String, NavigationController> navigationControllers,
-  BeagleDesignSystem designSystem,
-  BeagleImageDownloader imageDownloader,
-  BeagleLogger logger,
-  BeagleYogaFactory beagleYogaFactory,
+  String? baseUrl,
+  BeagleEnvironment? environment,
+  HttpClient? httpClient,
+  Map<String, ComponentBuilder>? components,
+  Storage? storage,
+  bool? useBeagleHeaders,
+  Map<String, ActionHandler>? actions,
+  BeagleNetworkStrategy? strategy,
+  Map<String, NavigationController>? navigationControllers,
+  BeagleDesignSystem? designSystem,
+  BeagleImageDownloader? imageDownloader,
+  BeagleLogger? logger,
+  BeagleYogaFactory? beagleYogaFactory,
 }) async {
   await beagleServiceLocator.reset();
 
   beagleServiceLocator
-    ..registerSingleton<BeagleYogaFactory>(beagleYogaFactory)
+    ..registerSingleton<BeagleYogaFactory>(beagleYogaFactory!)
     ..registerSingleton<BeagleDesignSystem>(designSystem ?? FakeDesignSystem())
-    ..registerSingleton<BeagleImageDownloader>(imageDownloader)
-    ..registerSingleton<BeagleLogger>(logger);
+    ..registerSingleton<BeagleImageDownloader>(imageDownloader!)
+    ..registerSingleton<BeagleLogger>(logger!);
 }

@@ -24,19 +24,19 @@ class NavigationController {
   });
 
   /// If true, uses this as the default navigation controller.
-  bool isDefault = false;
+  bool? isDefault = false;
 
   /// Wether to show a loading component or not. True by default.
-  bool shouldShowLoading = true;
+  bool? shouldShowLoading = true;
 
   /// Wether to show an error component or not. True by default.
-  bool shouldShowError = true;
+  bool? shouldShowError = true;
 
   /// A custom loading component to use. The default value is "beagle:loading"
-  String loadingComponent = 'beagle:loading';
+  String? loadingComponent = 'beagle:loading';
 
   /// A custom error component to use. The default value is "beagle:error"
-  String errorComponent = 'beagle:error';
+  String? errorComponent = 'beagle:error';
 
   Map<String, dynamic> toMap() {
     return {

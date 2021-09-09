@@ -33,6 +33,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final jsRuntimeMock = MockJavascriptRuntimeWrapper();
   final storageMock = MockStorage();
+  void Function(dynamic) anyFunction = (dynamic) {};
 
   setUp(() {
     reset(jsRuntimeMock);
@@ -46,7 +47,7 @@ void main() {
         expect(() => beagleJSEngine.evaluateJavascriptCode('code'),
             throwsA(isInstanceOf<BeagleJSEngineException>()));
 
-        verifyNever(jsRuntimeMock.evaluate(captureAny));
+        verifyNever(jsRuntimeMock.evaluate(''));
       });
     });
 
@@ -58,7 +59,7 @@ void main() {
                 .promiseToFuture(JsEvalResult('stringResult', 'rawResult')),
             throwsA(isInstanceOf<BeagleJSEngineException>()));
 
-        verifyNever(jsRuntimeMock.evaluate(captureAny));
+        verifyNever(jsRuntimeMock.evaluate(''));
       });
     });
 
@@ -87,7 +88,7 @@ void main() {
         verifyInOrder([
           jsRuntimeMock.enableHandlePromises(),
           jsRuntimeMock.evaluate('var window = global = globalThis;'),
-          jsRuntimeMock.evaluateAsync(any)
+          jsRuntimeMock.evaluateAsync('')
         ]);
       });
 
@@ -98,7 +99,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'httpClient.request';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript action messages', () async {
@@ -107,7 +108,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'action';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript operation messages', () async {
@@ -116,7 +117,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'operation';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript beagleView.update messages',
@@ -126,7 +127,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'beagleView.update';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript beagleNavigator messages',
@@ -136,7 +137,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'beagleNavigator';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript storage.set messages',
@@ -146,7 +147,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'storage.set';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript storage.get messages',
@@ -156,7 +157,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'storage.get';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript storage.remove messages',
@@ -166,7 +167,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'storage.remove';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
 
       test('Then should register for javascript storage.clear messages',
@@ -176,7 +177,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'storage.clear';
-        verify(jsRuntimeMock.onMessage(expectedChannelName, any));
+        verify(jsRuntimeMock.onMessage(expectedChannelName, anyFunction));
       });
     });
   });
@@ -247,7 +248,8 @@ void main() {
           expect(request.method, BeagleHttpMethod.get);
         });
 
-        verify(jsRuntimeMock.onMessage('httpClient.request', captureAny))
+        verify(jsRuntimeMock.onMessage(
+                'httpClient.request', captureAny as void Function(dynamic)))
             .captured
             .single(httpMessage);
 
@@ -275,10 +277,10 @@ void main() {
         beagleJSEngine
           ..onAction(viewId, ({action, element, view}) {
             firstActionListenerCalled = true;
-            expect(action.getType(), 'beagle:setContext');
-            expect(action.getAttributeValue('contextId'), 'address');
-            expect(action.getAttributeValue('path'), 'complement');
-            expect(action.getAttributeValue('value'), '@{onChange.value}');
+            expect(action?.getType(), 'beagle:setContext');
+            expect(action?.getAttributeValue('contextId'), 'address');
+            expect(action?.getAttributeValue('path'), 'complement');
+            expect(action?.getAttributeValue('value'), '@{onChange.value}');
           })
           ..onAction(viewId, ({action, element, view}) {
             secondActionListenerCalled = true;
@@ -287,7 +289,8 @@ void main() {
             nonRegisteredActionListenerCalled = true;
           });
 
-        verify(jsRuntimeMock.onMessage('action', captureAny))
+        verify(jsRuntimeMock.onMessage(
+                'action', captureAny as void Function(dynamic)))
             .captured
             .single({'viewId': viewId, 'action': actionMessage});
 
@@ -315,7 +318,8 @@ void main() {
           expect(params, ['paramA', 'paramB']);
         });
 
-        verify(jsRuntimeMock.onMessage('operation', captureAny))
+        verify(jsRuntimeMock.onMessage(
+                'operation', captureAny as void Function(dynamic)))
             .captured
             .single(operationMessage);
 
@@ -351,7 +355,8 @@ void main() {
             nonRegisteredViewUpdateListenerCalled = true;
           });
 
-        verify(jsRuntimeMock.onMessage('beagleView.update', captureAny))
+        verify(jsRuntimeMock.onMessage(
+                'beagleView.update', captureAny as void Function(dynamic)))
             .captured
             .single(viewUpdateMessage);
 
@@ -390,7 +395,8 @@ void main() {
             nonRegisteredViewNavigationListenerCalled = true;
           });
 
-        verify(jsRuntimeMock.onMessage('beagleNavigator', captureAny))
+        verify(jsRuntimeMock.onMessage(
+                'beagleNavigator', captureAny as void Function(dynamic)))
             .captured
             .single(navigationMessage);
 
@@ -415,7 +421,8 @@ void main() {
           'promiseId': promiseId,
         };
 
-        await verify(jsRuntimeMock.onMessage('storage.set', captureAny))
+        await verify(jsRuntimeMock.onMessage(
+                'storage.set', captureAny as void Function(dynamic)))
             .captured
             .single(storageMessage);
 
@@ -440,7 +447,8 @@ void main() {
           'promiseId': promiseId,
         };
 
-        await verify(jsRuntimeMock.onMessage('storage.get', captureAny))
+        await verify(jsRuntimeMock.onMessage(
+                'storage.get', captureAny as void Function(dynamic)))
             .captured
             .single(storageMessage);
 
@@ -463,7 +471,8 @@ void main() {
           'promiseId': promiseId,
         };
 
-        await verify(jsRuntimeMock.onMessage('storage.remove', captureAny))
+        await verify(jsRuntimeMock.onMessage(
+                'storage.remove', captureAny as void Function(dynamic)))
             .captured
             .single(storageMessage);
 
@@ -484,7 +493,8 @@ void main() {
           'promiseId': promiseId,
         };
 
-        await verify(jsRuntimeMock.onMessage('storage.clear', captureAny))
+        await verify(jsRuntimeMock.onMessage(
+                'storage.clear', captureAny as void Function(dynamic)))
             .captured
             .single(storageMessage);
 
@@ -498,12 +508,15 @@ void main() {
     group('When createBeagleView is called', () {
       test('Then should return correct view id', () async {
         final result = JsEvalResult('10', 'rawResult');
-        when(jsRuntimeMock.evaluate(any)).thenReturn(result);
+        when(jsRuntimeMock.evaluate('')).thenReturn(result);
         final beagleJSEngine = BeagleJSEngine(jsRuntimeMock, storageMock);
 
         await beagleJSEngine.start();
 
-        expect(beagleJSEngine.createBeagleView(), result.stringResult);
+        expect(
+            beagleJSEngine.createBeagleView(
+                networkOptions: null as BeagleNetworkOptions),
+            result.stringResult);
       });
     });
 
@@ -541,7 +554,8 @@ void main() {
           })
           ..removeViewListeners(viewId);
 
-        verify(jsRuntimeMock.onMessage('beagleView.update', captureAny))
+        verify(jsRuntimeMock.onMessage(
+                'beagleView.update', captureAny as void Function(dynamic)))
             .captured
             .single(viewUpdateMessage);
 

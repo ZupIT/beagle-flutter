@@ -27,19 +27,19 @@ import 'bridge_impl/js_runtime_wrapper.dart';
 final GetIt beagleServiceLocator = GetIt.instance;
 
 void setupServiceLocator({
-  String baseUrl,
-  BeagleEnvironment environment,
-  HttpClient httpClient,
-  Map<String, ComponentBuilder> components,
-  Storage storage,
-  bool useBeagleHeaders,
-  Map<String, ActionHandler> actions,
-  BeagleNetworkStrategy strategy,
-  Map<String, NavigationController> navigationControllers,
-  BeagleDesignSystem designSystem,
-  BeagleImageDownloader imageDownloader,
-  BeagleLogger logger,
-  Map<String, Operation> operations,
+  required String baseUrl,
+  required BeagleEnvironment environment,
+  required HttpClient httpClient,
+  required Map<String, ComponentBuilder> components,
+  required Storage storage,
+  required bool useBeagleHeaders,
+  required Map<String, ActionHandler> actions,
+  required BeagleNetworkStrategy strategy,
+  required Map<String, NavigationController> navigationControllers,
+  required BeagleDesignSystem designSystem,
+  required BeagleImageDownloader imageDownloader,
+  required BeagleLogger logger,
+  required Map<String, Operation> operations,
 }) {
   beagleServiceLocator
     ..registerSingleton<BeagleYogaFactory>(BeagleYogaFactory())

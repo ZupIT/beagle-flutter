@@ -16,18 +16,22 @@
 
 name: beagle_components
 description: Beagle Components is a set of tools and components to be used with the Beagle package.
-version: 0.9.3-alpha
+version: 0.9.4-alpha
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle_components
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
-  flutter: ">=1.22.5"
+  sdk: '>=2.13.0 <3.0.0'
+  flutter: ">=2.0.0"
 
 dependencies:
   beagle: ^0.9.3-alpha
   flutter:
     sdk: flutter
   webview_flutter: ^2.0.10
+
+dependency_overrides:
+  beagle:
+    path: ../beagle/
 
 dev_dependencies:
   flutter_test:

@@ -22,15 +22,15 @@ import 'package:flutter/foundation.dart';
 
 class DefaultBeagleImageDownloader implements BeagleImageDownloader {
   DefaultBeagleImageDownloader({
-    @required this.httpClient,
+    required this.httpClient,
   }) : assert(httpClient != null);
 
-  final HttpClient httpClient;
+  final HttpClient? httpClient;
 
   @override
   Future<Uint8List> downloadImage(String url) async {
     final request = BeagleRequest(url);
-    final response = await httpClient.sendRequest(request);
+    final response = await httpClient!.sendRequest(request);
 
     if (response.status != HttpStatus.ok) {
       throw BeagleImageDownloaderException(
@@ -47,17 +47,16 @@ class DefaultBeagleImageDownloader implements BeagleImageDownloader {
 }
 
 class BeagleImageDownloaderException implements Exception {
-  BeagleImageDownloaderException(
-      {@required this.statusCode, @required this.url})
+  BeagleImageDownloaderException({required this.statusCode, required this.url})
       : assert(url != null),
         assert(statusCode != null),
         _message = 'HTTP request failed, statusCode: $statusCode, $url';
 
-  final int statusCode;
+  final int? statusCode;
 
   final String _message;
 
-  final String url;
+  final String? url;
 
   @override
   String toString() => _message;

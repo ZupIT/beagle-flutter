@@ -19,17 +19,17 @@ import 'package:beagle/beagle.dart';
 final Map<String, ActionHandler> defaultActions = {
   'beagle:alert': ({action, view, element, context}) {
     BeagleAlert.showAlertDialog(
-      context,
-      message: action.getAttributeValue('message'),
-      onPressOk: action.getAttributeValue('onPressOk', () {}),
-      title: action.getAttributeValue('title', 'Alert'),
+      context!,
+      message: action?.getAttributeValue('message'),
+      onPressOk: action?.getAttributeValue('onPressOk', () {}),
+      title: action?.getAttributeValue('title', 'Alert'),
     );
   },
   'beagle:openNativeRoute': ({action, view, element, context}) {
     BeagleOpenNativeRoute()
-        .navigate(context, action.getAttributeValue('route'));
+        .navigate(context!, action?.getAttributeValue('route'));
   },
   'beagle:openExternalURL': ({action, view, element, context}) {
-    BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
+    BeagleOpenExternalUrl.launchURL(action?.getAttributeValue('url'));
   }
 };

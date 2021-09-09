@@ -80,7 +80,7 @@ void main() {
 
     group('When getContext is called', () {
       test('Then it should return the correct value', () {
-        final retrievedContext = beagleUIElement.getContext();
+        final retrievedContext = beagleUIElement.getContext()!;
 
         expect(retrievedContext.id, _contextId);
         expect(retrievedContext.value, _contextValue);
@@ -127,9 +127,9 @@ void main() {
 
     group('When getStyle is called', () {
       test('Then it should return a BeagleStyle object', () {
-        final retrievedValue = beagleUIElement.getStyle();
+        final retrievedValue = beagleUIElement.getStyle()!;
 
-        expect(retrievedValue.flex.alignItems, AlignItems.CENTER);
+        expect(retrievedValue.flex!.alignItems, AlignItems.CENTER);
         expect(retrievedValue.backgroundColor, 'red');
       });
     });

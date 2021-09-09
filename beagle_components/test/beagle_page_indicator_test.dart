@@ -29,8 +29,8 @@ void main() {
     Key key = pageIndicatorKey,
     String selectedColor = selectedColor,
     String unselectedColor = unselectedColor,
-    int numberOfPages,
-    int currentPage,
+    int numberOfPages = 0,
+    int currentPage = 0,
   }) {
     return MaterialApp(
       home: BeaglePageIndicator(

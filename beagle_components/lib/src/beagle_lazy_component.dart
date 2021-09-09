@@ -27,12 +27,12 @@ import 'after_layout.dart';
 /// the component is being fetched.
 class BeagleLazyComponent extends StatefulWidget {
   const BeagleLazyComponent(
-      {Key key,
-      this.path,
+      {Key? key,
+      required this.path,
+      required this.beagleId,
+      required this.view,
       this.initialState,
-      this.beagleId,
-      this.view,
-      this.child})
+      required this.child})
       : super(key: key);
 
   /// An URL that can be either absolute or a relative path from Beagle's base
@@ -40,7 +40,7 @@ class BeagleLazyComponent extends StatefulWidget {
   final String path;
 
   /// An element that will be displayed while the component is being fetched.
-  final BeagleUIElement initialState;
+  final BeagleUIElement? initialState;
 
   /// [BeagleUIElement] id. Identifies this component on Beagle's components
   /// tree.
@@ -71,7 +71,7 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
   Future<void> _fetchLazyView() async {
     try {
       final result =
-          await service.httpClient.sendRequest(BeagleRequest(_buildUrl()));
+          await service.httpClient!.sendRequest(BeagleRequest(_buildUrl()));
       if (result.status >= 200 && result.status < 400) {
         final jsonMap = jsonDecode(result.body);
         final component = BeagleUIElement(jsonMap);
@@ -92,7 +92,7 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
   void afterFirstLayout(BuildContext context) {
     if (widget.initialState != null) {
       widget.view.getRenderer().doFullRender(
-          widget.initialState, widget.beagleId, TreeUpdateMode.replace);
+          widget.initialState!, widget.beagleId, TreeUpdateMode.replace);
     }
     _fetchLazyView();
   }

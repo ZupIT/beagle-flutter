@@ -83,7 +83,9 @@ void main() {
       test('Then should register http request listener', () async {
         await beagleService.start();
 
-        verify(beagleJSEngineMock.onHttpRequest(any)).called(1);
+        verify(beagleJSEngineMock
+                .onHttpRequest(any as void Function(String, BeagleRequest)))
+            .called(1);
       });
     });
   });

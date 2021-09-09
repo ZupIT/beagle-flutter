@@ -24,15 +24,15 @@ class BeagleTabBar extends StatefulWidget {
   static const ICON_SIZE = 32;
 
   const BeagleTabBar({
-    Key key,
+    Key? key,
     this.items,
-    this.currentTab,
-    this.onTabSelection,
+    required this.currentTab,
+    required this.onTabSelection,
   }) : super(key: key);
 
   /// List of tabs that will be displayed. Note that the number of tabs of a TabView is final and cannot be changed
   /// after the component has initialized.
-  final List<TabBarItem> items;
+  final List<TabBarItem>? items;
 
   /// Currently selected Tab.
   final int currentTab;
@@ -46,7 +46,7 @@ class BeagleTabBar extends StatefulWidget {
 
 class _BeagleTabBarState extends State<BeagleTabBar>
     with TickerProviderStateMixin {
-  TabController _tabController;
+  late TabController _tabController;
   static final imageStyle = BeagleStyle(
     size: BeagleSize(
       height: UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL),
@@ -57,8 +57,8 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   void initState() {
     super.initState();
     _tabController = TabController(
-      initialIndex: widget.currentTab ?? 0,
-      length: widget.items == null ? 0 : widget.items.length,
+      initialIndex: widget.currentTab,
+      length: widget.items == null ? 0 : widget.items!.length,
       vsync: this,
     );
   }
@@ -66,8 +66,8 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   @override
   void didUpdateWidget(covariant BeagleTabBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final currentSelectedTab = widget.currentTab ?? 0;
-    final previousSelectedTab = oldWidget.currentTab ?? 0;
+    final currentSelectedTab = widget.currentTab;
+    final previousSelectedTab = oldWidget.currentTab;
 
     if (previousSelectedTab != currentSelectedTab) {
       _tabController.animateTo(widget.currentTab);
@@ -94,13 +94,13 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   }
 
   List<Widget> buildTabs() {
-    return widget.items
+    return widget.items!
         .map(
           (tabBarItem) => Tab(
             text: tabBarItem.title,
             icon: tabBarItem.icon == null
                 ? null
-                : BeagleImage(path: tabBarItem.icon, style: imageStyle),
+                : BeagleImage(path: tabBarItem.icon!, style: imageStyle),
           ),
         )
         .toList();
@@ -116,5 +116,5 @@ class TabBarItem {
             json['icon'] == null ? null : LocalImagePath.fromJson(json['icon']);
 
   final String title;
-  final LocalImagePath icon;
+  final LocalImagePath? icon;
 }

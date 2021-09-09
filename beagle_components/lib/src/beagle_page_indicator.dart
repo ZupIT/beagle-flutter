@@ -22,11 +22,11 @@ import 'package:flutter/widgets.dart';
 /// page of a [PageView].
 class BeaglePageIndicator extends StatelessWidget {
   const BeaglePageIndicator({
-    Key key,
-    this.selectedColor,
-    this.unselectedColor,
-    this.numberOfPages,
-    this.currentPage,
+    Key? key,
+    required this.selectedColor,
+    required this.unselectedColor,
+    required this.numberOfPages,
+    required this.currentPage,
   }) : super(key: key);
 
   /// This is a string value and it must be filled as HEX (Hexadecimal).

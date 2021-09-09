@@ -22,8 +22,8 @@ class RemoteView extends Route {
   RemoteView(this.url, {this.fallback, this.shouldPrefetch});
 
   final String url;
-  final BeagleUIElement fallback;
-  final bool shouldPrefetch;
+  final BeagleUIElement? fallback;
+  final bool? shouldPrefetch;
 }
 
 class LocalView extends Route {

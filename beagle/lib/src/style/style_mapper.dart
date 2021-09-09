@@ -17,26 +17,26 @@
 import 'package:beagle/src/model/beagle_style.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
-NodeProperties mapToNodeProperties(BeagleStyle style) {
+NodeProperties mapToNodeProperties(BeagleStyle? style) {
   if (style == null) {
     return NodeProperties();
   }
   final nodeProperties = NodeProperties()
-    ..setPositionType(_mapPositionType(style.positionType))
-    ..setDisplay(_mapDisplay(style.display));
+    ..setPositionType(_mapPositionType(style.positionType!))
+    ..setDisplay(_mapDisplay(style.display!));
 
-  _mapFlex(nodeProperties, style?.flex);
+  _mapFlex(nodeProperties, style.flex!);
   if (style.size != null) {
-    _mapSize(nodeProperties, style.size);
+    _mapSize(nodeProperties, style.size!);
   }
   if (style.margin != null) {
-    _mapMargin(nodeProperties, style.margin);
+    _mapMargin(nodeProperties, style.margin!);
   }
   if (style.padding != null) {
-    _mapPadding(nodeProperties, style.padding);
+    _mapPadding(nodeProperties, style.padding!);
   }
   if (style.position != null) {
-    _mapPosition(nodeProperties, style.position);
+    _mapPosition(nodeProperties, style.position!);
   }
   return nodeProperties;
 }
@@ -61,23 +61,23 @@ YGDisplay _mapDisplay(FlexDisplay flexDisplay) {
 
 void _mapFlex(NodeProperties nodeProperties, BeagleFlex flex) {
   nodeProperties
-    ..setAlignContent(_mapAlignContent(flex?.alignContent))
-    ..setAlignItems(_mapAlignItems(flex?.alignItems))
-    ..setAlignSelf(_mapAlignSelf(flex?.alignSelf))
-    ..setFlex(flex?.flex?.toDouble() ?? 0.0)
-    ..setFlexDirection(_mapFlexDirection(flex?.flexDirection))
-    ..setFlexWrap(_mapWrap(flex?.flexWrap))
-    ..setGrow(flex?.grow?.toDouble() ?? 0.0)
-    ..setJustifyContent(_mapJustify(flex?.justifyContent))
-    ..setShrink(flex?.shrink?.toDouble() ?? 1.0);
+    ..setAlignContent(_mapAlignContent(flex.alignContent!))
+    ..setAlignItems(_mapAlignItems(flex.alignItems!))
+    ..setAlignSelf(_mapAlignSelf(flex.alignSelf!))
+    ..setFlex(flex.flex!.toDouble())
+    ..setFlexDirection(_mapFlexDirection(flex.flexDirection!))
+    ..setFlexWrap(_mapWrap(flex.flexWrap!))
+    ..setGrow(flex.grow!.toDouble())
+    ..setJustifyContent(_mapJustify(flex.justifyContent!))
+    ..setShrink(flex.shrink!.toDouble());
 
-  if (flex?.basis?.value == null || flex?.basis?.value == 0) {
+  if (flex.basis!.value == null || flex.basis!.value == 0) {
     nodeProperties.setBasisAuto();
   } else {
-    if (flex.basis.type == UnitType.PERCENT) {
-      nodeProperties.setBasisPercent(flex.basis.value.toDouble());
+    if (flex.basis!.type == UnitType.PERCENT) {
+      nodeProperties.setBasisPercent(flex.basis!.value!.toDouble());
     } else {
-      nodeProperties.setBasis(flex.basis.value.toDouble());
+      nodeProperties.setBasis(flex.basis!.value!.toDouble());
     }
   }
 }
@@ -157,58 +157,58 @@ YGJustify _mapJustify(JustifyContent justifyContent) {
 
 void _mapSize(NodeProperties nodeProperties, BeagleSize size) {
   if (size.width != null) {
-    if (size.width.type == UnitType.REAL) {
-      nodeProperties.setWidth(size.width.value.toDouble());
+    if (size.width!.type == UnitType.REAL) {
+      nodeProperties.setWidth(size.width!.value!.toDouble());
     } else {
-      nodeProperties.setWidthPercent(size.width.value.toDouble());
+      nodeProperties.setWidthPercent(size.width!.value!.toDouble());
     }
   }
   if (size.height != null) {
-    if (size.height.type == UnitType.REAL) {
-      nodeProperties.setHeight(size.height.value.toDouble());
+    if (size.height!.type == UnitType.REAL) {
+      nodeProperties.setHeight(size.height!.value!.toDouble());
     } else {
-      nodeProperties.setHeightPercent(size.height.value.toDouble());
+      nodeProperties.setHeightPercent(size.height!.value!.toDouble());
     }
   }
   if (size.maxWidth != null) {
-    if (size.maxWidth.type == UnitType.REAL) {
-      nodeProperties.setMaxWidth(size.maxWidth.value.toDouble());
+    if (size.maxWidth!.type == UnitType.REAL) {
+      nodeProperties.setMaxWidth(size.maxWidth!.value!.toDouble());
     } else {
-      nodeProperties.setMaxWidthPercent(size.maxWidth.value.toDouble());
+      nodeProperties.setMaxWidthPercent(size.maxWidth!.value!.toDouble());
     }
   }
   if (size.maxHeight != null) {
-    if (size.maxHeight.type == UnitType.REAL) {
-      nodeProperties.setMaxHeight(size.maxHeight.value.toDouble());
+    if (size.maxHeight!.type == UnitType.REAL) {
+      nodeProperties.setMaxHeight(size.maxHeight!.value!.toDouble());
     } else {
-      nodeProperties.setMaxHeightPercent(size.maxHeight.value.toDouble());
+      nodeProperties.setMaxHeightPercent(size.maxHeight!.value!.toDouble());
     }
   }
   if (size.minWidth != null) {
-    if (size.minWidth.type == UnitType.REAL) {
-      nodeProperties.setMinWidth(size.minWidth.value.toDouble());
+    if (size.minWidth!.type == UnitType.REAL) {
+      nodeProperties.setMinWidth(size.minWidth!.value!.toDouble());
     } else {
-      nodeProperties.setMinWidthPercent(size.minWidth.value.toDouble());
+      nodeProperties.setMinWidthPercent(size.minWidth!.value!.toDouble());
     }
   }
   if (size.minHeight != null) {
-    if (size.minHeight.type == UnitType.REAL) {
-      nodeProperties.setMinHeight(size.minHeight.value.toDouble());
+    if (size.minHeight!.type == UnitType.REAL) {
+      nodeProperties.setMinHeight(size.minHeight!.value!.toDouble());
     } else {
-      nodeProperties.setMinHeightPercent(size.minHeight.value.toDouble());
+      nodeProperties.setMinHeightPercent(size.minHeight!.value!.toDouble());
     }
   }
   if (size.aspectRatio != null) {
-    nodeProperties.setAspectRatio(size.aspectRatio.toDouble());
+    nodeProperties.setAspectRatio(size.aspectRatio!.toDouble());
   }
 }
 
 void _mapMargin(NodeProperties nodeProperties, EdgeValue margin) {
   _mapEdgeValue(margin, (YGEdge edge, UnitValue unitValue) {
     if (unitValue.type == UnitType.REAL) {
-      nodeProperties.setMargin(edge, unitValue.value.toDouble());
+      nodeProperties.setMargin(edge, unitValue.value!.toDouble());
     } else {
-      nodeProperties.setMarginPercent(edge, unitValue.value.toDouble());
+      nodeProperties.setMarginPercent(edge, unitValue.value!.toDouble());
     }
   });
 }
@@ -216,9 +216,9 @@ void _mapMargin(NodeProperties nodeProperties, EdgeValue margin) {
 void _mapPadding(NodeProperties nodeProperties, EdgeValue padding) {
   _mapEdgeValue(padding, (YGEdge edge, UnitValue unitValue) {
     if (unitValue.type == UnitType.REAL) {
-      nodeProperties.setPadding(edge, unitValue.value.toDouble());
+      nodeProperties.setPadding(edge, unitValue.value!.toDouble());
     } else {
-      nodeProperties.setPaddingPercent(edge, unitValue.value.toDouble());
+      nodeProperties.setPaddingPercent(edge, unitValue.value!.toDouble());
     }
   });
 }
@@ -226,9 +226,9 @@ void _mapPadding(NodeProperties nodeProperties, EdgeValue padding) {
 void _mapPosition(NodeProperties nodeProperties, EdgeValue position) {
   _mapEdgeValue(position, (YGEdge edge, UnitValue unitValue) {
     if (unitValue.type == UnitType.REAL) {
-      nodeProperties.setPosition(edge, unitValue.value.toDouble());
+      nodeProperties.setPosition(edge, unitValue.value!.toDouble());
     } else {
-      nodeProperties.setPositionPercent(edge, unitValue.value.toDouble());
+      nodeProperties.setPositionPercent(edge, unitValue.value!.toDouble());
     }
   });
 }

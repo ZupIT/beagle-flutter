@@ -23,10 +23,10 @@ mixin YogaWidget {}
 
 class BeagleYogaFactory {
   Widget createYogaNode({
-    BeagleStyle style,
-    Widget child,
+    BeagleStyle? style,
+    required Widget child,
   }) {
-    final nodeProperties = mapToNodeProperties(style);
+    final nodeProperties = mapToNodeProperties(style!);
     return YogaNode(
       nodeProperties: nodeProperties,
       child: child,
@@ -34,10 +34,10 @@ class BeagleYogaFactory {
   }
 
   Widget createYogaLayout({
-    BeagleStyle style,
-    List<Widget> children,
+    BeagleStyle? style,
+    required List<Widget> children,
   }) {
-    final nodeProperties = mapToNodeProperties(style);
+    final nodeProperties = mapToNodeProperties(style!);
     final mappedChildren = children
         .map(
           (child) => child is YogaWidget

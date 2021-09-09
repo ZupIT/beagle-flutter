@@ -26,6 +26,7 @@ Widget createWidget(
   return MaterialApp(
     home: BeagleUndefinedWidget(
       environment: environment,
+      key: null,
     ),
   );
 }

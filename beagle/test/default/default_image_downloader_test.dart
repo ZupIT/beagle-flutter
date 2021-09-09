@@ -31,7 +31,8 @@ void main() {
       test('Then it should throw BeagleImageDownloaderException', () {
         final fakeResponse = Response(404, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();
-        when(httpClientMock.sendRequest(any)).thenAnswer((invocation) {
+        when(httpClientMock.sendRequest(any as BeagleRequest))
+            .thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
         const url = 'an url';
@@ -48,7 +49,8 @@ void main() {
       test('Then it should throw an Exception', () {
         final fakeResponse = Response(200, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();
-        when(httpClientMock.sendRequest(any)).thenAnswer((invocation) {
+        when(httpClientMock.sendRequest(any as BeagleRequest))
+            .thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
         const url = 'an url';
@@ -66,7 +68,8 @@ void main() {
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
         final fakeResponse = Response(200, '', {}, fakeImage);
         final httpClientMock = MockHttpClient();
-        when(httpClientMock.sendRequest(any)).thenAnswer((invocation) {
+        when(httpClientMock.sendRequest(any as BeagleRequest))
+            .thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
         const url = 'an url';

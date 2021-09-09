@@ -25,15 +25,15 @@ var childContent = ListView(children: [Text("Hello", key: keyContent)]);
 
 Widget createWidget({
   Key key = keyPullToRefresh,
-  Function onPull,
-  bool isRefreshing,
-  String color,
-  Widget child,
+  Function? onPull,
+  bool isRefreshing = false,
+  String color = '',
+  required Widget child,
 }) {
   return MaterialApp(
     home: PullToRefresh(
       key: key,
-      onPull: onPull,
+      onPull: onPull!,
       isRefreshing: isRefreshing,
       color: color,
       child: child,
@@ -44,7 +44,8 @@ Widget createWidget({
 void main() {
   group('Given a PullToRefresh', () {
     group('When I scroll on it', () {
-      testWidgets('Then it should call onPull callback presenting the RefreshProgressIndicator',
+      testWidgets(
+          'Then it should call onPull callback presenting the RefreshProgressIndicator',
           (WidgetTester tester) async {
         var tapCount = 0;
         void onPull() {
@@ -53,8 +54,8 @@ void main() {
           tapCount++;
         }
 
-        await tester.pumpWidget(createWidget(onPull: onPull,
-            child: childContent, color: color));
+        await tester.pumpWidget(
+            createWidget(onPull: onPull, child: childContent, color: color));
 
         await tester.drag(find.byKey(keyContent), const Offset(0.0, 300));
         await tester.pumpAndSettle();
@@ -65,37 +66,47 @@ void main() {
     });
 
     group('When isRefreshing is set to true', () {
-      testWidgets('Then it should present the RefreshProgressIndicator without pulling down',
-              (WidgetTester tester) async {
-            final isRefreshing = true;
-            var tapCount = 0;
-            void onPull() {
-              tapCount++;
-            }
-            await tester.pumpWidget(createWidget(onPull: onPull, isRefreshing: isRefreshing,
-                child: childContent, color: color));
+      testWidgets(
+          'Then it should present the RefreshProgressIndicator without pulling down',
+          (WidgetTester tester) async {
+        final isRefreshing = true;
+        var tapCount = 0;
+        void onPull() {
+          tapCount++;
+        }
 
-            const expectedTapCount = 0;
-            expect(tapCount, expectedTapCount);
-            expect(find.byType(RefreshProgressIndicator), findsOneWidget);
-          });
+        await tester.pumpWidget(createWidget(
+            onPull: onPull,
+            isRefreshing: isRefreshing,
+            child: childContent,
+            color: color));
+
+        const expectedTapCount = 0;
+        expect(tapCount, expectedTapCount);
+        expect(find.byType(RefreshProgressIndicator), findsOneWidget);
+      });
     });
 
     group('When isRefreshing is set to false', () {
-      testWidgets('Then it should not present the RefreshProgressIndicator without pulling down',
-              (WidgetTester tester) async {
-            final isRefreshing = false;
-            var tapCount = 0;
-            void onPull() {
-              tapCount++;
-            }
-            await tester.pumpWidget(createWidget(onPull: onPull, isRefreshing: isRefreshing,
-                child: childContent, color: color));
+      testWidgets(
+          'Then it should not present the RefreshProgressIndicator without pulling down',
+          (WidgetTester tester) async {
+        final isRefreshing = false;
+        var tapCount = 0;
+        void onPull() {
+          tapCount++;
+        }
 
-            const expectedTapCount = 0;
-            expect(tapCount, expectedTapCount);
-            expect(find.byType(RefreshProgressIndicator), findsNothing);
-          });
+        await tester.pumpWidget(createWidget(
+            onPull: onPull,
+            isRefreshing: isRefreshing,
+            child: childContent,
+            color: color));
+
+        const expectedTapCount = 0;
+        expect(tapCount, expectedTapCount);
+        expect(find.byType(RefreshProgressIndicator), findsNothing);
+      });
     });
   });
 }

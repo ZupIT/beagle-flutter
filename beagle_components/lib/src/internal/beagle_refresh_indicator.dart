@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -90,16 +89,14 @@ class BeagleRefreshIndicator extends StatefulWidget {
   /// An empty string may be passed to avoid having anything read by screen reading software.
   /// The [semanticsValue] may be used to specify progress on the widget.
   const BeagleRefreshIndicator(
-      {Key key,
-      @required this.child,
-      @required this.onRefresh,
+      {Key? key,
+      required this.child,
+      required this.onRefresh,
       this.displacement = 40.0,
       this.edgeOffset = 0.0,
       this.color,
-      this.isRefreshing})
-      : assert(child != null),
-        assert(onRefresh != null),
-        super(key: key);
+      this.isRefreshing = false})
+      : super(key: key);
 
   /// The widget below this widget in the tree.
   ///
@@ -112,7 +109,7 @@ class BeagleRefreshIndicator extends StatefulWidget {
   /// A function that's called when the user has dragged the refresh indicator
   /// far enough to demonstrate that they want the app to refresh. The returned
   /// [Future] must complete when the refresh operation is finished.
-  final RefreshCallback onRefresh;
+  final RefreshCallback? onRefresh;
 
   /// The offset where [RefreshProgressIndicator] starts to appear on drag start.
   ///
@@ -141,7 +138,7 @@ class BeagleRefreshIndicator extends StatefulWidget {
 
   /// The progress indicator's foreground color. The current theme's
   /// [ColorScheme.primary] by default.
-  final Color color;
+  final Color? color;
 
   /// Defines if the RefreshProgressIndicator should be running
   /// Not running by default
@@ -155,16 +152,16 @@ class BeagleRefreshIndicator extends StatefulWidget {
 /// programmatically show the refresh indicator, see the [show] method.
 class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     with TickerProviderStateMixin<BeagleRefreshIndicator> {
-  AnimationController _positionController;
-  AnimationController _scaleController;
-  Animation<double> _positionFactor;
-  Animation<double> _scaleFactor;
-  Animation<double> _value;
-  Animation<Color> _valueColor;
+  late AnimationController _positionController;
+  late AnimationController _scaleController;
+  late Animation<double> _positionFactor;
+  late Animation<double> _scaleFactor;
+  late Animation<double> _value;
+  late Animation<Color?> _valueColor;
 
-  _RefreshIndicatorMode _mode;
-  bool _isIndicatorAtTop;
-  double _dragOffset;
+  _RefreshIndicatorMode? _mode;
+  bool? _isIndicatorAtTop;
+  double? _dragOffset;
 
   static final Animatable<double> _threeQuarterTween =
       Tween<double>(begin: 0.0, end: 0.75);
@@ -243,7 +240,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
       });
       return false;
     }
-    bool indicatorAtTopNow;
+    bool? indicatorAtTopNow;
     switch (notification.metrics.axisDirection) {
       case AxisDirection.down:
         indicatorAtTopNow = true;
@@ -266,7 +263,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
         if (notification.metrics.extentBefore > 0.0) {
           _dismiss(_RefreshIndicatorMode.canceled);
         } else {
-          _dragOffset = _dragOffset - notification.scrollDelta;
+          _dragOffset = (_dragOffset! - notification.scrollDelta!);
           _checkDragOffset(notification.metrics.viewportDimension);
         }
       }
@@ -280,7 +277,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     } else if (notification is OverscrollNotification) {
       if (_mode == _RefreshIndicatorMode.drag ||
           _mode == _RefreshIndicatorMode.armed) {
-        _dragOffset = _dragOffset - notification.overscroll;
+        _dragOffset = (_dragOffset! - notification.overscroll);
         _checkDragOffset(notification.metrics.viewportDimension);
       }
     } else if (notification is ScrollEndNotification) {
@@ -335,12 +332,12 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     assert(_mode == _RefreshIndicatorMode.drag ||
         _mode == _RefreshIndicatorMode.armed);
     double newValue =
-        _dragOffset / (containerExtent * _kDragContainerExtentPercentage);
+        _dragOffset! / (containerExtent * _kDragContainerExtentPercentage);
     if (_mode == _RefreshIndicatorMode.armed)
       newValue = math.max(newValue, 1.0 / _kDragSizeFactorLimit);
     _positionController.value =
         newValue.clamp(0.0, 1.0); // this triggers various rebuilds
-    if (_mode == _RefreshIndicatorMode.drag && _valueColor.value.alpha == 0xFF)
+    if (_mode == _RefreshIndicatorMode.drag && _valueColor.value!.alpha == 0xFF)
       _mode = _RefreshIndicatorMode.armed;
   }
 
@@ -391,7 +388,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
           _mode = _RefreshIndicatorMode.refresh;
         });
 
-        final Future<void> refreshResult = widget.onRefresh();
+        final Future<void>? refreshResult = widget.onRefresh!();
         assert(() {
           if (refreshResult == null) {
             FlutterError.reportError(FlutterErrorDetails(
@@ -446,30 +443,30 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
         child,
         if (_mode != null)
           Positioned(
-            top: _isIndicatorAtTop != null && _isIndicatorAtTop
+            top: _isIndicatorAtTop != null && _isIndicatorAtTop!
                 ? widget.edgeOffset
                 : null,
-            bottom: !(_isIndicatorAtTop != null && _isIndicatorAtTop)
+            bottom: !(_isIndicatorAtTop != null && _isIndicatorAtTop!)
                 ? widget.edgeOffset
                 : null,
             left: 0.0,
             right: 0.0,
             child: SizeTransition(
               axisAlignment:
-                  _isIndicatorAtTop != null && _isIndicatorAtTop ? 1.0 : -1.0,
+                  _isIndicatorAtTop != null && _isIndicatorAtTop! ? 1.0 : -1.0,
               sizeFactor: _positionFactor, // this is what brings it down
               child: Container(
-                padding: _isIndicatorAtTop != null && _isIndicatorAtTop
+                padding: _isIndicatorAtTop != null && _isIndicatorAtTop!
                     ? EdgeInsets.only(top: widget.displacement)
                     : EdgeInsets.only(bottom: widget.displacement),
-                alignment: _isIndicatorAtTop != null && _isIndicatorAtTop
+                alignment: _isIndicatorAtTop != null && _isIndicatorAtTop!
                     ? Alignment.topCenter
                     : Alignment.bottomCenter,
                 child: ScaleTransition(
                   scale: _scaleFactor,
                   child: AnimatedBuilder(
                     animation: _positionController,
-                    builder: (BuildContext context, Widget child) {
+                    builder: (BuildContext context, Widget? child) {
                       return RefreshProgressIndicator(
                         semanticsLabel: MaterialLocalizations.of(context)
                             .refreshIndicatorSemanticLabel,
@@ -488,7 +485,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     );
   }
 
-  bool _checkIsRefreshing(bool isRefreshing) {
+  bool _checkIsRefreshing(bool? isRefreshing) {
     if (isRefreshing != null) {
       if (isRefreshing) {
         _showProgressIndicator();

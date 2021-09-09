@@ -16,11 +16,9 @@
 
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/utils/build_context_utils.dart';
 import 'package:flutter/widgets.dart';
-
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
 
@@ -30,30 +28,30 @@ typedef OnCreateViewListener = void Function(BeagleView view);
 /// A widget that displays content of beagle.
 class BeagleWidget extends StatefulWidget {
   const BeagleWidget({
-    Key key,
+    Key? key,
     this.onCreateView,
     this.screenJson,
     this.screenRequest,
   }) : super(key: key);
 
   /// that represents a local screen to be shown.
-  final String screenJson;
+  final String? screenJson;
 
   /// provides the url, method, headers and body to the request.
-  final BeagleScreenRequest screenRequest;
+  final BeagleScreenRequest? screenRequest;
 
   /// get a current BeagleView.
-  final OnCreateViewListener onCreateView;
+  final OnCreateViewListener? onCreateView;
 
   @override
   _BeagleWidget createState() => _BeagleWidget();
 }
 
 class _BeagleWidget extends State<BeagleWidget> {
-  BeagleView _view;
-  Widget widgetState;
+  late BeagleView _view;
+  late Widget widgetState;
 
-  BeagleService service;
+  late BeagleService service;
   final logger = beagleServiceLocator<BeagleLogger>();
   final environment = beagleServiceLocator<BeagleEnvironment>();
 
@@ -82,7 +80,7 @@ class _BeagleWidget extends State<BeagleWidget> {
         });
       })
       ..onAction(({action, element, view}) {
-        final handler = service.actions[action.getType().toLowerCase()];
+        final handler = service.actions![action!.getType().toLowerCase()];
         if (handler == null) {
           return logger.error(
               "Couldn't find action with name ${action.getType()}. It will be ignored.");
@@ -91,25 +89,29 @@ class _BeagleWidget extends State<BeagleWidget> {
           action: action,
           view: view,
           element: element,
-          context: context.findBuildContextForWidgetKey(element.getId()),
+          context: context.findBuildContextForWidgetKey(element!.getId()),
         );
       });
 
     if (widget.screenRequest != null) {
-      await _view.getNavigator().pushView(RemoteView(widget.screenRequest.url));
-    } else {
       await _view
           .getNavigator()
-          .pushView(LocalView(BeagleUIElement(jsonDecode(widget.screenJson))));
+          .pushView(RemoteView(widget.screenRequest!.url));
+    } else {
+      await _view.getNavigator().pushView(
+          LocalView(BeagleUIElement(jsonDecode(widget.screenJson as String))));
     }
   }
 
   Widget _buildViewFromTree(BeagleUIElement tree) {
     final widgetChildren = tree.getChildren().map(_buildViewFromTree).toList();
-    final builder = service.components[tree.getType().toLowerCase()];
+    final builder = service.components![tree.getType().toLowerCase()];
     if (builder == null) {
       logger.error("Can't find builder for component ${tree.getType()}");
-      return BeagleUndefinedWidget(environment: environment);
+      return BeagleUndefinedWidget(
+        environment: environment,
+        key: null,
+      );
     }
     try {
       return builder(tree, widgetChildren, _view);
@@ -117,12 +119,15 @@ class _BeagleWidget extends State<BeagleWidget> {
       logger.error(
           'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');
       logger.error(error.toString());
-      return BeagleUndefinedWidget(environment: environment);
+      return BeagleUndefinedWidget(
+        environment: environment,
+        key: null,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return widgetState ?? const SizedBox.shrink();
+    return widgetState;
   }
 }

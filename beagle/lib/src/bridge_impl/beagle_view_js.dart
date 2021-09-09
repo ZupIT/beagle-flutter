@@ -27,25 +27,25 @@ import 'renderer_js.dart';
 /// initialControllerId is the id of the navigation controller for the first navigation stack.
 /// If not specified, the default navigation controller is used.
 class BeagleViewJS implements BeagleView {
+  late String _id;
+  late BeagleNavigatorJS _navigator;
+  late Renderer _renderer;
+  static Map<String, BeagleViewJS> views = {};
+  final BeagleJSEngine _beagleJSEngine;
+
   BeagleViewJS(
     this._beagleJSEngine, {
-    BeagleNetworkOptions networkOptions,
-    String initialControllerId,
+    BeagleNetworkOptions? networkOptions,
+    String initialControllerId = '',
   }) {
     _id = _beagleJSEngine.createBeagleView(
-      networkOptions: networkOptions,
+      networkOptions: networkOptions!,
       initialControllerId: initialControllerId,
     );
     BeagleViewJS.views[_id] = this;
     _navigator = BeagleNavigatorJS(_beagleJSEngine, _id);
     _renderer = RendererJS(_beagleJSEngine, _id);
   }
-
-  String _id;
-  BeagleNavigatorJS _navigator;
-  Renderer _renderer;
-  static Map<String, BeagleViewJS> views = {};
-  final BeagleJSEngine _beagleJSEngine;
 
   @override
   void Function() addErrorListener(ViewErrorListener listener) {

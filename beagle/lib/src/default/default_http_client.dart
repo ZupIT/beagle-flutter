@@ -33,7 +33,7 @@ class DefaultHttpClient implements HttpClient {
           http.patch(uri, headers: req.headers, body: req.body),
       BeagleHttpMethod.delete: () => http.delete(uri, headers: req.headers),
     };
-    final response = await handlers[req.method]();
+    final response = await handlers[req.method]!();
     return Response(response.statusCode, response.body, response.headers,
         response.bodyBytes);
   }

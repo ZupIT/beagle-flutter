@@ -27,9 +27,9 @@ import 'beagle_view_js.dart';
 import 'js_runtime_wrapper.dart';
 
 typedef ActionListener = void Function({
-  BeagleAction action,
-  BeagleView view,
-  BeagleUIElement element,
+  BeagleAction? action,
+  BeagleView? view,
+  BeagleUIElement? element,
 });
 
 typedef HttpListener = void Function(String requestId, BeagleRequest request);
@@ -43,8 +43,7 @@ class BeagleJSEngine {
   BeagleJSEngine(
     JavascriptRuntimeWrapper jsRuntime,
     Storage storage,
-  )   : assert(jsRuntime != null),
-        _jsRuntime = jsRuntime,
+  )   : _jsRuntime = jsRuntime,
         _storage = storage;
 
   final JavascriptRuntimeWrapper _jsRuntime;
@@ -57,9 +56,9 @@ class BeagleJSEngine {
   final _navigatorChannelName = 'beagleNavigator';
   final _loggerChannelName = 'logger';
 
-  HttpListener _httpListener;
+  HttpListener? _httpListener;
   final Map<String, List<ActionListener>> _viewActionListenerMap = {};
-  OperationListener _operationListener;
+  OperationListener? _operationListener;
   final Map<String, List<ViewUpdateListener>> _viewUpdateListenerMap = {};
   final Map<String, List<ViewErrorListener>> _viewErrorListenerMap = {};
   final Map<String, List<NavigationListener>> _navigationListenerMap = {};
@@ -148,7 +147,7 @@ class BeagleJSEngine {
     final requestId = jsRequestMessage.requestId;
     final req = jsRequestMessage.toRequest();
 
-    _httpListener(requestId, req);
+    _httpListener!(requestId, req);
   }
 
   void _setupLoggerMessage() {
@@ -194,14 +193,9 @@ class BeagleJSEngine {
     final view = BeagleViewJS.views[viewId];
     final element = BeagleUIElement(actionMessage['element']);
 
-    for (final listener in _viewActionListenerMap[viewId]) {
-      listener(action: action, view: view, element: element);
+    for (final listener in _viewActionListenerMap[viewId]!) {
+      listener(action: action, view: view!, element: element);
     }
-  }
-
-  bool _hasActionListenerForView(String viewId) {
-    return _viewActionListenerMap.containsKey(viewId) &&
-        (_viewActionListenerMap[viewId]?.isNotEmpty ?? false);
   }
 
   void _setupOperationMessages() {
@@ -215,7 +209,7 @@ class BeagleJSEngine {
     if (_operationListener == null) {
       return;
     }
-    _operationListener(
+    _operationListener!(
         operationMessage['operation'], operationMessage['params']);
   }
 
@@ -236,14 +230,9 @@ class BeagleJSEngine {
     final deserialized = _deserializeJsFunctions(updateMessage['tree'], viewId);
     final uiElement = BeagleUIElement(deserialized);
 
-    for (final listener in _viewUpdateListenerMap[viewId]) {
+    for (final listener in _viewUpdateListenerMap[viewId]!) {
       listener(uiElement);
     }
-  }
-
-  bool _hasUpdateListenerForView(String viewId) {
-    return _viewUpdateListenerMap.containsKey(viewId) &&
-        _viewUpdateListenerMap[viewId].isNotEmpty;
   }
 
   void _setupBeagleNavigatorMessages() {
@@ -262,14 +251,25 @@ class BeagleJSEngine {
 
     final route = BeagleNavigatorJS.mapToRoute(navigationMessage['route']);
 
-    for (final listener in _navigationListenerMap[viewId]) {
-      listener(route);
+    for (final listener in _navigationListenerMap[viewId]!) {
+      listener(route!);
     }
   }
 
+  bool _handleListenerForView(String viewId, dynamic map) {
+    return map.containsKey(viewId) && (map[viewId]?.isNotEmpty ?? true);
+  }
+
+  bool _hasActionListenerForView(String viewId) {
+    return _handleListenerForView(viewId, _viewActionListenerMap);
+  }
+
+  bool _hasUpdateListenerForView(String viewId) {
+    return _handleListenerForView(viewId, _viewUpdateListenerMap);
+  }
+
   bool _hasNavigationListenerForView(String viewId) {
-    return _navigationListenerMap.containsKey(viewId) &&
-        _navigationListenerMap[viewId].isNotEmpty;
+    return _handleListenerForView(viewId, _navigationListenerMap);
   }
 
   void _setupStorageMessages() {
@@ -376,15 +376,13 @@ class BeagleJSEngine {
   }
 
   void callJsFunction(String functionId, [Map<String, dynamic>? argumentsMap]) {
-    final args = argumentsMap == null
-        ? "'$functionId'"
-        : "'$functionId', ${json.encode(argumentsMap)}";
-    _jsRuntime.evaluate('global.beagle.call($args)');
+    _jsRuntime.evaluate(
+        'global.beagle.call("$functionId"${argumentsMap != null ? ", ${json.encode(argumentsMap)}" : ""})');
   }
 
-  void respondHttpRequest(String id, Response response) {
+  void respondHttpRequest(String id, Response? response) {
     _jsRuntime.evaluate(
-        'global.beagle.httpClient.respond($id, ${response.toJson()})');
+        'global.beagle.httpClient.respond($id, ${response?.toJson()})');
   }
 }
 

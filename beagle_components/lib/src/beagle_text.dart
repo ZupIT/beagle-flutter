@@ -21,18 +21,18 @@ import 'package:flutter/widgets.dart';
 /// A Text widget that displays a string of text with single style.
 class BeagleText extends StatelessWidget {
   const BeagleText({
-    Key key,
+    Key? key,
     this.text,
     this.textColor,
-    this.alignment,
-    this.styleId,
+    this.alignment = TextAlignment.LEFT,
+    this.styleId = '',
   }) : super(key: key);
 
   /// The text to display.
   final dynamic text;
 
   /// This is a string value and it must be filled as HEX (Hexadecimal).
-  final String textColor;
+  final String? textColor;
 
   /// Defines the content alignment inside the widget.
   final TextAlignment alignment;
@@ -44,7 +44,7 @@ class BeagleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final beagleText = Text(
-      text.toString() ?? '',
+      text.toString(),
       textAlign: getTextAlign(alignment),
       style: getTextStyle(),
     );
@@ -53,26 +53,25 @@ class BeagleText extends StatelessWidget {
         : beagleText;
   }
 
-  TextAlign getTextAlign(TextAlignment alignment) {
+  TextAlign? getTextAlign(TextAlignment alignment) {
     if (alignment == TextAlignment.CENTER) {
       return TextAlign.center;
     } else if (alignment == TextAlignment.RIGHT) {
       return TextAlign.right;
     } else if (alignment == TextAlignment.LEFT) {
       return TextAlign.left;
-    } else {
-      return null;
     }
+    return null;
   }
 
-  Color getTextColor(String color) {
+  Color? getTextColor(String? color) {
     return color != null ? HexColor(color) : null;
   }
 
   TextStyle getTextStyle() {
     final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-    var textStyle = designSystem?.textStyle(styleId) ?? const TextStyle();
-    if (textColor != null && textColor.isNotEmpty) {
+    var textStyle = designSystem.textStyle(styleId) ?? const TextStyle();
+    if (textColor != null && textColor!.isNotEmpty) {
       textStyle = textStyle.copyWith(color: getTextColor(textColor));
     }
     return textStyle;

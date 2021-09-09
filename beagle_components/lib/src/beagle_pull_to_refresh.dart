@@ -27,11 +27,11 @@ import 'internal/beagle_refresh_indicator.dart';
 /// whenever the user scrolls down, calls the function "onPull" to update the child content
 class PullToRefresh extends StatefulWidget {
   const PullToRefresh({
-    Key key,
-    @required this.onPull,
-    this.isRefreshing,
-    this.color,
-    @required this.child,
+    Key? key,
+    required this.onPull,
+    this.isRefreshing = false,
+    this.color = '',
+    required this.child,
   }) : super(key: key);
 
   /// Function called when the user scrolls down the content
@@ -46,15 +46,13 @@ class PullToRefresh extends StatefulWidget {
   final String color;
 
   /// The content to be rendered
-  final Widget child;
+  final Widget? child;
 
   @override
   _BeaglePullToRefresh createState() => _BeaglePullToRefresh();
-
 }
 
 class _BeaglePullToRefresh extends State<PullToRefresh> {
-
   @override
   Widget build(BuildContext context) {
     /*
@@ -65,22 +63,22 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
      */
     return BeagleRefreshIndicator(
       color: HexColor(widget.color),
-      child: _buildScrollableContent(),
+      child: _buildScrollableContent()!,
       onRefresh: _onRefreshHandler,
       isRefreshing: widget.isRefreshing,
     );
   }
 
   Widget _buildScrollableContent() {
-    return _isScrollable(widget.child) ? widget.child : ListView(
-        children: [widget.child],
-        scrollDirection: Axis.vertical
-    );
+    return _isScrollable(widget.child!)
+        ? widget.child!
+        : ListView(children: [widget.child!], scrollDirection: Axis.vertical);
   }
 
-  bool _isScrollable(Widget widget) => widget is ScrollView || widget is SingleChildScrollView;
+  bool _isScrollable(Widget widget) =>
+      widget is ScrollView || widget is SingleChildScrollView;
 
   Future<void> _onRefreshHandler() async {
-      widget.onPull();
+    widget.onPull();
   }
 }

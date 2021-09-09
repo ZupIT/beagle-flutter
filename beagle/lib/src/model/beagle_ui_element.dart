@@ -41,7 +41,7 @@ class BeagleUIElement {
     return properties['_beagleComponent_'].toString();
   }
 
-  DataContext getContext() {
+  DataContext? getContext() {
     if (!properties.containsKey('context')) {
       return null;
     }
@@ -72,7 +72,7 @@ class BeagleUIElement {
         : defaultValue;
   }
 
-  BeagleStyle getStyle() {
+  BeagleStyle? getStyle() {
     return properties.containsKey('style')
         ? BeagleStyle.fromMap(properties['style'])
         : null;

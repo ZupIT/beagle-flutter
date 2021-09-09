@@ -22,8 +22,8 @@ import 'button_one_style.dart';
 
 class FakeDesignSystem extends BeagleDesignSystem {
   @override
-  BeagleButtonStyle buttonStyle(String id) {
-    BeagleButtonStyle style;
+  BeagleButtonStyle? buttonStyle(String id) {
+    BeagleButtonStyle? style = null;
     switch (id) {
       case 'button-one':
         style = ButtonOneStyle();
@@ -34,13 +34,13 @@ class FakeDesignSystem extends BeagleDesignSystem {
   }
 
   @override
-  String image(String id) {
+  String? image(String id) {
     return null;
   }
 
   @override
-  TextStyle textStyle(String id) {
-    TextStyle style;
+  TextStyle? textStyle(String id) {
+    TextStyle? style = null;
     switch (id) {
       case 'text-one':
         style = const TextStyle(

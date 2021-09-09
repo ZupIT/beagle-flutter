@@ -24,29 +24,29 @@ class BeagleSdk {
   /// documentation for more details.
   static void init({
     /// Attribute responsible for informing Beagle about the current build status of the application.
-    BeagleEnvironment environment,
+    BeagleEnvironment? environment,
 
     /// Informs the base URL used in Beagle in the application.
-    String baseUrl,
+    String? baseUrl,
 
     /// Interface that provides client to beagle make the requests.
-    HttpClient httpClient,
-    Map<String, ComponentBuilder> components,
-    Storage storage,
-    bool useBeagleHeaders,
-    Map<String, ActionHandler> actions,
-    BeagleNetworkStrategy strategy,
-    Map<String, NavigationController> navigationControllers,
+    HttpClient? httpClient,
+    Map<String, ComponentBuilder>? components,
+    Storage? storage,
+    bool? useBeagleHeaders,
+    Map<String, ActionHandler>? actions,
+    BeagleNetworkStrategy? strategy,
+    Map<String, NavigationController>? navigationControllers,
 
     /// [BeagleDesignSystem] interface that provides design system to beagle components.
-    BeagleDesignSystem designSystem,
+    BeagleDesignSystem? designSystem,
 
     /// [BeagleImageDownloader] interface that provides image resource from network.
-    BeagleImageDownloader imageDownloader,
+    BeagleImageDownloader? imageDownloader,
 
     /// [BeagleLogger] interface that provides logger to beagle use in application.
-    BeagleLogger logger,
-    Map<String, Operation> operations,
+    BeagleLogger? logger,
+    Map<String, Operation>? operations,
   }) {
     Yoga.init();
 
@@ -66,7 +66,7 @@ class BeagleSdk {
         actions == null ? defaultActions : {...defaultActions, ...actions};
 
     Map<String, ComponentBuilder> lowercaseComponents =
-        components.map((key, value) => MapEntry(key.toLowerCase(), value));
+        components!.map((key, value) => MapEntry(key.toLowerCase(), value));
 
     Map<String, ActionHandler> lowercaseActions =
         actions.map((key, value) => MapEntry(key.toLowerCase(), value));
@@ -79,7 +79,7 @@ class BeagleSdk {
       storage: storage,
       useBeagleHeaders: useBeagleHeaders,
       actions: lowercaseActions,
-      navigationControllers: navigationControllers,
+      navigationControllers: navigationControllers!,
       designSystem: designSystem,
       imageDownloader: imageDownloader,
       strategy: strategy,

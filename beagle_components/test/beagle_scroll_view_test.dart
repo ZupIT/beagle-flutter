@@ -23,8 +23,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'service_locator/service_locator.dart';
 
 Widget createWidget({
-  ScrollAxis scrollDirection,
-  bool scrollBarEnabled,
+  ScrollAxis scrollDirection = ScrollAxis.VERTICAL,
+  bool scrollBarEnabled = false,
 }) {
   return MaterialApp(
     home: BeagleScrollView(
@@ -57,7 +57,7 @@ void main() {
           expect(textFinder, findsOneWidget);
 
           final scrollbar = tester.widget<Scrollbar>(scrollbarFinder);
-          final ListView listView = scrollbar.child;
+          final ListView listView = scrollbar.child as ListView;
           expect(listView.scrollDirection == Axis.vertical, isTrue);
           expect(listView.semanticChildCount == 1, isTrue);
         },

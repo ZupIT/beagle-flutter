@@ -22,8 +22,8 @@ const touchableKey = Key('BeagleTouchable');
 
 Widget createWidget({
   Key touchableKey = touchableKey,
-  Function onPress,
-  Widget child,
+  void Function()? onPress,
+  required Widget child,
 }) {
   return MaterialApp(
     home: BeagleTouchable(
@@ -44,7 +44,8 @@ void main() {
           tapCount++;
         }
 
-        await tester.pumpWidget(createWidget(onPress: onPress));
+        await tester
+            .pumpWidget(createWidget(onPress: onPress, child: null as Widget));
 
         await tester.tap(find.byType(BeagleTouchable));
         await tester.tap(find.byType(BeagleTouchable));

@@ -161,9 +161,9 @@ void main() {
 
         expect(buttonFinder, findsOneWidget);
         expect(
-            buttonCreated.style.backgroundColor
+            buttonCreated.style!.backgroundColor!
                 .resolve({MaterialState.pressed}),
-            buttonOne.androidButtonStyle.backgroundColor
+            buttonOne.androidButtonStyle.backgroundColor!
                 .resolve({MaterialState.pressed}));
 
         expect(textCreated.style, buttonOne.buttonTextStyle);
@@ -192,9 +192,9 @@ void main() {
 
         expect(buttonFinder, findsOneWidget);
         expect(
-            buttonCreated.style.backgroundColor
+            buttonCreated.style!.backgroundColor!
                 .resolve({MaterialState.pressed}),
-            buttonOne.androidButtonStyle.backgroundColor
+            buttonOne.androidButtonStyle.backgroundColor!
                 .resolve({MaterialState.pressed}));
 
         expect(textCreated.style, buttonOne.buttonTextStyle);

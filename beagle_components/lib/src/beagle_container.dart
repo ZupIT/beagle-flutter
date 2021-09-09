@@ -22,17 +22,17 @@ import 'after_layout.dart';
 /// A simple container that can execute an action as soon as it gets created
 class BeagleContainer extends StatefulWidget with YogaWidget {
   const BeagleContainer({
-    Key key,
+    Key? key,
     this.onInit,
     this.style,
-    this.children,
+    required this.children,
   }) : super(key: key);
 
   /// Optional function to run once the container is created
-  final Function onInit;
+  final Function? onInit;
 
   /// Property responsible to customize all the flex attributes and general style configuration
-  final BeagleStyle style;
+  final BeagleStyle? style;
 
   /// Content of the container
   final List<Widget> children;
@@ -47,7 +47,7 @@ class _BeagleContainer extends State<BeagleContainer>
 
   @override
   void afterFirstLayout(BuildContext context) {
-    if (widget.onInit != null) widget.onInit();
+    if (widget.onInit != null) widget.onInit!();
   }
 
   @override

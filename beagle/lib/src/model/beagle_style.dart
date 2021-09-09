@@ -98,16 +98,16 @@ class BeagleFlex {
     }
   }
 
-  FlexDirection flexDirection = FlexDirection.COLUMN;
-  FlexWrap flexWrap = FlexWrap.NO_WRAP;
-  JustifyContent justifyContent = JustifyContent.FLEX_START;
-  AlignItems alignItems = AlignItems.STRETCH;
-  AlignSelf alignSelf = AlignSelf.AUTO;
-  AlignContent alignContent = AlignContent.FLEX_START;
-  UnitValue basis = UnitValue(value: 0, type: UnitType.REAL);
-  num flex = 0;
-  num grow = 0;
-  num shrink = 1;
+  FlexDirection? flexDirection = FlexDirection.COLUMN;
+  FlexWrap? flexWrap = FlexWrap.NO_WRAP;
+  JustifyContent? justifyContent = JustifyContent.FLEX_START;
+  AlignItems? alignItems = AlignItems.STRETCH;
+  AlignSelf? alignSelf = AlignSelf.AUTO;
+  AlignContent? alignContent = AlignContent.FLEX_START;
+  UnitValue? basis = UnitValue(value: 0, type: UnitType.REAL);
+  num? flex = 0;
+  num? grow = 0;
+  num? shrink = 1;
 }
 
 class UnitValue {
@@ -118,8 +118,8 @@ class UnitValue {
     type = EnumUtils.fromString(UnitType.values, map['type']);
   }
 
-  num value;
-  UnitType type;
+  late num? value;
+  late UnitType? type;
 }
 
 class BeagleSize {
@@ -157,13 +157,13 @@ class BeagleSize {
     }
   }
 
-  UnitValue width;
-  UnitValue height;
-  UnitValue maxWidth;
-  UnitValue maxHeight;
-  UnitValue minWidth;
-  UnitValue minHeight;
-  num aspectRatio;
+  late UnitValue? width;
+  late UnitValue? height;
+  late UnitValue? maxWidth;
+  late UnitValue? maxHeight;
+  late UnitValue? minWidth;
+  late UnitValue? minHeight;
+  late num? aspectRatio;
 }
 
 class EdgeValue {
@@ -209,15 +209,15 @@ class EdgeValue {
     }
   }
 
-  UnitValue left;
-  UnitValue top;
-  UnitValue right;
-  UnitValue bottom;
-  UnitValue start;
-  UnitValue end;
-  UnitValue horizontal;
-  UnitValue vertical;
-  UnitValue all;
+  late UnitValue? left;
+  late UnitValue? top;
+  late UnitValue? right;
+  late UnitValue? bottom;
+  late UnitValue? start;
+  late UnitValue? end;
+  late UnitValue? horizontal;
+  late UnitValue? vertical;
+  late UnitValue? all;
 }
 
 class CornerRadius {
@@ -229,7 +229,7 @@ class CornerRadius {
     }
   }
 
-  num radius;
+  late num? radius;
 }
 
 class BeagleStyle {
@@ -284,15 +284,15 @@ class BeagleStyle {
     }
   }
 
-  String backgroundColor;
-  CornerRadius cornerRadius;
-  BeagleFlex flex;
-  FlexPosition positionType = FlexPosition.RELATIVE;
-  FlexDisplay display = FlexDisplay.FLEX;
-  BeagleSize size;
-  EdgeValue margin;
-  EdgeValue padding;
-  EdgeValue position;
-  num borderWidth;
-  String borderColor;
+  late String? backgroundColor;
+  late CornerRadius? cornerRadius;
+  late BeagleFlex? flex;
+  late FlexPosition? positionType = FlexPosition.RELATIVE;
+  late FlexDisplay? display = FlexDisplay.FLEX;
+  late BeagleSize? size;
+  late EdgeValue? margin;
+  late EdgeValue? padding;
+  late EdgeValue? position;
+  late num? borderWidth;
+  late String? borderColor;
 }

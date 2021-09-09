@@ -20,8 +20,8 @@ import 'package:flutter/widgets.dart';
 /// A Undefined widget that displays a string of text.
 class BeagleUndefinedWidget extends StatelessWidget {
   const BeagleUndefinedWidget({
-    Key key,
-    BeagleEnvironment environment,
+    required Key? key,
+    required BeagleEnvironment environment,
   })  : _environment = environment,
         super(key: key);
 

@@ -91,5 +91,5 @@ abstract class BeagleNavigator {
   bool isEmpty();
 
   /// Returns the current route or null if the navigator has not loaded its first route yet.
-  T getCurrentRoute<T extends Route>();
+  T? getCurrentRoute<T extends Route?>();
 }

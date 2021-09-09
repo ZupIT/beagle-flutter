@@ -22,7 +22,7 @@ extension BuildContextUtils on BuildContext {
       return this;
     }
 
-    BuildContext widgetContext;
+    late BuildContext widgetContext;
 
     void visitor(Element element) {
       if (_compareWidgetKey(element, widgetKey)) {
@@ -38,7 +38,7 @@ extension BuildContextUtils on BuildContext {
   }
 
   bool _compareWidgetKey(BuildContext context, String widgetKey) {
-    final ValueKey<String> key = context.widget.key;
+    final ValueKey<String>? key = context.widget.key as ValueKey<String>?;
     return key != null && key.value == widgetKey;
   }
 }

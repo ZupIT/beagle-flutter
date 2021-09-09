@@ -20,21 +20,21 @@ import 'text_input_type.dart';
 /// Defines a text field that lets the user enter text.
 class BeagleTextInput extends StatefulWidget {
   const BeagleTextInput({
-    Key key,
-    this.value,
-    this.placeholder,
-    this.enabled,
-    this.readOnly,
-    this.type,
-    this.error,
-    this.showError,
+    Key? key,
+    this.value = '',
+    this.placeholder = '',
+    this.enabled = false,
+    this.readOnly = false,
+    this.type = BeagleTextInputType.TEXT,
+    this.error = '',
+    this.showError = false,
     this.onChange,
     this.onBlur,
     this.onFocus,
   }) : super(key: key);
 
   /// Initial text displayed.
-  final String value;
+  final String? value;
 
   /// A label text that is shown when the text is empty.
   final String placeholder;
@@ -58,21 +58,21 @@ class BeagleTextInput extends StatefulWidget {
   final bool showError;
 
   /// Action that will be performed when text change.
-  final Function onChange;
+  final Function? onChange;
 
   /// Action that will be performed when the widget looses its focus.
-  final Function onBlur;
+  final Function? onBlur;
 
   /// Action that will be performed when the widget acquire focus.
-  final Function onFocus;
+  final Function? onFocus;
 
   @override
   _BeagleTextInput createState() => _BeagleTextInput();
 }
 
 class _BeagleTextInput extends State<BeagleTextInput> {
-  TextEditingController _controller;
-  FocusNode _focus;
+  late TextEditingController? _controller;
+  late FocusNode? _focus;
 
   @override
   void initState() {
@@ -80,22 +80,22 @@ class _BeagleTextInput extends State<BeagleTextInput> {
 
     if (widget.onBlur != null || widget.onFocus != null) {
       _focus = FocusNode();
-      _focus.addListener(() {
-        if (_focus.hasFocus && widget.onFocus != null) {
-          widget.onFocus({'value': _controller.text});
+      _focus!.addListener(() {
+        if (_focus!.hasFocus && widget.onFocus != null) {
+          widget.onFocus!({'value': _controller!.text});
         }
 
-        if (!_focus.hasFocus && widget.onBlur != null) {
-          widget.onBlur({'value': _controller.text});
+        if (!_focus!.hasFocus && widget.onBlur != null) {
+          widget.onBlur!({'value': _controller!.text});
         }
       });
     }
 
     _controller = TextEditingController();
     if (widget.onChange != null) {
-      _controller.addListener(() {
-        if ((widget.value ?? '') != _controller.text) {
-          widget.onChange({'value': _controller.text});
+      _controller!.addListener(() {
+        if ((widget.value ?? '') != _controller!.text) {
+          widget.onChange!({'value': _controller!.text});
         }
       });
     }
@@ -103,8 +103,8 @@ class _BeagleTextInput extends State<BeagleTextInput> {
 
   @override
   void dispose() {
-    _controller.dispose();
-    if (_focus != null) _focus.dispose();
+    _controller!.dispose();
+    if (_focus != null) _focus!.dispose();
     super.dispose();
   }
 
@@ -112,8 +112,8 @@ class _BeagleTextInput extends State<BeagleTextInput> {
   Widget build(BuildContext context) {
     if (_controller != null &&
         widget.value != null &&
-        widget.value != _controller.text) {
-      _controller.text = widget.value;
+        widget.value != _controller!.text) {
+      _controller!.text = widget.value!;
     }
     return TextField(
       controller: _controller,

@@ -74,7 +74,7 @@ ComponentBuilder beagleTextBuilder() {
         alignment: EnumUtils.fromString(
           TextAlignment.values,
           element.getAttributeValue('alignment') ?? '',
-        ),
+        )!,
       );
 }
 
@@ -93,7 +93,7 @@ ComponentBuilder beagleScrollViewBuilder() {
         scrollDirection: EnumUtils.fromString(
           ScrollAxis.values,
           element.getAttributeValue('scrollDirection'),
-        ),
+        )!,
         scrollBarEnabled: element.getAttributeValue('scrollBarEnabled'),
         children: children,
       );
@@ -114,7 +114,7 @@ ComponentBuilder beagleTextInputBuilder() {
         type: EnumUtils.fromString(
           BeagleTextInputType.values,
           element.getAttributeValue('type'),
-        ),
+        )!,
       );
 }
 
@@ -138,7 +138,7 @@ ComponentBuilder beagleLazyComponentBuilder() {
             initialState == null ? null : BeagleUIElement(initialState),
         beagleId: element.getId(),
         view: view,
-        child: children.isEmpty ? null : children[0]);
+        child: children.isEmpty ? new Container() : children[0]);
   };
 }
 
@@ -171,7 +171,7 @@ ComponentBuilder beagleImageBuilder() {
       mode: EnumUtils.fromString(
         ImageContentMode.values,
         element.getAttributeValue('mode') ?? '',
-      ),
+      )!,
       style: element.getStyle(),
     );
   };
@@ -208,7 +208,6 @@ ComponentBuilder beagleScreenComponentBuilder() {
         child: children[0],
       );
 }
-
 
 ComponentBuilder beaglePullToRefreshBuilder() {
   return (element, children, view) {

@@ -33,7 +33,7 @@ void main() {
   Widget createWidget({
     Key key = pageViewKey,
     List<Widget> pages = pages,
-    void Function(int) onPageChange,
+    void Function(int)? onPageChange,
     int currentPage = 0,
   }) {
     return MaterialApp(

@@ -26,7 +26,7 @@ class DefaultStorage implements Storage {
 
   @override
   Future<String> getItem(String key) async {
-    return storage[key];
+    return storage[key]!;
   }
 
   @override

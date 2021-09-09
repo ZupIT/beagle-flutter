@@ -27,18 +27,18 @@ class BeagleScreenRequest implements BeagleNetworkOptions {
   });
 
   /// Server URL
-  String url;
+  late String url;
 
   //TODO: NEEDS IMPLEMENTS
   /// Content that will be deliver with the request.
-  String body;
+  late String? body;
 
   @override
-  Map<String, String> headers;
+  late Map<String, String>? headers;
 
   @override
-  BeagleHttpMethod method;
+  late BeagleHttpMethod? method;
 
   @override
-  BeagleNetworkStrategy strategy;
+  late BeagleNetworkStrategy? strategy;
 }
