@@ -23,12 +23,16 @@ environment:
   flutter: ">=1.22.5"
 
 dependencies:
-  beagle:
-    path: ../beagle
-  beagle_components:
-    path: ../beagle_components
+  beagle: ^0.9.3-alpha
+  beagle_components: ^0.9.3-alpha  
   flutter:
     sdk: flutter
+
+dependency_overrides:
+  beagle:
+    path: ../beagle/
+  beagle_components:
+    path: ../beagle_components/
 
 dev_dependencies:
   flutter_test:

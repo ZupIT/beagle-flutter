@@ -52,7 +52,7 @@ void main() {
         loadingComponent: 'custom:loading',
       ),
     },
-    analyticsProvider: AppAnalyticsProvider(),
+    // analyticsProvider: AppAnalyticsProvider(),
     logger: DefaultLogger(),
     designSystem: AppDesignSystem(),
   );
