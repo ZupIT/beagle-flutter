@@ -40,7 +40,7 @@ class BeagleSimpleForm extends StatefulWidget with YogaWidget {
   @override
   BeagleSimpleFormState createState() => BeagleSimpleFormState();
 
-  static of(BuildContext context, {bool root = false}) => root
+  static BeagleSimpleFormState of(BuildContext context, {bool root = false}) => root
       ? context.findRootAncestorStateOfType<BeagleSimpleFormState>()
       : context.findAncestorStateOfType<BeagleSimpleFormState>();
 
