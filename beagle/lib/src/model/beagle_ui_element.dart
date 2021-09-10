@@ -61,7 +61,6 @@ class BeagleUIElement {
     }
 
     final list =
-        // ignore: avoid_as
         (properties['children'] as List<dynamic>).cast<Map<String, dynamic>>();
     return list.map((child) => BeagleUIElement(child)).toList();
   }

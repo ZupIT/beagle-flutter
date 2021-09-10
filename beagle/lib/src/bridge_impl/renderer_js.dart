@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/model/beagle_template_manager.dart';
 
 class RendererJS implements Renderer {
   RendererJS(this._beagleJSEngine, this._viewId);
@@ -51,5 +52,19 @@ class RendererJS implements Renderer {
   void doPartialRender(BeagleUIElement tree,
       [String anchor, TreeUpdateMode mode]) {
     _doRender(false, tree, anchor, mode);
+  }
+
+  @override
+  void doTemplateRender(TemplateManager templateManager, String anchor,
+      List<List<DataContext>> contexts,
+      [BeagleUIElement Function(BeagleUIElement, int) componentManager,
+      TreeUpdateMode mode]) {
+    final templateManagerArg = jsonEncode(templateManager);
+    final contextsArg = jsonEncode(contexts);
+    final componentManagerArg =
+        componentManager == null ? '' : ", ${jsonEncode(componentManager)}'";
+    final modeArg = mode == null ? '' : ", '${_getJsTreeUpdateModeName(mode)}'";
+    _beagleJSEngine.evaluateJavascriptCode(
+        "global.beagle.getViewById('$_viewId').getRenderer().doTemplateRender($templateManagerArg, '$anchor', $contextsArg$componentManagerArg$modeArg)");
   }
 }

@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/model/beagle_template_manager.dart';
 
 abstract class Renderer {
   /// Does a partial render to the BeagleView. Compared to the full render, it will skip every step
@@ -54,4 +55,47 @@ abstract class Renderer {
   /// remove all current children and adds [tree] as the only child. ReplaceComponent will replace
   /// the element identified by [anchor] entirely by [tree]. Default is replaceComponent.
   void doFullRender(BeagleUIElement tree, [String anchor, TreeUpdateMode mode]);
+
+  /// Renders according to a template manager and a matrix of contexts.
+  ///
+  /// Each line in the matrix of contexts represents an iteration and each column represents the value
+  /// of a template variable. For instance, imagine a template with the variables `@{name}`, `@{sex}`
+  /// and `@{address}`. Now suppose we want to render three different entries with this template.
+  /// Here's a context matrix that could be used for this example:
+  ///
+  /// [
+  ///   [{ id: 'name', value: 'John' }, { id: 'sex', value: 'M' }, { id: 'address', value: { street: '42 Avenue', number: '256' } }],
+  ///   [{ id: 'name', value: 'Sue' }, { id: 'sex', value: 'F' }, { id: 'address', value: { street: 'St Monica St', number: '85' } }],
+  ///   [{ id: 'name', value: 'Paul' }, { id: 'sex', value: 'M' }, { id: 'address', value: { street: 'Bv Kennedy', number: '877' } }],
+  /// ]
+  ///
+  /// Note that the parameter `contexts` adds to the context hierarchy that is already present in the
+  /// tree, it doesn't replace it, i.e. you can still use the contexts declared in the current tree.
+  ///
+  /// For each line of the context matrix, a template is chosen from the template manager according to
+  /// `case`, which is a boolean or a beagle expression that resolves to a boolean. When `case` is an
+  /// expression, it's resolved using the entire context of the current tree plus the contexts passed
+  /// in the parameter `contexts` corresponding to the current iteration. If no template attends the
+  /// condition the default template is used. If there's no default template, the iteration is skipped.
+  ///
+  /// After processing all items, the resulting tree is attached to the current tree at the node with
+  /// id `anchor` (passed as parameter).
+  ///
+  /// The component manager is an optional parameter and is used to modify the resulting component.
+  /// This can be very useful for managing ids, for instance. The component manager is a function that
+  /// receives the component generated and the index of the current iteration, returning the modified
+  /// component.
+  ///
+  /// @param templateManager templates used to render each line of the context matrix.
+  /// @param anchor the id of the node in the current tree to attach the new nodes to.
+  /// @param contexts matrix of contexts where each line represents an item to be rendered according to
+  /// the templateManager.
+  /// @param componentManager optional. When set, the component goes through this function before being
+  /// finally rendered.
+  /// @param mode optional. when `viewTree` is just a new branch to be added to the tree, the mode must be
+  /// specified. It can be `append`, `prepend` or `replace`. The default value is `replace`
+  void doTemplateRender(TemplateManager templateManager, String anchor,
+      List<List<DataContext>> contexts,
+      [BeagleUIElement Function(BeagleUIElement, int) componentManager,
+      TreeUpdateMode mode]);
 }
