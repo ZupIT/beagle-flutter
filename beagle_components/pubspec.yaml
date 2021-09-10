@@ -24,7 +24,7 @@ environment:
 
 dependencies:
   beagle:
-    path: ../beagle
+    path: ../beagle/lib
   flutter:
     sdk: flutter
   webview_flutter: ^2.0.10
