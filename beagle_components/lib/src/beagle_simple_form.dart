@@ -38,15 +38,15 @@ class BeagleSimpleForm extends StatefulWidget with YogaWidget {
   final Function onValidationError;
 
   @override
-  _BeagleSimpleForm createState() => _BeagleSimpleForm();
+  BeagleSimpleFormState createState() => BeagleSimpleFormState();
 
-  static _BeagleSimpleForm of(BuildContext context, {bool root = false}) => root
-      ? context.findRootAncestorStateOfType<_BeagleSimpleForm>()
-      : context.findAncestorStateOfType<_BeagleSimpleForm>();
+  static of(BuildContext context, {bool root = false}) => root
+      ? context.findRootAncestorStateOfType<BeagleSimpleFormState>()
+      : context.findAncestorStateOfType<BeagleSimpleFormState>();
 
 }
 
-class _BeagleSimpleForm extends State<BeagleSimpleForm> {
+class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
 
   @override
