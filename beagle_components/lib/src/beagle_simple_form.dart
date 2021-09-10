@@ -17,7 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import '../beagle_components.dart';
+import 'package:beagle_components/beagle_components.dart';
 
 /// This component defines a submit handler for a form request.
 class BeagleSimpleForm extends StatefulWidget with YogaWidget {
