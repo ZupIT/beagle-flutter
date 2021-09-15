@@ -15,81 +15,112 @@
  */
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
+import 'package:beagle_components/src/utils/build_context_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../beagle_image_test.dart';
 import '../service_locator/service_locator.dart';
-class ContextMock extends Mock implements BuildContext {}
-class BeagleUiElementMock extends Mock implements BeagleUIElement {}
 
-class SimpleFormStateMock extends BeagleSimpleFormState {
+class BeagleUiElementMock extends Mock implements BeagleUIElement {}
+class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+class MockDesignSystem extends Mock implements BeagleDesignSystem {}
+class MockBuildContext extends Mock implements BuildContext {}
+final infoMessage = <String>[];
+final warningMessage = <String>[];
+class MockBeagleLogger extends BeagleLogger {
   @override
-  void submit() {
-    onSubmit();
+  void error(String message) {
   }
+
+  @override
+  void errorWithException(String message, Exception exception) {
+  }
+
+  @override
+  void info(String message) {
+    infoMessage.add(message);
+  }
+
+  @override
+  void warning(String message) {
+    warningMessage.add(message);
+  }
+
 }
 final mockElementId = 'submitKey';
 final submitKey = Key(mockElementId);
-var didPressSubmit = false;
+var didCallOnSubmit = false;
 void onSubmit() {
-  didPressSubmit = true;
+  didCallOnSubmit = true;
 }
-ContextMock _mockContext = ContextMock();
+var didCallOnValidationError = false;
+void onValidationError() {
+  didCallOnValidationError = true;
+}
 BeagleUIElement _mockElement = BeagleUiElementMock();
-final elevatedButton = createElevatedButton();
+final _beagleYogaFactoryMock = MockBeagleYogaFactory();
+final _designSystemMock = MockDesignSystem();
+final _beagleLoggerMock = MockBeagleLogger();
+final BuildContext _mockContext = MockBuildContext();
+final _navigationBarStyleId = 'navigationBarStyleId';
 final _labelSubmit = 'Submit';
-BeagleSimpleForm simpleForm;
+final navigationBarStyle =
+BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
+
+ElevatedButton createElevatedButton() {
+  return ElevatedButton(
+    key: submitKey,
+    onPressed: () =>
+    {BeagleSubmitForm.submit(_mockContext, _mockElement)},
+    child: Text(_labelSubmit),
+  );
+}
+
+final elevatedButton = createElevatedButton();
+final simpleForm = createBeagleSimpleForm(onValidationError: onValidationError, onSubmit: onSubmit);
+
+BeagleSimpleForm createBeagleSimpleForm({Function onValidationError, Function onSubmit}) {
+  return BeagleSimpleForm(
+    key: Key('scrollKey'),
+    onValidationError: onValidationError,
+    onSubmit: onSubmit,
+    children: [BeagleTextInput(value: '', placeholder: 'Text',),
+      elevatedButton
+    ],
+  );
+}
+
 Widget createWidget({
   Function onValidationError,
   Function onSubmit,
 }) {
   return MaterialApp(
     home: Scaffold(
-      body: createBeagleSimpleForm(onValidationError: onValidationError, onSubmit: onSubmit),
+      body: simpleForm,
     ),
   );
 }
 
-BeagleSimpleForm createBeagleSimpleForm({Function onValidationError, Function onSubmit}) {
-  return BeagleSimpleForm(
-      key: Key('scrollKey'),
-      onValidationError: onValidationError,
-      onSubmit: onSubmit,
-      children: [BeagleTextInput(value: '', placeholder: 'Text',),
-        // TextButton(
-        //   onPressed: () {
-        //     BeagleSubmitForm.submit(_mockContext, _mockElement);
-        //   },
-        //   child: Text(labelSubmit),
-        // )
-        elevatedButton
-  ],
-    );
+class SimpleFormStateSpy extends BeagleSimpleFormState {
+  SimpleFormStateSpy({this.hasInputErrors,this.simpleForm});
+  final bool hasInputErrors;
+  final BeagleSimpleForm simpleForm;
+  @override
+  bool searchInputErrors() {
+    return hasInputErrors;
+  }
+
+  @override
+  BeagleSimpleForm get widget => simpleForm;
 }
 
-ElevatedButton createElevatedButton() {
-  return ElevatedButton(
-          key: submitKey,
-          onPressed: () =>
-          {BeagleSubmitForm.submit(_mockContext, _mockElement)},
-          child: Text(_labelSubmit),
-        );
-}
 
 void main() {
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  final designSystemMock = MockDesignSystem();
-  final beagleLoggerMock = MockBeagleLogger();
-
-  final navigationBarStyleId = 'navigationBarStyleId';
-
-  final navigationBarStyle =
-  BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
 
   setUpAll(() async {
-    when(beagleYogaFactoryMock.createYogaLayout(
+
+    when(_beagleYogaFactoryMock.createYogaLayout(
       style: anyNamed('style'),
       children: anyNamed('children'),
     )).thenAnswer((realInvocation) {
@@ -97,41 +128,103 @@ void main() {
       return children.last;
     });
 
-
-    when(designSystemMock.navigationBarStyle(navigationBarStyleId))
+    when(_designSystemMock.navigationBarStyle(_navigationBarStyleId))
         .thenReturn(navigationBarStyle);
 
     await testSetupServiceLocator(
-      beagleYogaFactory: beagleYogaFactoryMock,
-      designSystem: designSystemMock,
-      logger: beagleLoggerMock,
+      beagleYogaFactory: _beagleYogaFactoryMock,
+      designSystem: _designSystemMock,
+      logger: _beagleLoggerMock,
     );
 
     when(_mockElement.getId()).thenReturn(mockElementId);
     when(_mockContext.widget).thenReturn(elevatedButton);
 
-    final simpleForm = createBeagleSimpleForm(onSubmit: onSubmit);
     when(_mockContext.findAncestorWidgetOfExactType<BeagleSimpleForm>()).thenReturn(simpleForm);
 
-    when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateMock());
+    when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(hasInputErrors: false, simpleForm: simpleForm));
   });
 
   group('Given a BeagleSubmitForm', () {
 
-    group('When I press the OK button', () {
+    group('When I press the OK button without any validation error', () {
       testWidgets('Then it should call onSubmit callback',
               (WidgetTester tester) async {
 
-            await tester.pumpWidget(createWidget(onSubmit: onSubmit));
+            //Defines that validation error will not occurs
+            when(_mockContext.visitChildElements((element) { })).thenAnswer((realInvocation) {});
+            when(_mockContext.searchInputErrors()).thenReturn(false);
+
+            final expectedInfoMessage = 'BeagleSimpleForm: submitting form';
+
+            //reset values
+            didCallOnSubmit = false;
+            didCallOnValidationError = false;
+
+            await tester.pumpWidget(createWidget(onSubmit: onSubmit, onValidationError: onValidationError));
             await tester.pumpAndSettle();
 
-            expect(didPressSubmit, false);
+            expect(didCallOnSubmit, false);
             await tester.tap(find.byType(ElevatedButton));
             await tester.pumpAndSettle();
 
-            expect(didPressSubmit, true);
+            expect(didCallOnSubmit, true);
+            expect(didCallOnValidationError, false);
+            expect(infoMessage.last, expectedInfoMessage);
           });
     });
 
+
+    group('When I press the OK button, and it has a validation error handled by me', () {
+      testWidgets('Then it should call onSubmit callback',
+              (WidgetTester tester) async {
+
+            //Defines that validation error will not occurs
+            when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(hasInputErrors: true, simpleForm: simpleForm));
+            final expectedWarningMessage = 'BeagleSimpleForm: has a validation error';
+
+            didCallOnSubmit = false;
+            didCallOnValidationError = false;
+            await tester.pumpWidget(createWidget(onSubmit: onSubmit, onValidationError: onValidationError));
+            await tester.pumpAndSettle();
+
+            expect(didCallOnSubmit, false);
+            await tester.tap(find.byType(ElevatedButton));
+            await tester.pumpAndSettle();
+
+            expect(didCallOnSubmit, false);
+            expect(didCallOnValidationError, true);
+            expect(warningMessage.last, expectedWarningMessage);
+          });
+    });
+
+    group('When I press the OK button, and it has a validation error not handled by me', () {
+      testWidgets('Then it should call onSubmit callback',
+              (WidgetTester tester) async {
+
+            //Defines that validation error will not occurs
+            final simpleFormSpy = createBeagleSimpleForm(onSubmit: onSubmit, onValidationError: null);
+            when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(hasInputErrors: true, simpleForm: simpleFormSpy));
+            when(_mockContext.findAncestorWidgetOfExactType<BeagleSimpleForm>()).thenReturn(simpleFormSpy);
+            final expectedFirstWarningMessage = 'BeagleSimpleForm: has a validation error';
+            final expectedLastWarningMessage = 'BeagleSimpleForm: you did not provided a validation function onValidationError';
+
+            didCallOnSubmit = false;
+            didCallOnValidationError = false;
+            await tester.pumpWidget(createWidget(onSubmit: onSubmit, onValidationError: null));
+            await tester.pumpAndSettle();
+
+            expect(didCallOnSubmit, false);
+            await tester.tap(find.byType(ElevatedButton));
+            await tester.pumpAndSettle();
+
+            expect(didCallOnSubmit, false);
+            expect(didCallOnValidationError, false);
+            expect(warningMessage.first, expectedFirstWarningMessage);
+            expect(warningMessage.last, expectedLastWarningMessage);
+          });
+    });
   });
+
+
 }

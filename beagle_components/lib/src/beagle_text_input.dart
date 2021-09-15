@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import 'package:beagle_components/src/protocol/input_validation.dart';
 import 'package:flutter/material.dart';
 import 'text_input_type.dart';
 
 /// Defines a text field that lets the user enter text.
-class BeagleTextInput extends StatefulWidget {
+class BeagleTextInput extends StatefulWidget implements InputValidation {
   const BeagleTextInput({
     Key key,
     this.value,
@@ -68,6 +69,11 @@ class BeagleTextInput extends StatefulWidget {
 
   @override
   _BeagleTextInput createState() => _BeagleTextInput();
+
+  @override
+  bool hasError() {
+    return error != null && error.isNotEmpty;
+  }
 }
 
 class _BeagleTextInput extends State<BeagleTextInput> {

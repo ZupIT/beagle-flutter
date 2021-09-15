@@ -15,9 +15,9 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle_components/src/utils/build_context_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:beagle_components/beagle_components.dart';
 
 /// This component defines a submit handler for a form request.
 class BeagleSimpleForm extends StatefulWidget with YogaWidget {
@@ -48,7 +48,7 @@ class BeagleSimpleForm extends StatefulWidget with YogaWidget {
 
 class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
-
+  BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
   @override
   Widget build(BuildContext context) {
     return beagleYogaFactory.createYogaLayout(
@@ -58,32 +58,21 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   }
 
   void submit() {
-    final hasError = _searchErrorInHierarchy();
+    final hasError = searchInputErrors();
     if (hasError) {
+      logger.warning('BeagleSimpleForm: has a validation error');
       if (widget.onValidationError != null) {
         widget.onValidationError();
+      } else {
+        logger.warning('BeagleSimpleForm: you did not provided a validation function onValidationError');
       }
     } else {
+      logger.info('BeagleSimpleForm: submitting form');
       widget.onSubmit();
     }
   }
 
-  bool _searchErrorInHierarchy() {
-    bool hasError = false;
-
-    void visitor(Element element) {
-      if (element.widget is BeagleTextInput) {
-        final errorMsg = (element.widget as BeagleTextInput).error;
-        if(errorMsg != null && errorMsg.isNotEmpty) {
-         hasError = true;
-        }
-      } else {
-        element.visitChildElements(visitor);
-      }
-    }
-
-    context.visitChildElements(visitor);
-
-    return hasError;
+  bool searchInputErrors() {
+    return context.searchInputErrors();
   }
 }
