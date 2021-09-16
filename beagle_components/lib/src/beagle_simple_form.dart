@@ -58,7 +58,7 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   }
 
   void submit() {
-    final hasError = searchInputErrors();
+    final hasError = hasInputErrors();
     if (hasError) {
       logger.warning('BeagleSimpleForm: has a validation error');
       if (widget.onValidationError != null) {
@@ -72,7 +72,7 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> {
     }
   }
 
-  bool searchInputErrors() {
+  bool hasInputErrors() {
     return context.searchInputErrors();
   }
 }

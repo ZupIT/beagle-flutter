@@ -103,12 +103,12 @@ Widget createWidget({
 }
 
 class SimpleFormStateSpy extends BeagleSimpleFormState {
-  SimpleFormStateSpy({this.hasInputErrors,this.simpleForm});
-  final bool hasInputErrors;
+  SimpleFormStateSpy({this.withInputErrors,this.simpleForm});
+  final bool withInputErrors;
   final BeagleSimpleForm simpleForm;
   @override
-  bool searchInputErrors() {
-    return hasInputErrors;
+  bool hasInputErrors() {
+    return withInputErrors;
   }
 
   @override
@@ -142,7 +142,7 @@ void main() {
 
     when(_mockContext.findAncestorWidgetOfExactType<BeagleSimpleForm>()).thenReturn(simpleForm);
 
-    when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(hasInputErrors: false, simpleForm: simpleForm));
+    when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(withInputErrors: false, simpleForm: simpleForm));
   });
 
   group('Given a BeagleSubmitForm', () {
@@ -180,7 +180,7 @@ void main() {
               (WidgetTester tester) async {
 
             //Defines that validation error will not occurs
-            when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(hasInputErrors: true, simpleForm: simpleForm));
+            when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(withInputErrors: true, simpleForm: simpleForm));
             final expectedWarningMessage = 'BeagleSimpleForm: has a validation error';
 
             didCallOnSubmit = false;
@@ -204,7 +204,7 @@ void main() {
 
             //Defines that validation error will not occurs
             final simpleFormSpy = createBeagleSimpleForm(onSubmit: onSubmit, onValidationError: null);
-            when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(hasInputErrors: true, simpleForm: simpleFormSpy));
+            when(_mockContext.findAncestorStateOfType()).thenReturn(SimpleFormStateSpy(withInputErrors: true, simpleForm: simpleFormSpy));
             when(_mockContext.findAncestorWidgetOfExactType<BeagleSimpleForm>()).thenReturn(simpleFormSpy);
             final expectedFirstWarningMessage = 'BeagleSimpleForm: has a validation error';
             final expectedLastWarningMessage = 'BeagleSimpleForm: you did not provided a validation function onValidationError';
