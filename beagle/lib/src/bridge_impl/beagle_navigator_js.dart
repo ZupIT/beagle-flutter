@@ -16,6 +16,7 @@
 
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'beagle_js_engine.dart';
 
 class BeagleNavigatorJS implements BeagleNavigator {
@@ -65,7 +66,7 @@ class BeagleNavigatorJS implements BeagleNavigator {
   T? getCurrentRoute<T extends Route?>() {
     final result = _beagleJSEngine
         .evaluateJavascriptCode(
-            "global.beagle.getViewById('$_viewId').getNavigator().getCurrentRoute()")
+            "global.beagle.getViewById('$_viewId').getNavigator().getCurrentRoute()")!
         .rawResult;
 
     if (result == null) {
@@ -79,7 +80,7 @@ class BeagleNavigatorJS implements BeagleNavigator {
   bool isEmpty() {
     return _beagleJSEngine
         .evaluateJavascriptCode(
-            "global.beagle.getViewById('$_viewId').getNavigator().isEmpty()")
+            "global.beagle.getViewById('$_viewId').getNavigator().isEmpty()")!
         .rawResult;
   }
 
@@ -109,7 +110,7 @@ class BeagleNavigatorJS implements BeagleNavigator {
 
     final result = _beagleJSEngine.evaluateJavascriptCode(
         "global.beagle.getViewById('$_viewId').getNavigator().$jsFunction($functionParam)");
-    return _beagleJSEngine.promiseToFuture(result);
+    return _beagleJSEngine.promiseToFuture(result) as Future<JsEvalResult>;
   }
 
   @override

@@ -19,6 +19,7 @@ import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:meta/meta.dart';
 
 import '../service_locator.dart';
 import 'beagle_js_request_message.dart';
@@ -66,7 +67,7 @@ class BeagleJSEngine {
 
   /// Runs javascript [code].
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  JsEvalResult evaluateJavascriptCode(String code) {
+  JsEvalResult? evaluateJavascriptCode(String code) {
     _checkEngineIsStarted();
     return _jsRuntime.evaluate(code);
   }
@@ -134,11 +135,12 @@ class BeagleJSEngine {
   void _setupHttpMessages() {
     _jsRuntime.onMessage(
       _httpRequestChannelName,
-      _notifyHttpListener,
+      notifyHttpListener,
     );
   }
 
-  void _notifyHttpListener(dynamic requestMessage) {
+  @visibleForTesting
+  void notifyHttpListener(dynamic requestMessage) {
     if (_httpListener == null) {
       return;
     }
@@ -153,11 +155,12 @@ class BeagleJSEngine {
   void _setupLoggerMessage() {
     _jsRuntime.onMessage(
       _loggerChannelName,
-      _notifyLoggerListener,
+      notifyLoggerListener,
     );
   }
 
-  void _notifyLoggerListener(dynamic loggerMessage) {
+  @visibleForTesting
+  void notifyLoggerListener(dynamic loggerMessage) {
     final logger = beagleServiceLocator<BeagleLogger>();
     final message = loggerMessage['message'];
     final level = loggerMessage['level'];
@@ -176,11 +179,12 @@ class BeagleJSEngine {
   void _setupActionMessages() {
     _jsRuntime.onMessage(
       _actionChannelName,
-      _notifyActionListener,
+      notifyActionListener,
     );
   }
 
-  void _notifyActionListener(dynamic actionMessage) {
+  @visibleForTesting
+  void notifyActionListener(dynamic actionMessage) {
     final viewId = actionMessage['viewId'];
 
     if (!_hasActionListenerForView(viewId)) {
@@ -201,11 +205,12 @@ class BeagleJSEngine {
   void _setupOperationMessages() {
     _jsRuntime.onMessage(
       _operationChannelName,
-      _notifyOperationListener,
+      notifyOperationListener,
     );
   }
 
-  void _notifyOperationListener(dynamic operationMessage) {
+  @visibleForTesting
+  void notifyOperationListener(dynamic operationMessage) {
     if (_operationListener == null) {
       return;
     }
@@ -216,11 +221,12 @@ class BeagleJSEngine {
   void _setupBeagleViewMessages() {
     _jsRuntime.onMessage(
       _viewUpdateChannelName,
-      _notifyViewUpdateListeners,
+      notifyViewUpdateListeners,
     );
   }
 
-  void _notifyViewUpdateListeners(dynamic updateMessage) {
+  @visibleForTesting
+  void notifyViewUpdateListeners(dynamic updateMessage) {
     final viewId = updateMessage['id'];
 
     if (!_hasUpdateListenerForView(viewId)) {
@@ -238,11 +244,12 @@ class BeagleJSEngine {
   void _setupBeagleNavigatorMessages() {
     _jsRuntime.onMessage(
       _navigatorChannelName,
-      _notifyNavigationListeners,
+      notifyNavigationListeners,
     );
   }
 
-  void _notifyNavigationListeners(dynamic navigationMessage) {
+  @visibleForTesting
+  void notifyNavigationListeners(dynamic navigationMessage) {
     final viewId = navigationMessage['viewId'];
 
     if (!_hasNavigationListenerForView(viewId)) {
@@ -272,35 +279,46 @@ class BeagleJSEngine {
     return _handleListenerForView(viewId, _navigationListenerMap);
   }
 
-  void _setupStorageMessages() {
-    void evaluateOnJSRuntime(String promiseId, String? result) =>
-        _jsRuntime.evaluate(
-            "global.beagle.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
+  void evaluateOnJSRuntime(String promiseId, String? result) => _jsRuntime.evaluate(
+      "global.beagle.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
 
+  @visibleForTesting
+  void notifyStorageSetListeners(dynamic args) async {
+    await _storage.setItem(args['key'], args['value']);
+    evaluateOnJSRuntime(args['promiseId'], null);
+  }
+
+  @visibleForTesting
+  void notifyStorageGetListeners(dynamic args) async {
+    final result = await _storage.getItem(args['key']);
+    evaluateOnJSRuntime(args['promiseId'], result);
+  }
+
+  @visibleForTesting
+  void notifyStorageRemoveListeners(dynamic args) async {
+    await _storage.removeItem(args['key']);
+    evaluateOnJSRuntime(args['promiseId'], null);
+  }
+
+  @visibleForTesting
+  void notifyStorageClearListeners(dynamic args) async {
+    await _storage.clear();
+    evaluateOnJSRuntime(args['promiseId'], null);
+  }
+
+  void _setupStorageMessages() {
     _jsRuntime
-      ..onMessage('storage.set', (dynamic args) async {
-        await _storage.setItem(args['key'], args['value']);
-        evaluateOnJSRuntime(args['promiseId'], null);
-      })
-      ..onMessage('storage.get', (dynamic args) async {
-        final result = await _storage.getItem(args['key']);
-        evaluateOnJSRuntime(args['promiseId'], result);
-      })
-      ..onMessage('storage.remove', (dynamic args) async {
-        await _storage.removeItem(args['key']);
-        evaluateOnJSRuntime(args['promiseId'], null);
-      })
-      ..onMessage('storage.clear', (dynamic args) async {
-        await _storage.clear();
-        evaluateOnJSRuntime(args['promiseId'], null);
-      });
+      ..onMessage('storage.set', notifyStorageSetListeners)
+      ..onMessage('storage.get', notifyStorageGetListeners)
+      ..onMessage('storage.remove', notifyStorageRemoveListeners)
+      ..onMessage('storage.clear', notifyStorageClearListeners);
   }
 
   /// Handles a javascript promise.
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  Future<JsEvalResult> promiseToFuture(JsEvalResult result) {
+  Future<JsEvalResult>? promiseToFuture(JsEvalResult? result) {
     _checkEngineIsStarted();
-    return _jsRuntime.handlePromise(result);
+    return _jsRuntime.handlePromise(result!);
   }
 
   /// Lazily starts the [BeagleJSEngine].
@@ -328,7 +346,7 @@ class BeagleJSEngine {
       params.add(initialControllerId);
     }
     final script = 'global.beagle.createBeagleView(${params.join(', ')})';
-    final id = _jsRuntime.evaluate(script).stringResult;
+    final id = _jsRuntime.evaluate(script)!.stringResult;
 
     return id;
   }

@@ -44,7 +44,7 @@ class GlobalContextJS implements GlobalContext {
     final args = path == null ? '' : "'$path'";
     return _beagleJSEngine
         .evaluateJavascriptCode(
-            'global.beagle.getService().globalContext.get($args)')
+            'global.beagle.getService().globalContext.get($args)')!
         .rawResult;
   }
 
