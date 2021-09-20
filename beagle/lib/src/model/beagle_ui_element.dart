@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
 class DataContext {
-  DataContext(this.id, this.value);
-
   String id;
   dynamic value;
+
+  DataContext(this.id, this.value);
+
+  Map<String, dynamic> toJson() => {'id': id, 'value': jsonEncode(value)};
 }
 
 class BeagleUIElement {

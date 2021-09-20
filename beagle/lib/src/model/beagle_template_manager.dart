@@ -17,39 +17,22 @@
 import 'package:beagle/beagle.dart';
 
 class TemplateManagerItem {
-  Map<String, dynamic> properties;
+  String case_;
+  BeagleUIElement view;
 
-  TemplateManagerItem(this.properties);
+  TemplateManagerItem(this.case_, this.view);
 
-  String getCase() {
-    bool hasCase =
-        properties.containsKey('case') && properties['case'].isNotEmpty;
-    return hasCase ? properties['case'] : null;
-  }
-
-  BeagleUIElement getView() {
-    return BeagleUIElement(properties['case']);
-  }
+  Map<String, dynamic> toJson() => {'case': case_, 'view': view.properties};
 }
 
 class TemplateManager {
-  Map<String, dynamic> properties;
+  BeagleUIElement default_;
+  List<TemplateManagerItem> templates;
 
-  TemplateManager(this.properties);
+  TemplateManager(this.default_, this.templates);
 
-  BeagleUIElement getDefaultTemplate() {
-    bool hasDefault =
-        properties.containsKey('default') && properties['default'].isNotEmpty;
-    return hasDefault ? BeagleUIElement(properties['default']) : null;
-  }
-
-  List<TemplateManagerItem> getTemplates() {
-    if (!properties.containsKey('templates')) {
-      return [];
-    }
-
-    final list =
-        (properties['templates'] as List<dynamic>).cast<Map<String, dynamic>>();
-    return list.map((child) => TemplateManagerItem(child)).toList();
-  }
+  Map<String, dynamic> toJson() => {
+        'default': default_.properties,
+        'templates': templates.map((t) => t.toJson()).toList(),
+      };
 }

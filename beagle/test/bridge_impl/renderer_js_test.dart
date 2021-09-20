@@ -19,94 +19,187 @@ import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/renderer_js.dart';
+import 'package:beagle/src/model/beagle_template_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 
 void main() {
-  final beagleJSEngine = MockBeagleJSEngine();
-  final tree = BeagleUIElement(
-      {'_beagleComponent_': 'beagle:button', 'text': 'Click me!'});
-
   group('Given a RendererJS object', () {
-    final renderer = RendererJS(beagleJSEngine, 'viewId');
+    group('doFullRender and doPartialRender', () {
+      final beagleJSEngine = MockBeagleJSEngine();
+      final tree = BeagleUIElement(
+          {'_beagleComponent_': 'beagle:button', 'text': 'Click me!'});
+      final renderer = RendererJS(beagleJSEngine, 'viewId');
 
-    group('When doFullRender is called', () {
-      test('Then it should do full render', () {
-        renderer.doFullRender(tree);
-        expect(
-            verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
-                .captured
-                .single,
-            "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)})");
-      });
-    });
-
-    group('When doFullRender is called passing an anchor', () {
-      test('Then it should do full render by replacing a branch of the tree',
-          () {
-        renderer.doFullRender(tree, 'elementId');
-        expect(
-            verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
-                .captured
-                .single,
-            "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId')");
-      });
-    });
-
-    group('When doFullRender is called passing an anchor and append mode', () {
-      test(
-          'Then it should do full render by appending an element to a branch of the tree',
-          () {
-        renderer.doFullRender(tree, 'elementId', TreeUpdateMode.append);
-        expect(
-            verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
-                .captured
-                .single,
-            "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId', 'append')");
-      });
-    });
-
-    group('When doPartialRender is called', () {
-      test('Then it should do partial render', () {
-        final tree = BeagleUIElement({
-          '_beagleComponent_': 'beagle:button',
-          'id': 'beagle1',
-          'text': 'Click me!'
+      group('When doFullRender is called', () {
+        test('Then it should do full render', () {
+          renderer.doFullRender(tree);
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .single,
+              "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)})");
         });
-        renderer.doPartialRender(tree);
-        expect(
-            verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
-                .captured
-                .single,
-            "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)})");
+      });
+
+      group('When doFullRender is called passing an anchor', () {
+        test('Then it should do full render by replacing a branch of the tree',
+            () {
+          renderer.doFullRender(tree, 'elementId');
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .single,
+              "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId')");
+        });
+      });
+
+      group('When doFullRender is called passing an anchor and append mode',
+          () {
+        test(
+            'Then it should do full render by appending an element to a branch of the tree',
+            () {
+          renderer.doFullRender(tree, 'elementId', TreeUpdateMode.append);
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .single,
+              "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId', 'append')");
+        });
+      });
+
+      group('When doPartialRender is called', () {
+        test('Then it should do partial render', () {
+          final tree = BeagleUIElement({
+            '_beagleComponent_': 'beagle:button',
+            'id': 'beagle1',
+            'text': 'Click me!'
+          });
+          renderer.doPartialRender(tree);
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .single,
+              "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)})");
+        });
+      });
+
+      group('When doPartialRender is called passing an anchor', () {
+        test(
+            'Then it should do partial render by replacing a branch of the tree',
+            () {
+          renderer.doPartialRender(tree, 'elementId');
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .single,
+              "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)}, 'elementId')");
+        });
+      });
+
+      group('When doPartialRender is called passing an anchor and prepend mode',
+          () {
+        test(
+            'Should do full partial by prepending an element to a branch of the tree',
+            () {
+          renderer.doPartialRender(tree, 'elementId', TreeUpdateMode.prepend);
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .single,
+              "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)}, 'elementId', 'prepend')");
+        });
       });
     });
 
-    group('When doPartialRender is called passing an anchor', () {
-      test('Then it should do partial render by replacing a branch of the tree',
-          () {
-        renderer.doPartialRender(tree, 'elementId');
-        expect(
-            verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
-                .captured
-                .single,
-            "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)}, 'elementId')");
+    group('doTemplateRender', () {
+      final beagleJSEngine = MockBeagleJSEngine();
+      final templatesContainerTree = BeagleUIElement({
+        '_beagleComponent_': 'beagle:container',
+        'id': 'templatesContainerId'
       });
-    });
+      final dataSource = [
+        [
+          DataContext('name', 'John'),
+          DataContext('sex', 'M'),
+          DataContext('address', {'street': '42 Avenue TT', 'number': '256'})
+        ],
+        [
+          DataContext('name', 'Alex'),
+          DataContext('sex', 'F'),
+          DataContext('address', {'street': 'St Monica St', 'number': '852'})
+        ]
+      ];
 
-    group('When doPartialRender is called passing an anchor and prepend mode',
-        () {
-      test(
-          'Should do full partial by prepending an element to a branch of the tree',
+      group(
+          'When doTemplateRender is called with only one template without case',
           () {
-        renderer.doPartialRender(tree, 'elementId', TreeUpdateMode.prepend);
-        expect(
-            verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
-                .captured
-                .single,
-            "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)}, 'elementId', 'prepend')");
+        test('Then it should render a template', () {
+          final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
+          templateRenderer.doFullRender(templatesContainerTree);
+
+          TemplateManager templateManager =
+              TemplateManager(templatesContainerTree, []);
+          templateRenderer.doTemplateRender(
+              templateManager, 'templatesContainerId', dataSource);
+
+          final arguments = [
+            jsonEncode(templateManager.toJson())
+                .replaceAll(RegExp(r'default_:'), 'default:')
+                .replaceAll(RegExp(r'case_:'), 'case:'),
+            "'templatesContainerId'",
+            jsonEncode(dataSource)
+          ];
+
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .last,
+              "global.beagle.getViewById('viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
+        });
+      });
+
+      group('When doTemplateRender is called with more than one template', () {
+        test('Then it should render a template', () {
+          final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
+          templateRenderer.doFullRender(templatesContainerTree);
+
+          final maleText = BeagleUIElement({
+            '_beagleComponent_': 'beagle:text',
+            'text':
+                "This is @{item.name} and HE lives at @{item.address.street}, @{item.address.number}"
+          });
+
+          final femaleText = BeagleUIElement({
+            '_beagleComponent_': 'beagle:text',
+            'text':
+                "This is @{item.name} and SHE lives at @{item.address.street}, @{item.address.number}"
+          });
+
+          TemplateManager templateManager =
+              TemplateManager(templatesContainerTree, [
+            TemplateManagerItem("@{eq(item.sex, 'M')}", maleText),
+            TemplateManagerItem("@{eq(item.sex, 'F')}", femaleText)
+          ]);
+          templateRenderer.doTemplateRender(
+              templateManager, 'templatesContainerId', dataSource);
+
+          final arguments = [
+            jsonEncode(templateManager.toJson())
+                .replaceAll(RegExp(r'default_:'), 'default:')
+                .replaceAll(RegExp(r'case_:'), 'case:'),
+            "'templatesContainerId'",
+            jsonEncode(dataSource)
+          ];
+
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .last,
+              "global.beagle.getViewById('viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
+        });
       });
     });
   });
