@@ -27,13 +27,13 @@ class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 
 void main() {
   group('Given a RendererJS object', () {
-    group('doFullRender and doPartialRender', () {
+    group('When doFullRender', () {
       final beagleJSEngine = MockBeagleJSEngine();
       final tree = BeagleUIElement(
           {'_beagleComponent_': 'beagle:button', 'text': 'Click me!'});
       final renderer = RendererJS(beagleJSEngine, 'viewId');
 
-      group('When doFullRender is called', () {
+      group('Is called', () {
         test('Then it should do full render', () {
           renderer.doFullRender(tree);
           expect(
@@ -44,7 +44,7 @@ void main() {
         });
       });
 
-      group('When doFullRender is called passing an anchor', () {
+      group('Is called passing an anchor', () {
         test('Then it should do full render by replacing a branch of the tree',
             () {
           renderer.doFullRender(tree, 'elementId');
@@ -56,8 +56,7 @@ void main() {
         });
       });
 
-      group('When doFullRender is called passing an anchor and append mode',
-          () {
+      group('Is called passing an anchor and append mode', () {
         test(
             'Then it should do full render by appending an element to a branch of the tree',
             () {
@@ -69,8 +68,15 @@ void main() {
               "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId', 'append')");
         });
       });
+    });
 
-      group('When doPartialRender is called', () {
+    group('When doPartialRender', () {
+      final beagleJSEngine = MockBeagleJSEngine();
+      final tree = BeagleUIElement(
+          {'_beagleComponent_': 'beagle:button', 'text': 'Click me!'});
+      final renderer = RendererJS(beagleJSEngine, 'viewId');
+
+      group('Is called', () {
         test('Then it should do partial render', () {
           final tree = BeagleUIElement({
             '_beagleComponent_': 'beagle:button',
@@ -86,7 +92,7 @@ void main() {
         });
       });
 
-      group('When doPartialRender is called passing an anchor', () {
+      group('Is called passing an anchor', () {
         test(
             'Then it should do partial render by replacing a branch of the tree',
             () {
@@ -99,8 +105,7 @@ void main() {
         });
       });
 
-      group('When doPartialRender is called passing an anchor and prepend mode',
-          () {
+      group('Is called passing an anchor and prepend mode', () {
         test(
             'Should do full partial by prepending an element to a branch of the tree',
             () {
@@ -114,7 +119,7 @@ void main() {
       });
     });
 
-    group('doTemplateRender', () {
+    group('When doTemplateRender', () {
       final beagleJSEngine = MockBeagleJSEngine();
       final templatesContainerTree = BeagleUIElement({
         '_beagleComponent_': 'beagle:container',
@@ -133,15 +138,20 @@ void main() {
         ]
       ];
 
-      group(
-          'When doTemplateRender is called with only one template without case',
-          () {
-        test('Then it should render a template', () {
+      group('Is called with only one template without case', () {
+        test(
+            'Then it should render using this as default template without templates',
+            () {
           final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
           templateRenderer.doFullRender(templatesContainerTree);
 
-          TemplateManager templateManager =
-              TemplateManager(templatesContainerTree, []);
+          final defaultText = BeagleUIElement({
+            '_beagleComponent_': 'beagle:text',
+            'text':
+                "This is @{item.name} which lives at @{item.address.street}, @{item.address.number}"
+          });
+
+          TemplateManager templateManager = TemplateManager(defaultText, []);
           templateRenderer.doTemplateRender(
               templateManager, 'templatesContainerId', dataSource);
 
@@ -161,10 +171,18 @@ void main() {
         });
       });
 
-      group('When doTemplateRender is called with more than one template', () {
-        test('Then it should render a template', () {
+      group('Is called with more than one template', () {
+        test(
+            'Then it should render a template using the templates that match the conditions',
+            () {
           final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
           templateRenderer.doFullRender(templatesContainerTree);
+
+          final defaultText = BeagleUIElement({
+            '_beagleComponent_': 'beagle:text',
+            'text':
+                "This is @{item.name} which lives at @{item.address.street}, @{item.address.number}"
+          });
 
           final maleText = BeagleUIElement({
             '_beagleComponent_': 'beagle:text',
@@ -178,8 +196,7 @@ void main() {
                 "This is @{item.name} and SHE lives at @{item.address.street}, @{item.address.number}"
           });
 
-          TemplateManager templateManager =
-              TemplateManager(templatesContainerTree, [
+          TemplateManager templateManager = TemplateManager(defaultText, [
             TemplateManagerItem("@{eq(item.sex, 'M')}", maleText),
             TemplateManagerItem("@{eq(item.sex, 'F')}", femaleText)
           ]);
