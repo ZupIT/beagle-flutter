@@ -28,10 +28,6 @@ dependencies:
     sdk: flutter
   webview_flutter: ^2.0.10
 
-dependency_overrides:
-  beagle:
-    path: ../beagle/
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
