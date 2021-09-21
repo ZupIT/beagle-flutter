@@ -158,7 +158,6 @@ ComponentBuilder beagleImageBuilder() {
         ImageContentMode.values,
         element.getAttributeValue('mode') ?? '',
       ),
-      style: element.getStyle(),
     );
   };
 }

@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class AppDesignSystem extends BeagleDesignSystem {
@@ -34,7 +35,20 @@ class AppDesignSystem extends BeagleDesignSystem {
 
   @override
   BeagleButtonStyle buttonStyle(String id) {
-    return null;
+    BeagleButtonStyle buttonStyle;
+    switch (id) {
+      case 'DesignSystem.Stylish.Button':
+        buttonStyle = BeagleButtonStyle(
+          androidButtonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
+            buttonTextStyle: TextStyle(color: HexColor("#6F6F6F")));
+        break;
+
+      default:
+        break;
+
+    }
+
+    return buttonStyle;
   }
 
   @override

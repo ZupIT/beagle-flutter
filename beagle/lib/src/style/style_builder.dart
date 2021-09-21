@@ -19,8 +19,6 @@ import 'package:beagle/src/style/style_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
-mixin YogaWidget {}
-
 class BeagleYogaFactory {
   Widget createYogaNode({
     BeagleStyle style,
@@ -40,9 +38,7 @@ class BeagleYogaFactory {
     final nodeProperties = mapToNodeProperties(style);
     final mappedChildren = children
         .map(
-          (child) => child is YogaWidget
-              ? child
-              : YogaNode(
+          (child) => YogaNode(
                   nodeProperties: mapToNodeProperties(BeagleStyle()),
                   child: child,
                 ),

@@ -22,6 +22,7 @@ export 'package:beagle/src/action/beagle_open_external_url.dart';
 export 'package:beagle/src/action/beagle_open_native_route.dart';
 
 export 'package:beagle/src/components/beagle_undefined_widget.dart';
+export 'package:beagle/src/components/flex_widget.dart';
 
 export 'package:beagle/src/default/empty/default_empty_design_system.dart';
 export 'package:beagle/src/default/empty/default_empty_logger.dart';

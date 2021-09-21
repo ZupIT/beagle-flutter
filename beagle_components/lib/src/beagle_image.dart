@@ -22,12 +22,12 @@ import 'package:flutter/widgets.dart';
 
 /// Defines an image widget that renders local or remote resource depending on
 /// the value passed to [path].
-class BeagleImage extends StatefulWidget with YogaWidget {
+class BeagleImage extends StatefulWidget {
   const BeagleImage({
     Key key,
     this.path,
     this.mode,
-    this.style,
+    // this.style,
   }) : super(key: key);
 
   /// Defines the location of the image resource.
@@ -35,9 +35,9 @@ class BeagleImage extends StatefulWidget with YogaWidget {
 
   /// Defines how the declared image will fit the view.
   final ImageContentMode mode;
-
-  /// Defines the style of this image. Only width and height are supported for now.
-  final BeagleStyle style;
+  //
+  // /// Defines the style of this image. Only width and height are supported for now.
+  // final BeagleStyle style;
 
   @override
   _BeagleImageState createState() => _BeagleImageState();
@@ -46,7 +46,6 @@ class BeagleImage extends StatefulWidget with YogaWidget {
 class _BeagleImageState extends State<BeagleImage> {
   Future<Uint8List> imageBytes;
   BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
-  BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
 
   @override
   void initState() {
@@ -62,9 +61,7 @@ class _BeagleImageState extends State<BeagleImage> {
     final image = isLocalImage()
         ? createImageFromAsset(widget.path)
         : createImageFromNetwork(widget.path);
-    // TODO when implement yoga to all beagle components, this YogaLayout should be replaced by a single YogaNode
-    return beagleYogaFactory
-        .createYogaLayout(style: widget.style, children: [image]);
+    return image;
   }
 
   Future<void> downloadImage() async {

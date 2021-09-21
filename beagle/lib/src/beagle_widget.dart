@@ -55,6 +55,7 @@ class _BeagleWidget extends State<BeagleWidget> {
   BeagleService service;
   final logger = beagleServiceLocator<BeagleLogger>();
   final environment = beagleServiceLocator<BeagleEnvironment>();
+  BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
 
   @override
   void initState() {
@@ -111,7 +112,7 @@ class _BeagleWidget extends State<BeagleWidget> {
       return BeagleUndefinedWidget(environment: environment);
     }
     try {
-      return builder(tree, widgetChildren, _view);
+      return createWidget(tree, builder(tree, widgetChildren, _view));
     } catch (error) {
       logger.error(
           'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');
@@ -120,6 +121,14 @@ class _BeagleWidget extends State<BeagleWidget> {
     }
   }
 
+  Widget createWidget(BeagleUIElement tree, Widget widget) {
+    if (tree.getStyle() != null) {
+        return beagleYogaFactory.createYogaLayout(style: tree.getStyle(), children: [widget]);
+    }
+
+    return widget;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return widgetState ?? const SizedBox.shrink();
