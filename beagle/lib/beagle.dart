@@ -22,7 +22,6 @@ export 'package:beagle/src/action/beagle_open_external_url.dart';
 export 'package:beagle/src/action/beagle_open_native_route.dart';
 
 export 'package:beagle/src/components/beagle_undefined_widget.dart';
-export 'package:beagle/src/components/flex_widget.dart';
 
 export 'package:beagle/src/default/empty/default_empty_design_system.dart';
 export 'package:beagle/src/default/empty/default_empty_logger.dart';
@@ -71,6 +70,7 @@ export 'package:beagle/src/utils/enum.dart';
 
 export 'package:beagle/src/beagle_sdk.dart';
 export 'package:beagle/src/beagle_widget.dart';
+export 'package:beagle/src/beagle_flex_widget.dart';
 
 export 'package:beagle/src/service_locator.dart' show beagleServiceLocator;
 export 'package:beagle/src/analytics/analytics_config.dart';

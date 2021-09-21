@@ -33,8 +33,6 @@ class BeagleScreen extends StatelessWidget {
   final BeagleNavigationBar navigationBar;
   final Widget child;
 
-  BeagleYogaFactory get _beagleYogaFactory => beagleServiceLocator();
-
   BeagleNavigationBarStyle get _navigationBarStyle =>
       beagleServiceLocator<BeagleDesignSystem>()
           ?.navigationBarStyle(navigationBar.styleId);
@@ -62,7 +60,7 @@ class BeagleScreen extends StatelessWidget {
           )
         : null;
 
-    final yogaChild = _beagleYogaFactory.createYogaLayout(
+    final yogaChild = BeagleFlexWidget(
       style: BeagleStyle(flex: BeagleFlex(grow: 1.0)),
       children: [child],
     );
