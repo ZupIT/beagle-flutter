@@ -82,7 +82,7 @@ function createResponse({ status, body, headers }: HttpClientResponse): Response
     redirected: status >= 300 && status < 400,
     status,
     statusText: '',
-    trailer: Promise.resolve(responseHeaders),
+    // trailer: Promise.resolve(responseHeaders),
     type: 'default',
     url: '',
   }

@@ -19,7 +19,6 @@ import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/beagle_service_js.dart';
-import 'package:beagle/src/utils/network_strategy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -31,7 +30,6 @@ void main() {
   const useBeagleHeaders = true;
   final actions = {'beagle:alert': ({action, view, element, context}) {}};
   final operations = {'operation': ([paramA, paramB]) {}};
-  const strategy = BeagleNetworkStrategy.networkOnly;
   final navigationControllers = {
     'general': NavigationController(
         isDefault: true, loadingComponent: 'custom:loading'),
@@ -48,7 +46,6 @@ void main() {
       useBeagleHeaders: useBeagleHeaders,
       actions: actions,
       operations: operations,
-      strategy: strategy,
       navigationControllers: navigationControllers,
     );
 
@@ -67,7 +64,6 @@ void main() {
           'actionKeys': actions.keys.toList(),
           'customOperations': operations.keys.toList(),
           'useBeagleHeaders': useBeagleHeaders,
-          'strategy': NetworkStrategyUtils.getJsStrategyName(strategy),
           'navigationControllers': {
             'general': NavigationController(
                     isDefault: true, loadingComponent: 'custom:loading')

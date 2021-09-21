@@ -22,7 +22,6 @@ void main() {
     final networkOptions = BeagleNetworkOptions(
       method: BeagleHttpMethod.get,
       headers: {'content-type': 'text/javascript; charset=UTF-8'},
-      strategy: BeagleNetworkStrategy.beagleCacheOnly,
     );
 
     group('When toJsonEncode is called by passing null as parameter', () {

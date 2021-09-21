@@ -55,7 +55,7 @@ class BeagleExample extends StatelessWidget {
           title: const Text('Beagle example'),
         ),
         body: BeagleWidget(
-          screenRequest: BeagleScreenRequest('components'),
+          route: RemoteView('components'),
         ),
       ),
     );

@@ -15,15 +15,8 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
 
-class NetworkStrategyUtils {
-  // transforms the enum NetworkStrategy into the string expected by beagle web (js)
-  static String getJsStrategyName(BeagleNetworkStrategy strategy) {
-    if (strategy == null) {
-      return null;
-    }
-
-    return EnumUtils.getEnumValueNameInKebabCase(strategy);
-  }
+abstract class ViewClient {
+  void preFetch(RemoteView route);
+  Future<BeagleUIElement> fetch(RemoteView route);
 }

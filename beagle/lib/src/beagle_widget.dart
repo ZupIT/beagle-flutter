@@ -15,7 +15,7 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/utils/build_context_utils.dart';
@@ -29,20 +29,9 @@ typedef OnCreateViewListener = void Function(BeagleView view);
 /// TODO: THE UNIT TEST WILL BE WRITE AFTER RESOLVE DEPENDENCY INJECTION
 /// A widget that displays content of beagle.
 class BeagleWidget extends StatefulWidget {
-  const BeagleWidget({
-    Key key,
-    this.onCreateView,
-    this.screenJson,
-    this.screenRequest,
-  }) : super(key: key);
+  BeagleWidget({Key key, this.parentNavigator, this.onCreateView}) : super(key: key);
 
-  /// that represents a local screen to be shown.
-  final String screenJson;
-
-  /// provides the url, method, headers and body to the request.
-  final BeagleScreenRequest screenRequest;
-
-  /// get a current BeagleView.
+  final BeagleNavigator parentNavigator; // optional
   final OnCreateViewListener onCreateView;
 
   @override
@@ -50,8 +39,8 @@ class BeagleWidget extends StatefulWidget {
 }
 
 class _BeagleWidget extends State<BeagleWidget> {
-  BeagleView _view;
   Widget widgetState;
+  BeagleView view;
 
   BeagleService service;
   final logger = beagleServiceLocator<BeagleLogger>();
@@ -65,17 +54,15 @@ class _BeagleWidget extends State<BeagleWidget> {
 
   @override
   void dispose() {
-    _view.destroy();
+    view.destroy();
     super.dispose();
   }
 
   Future<void> _startBeagleView() async {
     await beagleServiceLocator.allReady();
     service = beagleServiceLocator<BeagleService>();
-    _view = beagleServiceLocator<BeagleViewJS>(
-      param1: widget.screenRequest,
-    )
-      ..subscribe((tree) {
+    view = beagleServiceLocator<BeagleViewJS>(param1: widget.parentNavigator)
+      ..onChange((tree) {
         final widgetLoaded = _buildViewFromTree(tree);
         setState(() {
           widgetState = widgetLoaded;
@@ -94,14 +81,7 @@ class _BeagleWidget extends State<BeagleWidget> {
           context: context.findBuildContextForWidgetKey(element.getId()),
         );
       });
-
-    if (widget.screenRequest != null) {
-      await _view.getNavigator().pushView(RemoteView(widget.screenRequest.url));
-    } else {
-      await _view
-          .getNavigator()
-          .pushView(LocalView(BeagleUIElement(jsonDecode(widget.screenJson))));
-    }
+    if (widget.onCreateView != null) widget.onCreateView(view);
   }
 
   Widget _buildViewFromTree(BeagleUIElement tree) {
@@ -112,7 +92,7 @@ class _BeagleWidget extends State<BeagleWidget> {
       return BeagleUndefinedWidget(environment: environment);
     }
     try {
-      return builder(tree, widgetChildren, _view);
+      return builder(tree, widgetChildren, view);
     } catch (error) {
       logger.error(
           'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');

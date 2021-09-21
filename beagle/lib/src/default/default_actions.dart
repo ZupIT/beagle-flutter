@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
+import 'dart:developer';
+
 import 'package:beagle/beagle.dart';
+
+BeagleRoute _routeFromJson(Map<String, dynamic> json) {
+  return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
+}
 
 final Map<String, ActionHandler> defaultActions = {
   'beagle:alert': ({action, view, element, context}) {
@@ -25,11 +31,39 @@ final Map<String, ActionHandler> defaultActions = {
       title: action.getAttributeValue('title', 'Alert'),
     );
   },
+  // Native navigation
   'beagle:openNativeRoute': ({action, view, element, context}) {
     BeagleOpenNativeRoute()
         .navigate(context, action.getAttributeValue('route'));
   },
   'beagle:openExternalURL': ({action, view, element, context}) {
     BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
-  }
+  },
+  // Beagle Navigation
+  'beagle:pushView': ({action, view, element, context}) {
+    log("PUSH VIEW ACTION");
+    final route = _routeFromJson(action.getAttributeValue("route"));
+    view.getNavigator().pushView(route, context);
+  },
+  'beagle:popView': ({action, view, element, context}) {
+    view.getNavigator().popView(context);
+  },
+  'beagle:popToView': ({action, view, element, context}) {
+    view.getNavigator().popToView(action.getAttributeValue("route"), context);
+  },
+  'beagle:pushStack': ({action, view, element, context}) {
+    final route = _routeFromJson(action.getAttributeValue("route"));
+    view.getNavigator().pushStack(route, context);
+  },
+  'beagle:popStack': ({action, view, element, context}) {
+    view.getNavigator().popStack(context);
+  },
+  'beagle:resetStack': ({action, view, element, context}) {
+    final route = _routeFromJson(action.getAttributeValue("route"));
+    view.getNavigator().resetStack(route, context);
+  },
+  'beagle:resetApplication': ({action, view, element, context}) {
+    final route = _routeFromJson(action.getAttributeValue("route"));
+    view.getNavigator().resetApplication(route, context);
+  },
 };

@@ -17,40 +17,21 @@
 import 'package:beagle/beagle.dart';
 
 import 'beagle_js_engine.dart';
-import 'beagle_navigator_js.dart';
 import 'renderer_js.dart';
 
-/// Creates a new Beagle View. There are two optional parameters: the networkOptions and the
-/// initialControllerId. The first one sets network options for every view requested by this
-/// Beagle View (headers, http method and cache strategy). If nothing is specified, the default
-/// network options are used (beagle headers, get and beagle-with-fallback-to-cache). The
-/// initialControllerId is the id of the navigation controller for the first navigation stack.
-/// If not specified, the default navigation controller is used.
+/// Creates a new Beagle View. If this view is created by a navigator, it must be specified in the constructor.
 class BeagleViewJS implements BeagleView {
-  BeagleViewJS(
-    this._beagleJSEngine, {
-    BeagleNetworkOptions networkOptions,
-    String initialControllerId,
-  }) {
-    _id = _beagleJSEngine.createBeagleView(
-      networkOptions: networkOptions,
-      initialControllerId: initialControllerId,
-    );
+  BeagleViewJS(this._beagleJSEngine, [this.parentNavigator]) {
+    _id = _beagleJSEngine.createBeagleView();
     BeagleViewJS.views[_id] = this;
-    _navigator = BeagleNavigatorJS(_beagleJSEngine, _id);
     _renderer = RendererJS(_beagleJSEngine, _id);
   }
 
   String _id;
-  BeagleNavigatorJS _navigator;
+  BeagleNavigator parentNavigator;
   Renderer _renderer;
   static Map<String, BeagleViewJS> views = {};
   final BeagleJSEngine _beagleJSEngine;
-
-  @override
-  void Function() addErrorListener(ViewErrorListener listener) {
-    return _beagleJSEngine.onViewUpdateError(_id, listener);
-  }
 
   @override
   void destroy() {
@@ -60,7 +41,7 @@ class BeagleViewJS implements BeagleView {
 
   @override
   BeagleNavigator getNavigator() {
-    return _navigator;
+    return parentNavigator;
   }
 
   @override
@@ -77,7 +58,7 @@ class BeagleViewJS implements BeagleView {
   }
 
   @override
-  void Function() subscribe(ViewUpdateListener listener) {
+  void Function() onChange(ViewChangeListener listener) {
     return _beagleJSEngine.onViewUpdate(_id, listener);
   }
 

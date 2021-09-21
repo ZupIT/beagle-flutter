@@ -31,12 +31,11 @@ class BeagleSdk {
 
     /// Interface that provides client to beagle make the requests.
     HttpClient httpClient,
+    ViewClient viewClient,
     Map<String, ComponentBuilder> components,
-    Storage storage,
-    bool useBeagleHeaders,
     Map<String, ActionHandler> actions,
-    BeagleNetworkStrategy strategy,
-    Map<String, NavigationController> navigationControllers,
+    NavigationController defaultNavigationController,
+    Map<String, NavigationController> navigationControllers = const {},
 
     /// [BeagleDesignSystem] interface that provides design system to beagle components.
     BeagleDesignSystem designSystem,
@@ -51,19 +50,18 @@ class BeagleSdk {
     Yoga.init();
 
     baseUrl = baseUrl ?? "";
+    final urlBuilder = UrlBuilder(baseUrl);
     httpClient = httpClient ?? const DefaultHttpClient();
+    logger = logger ?? DefaultEmptyLogger();
+    viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: urlBuilder);
     environment = environment ?? BeagleEnvironment.debug;
-    useBeagleHeaders = useBeagleHeaders ?? true;
-    storage = storage ?? DefaultStorage();
     designSystem = designSystem ?? DefaultEmptyDesignSystem();
+    defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
     imageDownloader =
         imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
-    strategy = strategy ?? BeagleNetworkStrategy.beagleWithFallbackToCache;
-    logger = logger ?? DefaultEmptyLogger();
     operations = operations ?? {};
 
-    actions =
-        actions == null ? defaultActions : {...defaultActions, ...actions};
+    actions = actions == null ? defaultActions : {...defaultActions, ...actions};
 
     Map<String, ComponentBuilder> lowercaseComponents =
         components.map((key, value) => MapEntry(key.toLowerCase(), value));
@@ -74,15 +72,14 @@ class BeagleSdk {
     setupServiceLocator(
       baseUrl: baseUrl,
       httpClient: httpClient,
+      viewClient: viewClient,
       environment: environment,
       components: lowercaseComponents,
-      storage: storage,
-      useBeagleHeaders: useBeagleHeaders,
       actions: lowercaseActions,
+      defaultNavigationController: defaultNavigationController,
       navigationControllers: navigationControllers,
       designSystem: designSystem,
       imageDownloader: imageDownloader,
-      strategy: strategy,
       logger: logger,
       operations: operations,
     );
