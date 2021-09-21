@@ -17,22 +17,22 @@
 import 'package:beagle/beagle.dart';
 
 class TemplateManagerItem {
-  String case_;
+  String condition;
   BeagleUIElement view;
 
-  TemplateManagerItem(this.case_, this.view);
+  TemplateManagerItem(this.condition, this.view);
 
-  Map<String, dynamic> toJson() => {'case': case_, 'view': view.properties};
+  Map<String, dynamic> toJson() => {'case': condition, 'view': view.properties};
 }
 
 class TemplateManager {
-  BeagleUIElement default_;
+  BeagleUIElement defaultTemplate;
   List<TemplateManagerItem> templates;
 
-  TemplateManager(this.default_, this.templates);
+  TemplateManager(this.defaultTemplate, this.templates);
 
   Map<String, dynamic> toJson() => {
-        'default': default_.properties,
+        'default': defaultTemplate.properties,
         'templates': templates.map((t) => t.toJson()).toList(),
       };
 }
