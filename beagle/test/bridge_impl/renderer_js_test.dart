@@ -205,8 +205,8 @@ void main() {
 
           final arguments = [
             jsonEncode(templateManager.toJson())
-                .replaceAll(RegExp(r'default_:'), 'default:')
-                .replaceAll(RegExp(r'case_:'), 'case:'),
+                .replaceAll(RegExp(r'defaultTemplate:'), 'default:')
+                .replaceAll(RegExp(r'condition:'), 'case:'),
             "'templatesContainerId'",
             jsonEncode(dataSource)
           ];
