@@ -1,3 +1,5 @@
+// ignore_for_file: inference_failure_on_generic_invocation
+
 /*
  * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
@@ -261,11 +263,13 @@ void main() {
         });
 
         mocktail
+            .when(jsRuntimeMock.onMessage(
+                mocktail.any<String>(), mocktail.any<void Function(dynamic)>()))
+            .thenReturn(true);
+
+        mocktail
             .verify(jsRuntimeMock.onMessage(
-                'httpClient.request',
-                (dynamic fn) => {
-                      beagleJSEngine.notifyActionListener(mocktail.captureAny())
-                    }))
+                'httpClient.request', mocktail.captureAny()))
             .captured
             .single(httpMessage);
 
