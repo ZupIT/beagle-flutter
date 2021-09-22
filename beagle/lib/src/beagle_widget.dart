@@ -123,7 +123,7 @@ class _BeagleWidget extends State<BeagleWidget> {
   }
 
   Widget createWidget(BeagleUIElement tree, Widget widget) {
-    if (widget is RootAsYogaWidget) {
+    if (widget is RootAsFlexWidget) {
       return widget;
     } else {
       return BeagleStyledWidget(child: widget, beagleStyle: tree.getStyle());
