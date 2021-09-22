@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 /// This component defines a submit handler for a form request.
-class BeagleSimpleForm extends StatefulWidget with YogaWidget {
+class BeagleSimpleForm extends StatefulWidget with RootAsFlexWidget {
   const BeagleSimpleForm({
     Key key,
     this.onSubmit,
@@ -47,12 +47,10 @@ class BeagleSimpleForm extends StatefulWidget with YogaWidget {
 }
 
 class BeagleSimpleFormState extends State<BeagleSimpleForm> {
-  BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
   BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
   @override
   Widget build(BuildContext context) {
-    return beagleYogaFactory.createYogaLayout(
-      style: BeagleStyle(),
+    return BeagleFlexWidget(
       children: widget.children,
     );
   }
