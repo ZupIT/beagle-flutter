@@ -35,6 +35,7 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:screenComponent': beagleScreenComponentBuilder(),
   'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
+  'beagle:simpleForm': beagleSimpleFormBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -213,5 +214,15 @@ ComponentBuilder beaglePullToRefreshBuilder() {
         isRefreshing: element.getAttributeValue('isRefreshing'),
         color: element.getAttributeValue('color'),
         child: children.isEmpty ? null : children[0]);
+  };
+}
+
+ComponentBuilder beagleSimpleFormBuilder() {
+  return (element, children, view) {
+    return BeagleSimpleForm(
+        key: element.getKey(),
+        onSubmit: element.getAttributeValue('onSubmit'),
+        onValidationError: element.getAttributeValue('onValidationError'),
+        children: children);
   };
 }

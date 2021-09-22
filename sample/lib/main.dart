@@ -45,7 +45,7 @@ void main() {
     environment:
         kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
     components: {...defaultComponents, ...myCustomComponents},
-    actions: myCustomActions,
+    actions: {...myCustomActions, ...defaultActions},
     navigationControllers: {
       'general': NavigationController(
         isDefault: true,

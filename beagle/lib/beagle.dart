@@ -25,7 +25,6 @@ export 'package:beagle/src/components/beagle_undefined_widget.dart';
 
 export 'package:beagle/src/default/empty/default_empty_design_system.dart';
 export 'package:beagle/src/default/empty/default_empty_logger.dart';
-export 'package:beagle/src/default/default_actions.dart';
 export 'package:beagle/src/default/default_http_client.dart';
 export 'package:beagle/src/default/default_image_downloader.dart';
 export 'package:beagle/src/default/default_logger.dart';
