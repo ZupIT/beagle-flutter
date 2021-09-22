@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/beagle_styled_widget.dart';
 import 'package:flutter/widgets.dart';
 
 import 'bridge_impl/beagle_view_js.dart';
@@ -122,10 +123,11 @@ class _BeagleWidget extends State<BeagleWidget> {
   }
 
   Widget createWidget(BeagleUIElement tree, Widget widget) {
-    if (widget is BeagleFlexWidget && widget.isSelfStyled)
+    if (widget is RootAsYogaWidget) {
       return widget;
-    else
+    } else {
       return BeagleStyledWidget(child: widget, beagleStyle: tree.getStyle());
+    }
   }
   
   @override

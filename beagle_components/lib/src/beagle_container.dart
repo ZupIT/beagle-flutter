@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'after_layout.dart';
 
 /// A simple container that can execute an action as soon as it gets created
-class BeagleContainer extends StatefulWidget {
+class BeagleContainer extends StatefulWidget with RootAsYogaWidget {
   const BeagleContainer({
     Key key,
     this.onInit,
@@ -54,7 +54,6 @@ class _BeagleContainer extends State<BeagleContainer>
     return BeagleFlexWidget(
       style: widget.style,
       children: widget.children,
-      isSelfStyled: true,
     );
   }
 }

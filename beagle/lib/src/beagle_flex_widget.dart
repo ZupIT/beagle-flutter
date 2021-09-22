@@ -19,9 +19,9 @@ import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
 import 'beagle_styled_widget.dart';
-
+mixin RootAsYogaWidget {}
 class BeagleFlexWidget extends YogaLayout {
-  BeagleFlexWidget(this.isSelfStyled = false, {BeagleStyle style, List<Widget> children}): super(nodeProperties:
+  BeagleFlexWidget({BeagleStyle style, List<Widget> children}): super(nodeProperties:
   mapToNodeProperties(style), children: children
       .map(
         (child) {
@@ -38,6 +38,4 @@ class BeagleFlexWidget extends YogaLayout {
           }
         },
   ).toList());
-  
-  final bool isSelfStyled;
 }
