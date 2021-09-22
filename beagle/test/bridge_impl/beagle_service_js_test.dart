@@ -21,7 +21,7 @@ import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/beagle_service_js.dart';
 import 'package:beagle/src/utils/network_strategy.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 
@@ -56,7 +56,7 @@ void main() {
       test('Then should start BeagleJSEngine', () async {
         await beagleService.start();
 
-        verify(beagleJSEngineMock.start()).called(1);
+        verify(beagleJSEngineMock.start).called(1);
       });
 
       test('Then should start beagle javascript core', () async {
@@ -75,17 +75,15 @@ void main() {
           },
         };
 
-        verify(beagleJSEngineMock.evaluateJavascriptCode(
-                'global.beagle.start(${json.encode(expectedParams)})'))
-            .called(1);
+        verify(() => beagleJSEngineMock.evaluateJavascriptCode(
+            'global.beagle.start(${json.encode(expectedParams)})')).called(1);
       });
 
       test('Then should register http request listener', () async {
         await beagleService.start();
 
-        verify(beagleJSEngineMock
-                .onHttpRequest(any as void Function(String, BeagleRequest)))
-            .called(1);
+        verify(() => beagleJSEngineMock
+            .onHttpRequest(any(named: 'listener', that: isNotNull))).called(1);
       });
     });
   });

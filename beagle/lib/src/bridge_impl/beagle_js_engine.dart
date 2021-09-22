@@ -186,7 +186,6 @@ class BeagleJSEngine {
   @visibleForTesting
   void notifyActionListener(dynamic actionMessage) {
     final viewId = actionMessage['viewId'];
-
     if (!_hasActionListenerForView(viewId)) {
       return;
     }
@@ -195,10 +194,12 @@ class BeagleJSEngine {
         BeagleAction(_deserializeJsFunctions(actionMessage['action']));
 
     final view = BeagleViewJS.views[viewId];
-    final element = BeagleUIElement(actionMessage['element']);
+    final element = actionMessage['element'] != null
+        ? BeagleUIElement(actionMessage['element'])
+        : null;
 
     for (final listener in _viewActionListenerMap[viewId]!) {
-      listener(action: action, view: view!, element: element);
+      listener(action: action, view: view, element: element);
     }
   }
 
@@ -346,7 +347,7 @@ class BeagleJSEngine {
       params.add(initialControllerId);
     }
     final script = 'global.beagle.createBeagleView(${params.join(', ')})';
-    final id = _jsRuntime.evaluate(script)!.stringResult;
+    final id = _jsRuntime.evaluate(script)?.stringResult ?? '';
 
     return id;
   }
@@ -361,30 +362,33 @@ class BeagleJSEngine {
     _operationListener = listener;
   }
 
-  RemoveListener handleListenerRemoval(
-      String viewId, Map<String, dynamic> map, dynamic listener) {
-    map[viewId] = _viewUpdateListenerMap[viewId] ?? [];
+  RemoveListener handleListenerRemoval<T>(
+      String viewId, Map<String, List<T>> map, T listener) {
+    map[viewId] = map[viewId] ?? [];
     map[viewId]?.add(listener);
     return () {
       map[viewId]?.remove(listener);
     };
   }
 
-  // ignore: use_setters_to_change_properties
   RemoveListener onAction(String viewId, ActionListener listener) {
-    return handleListenerRemoval(viewId, _viewActionListenerMap, listener);
+    return handleListenerRemoval<ActionListener>(
+        viewId, _viewActionListenerMap, listener);
   }
 
   RemoveListener onViewUpdate(String viewId, ViewUpdateListener listener) {
-    return handleListenerRemoval(viewId, _viewUpdateListenerMap, listener);
+    return handleListenerRemoval<ViewUpdateListener>(
+        viewId, _viewUpdateListenerMap, listener);
   }
 
   RemoveListener onViewUpdateError(String viewId, ViewErrorListener listener) {
-    return handleListenerRemoval(viewId, _viewErrorListenerMap, listener);
+    return handleListenerRemoval<ViewErrorListener>(
+        viewId, _viewErrorListenerMap, listener);
   }
 
   RemoveListener onNavigate(String viewId, NavigationListener listener) {
-    return handleListenerRemoval(viewId, _navigationListenerMap, listener);
+    return handleListenerRemoval<NavigationListener>(
+        viewId, _navigationListenerMap, listener);
   }
 
   void removeViewListeners(String viewId) {

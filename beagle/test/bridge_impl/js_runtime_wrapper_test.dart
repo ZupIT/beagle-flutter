@@ -17,7 +17,7 @@
 import 'package:beagle/src/bridge_impl/js_runtime_wrapper.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class JavascriptRuntimeMock extends Mock implements JavascriptRuntime {}
 
@@ -35,7 +35,7 @@ void main() {
         const jsCode = 'some js code';
         jsRuntimeWrapper.evaluate(jsCode);
 
-        verify(jsRuntimeMock.evaluate(jsCode)).called(1);
+        verify(() => jsRuntimeMock.evaluate(jsCode)).called(1);
       });
     });
 
@@ -46,7 +46,7 @@ void main() {
         const jsCode = 'some js code';
         await jsRuntimeWrapper.evaluateAsync(jsCode);
 
-        verify(jsRuntimeMock.evaluateAsync(jsCode)).called(1);
+        verify(() => jsRuntimeMock.evaluateAsync(jsCode)).called(1);
       });
     });
 

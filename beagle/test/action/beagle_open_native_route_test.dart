@@ -17,7 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:flutter/src/widgets/navigator.dart' as flutter;
 
 class ContextMock extends Mock implements BuildContext {}
@@ -58,7 +58,9 @@ void main() {
       testWidgets('Then it should push a route', (WidgetTester tester) async {
         await _buildPage(tester);
         await _navigate(tester);
-        verify(mockObserver.didPush(any as flutter.Route<dynamic>, any));
+        verify(() => mockObserver.didPush(
+            any<flutter.Route<dynamic>>(named: 'route', that: isNotNull),
+            any<flutter.Route<dynamic>>(named: 'previousRoute')));
       });
     });
   });

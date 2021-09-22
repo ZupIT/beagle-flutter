@@ -17,7 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 final List<MethodCall> log = <MethodCall>[];
 MethodChannel channel = const MethodChannel('plugins.flutter.io/url_launcher');

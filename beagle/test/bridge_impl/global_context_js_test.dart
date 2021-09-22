@@ -20,7 +20,7 @@ import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/global_context_js.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 
@@ -45,8 +45,8 @@ void main() {
         };
         GlobalContextJS(beagleJSEngineMock).set(value);
         expect(
-            verify(beagleJSEngineMock
-                    .evaluateJavascriptCode(captureAny as String))
+            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
+                    captureAny<String>(named: 'code', that: isNotNull)))
                 .captured
                 .single,
             'global.beagle.getService().globalContext.set(${jsonEncode(value)})');
@@ -57,8 +57,8 @@ void main() {
       test('Then it should set value in global context at specific path', () {
         GlobalContextJS(beagleJSEngineMock).set('test', 'order.cart.name');
         expect(
-            verify(beagleJSEngineMock
-                    .evaluateJavascriptCode(captureAny as String))
+            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
+                    captureAny<String>(named: 'code', that: isNotNull)))
                 .captured
                 .single,
             "global.beagle.getService().globalContext.set(\"test\", 'order.cart.name')");
@@ -71,8 +71,8 @@ void main() {
         final user = User('Fulano', 30);
         expect(() => GlobalContextJS(beagleJSEngineMock).set(user, 'user'),
             throwsA(isInstanceOf<GlobalContextSerializationError>()));
-        verifyNever(
-            beagleJSEngineMock.evaluateJavascriptCode(captureAny as String));
+        verifyNever(() => beagleJSEngineMock.evaluateJavascriptCode(
+            captureAny<String>(named: 'code', that: isNotNull)));
       });
     });
 
@@ -94,7 +94,7 @@ void main() {
             }
           }
         };
-        when(beagleJSEngineMock.evaluateJavascriptCode(
+        when(() => beagleJSEngineMock.evaluateJavascriptCode(
                 'global.beagle.getService().globalContext.get()'))
             .thenReturn(JsEvalResult(value.toString(), value));
         final result = GlobalContextJS(beagleJSEngineMock).get();
@@ -105,7 +105,7 @@ void main() {
     group('When I call get method for a specific path', () {
       test('Then it should get value in global context at specific path', () {
         const value = 'Flutter test';
-        when(beagleJSEngineMock.evaluateJavascriptCode(
+        when(() => beagleJSEngineMock.evaluateJavascriptCode(
                 "global.beagle.getService().globalContext.get('order.cart.name')"))
             .thenReturn(JsEvalResult(value, value));
         final result =
@@ -119,8 +119,8 @@ void main() {
         clearInteractions(beagleJSEngineMock);
         GlobalContextJS(beagleJSEngineMock).clear();
         expect(
-            verify(beagleJSEngineMock
-                    .evaluateJavascriptCode(captureAny as String))
+            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
+                    captureAny<String>(named: 'code', that: isNotNull)))
                 .captured
                 .single,
             'global.beagle.getService().globalContext.clear()');
@@ -131,8 +131,8 @@ void main() {
       test('Then it should clear global context at specific path', () {
         GlobalContextJS(beagleJSEngineMock).clear('order.cart.name');
         expect(
-            verify(beagleJSEngineMock
-                    .evaluateJavascriptCode(captureAny as String))
+            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
+                    captureAny<String>(named: 'code', that: isNotNull)))
                 .captured
                 .single,
             "global.beagle.getService().globalContext.clear('order.cart.name')");

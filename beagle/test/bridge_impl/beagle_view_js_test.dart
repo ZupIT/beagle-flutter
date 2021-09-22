@@ -20,7 +20,7 @@ import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class BeagleJSEngineMock extends Mock implements BeagleJSEngine {}
 
@@ -29,9 +29,8 @@ class BuildContextMock extends Mock implements BuildContext {}
 void main() {
   const createdViewId = 'viewId';
   final jsEngineMock = BeagleJSEngineMock();
-  when(jsEngineMock.createBeagleView(
-          networkOptions: null as BeagleNetworkOptions))
-      .thenReturn(createdViewId);
+  when(() => jsEngineMock.createBeagleView(
+      networkOptions: null as BeagleNetworkOptions)).thenReturn(createdViewId);
 
   setUp(() {
     reset(jsEngineMock);
@@ -58,7 +57,7 @@ void main() {
           () {
         beagleView.destroy();
 
-        verify(jsEngineMock.removeViewListeners(createdViewId));
+        verify(() => jsEngineMock.removeViewListeners(createdViewId));
       });
     });
 
@@ -70,7 +69,7 @@ void main() {
         };
 
         when(
-          jsEngineMock.evaluateJavascriptCode(
+          () => jsEngineMock.evaluateJavascriptCode(
               "global.beagle.getViewById('$createdViewId').getTree()"),
         ).thenReturn(
           JsEvalResult(
