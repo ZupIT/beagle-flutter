@@ -53,24 +53,24 @@ ComponentBuilder beagleErrorBuilder() {
 
 ComponentBuilder beagleTextBuilder() {
   return (element, _, __) => BeagleText(
-        key: element.getKey(),
-        text: element.getAttributeValue('text'),
-        textColor: element.getAttributeValue('textColor'),
-        styleId: element.getAttributeValue('styleId'),
-        alignment: EnumUtils.fromString(
-          TextAlignment.values,
-          element.getAttributeValue('alignment') ?? '',
-        ),
-      );
+    key: element.getKey(),
+    text: element.getAttributeValue('text'),
+    textColor: element.getAttributeValue('textColor'),
+    styleId: element.getAttributeValue('styleId'),
+    alignment: EnumUtils.fromString(
+      TextAlignment.values,
+      element.getAttributeValue('alignment') ?? '',
+    ),
+  );
 }
 
 ComponentBuilder beagleContainerBuilder() {
   return (element, children, _) => BeagleContainer(
-        key: element.getKey(),
-        onInit: element.getAttributeValue('onInit'),
-        style: element.getStyle(),
-        children: children,
-      );
+    key: element.getKey(),
+    onInit: element.getAttributeValue('onInit'),
+    style: element.getStyle(),
+    children: children,
+  );
 }
 
 ComponentBuilder beagleScrollViewBuilder() {

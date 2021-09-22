@@ -54,6 +54,7 @@ class _BeagleContainer extends State<BeagleContainer>
     return BeagleFlexWidget(
       style: widget.style,
       children: widget.children,
+      isSelfStyled: true,
     );
   }
 }

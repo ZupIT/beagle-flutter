@@ -18,14 +18,26 @@ import 'package:beagle/src/style/style_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
+import 'beagle_styled_widget.dart';
+
 class BeagleFlexWidget extends YogaLayout {
-  BeagleFlexWidget({BeagleStyle style, List<Widget> children}) : super (nodeProperties:
+  BeagleFlexWidget(this.isSelfStyled = false, {BeagleStyle style, List<Widget> children}): super(nodeProperties:
   mapToNodeProperties(style), children: children
       .map(
-        (child) => YogaNode(
-      nodeProperties: mapToNodeProperties(BeagleStyle()),
-      child: child,
-    ),
-  )
-      .toList());
+        (child) {
+          if(child is BeagleStyledWidget) {
+            return YogaNode(
+              nodeProperties: mapToNodeProperties(child.metaData),
+              child: child,
+            );
+          } else {
+            return YogaNode(
+              nodeProperties: mapToNodeProperties(BeagleStyle()),
+              child: child,
+            );
+          }
+        },
+  ).toList());
+  
+  final bool isSelfStyled;
 }
