@@ -20,6 +20,7 @@ import get from 'lodash/get'
 export interface JsBridgeBeagleView extends BeagleView {
   id: string,
   executeFunction: (functionId: string, argumentsMap: Record<string, any>) => void,
+  getTreeAsJson: () => string,
 }
 
 const map: Record<string, JsBridgeBeagleView> = {}
@@ -71,6 +72,8 @@ export function createBeagleView(service: BeagleService) {
     }
     fn(argumentsMap)
   }
+
+  view.getTreeAsJson = () => JSON.stringify(view.getTree())
   
   map[view.id] = view
   return view.id

@@ -14,98 +14,81 @@
  * limitations under the License.
  */
 
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
 
-typedef OnCreateViewListener = void Function(BeagleView view);
-
-/// TODO: THE UNIT TEST WILL BE WRITE AFTER RESOLVE DEPENDENCY INJECTION
-/// A widget that displays content of beagle.
+// TODO: THE UNIT TEST WILL BE WRITE AFTER RESOLVE DEPENDENCY INJECTION
+/// A widget that displays content of Beagle. Attention: This component assumes the dependency BeagleService is ready to
+/// use. To make sure it's ready, call `await beagleServiceLocator.allReady()`.
 class BeagleWidget extends StatefulWidget {
-  BeagleWidget({Key key, this.parentNavigator, this.onCreateView}) : super(key: key) {
-    log("BEAGLE WIDGET: CONSTRUCTOR. Key: $key");
-  }
+  BeagleWidget(this.navigator) : view = beagleServiceLocator<BeagleViewJS>(param1: navigator);
 
-  final BeagleNavigator parentNavigator; // optional
-  final OnCreateViewListener onCreateView;
+  final BeagleNavigator navigator;
+  final BeagleView view;
 
   @override
-  _BeagleWidget createState() {
-    log("BEAGLE WIDGET: CREATE STATE");
-    return _BeagleWidget();
-  }
+  _BeagleWidget createState() => _BeagleWidget();
 }
 
 class _BeagleWidget extends State<BeagleWidget> {
-  Widget widgetState;
-  BeagleView view;
-
-  static BeagleService service;
   final logger = beagleServiceLocator<BeagleLogger>();
   final environment = beagleServiceLocator<BeagleEnvironment>();
+  final beagleService = beagleServiceLocator<BeagleService>();
+  Widget widgetState;
 
-  @override
-  void initState() {
-    super.initState();
-    _startBeagleView();
-  }
-
-  @override
-  void dispose() {
-    view.destroy();
-    super.dispose();
-  }
-
-  Future<void> _startBeagleView() async {
-    log("BEAGLE WIDGET: STARTING VIEW");
-    await beagleServiceLocator.allReady();
-    log("BEAGLE WIDGET: BEAGLE SERVICE IS READY");
-    service = beagleServiceLocator<BeagleService>();
-    log("BEAGLE WIDGET: CREATING VIEW AND ASSIGNING LISTENERS");
-    view = beagleServiceLocator<BeagleViewJS>(param1: widget.parentNavigator)
-      ..onChange((tree) {
-        final widgetLoaded = _buildViewFromTree(tree);
-        setState(() {
-          widgetState = widgetLoaded;
-        });
-      })
-      ..onAction(({action, element, view}) {
-        final handler = service.actions[action.getType().toLowerCase()];
-        if (handler == null) {
-          return logger.error(
-              "Couldn't find action with name ${action.getType()}. It will be ignored.");
-        }
-        handler(
-          action: action,
-          view: view,
-          element: element,
-          context: context,
-        );
-      });
-    log("BEAGLE WIDGET: VIEW IS CREATED, CALLING ONCREATEVIEW");
-    if (widget.onCreateView != null) widget.onCreateView(view);
+  void _updateCurrentUI(BeagleUIElement tree) {
+    if (tree != null) {
+      setState(() => widgetState = _buildViewFromTree(tree));
+    }
   }
 
   Widget _buildViewFromTree(BeagleUIElement tree) {
     final widgetChildren = tree.getChildren().map(_buildViewFromTree).toList();
-    final builder = service.components[tree.getType().toLowerCase()];
+    final builder = beagleService.components[tree.getType().toLowerCase()];
     if (builder == null) {
       logger.error("Can't find builder for component ${tree.getType()}");
       return BeagleUndefinedWidget(environment: environment);
     }
     try {
-      return builder(tree, widgetChildren, view);
+      return builder(tree, widgetChildren, widget.view);
     } catch (error) {
-      logger.error(
-          'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');
+      logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       logger.error(error.toString());
       return BeagleUndefinedWidget(environment: environment);
     }
+  }
+
+  @override
+  void dispose() {
+    widget.view.destroy();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // setup actions
+    widget.view.onAction(({action, element, view}) {
+      final handler = beagleService.actions[action.getType().toLowerCase()];
+      if (handler == null) {
+        return logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
+      }
+      handler(
+        action: action,
+        view: view,
+        element: element,
+        context: context,
+      );
+    });
+
+    // update the UI everytime the beagle view changes
+    widget.view.onChange(_updateCurrentUI);
+
+    // first render:
+    _updateCurrentUI(widget.view.getTree());
   }
 
   @override

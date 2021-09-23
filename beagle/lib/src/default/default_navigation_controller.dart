@@ -42,9 +42,9 @@ class DefaultNavigationController implements NavigationController {
 
   @override
   void onLoading({BeagleView view, BuildContext context, Function completeNavigation}) {
+    completeNavigation();
     BeagleUIElement component = BeagleUIElement({ "_beagleComponent_": LOADING_COMPONENT_NAME });
     view.getRenderer().doFullRender(component);
-    completeNavigation();
   }
 
   @override

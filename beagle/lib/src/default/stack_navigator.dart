@@ -17,14 +17,6 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
-const INITIAL = "initial";
-
-int _nextId = 0;
-
-Key _createKey() {
-  return Key("beagle-stack-navigator-${++_nextId}");
-}
-
 class StackNavigator extends StatelessWidget {
   StackNavigator({
     @required this.initialRoute,
@@ -41,53 +33,33 @@ class StackNavigator extends StatelessWidget {
   final ViewClient viewClient;
   final BeagleNavigator rootNavigator;
   final BeagleLogger logger;
-  final _navigatorKey = _createKey();
   final List<String> _history = [];
 
   Route<dynamic> _buildRoute(BeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
-      builder: (context) => screenBuilder(beagleWidget),
+      builder: (context) => screenBuilder(beagleWidget, context),
       settings: RouteSettings(name: routeName),
     );
   }
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
-    final beagleWidget = BeagleWidget(
-      key: _createKey(),
-      parentNavigator: rootNavigator,
-      onCreateView: (view) {
-        fetchContentAndUpdateView(
-          view: view,
-          context: state.context,
-          completeNavigation: () => null,
-          route: initialRoute,
-        );
-      },
+    final beagleWidget = BeagleWidget(rootNavigator);
+    _fetchContentAndUpdateView(
+      view: beagleWidget.view,
+      context: state.context,
+      completeNavigation: () => null,
+      route: initialRoute,
     );
 
     _history.add(routeName);
     return [_buildRoute(beagleWidget, routeName)];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => true,
-      child: Scaffold(
-        body: Navigator(
-          key: _navigatorKey,
-          initialRoute: getRouteId(initialRoute),
-          onGenerateInitialRoutes: _onGenerateInitialRoutes,
-        ),
-      ),
-    );
-  }
-
-  String getRouteId(BeagleRoute route) {
+  String _getRouteId(BeagleRoute route) {
     return route is LocalView ? route.screen.getId() : (route as RemoteView).url;
   }
 
-  Future<void> fetchContentAndUpdateView({
+  Future<void> _fetchContentAndUpdateView({
     RemoteView route,
     BuildContext context,
     BeagleView view,
@@ -100,7 +72,7 @@ class StackNavigator extends StatelessWidget {
       completeNavigation();
     } catch (error, stackTrace) {
       Future<void> retry() {
-        return fetchContentAndUpdateView(
+        return _fetchContentAndUpdateView(
           route: route,
           context: context,
           view: view,
@@ -137,8 +109,8 @@ class StackNavigator extends StatelessWidget {
   }
 
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
-    final routeId = getRouteId(route);
-    BeagleWidget beagleWidget;
+    final routeId = _getRouteId(route);
+    final beagleWidget = BeagleWidget(rootNavigator);
     bool completed = false;
 
     void complete() {
@@ -149,28 +121,29 @@ class StackNavigator extends StatelessWidget {
       completed = true;
     }
 
-    void onCreateView(BeagleView view) async {
-      if (route is LocalView) {
-        controller.onSuccess(
-          view: view,
-          context: context,
-          screen: route.screen,
-        );
-        complete();
-      } else {
-        await fetchContentAndUpdateView(
-          route: route,
-          context: context,
-          view: view,
-          completeNavigation: complete,
-        );
-      }
+    if (route is LocalView) {
+      controller.onSuccess(view: beagleWidget.view, context: context, screen: route.screen);
+      complete();
+    } else {
+      await _fetchContentAndUpdateView(
+        route: route,
+        context: context,
+        view: beagleWidget.view,
+        completeNavigation: complete,
+      );
     }
+  }
 
-    beagleWidget = BeagleWidget(key: _createKey(), parentNavigator: rootNavigator, onCreateView: onCreateView);
-    /* FIXME: we should let the user decide when to complete the navigation. As of right now this is not possible
-    because of the async nature of the BeagleWidget. Today the BeagleWidget is stateful and only initializes when it
-    gets rendered. Because of this, we need to render it before controlling it =(. */
-    complete();
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => true,
+      child: Scaffold(
+        body: Navigator(
+          initialRoute: _getRouteId(initialRoute),
+          onGenerateInitialRoutes: _onGenerateInitialRoutes,
+        ),
+      ),
+    );
   }
 }

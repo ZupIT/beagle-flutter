@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:ffi';
+
 import 'package:beagle/beagle.dart';
 
 import 'beagle_js_engine.dart';
@@ -52,9 +56,9 @@ class BeagleViewJS implements BeagleView {
   @override
   BeagleUIElement getTree() {
     final result = _beagleJSEngine
-        .evaluateJavascriptCode("global.beagle.getViewById('$_id').getTree()")
-        .rawResult;
-    return BeagleUIElement(result);
+      .evaluateJavascriptCode("global.beagle.getViewById('$_id').getTreeAsJson()")
+      .stringResult;
+    return result == "null" ? null : BeagleUIElement(json.decode(result));
   }
 
   @override

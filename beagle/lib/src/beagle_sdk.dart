@@ -16,6 +16,8 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/service_locator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 import 'package:beagle/src/default/default_actions.dart';
 
@@ -86,5 +88,21 @@ class BeagleSdk {
       operations: operations,
       analyticsProvider: analyticsProvider
     );
+  }
+
+  static void openScreen({
+    @required BeagleRoute route,
+    @required BuildContext context,
+    ScreenBuilder screenBuilder,
+    NavigationController initialController,
+  }) async {
+    await beagleServiceLocator.allReady();
+    final navigator = RootNavigator(
+      initialRoute: route,
+      screenBuilder: screenBuilder ?? (widget, _) => widget,
+      initialController: initialController,
+    );
+    final pageRoute = MaterialPageRoute<dynamic>(builder: (_) => navigator);
+    Navigator.push(context, pageRoute);
   }
 }

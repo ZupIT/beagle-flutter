@@ -17,19 +17,16 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
-typedef ScreenBuilder = Widget Function(BeagleWidget beagleWidget);
+typedef ScreenBuilder = Widget Function(BeagleWidget beagleWidget, BuildContext context);
 
-int _nextRootNavigatorId = 0;
 int _nextStackId = 0;
 
-Key _createNavigatorKey() {
-  return Key("beagle-root-navigator-${++_nextRootNavigatorId}");
-}
-
 String _createRouteName() {
-  return "${++_nextStackId}";
+  return "beagle-root-navigator-stack-${++_nextStackId}";
 }
 
+/// Main Beagle Navigator. This component assumes the BeagleService is ready to use. To make sure it's ready, call
+/// `await beagleServiceLocator.allReady()`.
 class RootNavigator extends StatefulWidget {
   RootNavigator({
     @required this.initialRoute,
@@ -46,17 +43,9 @@ class RootNavigator extends StatefulWidget {
 }
 
 class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
-  final _navigatorKey = _createNavigatorKey();
   final logger = beagleServiceLocator<BeagleLogger>();
-  BeagleService _beagleService;
+  final BeagleService _beagleService = beagleServiceLocator<BeagleService>();
   List<StackNavigator> _history = [];
-
-  Future<void> _startNavigator() async {
-    await beagleServiceLocator.allReady();
-    setState(() {
-      _beagleService = beagleServiceLocator<BeagleService>();
-    });
-  }
 
   StackNavigator _createStackNavigator(BeagleRoute route, NavigationController controller) {
     return StackNavigator(
@@ -83,7 +72,7 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
     return [_createNewRoute(widget.initialRoute, controller)];
   }
 
-  NavigationController getControllerById(String id) {
+  NavigationController _getControllerById(String id) {
     final entry = _beagleService.navigationControllers.entries.firstWhere(
       (element) => element.key == id,
       orElse: () => null,
@@ -92,18 +81,11 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _startNavigator();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return _beagleService == null ? const SizedBox.shrink() :  WillPopScope(
+    return WillPopScope(
       onWillPop: () async => true,
       child: Scaffold(
         body: Navigator(
-          key: _navigatorKey,
           initialRoute: "$_nextStackId",
           onGenerateInitialRoutes: _onGenerateInitialRoutes,
         ),
@@ -113,9 +95,6 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
 
   @override
   void popStack(_) {
-    if (_history.length == 1) {
-      return logger.error("Cannot pop stack because there's only a single stack in the Beagle Navigator.");
-    }
     Navigator.pop(context);
     _history.removeLast();
   }
@@ -132,7 +111,7 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
 
   @override
   Future<void> pushStack(BeagleRoute route, _, [String controllerId]) async {
-    Navigator.push(context, _createNewRoute(route, getControllerById(controllerId)));
+    Navigator.push(context, _createNewRoute(route, _getControllerById(controllerId)));
   }
 
   @override
@@ -143,12 +122,12 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
   @override
   Future<void> resetApplication(BeagleRoute route, _, [String controllerId]) async {
     _history = [];
-    Navigator.pushAndRemoveUntil(context, _createNewRoute(route, getControllerById(controllerId)), (route) => false);
+    Navigator.pushAndRemoveUntil(context, _createNewRoute(route, _getControllerById(controllerId)), (route) => false);
   }
 
   @override
   Future<void> resetStack(BeagleRoute route, _, [String controllerId]) async {
     _history.removeLast();
-    Navigator.pushReplacement(context, _createNewRoute(route, getControllerById(controllerId)));
+    Navigator.pushReplacement(context, _createNewRoute(route, _getControllerById(controllerId)));
   }
 }

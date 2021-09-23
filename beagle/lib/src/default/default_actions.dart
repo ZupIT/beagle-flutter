@@ -24,15 +24,6 @@ BeagleRoute _getRoute(BeagleAction action) {
   return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
 }
 
-BeagleNavigator _getNavigator(BeagleView view) {
-  final navigator = view.getNavigator();
-  final logger = beagleServiceLocator<BeagleLogger>();
-  if (navigator == null) {
-    logger.error("Cannot navigate because no BeagleNavigator has been assigned to this BeagleView.");
-  }
-  return navigator;
-}
-
 final Map<String, ActionHandler> defaultActions = {
   'beagle:confirm': ({action, view, element, context}) {
     BeagleConfirm.showAlertDialog(
@@ -64,24 +55,24 @@ final Map<String, ActionHandler> defaultActions = {
   },
   // Beagle Navigation
   'beagle:pushView': ({action, view, element, context}) {
-    _getNavigator(view)?.pushView(_getRoute(action), context);
+    view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({action, view, element, context}) {
-    _getNavigator(view)?.popView(context);
+    view.getNavigator().popView(context);
   },
   'beagle:popToView': ({action, view, element, context}) {
-    _getNavigator(view)?.popToView(action.getAttributeValue("route"), context);
+    view.getNavigator().popToView(action.getAttributeValue("route"), context);
   },
   'beagle:pushStack': ({action, view, element, context}) {
-    _getNavigator(view)?.pushStack(_getRoute(action), context);
+    view.getNavigator().pushStack(_getRoute(action), context);
   },
   'beagle:popStack': ({action, view, element, context}) {
-    _getNavigator(view)?.popStack(context);
+    view.getNavigator().popStack(context);
   },
   'beagle:resetStack': ({action, view, element, context}) {
-    _getNavigator(view)?.resetStack(_getRoute(action), context);
+    view.getNavigator().resetStack(_getRoute(action), context);
   },
   'beagle:resetApplication': ({action, view, element, context}) {
-    _getNavigator(view)?.resetApplication(_getRoute(action), context);
+    view.getNavigator().resetApplication(_getRoute(action), context);
   },
 };
