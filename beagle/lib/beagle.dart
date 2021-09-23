@@ -28,10 +28,9 @@ export 'package:beagle/src/default/empty/default_empty_logger.dart';
 export 'package:beagle/src/default/default_http_client.dart';
 export 'package:beagle/src/default/default_image_downloader.dart';
 export 'package:beagle/src/default/default_logger.dart';
-export 'package:beagle/src/default/default_storage.dart';
 export 'package:beagle/src/default/url_builder.dart';
-export 'package:beagle/src/default/root_navigator.dart';
-export 'package:beagle/src/default/stack_navigator.dart';
+export 'package:beagle/src/navigation/root_navigator.dart';
+export 'package:beagle/src/navigation/stack_navigator.dart';
 export 'package:beagle/src/default/default_view_client.dart';
 export 'package:beagle/src/default/default_navigation_controller.dart';
 
@@ -43,7 +42,6 @@ export 'package:beagle/src/interface/global_context.dart';
 export 'package:beagle/src/interface/http_client.dart';
 export 'package:beagle/src/interface/navigation_controller.dart';
 export 'package:beagle/src/interface/renderer.dart';
-export 'package:beagle/src/interface/storage.dart';
 export 'package:beagle/src/interface/types.dart';
 export 'package:beagle/src/interface/view_client.dart';
 
