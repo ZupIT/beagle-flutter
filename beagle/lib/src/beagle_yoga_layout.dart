@@ -29,7 +29,7 @@ class BeagleYogaLayout extends YogaLayout {
         (child) {
       if(child is BeagleMetadataWidget) {
         return YogaNode(
-          nodeProperties: mapToNodeProperties((child.metaData as BeagleMetadata).beagleStyle),
+          nodeProperties: mapToNodeProperties((child.beagleMetadata).beagleStyle),
           child: child,
         );
       } else {

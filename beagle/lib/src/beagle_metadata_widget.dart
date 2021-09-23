@@ -19,4 +19,5 @@ import 'package:flutter/widgets.dart';
 
 class BeagleMetadataWidget extends MetaData {
   const BeagleMetadataWidget({Widget child, BeagleMetadata beagleMetadata}) : super(child: child, metaData: beagleMetadata);
+  BeagleMetadata get beagleMetadata => metaData;
 }
