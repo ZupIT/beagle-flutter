@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:beagle_components/src/protocol/input_validation.dart';
 import 'package:flutter/widgets.dart';
 
 extension BuildContextUtils on BuildContext {
@@ -37,8 +38,25 @@ extension BuildContextUtils on BuildContext {
     return widgetContext;
   }
 
+  bool searchInputErrors() {
+    bool hasError = false;
+
+    void visitor(Element element) {
+      if (element.widget is InputValidation &&
+          (element.widget as InputValidation).hasError()) {
+          hasError = true;
+      } else {
+        element.visitChildElements(visitor);
+      }
+    }
+
+    visitChildElements(visitor);
+
+    return hasError;
+  }
+
   bool _compareWidgetKey(BuildContext context, String widgetKey) {
-    final ValueKey<String> key = context.widget.key;
+    final ValueKey<String> key = (context.widget.key is ValueKey<String>) ? context.widget.key : null;
     return key != null && key.value == widgetKey;
   }
 }

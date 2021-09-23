@@ -40,7 +40,7 @@ void main() {
   final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
 
   BeagleSdk.init(
-    baseUrl: "https://gist.githubusercontent.com/Tiagoperes/59e831129f7d5519f06777f975cc8dd2/raw/4fc47497abe81acb9d889ba1449f296423a74d13",
+    baseUrl: "https://gist.githubusercontent.com/Tiagoperes/59e831129f7d5519f06777f975cc8dd2/raw/ed2e702823c973f42bcd6170e83f85a2a4235dcd",
     environment: kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
     components: {...defaultComponents, ...myCustomComponents},
     actions: myCustomActions,
@@ -68,7 +68,7 @@ class BeagleSampleApp extends StatelessWidget {
         // body: Text("Hello World"),
         body: Padding(
           padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-          child: DefaultBeagleNavigator(
+          child: RootNavigator(
             initialRoute: RemoteView("/stack1page1.json"),
             screenBuilder: (beagleWidget) => beagleWidget,
           ),

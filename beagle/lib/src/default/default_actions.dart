@@ -17,17 +17,40 @@
 import 'dart:developer';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/action/beagle_confirm.dart';
 
-BeagleRoute _routeFromJson(Map<String, dynamic> json) {
+BeagleRoute _getRoute(BeagleAction action) {
+  final json = action.getAttributeValue("route");
   return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
 }
 
+BeagleNavigator _getNavigator(BeagleView view) {
+  final navigator = view.getNavigator();
+  final logger = beagleServiceLocator<BeagleLogger>();
+  if (navigator == null) {
+    logger.error("Cannot navigate because no BeagleNavigator has been assigned to this BeagleView.");
+  }
+  return navigator;
+}
+
 final Map<String, ActionHandler> defaultActions = {
+  'beagle:confirm': ({action, view, element, context}) {
+    BeagleConfirm.showAlertDialog(
+      context,
+      title: action.getAttributeValue('title'),
+      message: action.getAttributeValue('message'),
+      labelOk: action.getAttributeValue('labelOk'),
+      onPressOk: action.getAttributeValue('onPressOk'),
+      labelCancel: action.getAttributeValue('labelCancel'),
+      onPressCancel: action.getAttributeValue('onPressCancel'),
+    );
+  },
   'beagle:alert': ({action, view, element, context}) {
     BeagleAlert.showAlertDialog(
       context,
       message: action.getAttributeValue('message'),
-      onPressOk: action.getAttributeValue('onPressOk', () {}),
+      labelOk: action.getAttributeValue('labelOk'),
+      onPressOk: action.getAttributeValue('onPressOk'),
       title: action.getAttributeValue('title', 'Alert'),
     );
   },
@@ -42,28 +65,24 @@ final Map<String, ActionHandler> defaultActions = {
   // Beagle Navigation
   'beagle:pushView': ({action, view, element, context}) {
     log("PUSH VIEW ACTION");
-    final route = _routeFromJson(action.getAttributeValue("route"));
-    view.getNavigator().pushView(route, context);
+    _getNavigator(view)?.pushView(_getRoute(action), context);
   },
   'beagle:popView': ({action, view, element, context}) {
-    view.getNavigator().popView(context);
+    _getNavigator(view)?.popView(context);
   },
   'beagle:popToView': ({action, view, element, context}) {
-    view.getNavigator().popToView(action.getAttributeValue("route"), context);
+    _getNavigator(view)?.popToView(action.getAttributeValue("route"), context);
   },
   'beagle:pushStack': ({action, view, element, context}) {
-    final route = _routeFromJson(action.getAttributeValue("route"));
-    view.getNavigator().pushStack(route, context);
+    _getNavigator(view)?.pushStack(_getRoute(action), context);
   },
   'beagle:popStack': ({action, view, element, context}) {
-    view.getNavigator().popStack(context);
+    _getNavigator(view)?.popStack(context);
   },
   'beagle:resetStack': ({action, view, element, context}) {
-    final route = _routeFromJson(action.getAttributeValue("route"));
-    view.getNavigator().resetStack(route, context);
+    _getNavigator(view)?.resetStack(_getRoute(action), context);
   },
   'beagle:resetApplication': ({action, view, element, context}) {
-    final route = _routeFromJson(action.getAttributeValue("route"));
-    view.getNavigator().resetApplication(route, context);
+    _getNavigator(view)?.resetApplication(_getRoute(action), context);
   },
 };

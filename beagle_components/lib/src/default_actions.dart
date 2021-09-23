@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: "com.vanniktech.maven.publish"
+import 'package:beagle/beagle.dart';
+import 'package:beagle_components/src/action/beagle_submit_form.dart';
 
-def versionName = System.env.VERSION_DEPLOY != null ? System.env.VERSION_DEPLOY : VERSION_NAME ?: ""
-
-version = versionName
-
-mavenPublish {
-    releaseSigningEnabled = System.env.VERSION_DEPLOY != null ? true : false
-    nexus {
-        stagingProfile = "br.com.zup"
-    }
-}
+final Map<String, ActionHandler> defaultActions = {
+  'beagle:submitForm': ({action, view, element, context}) {
+    BeagleSubmitForm.submit(context, element);
+  }
+};

@@ -35,7 +35,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lints: ^1.0.1
-  mockito: ^5.0.12
+  mockito: ^5.0.14
 
 flutter:
   plugin:

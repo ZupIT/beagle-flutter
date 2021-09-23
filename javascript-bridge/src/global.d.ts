@@ -25,6 +25,8 @@ type FlutterJSChannel = (
   | 'storage.clear'
   | 'operation'
   | 'logger'
+  | 'analytics.createRecord'
+  | 'analytics.getConfig'
 )
 
 declare function sendMessage(channel: FlutterJSChannel, message: String)

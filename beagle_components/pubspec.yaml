@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-
 name: beagle_components
 description: Beagle Components is a set of tools and components to be used with the Beagle package.
 version: 0.9.3-alpha
@@ -34,7 +33,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lints: ^1.0.1
-  mockito: ^5.0.12
+  mockito: ^5.0.14
 
 flutter:
   uses-material-design: true

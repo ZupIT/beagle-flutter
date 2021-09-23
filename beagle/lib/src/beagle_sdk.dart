@@ -17,6 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/service_locator.dart';
 import 'package:yoga_engine/yoga_engine.dart';
+import 'package:beagle/src/default/default_actions.dart';
 
 class BeagleSdk {
   /// Starts the BeagleService. Only a single instance of this service is allowed.
@@ -46,6 +47,7 @@ class BeagleSdk {
     /// [BeagleLogger] interface that provides logger to beagle use in application.
     BeagleLogger logger,
     Map<String, Operation> operations,
+    AnalyticsProvider analyticsProvider
   }) {
     Yoga.init();
 
@@ -82,6 +84,7 @@ class BeagleSdk {
       imageDownloader: imageDownloader,
       logger: logger,
       operations: operations,
+      analyticsProvider: analyticsProvider
     );
   }
 }

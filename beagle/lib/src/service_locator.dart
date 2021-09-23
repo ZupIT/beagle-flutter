@@ -40,6 +40,7 @@ void setupServiceLocator({
   BeagleImageDownloader imageDownloader,
   BeagleLogger logger,
   Map<String, Operation> operations,
+  AnalyticsProvider analyticsProvider
 }) {
   beagleServiceLocator
     ..registerSingleton<BeagleYogaFactory>(BeagleYogaFactory())
@@ -79,6 +80,10 @@ void setupServiceLocator({
       ),
     )
     ..registerFactory<UrlBuilder>(() => UrlBuilder(baseUrl));
+
+  if(analyticsProvider != null) {
+    beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProvider);
+  }
 }
 
 JavascriptRuntimeWrapper createJavascriptRuntimeWrapperInstance() =>

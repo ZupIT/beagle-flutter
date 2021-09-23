@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
-import 'package:flutter/rendering.dart';
-
-///TODO: NEEDS ADD DOCUMENTATION
-abstract class BeagleDesignSystem {
-  String image(String id);
-
-  BeagleButtonStyle buttonStyle(String id);
-
-  TextStyle textStyle(String id);
-
-  BeagleNavigationBarStyle navigationBarStyle(String id);
+abstract class InputValidation {
+  bool hasError();
 }

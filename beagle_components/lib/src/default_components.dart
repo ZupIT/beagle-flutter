@@ -15,22 +15,8 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-
-import 'beagle_button.dart';
-import 'beagle_container.dart';
-import 'beagle_image.dart';
-import 'beagle_lazy_component.dart';
-import 'beagle_page_indicator.dart';
-import 'beagle_page_view.dart';
-import 'beagle_scroll_view.dart';
-import 'beagle_tab_bar.dart';
-import 'beagle_text.dart';
-import 'beagle_text_input.dart';
-import 'beagle_touchable.dart';
-import 'beagle_webview.dart';
-import 'text_input_type.dart';
-import 'beagle_pull_to_refresh.dart';
 
 final Map<String, ComponentBuilder> defaultComponents = {
   'custom:loading': beagleLoadingBuilder(),
@@ -49,6 +35,7 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:screenComponent': beagleScreenComponentBuilder(),
   'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
+  'beagle:simpleForm': beagleSimpleFormBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -203,12 +190,22 @@ ComponentBuilder beagleWebViewBuilder() {
 }
 
 ComponentBuilder beagleScreenComponentBuilder() {
-  return (element, children, __) => Container(
-        key: element.getKey(),
-        child: children[0],
-      );
-}
+  return (element, children, _) {
+    final Map<String, dynamic> safeArea = element.getAttributeValue('safeArea') ?? {};
+    final Map<String, dynamic> navigationBarMap = element.getAttributeValue('navigationBar');
+    final BeagleNavigationBar navigationBar = navigationBarMap == null
+        ? null
+        : BeagleNavigationBar.fromJson(navigationBarMap);
 
+    return BeagleScreen(
+      key: element.getKey(),
+      identifier: element.getAttributeValue('identifier'),
+      safeArea: safeArea.isNotEmpty ? BeagleSafeArea.fromJson(safeArea) : null,
+      navigationBar: navigationBar,
+      child: children[0],
+    );
+  };
+}
 
 ComponentBuilder beaglePullToRefreshBuilder() {
   return (element, children, view) {
@@ -218,5 +215,15 @@ ComponentBuilder beaglePullToRefreshBuilder() {
         isRefreshing: element.getAttributeValue('isRefreshing'),
         color: element.getAttributeValue('color'),
         child: children.isEmpty ? null : children[0]);
+  };
+}
+
+ComponentBuilder beagleSimpleFormBuilder() {
+  return (element, children, view) {
+    return BeagleSimpleForm(
+        key: element.getKey(),
+        onSubmit: element.getAttributeValue('onSubmit'),
+        onValidationError: element.getAttributeValue('onValidationError'),
+        children: children);
   };
 }

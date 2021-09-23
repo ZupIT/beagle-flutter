@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-apply plugin: 'io.gitlab.arturbosch.detekt'
+import 'package:beagle/src/analytics/analytics_config.dart';
 
-detekt {
-    config = files("$rootDir/../config/detekt-default-config.yml")
+import 'analytics_record.dart';
+
+/// This interface is used to start the configuration of analytics, without this the analytics will not be reported.
+abstract class AnalyticsProvider {
+  /// This function is called to record the reports.
+  /// @param record is an [AnalyticsRecord] generated when a screen is loaded or a action is executed
+  /// according the config passing on getConfig function.
+  void createRecord(AnalyticsRecord record);
+
+  /// This function is called to get the AnalyticsConfig.
+  /// @return is an AnalyticsConfig
+  AnalyticsConfig getConfig();
 }

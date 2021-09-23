@@ -18,9 +18,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/build_context_utils.dart';
 import 'package:flutter/widgets.dart';
-
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
 
@@ -29,20 +27,25 @@ typedef OnCreateViewListener = void Function(BeagleView view);
 /// TODO: THE UNIT TEST WILL BE WRITE AFTER RESOLVE DEPENDENCY INJECTION
 /// A widget that displays content of beagle.
 class BeagleWidget extends StatefulWidget {
-  BeagleWidget({Key key, this.parentNavigator, this.onCreateView}) : super(key: key);
+  BeagleWidget({Key key, this.parentNavigator, this.onCreateView}) : super(key: key) {
+    log("BEAGLE WIDGET: CONSTRUCTOR. Key: $key");
+  }
 
   final BeagleNavigator parentNavigator; // optional
   final OnCreateViewListener onCreateView;
 
   @override
-  _BeagleWidget createState() => _BeagleWidget();
+  _BeagleWidget createState() {
+    log("BEAGLE WIDGET: CREATE STATE");
+    return _BeagleWidget();
+  }
 }
 
 class _BeagleWidget extends State<BeagleWidget> {
   Widget widgetState;
   BeagleView view;
 
-  BeagleService service;
+  static BeagleService service;
   final logger = beagleServiceLocator<BeagleLogger>();
   final environment = beagleServiceLocator<BeagleEnvironment>();
 
@@ -59,8 +62,11 @@ class _BeagleWidget extends State<BeagleWidget> {
   }
 
   Future<void> _startBeagleView() async {
+    log("BEAGLE WIDGET: STARTING VIEW");
     await beagleServiceLocator.allReady();
+    log("BEAGLE WIDGET: BEAGLE SERVICE IS READY");
     service = beagleServiceLocator<BeagleService>();
+    log("BEAGLE WIDGET: CREATING VIEW AND ASSIGNING LISTENERS");
     view = beagleServiceLocator<BeagleViewJS>(param1: widget.parentNavigator)
       ..onChange((tree) {
         final widgetLoaded = _buildViewFromTree(tree);
@@ -78,9 +84,10 @@ class _BeagleWidget extends State<BeagleWidget> {
           action: action,
           view: view,
           element: element,
-          context: context.findBuildContextForWidgetKey(element.getId()),
+          context: context,
         );
       });
+    log("BEAGLE WIDGET: VIEW IS CREATED, CALLING ONCREATEVIEW");
     if (widget.onCreateView != null) widget.onCreateView(view);
   }
 
