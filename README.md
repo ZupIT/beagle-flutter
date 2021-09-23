@@ -162,15 +162,3 @@ Currently in alpha. It'll be moved to beta as soon as we have every layout tool 
 a list of every feature we need to release a stable version of Beagle Flutter and its status.
 
 It's important to reiterate that Beagle is an open source project and every help is welcomed!
-
-### Major features
-
-todo: check https://docs.google.com/spreadsheets/d/1aSo7eZsj2lEnTG0kKzta-U4G9qkgA8v1w9kpyrPlVPA/edit?usp=sharing
-
-### Default components
-
-todo: check https://docs.google.com/spreadsheets/d/1aSo7eZsj2lEnTG0kKzta-U4G9qkgA8v1w9kpyrPlVPA/edit?usp=sharing
-
-### Default actions
-
-todo: check https://docs.google.com/spreadsheets/d/1aSo7eZsj2lEnTG0kKzta-U4G9qkgA8v1w9kpyrPlVPA/edit?usp=sharing
