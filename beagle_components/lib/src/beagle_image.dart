@@ -27,7 +27,6 @@ class BeagleImage extends StatefulWidget {
     Key key,
     this.path,
     this.mode,
-    // this.style,
   }) : super(key: key);
 
   /// Defines the location of the image resource.
@@ -35,9 +34,6 @@ class BeagleImage extends StatefulWidget {
 
   /// Defines how the declared image will fit the view.
   final ImageContentMode mode;
-  //
-  // /// Defines the style of this image. Only width and height are supported for now.
-  // final BeagleStyle style;
 
   @override
   _BeagleImageState createState() => _BeagleImageState();

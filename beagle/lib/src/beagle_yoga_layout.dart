@@ -13,28 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/beagle_yoga_layout.dart';
+import 'package:beagle/src/beagle_metadata_widget.dart';
+import 'package:beagle/src/model/beagle_metadata.dart';
 import 'package:beagle/src/style/style_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
-class BeagleYogaFactory {
-  Widget createYogaNode({
-    BeagleStyle style,
-    Widget child,
-  }) {
-    final nodeProperties = mapToNodeProperties(style);
-    return YogaNode(
-      nodeProperties: nodeProperties,
-      child: child,
-    );
-  }
-
-  Widget createYogaLayout({
-    BeagleStyle style,
-    List<Widget> children,
-  }) {
-    return BeagleYogaLayout(style: style, children: children);
-  }
+class BeagleYogaLayout extends YogaLayout {
+  BeagleYogaLayout({BeagleStyle style, List<Widget> children}): super(nodeProperties:
+  mapToNodeProperties(style), children: children
+      .map(
+        (child) {
+      if(child is BeagleMetadataWidget) {
+        return YogaNode(
+          nodeProperties: mapToNodeProperties((child.metaData as BeagleMetadata).beagleStyle),
+          child: child,
+        );
+      } else {
+        return YogaNode(
+          nodeProperties: mapToNodeProperties(BeagleStyle()),
+          child: child,
+        );
+      }
+    },
+  ).toList());
 }
