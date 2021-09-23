@@ -16,6 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/model/beagle_template_manager.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class Renderer {
   /// Does a partial render to the BeagleView. Compared to the full render, it will skip every step
@@ -94,8 +95,11 @@ abstract class Renderer {
   /// finally rendered.
   /// @param mode optional. when `viewTree` is just a new branch to be added to the tree, the mode must be
   /// specified. It can be `append`, `prepend` or `replace`. The default value is `replace`
-  void doTemplateRender(TemplateManager templateManager, String anchor,
-      List<List<DataContext>> contexts,
-      [BeagleUIElement Function(BeagleUIElement, int) componentManager,
-      TreeUpdateMode mode]);
+  void doTemplateRender({
+    @required TemplateManager templateManager,
+    @required String anchor,
+    @required List<List<DataContext>> contexts,
+    BeagleUIElement Function(BeagleUIElement, int) componentManager,
+    TreeUpdateMode mode,
+  });
 }

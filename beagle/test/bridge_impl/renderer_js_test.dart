@@ -18,12 +18,18 @@ import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/bridge_impl/js_runtime_wrapper.dart';
 import 'package:beagle/src/bridge_impl/renderer_js.dart';
 import 'package:beagle/src/model/beagle_template_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
+
+class MockJavascriptRuntimeWrapper extends Mock
+    implements JavascriptRuntimeWrapper {}
+
+class MockStorage extends Mock implements Storage {}
 
 void main() {
   group('Given a RendererJS object', () {
@@ -121,10 +127,27 @@ void main() {
 
     group('When doTemplateRender', () {
       final beagleJSEngine = MockBeagleJSEngine();
-      final templatesContainerTree = BeagleUIElement({
-        '_beagleComponent_': 'beagle:container',
-        'id': 'templatesContainerId'
+      final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
+      final templatesContainerId = 'templatesContainerId';
+      final defaultText = BeagleUIElement({
+        '_beagleComponent_': 'beagle:text',
+        'text':
+            "This is @{item.name} which lives at @{item.address.street}, @{item.address.number}"
       });
+      final maleText = BeagleUIElement({
+        '_beagleComponent_': 'beagle:text',
+        'text':
+            "This is @{item.name} and HE lives at @{item.address.street}, @{item.address.number}"
+      });
+      final femaleText = BeagleUIElement({
+        '_beagleComponent_': 'beagle:text',
+        'text':
+            "This is @{item.name} and SHE lives at @{item.address.street}, @{item.address.number}"
+      });
+      final templateManagerWithCases = TemplateManager(defaultText, [
+        TemplateManagerItem("@{eq(item.sex, 'M')}", maleText),
+        TemplateManagerItem("@{eq(item.sex, 'F')}", femaleText)
+      ]);
       final dataSource = [
         [
           DataContext('name', 'John'),
@@ -142,24 +165,17 @@ void main() {
         test(
             'Then it should render using this as default template without templates',
             () {
-          final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
-          templateRenderer.doFullRender(templatesContainerTree);
-
-          final defaultText = BeagleUIElement({
-            '_beagleComponent_': 'beagle:text',
-            'text':
-                "This is @{item.name} which lives at @{item.address.street}, @{item.address.number}"
-          });
-
-          TemplateManager templateManager = TemplateManager(defaultText, []);
+          final templateManager = TemplateManager(defaultText, []);
           templateRenderer.doTemplateRender(
-              templateManager, 'templatesContainerId', dataSource);
+              templateManager: templateManager,
+              anchor: templatesContainerId,
+              contexts: dataSource);
 
           final arguments = [
             jsonEncode(templateManager.toJson())
                 .replaceAll(RegExp(r'defaultTemplate:'), 'default:')
                 .replaceAll(RegExp(r'condition:'), 'case:'),
-            "'templatesContainerId'",
+            "'$templatesContainerId'",
             jsonEncode(dataSource)
           ];
 
@@ -175,40 +191,51 @@ void main() {
         test(
             'Then it should render a template using the templates that match the conditions',
             () {
-          final templateRenderer = RendererJS(beagleJSEngine, 'viewId');
-          templateRenderer.doFullRender(templatesContainerTree);
-
-          final defaultText = BeagleUIElement({
-            '_beagleComponent_': 'beagle:text',
-            'text':
-                "This is @{item.name} which lives at @{item.address.street}, @{item.address.number}"
-          });
-
-          final maleText = BeagleUIElement({
-            '_beagleComponent_': 'beagle:text',
-            'text':
-                "This is @{item.name} and HE lives at @{item.address.street}, @{item.address.number}"
-          });
-
-          final femaleText = BeagleUIElement({
-            '_beagleComponent_': 'beagle:text',
-            'text':
-                "This is @{item.name} and SHE lives at @{item.address.street}, @{item.address.number}"
-          });
-
-          TemplateManager templateManager = TemplateManager(defaultText, [
-            TemplateManagerItem("@{eq(item.sex, 'M')}", maleText),
-            TemplateManagerItem("@{eq(item.sex, 'F')}", femaleText)
-          ]);
           templateRenderer.doTemplateRender(
-              templateManager, 'templatesContainerId', dataSource);
+              templateManager: templateManagerWithCases,
+              anchor: 'templatesContainerId',
+              contexts: dataSource);
 
           final arguments = [
-            jsonEncode(templateManager.toJson())
+            jsonEncode(templateManagerWithCases.toJson())
                 .replaceAll(RegExp(r'defaultTemplate:'), 'default:')
                 .replaceAll(RegExp(r'condition:'), 'case:'),
-            "'templatesContainerId'",
+            "'$templatesContainerId'",
             jsonEncode(dataSource)
+          ];
+
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .last,
+              "global.beagle.getViewById('viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
+        });
+      });
+
+      group('Is called with a componentManager', () {
+        test(
+            'Then it should render a template using the templates that match the conditions and should call the componentManager for each item of the dataSource',
+            () async {
+          // ignore: prefer_function_declarations_over_variables
+          final componentManager = (BeagleUIElement component, int index) {
+            return component;
+          };
+
+          templateRenderer.doTemplateRender(
+              templateManager: templateManagerWithCases,
+              anchor: templatesContainerId,
+              contexts: dataSource,
+              componentManager: componentManager,
+              mode: TreeUpdateMode.append);
+
+          final arguments = [
+            jsonEncode(templateManagerWithCases.toJson())
+                .replaceAll(RegExp(r'defaultTemplate:'), 'default:')
+                .replaceAll(RegExp(r'condition:'), 'case:'),
+            "'$templatesContainerId'",
+            jsonEncode(dataSource),
+            """function _componentManagerJs(c, i) { return sendMessage("$templatesContainerId.componentManagerEvent", JSON.stringify({ "component": c, "index": i })); }""",
+            "'${TreeUpdateMode.append.toString().split('.')[1]}'"
           ];
 
           expect(

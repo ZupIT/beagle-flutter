@@ -18,6 +18,7 @@ import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/model/beagle_template_manager.dart';
+import 'package:flutter/foundation.dart';
 
 class RendererJS implements Renderer {
   final String _viewId;
@@ -54,18 +55,33 @@ class RendererJS implements Renderer {
   }
 
   @override
-  void doTemplateRender(TemplateManager templateManager, String anchor,
-      List<List<DataContext>> contexts,
-      [BeagleUIElement Function(BeagleUIElement, int) componentManager,
-      TreeUpdateMode mode]) {
+  void doTemplateRender({
+    @required TemplateManager templateManager,
+    @required String anchor,
+    @required List<List<DataContext>> contexts,
+    BeagleUIElement Function(BeagleUIElement, int) componentManager,
+    TreeUpdateMode mode,
+  }) {
     final arguments = [
       jsonEncode(templateManager.toJson()),
       "'$anchor'",
       jsonEncode(
           contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList())
     ];
-    if (componentManager != null) arguments.add(jsonEncode(componentManager));
-    if (mode != null) arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
+    if (componentManager != null) {
+      final componentManagerEventId = '$anchor.componentManagerEvent';
+      // ignore: void_checks
+      // _beagleJSEngine.jsRuntime.onMessage(componentManagerEventId, (args) {
+      //   return componentManager(
+      //       args['component'] as BeagleUIElement, args['index'] as int);
+      // });
+      arguments.add(
+          """function _componentManagerJs(c, i) { return sendMessage("$componentManagerEventId", JSON.stringify({ "component": c, "index": i })); }""");
+    }
+    if (mode != null) {
+      if (componentManager == null) arguments.add('null');
+      arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
+    }
     _beagleJSEngine.evaluateJavascriptCode(
         "global.beagle.getViewById('$_viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
   }
