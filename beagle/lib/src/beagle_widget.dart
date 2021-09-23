@@ -126,7 +126,7 @@ class _BeagleWidget extends State<BeagleWidget> {
     if (widget is RootAsFlexWidget) {
       return widget;
     } else {
-      return BeagleMetadataWidget(child: widget, beagleStyle: BeagleMetadata(beagleStyle: tree.getStyle()));
+      return BeagleMetadataWidget(child: widget, beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
     }
   }
   
