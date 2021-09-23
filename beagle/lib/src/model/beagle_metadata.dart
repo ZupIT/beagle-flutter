@@ -15,8 +15,8 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
 
-class BeagleStyledWidget extends MetaData {
-  const BeagleStyledWidget({Widget child, BeagleStyle beagleStyle}) : super(child: child, metaData: beagleStyle);
+class BeagleMetadata  {
+  const BeagleMetadata({this.beagleStyle});
+  final BeagleStyle beagleStyle;
 }

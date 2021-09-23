@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/model/beagle_metadata.dart';
 import 'package:beagle/src/style/style_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
-import 'beagle_styled_widget.dart';
+import 'beagle_metadata_widget.dart';
 mixin RootAsFlexWidget {}
 class BeagleFlexWidget extends YogaLayout {
   BeagleFlexWidget({BeagleStyle style, List<Widget> children}): super(nodeProperties:
   mapToNodeProperties(style), children: children
       .map(
         (child) {
-          if(child is BeagleStyledWidget) {
+          if(child is BeagleMetadataWidget) {
             return YogaNode(
-              nodeProperties: mapToNodeProperties(child.metaData),
+              nodeProperties: mapToNodeProperties((child.metaData as BeagleMetadata).beagleStyle),
               child: child,
             );
           } else {
