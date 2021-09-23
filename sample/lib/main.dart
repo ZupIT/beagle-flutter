@@ -66,11 +66,11 @@ class BeagleSampleApp extends StatelessWidget {
       ),
       home: Scaffold(
         // body: Text("Hello World"),
-        body: Padding(
-          padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-          child: RootNavigator(
-            initialRoute: RemoteView("/stack1page1.json"),
-            screenBuilder: (beagleWidget) => beagleWidget,
+        body: RootNavigator(
+          initialRoute: RemoteView("/stack1page1.json"),
+          screenBuilder: (beagleWidget) => Padding(
+            padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+            child: beagleWidget,
           ),
         ),
       ),

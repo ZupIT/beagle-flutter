@@ -64,7 +64,6 @@ final Map<String, ActionHandler> defaultActions = {
   },
   // Beagle Navigation
   'beagle:pushView': ({action, view, element, context}) {
-    log("PUSH VIEW ACTION");
     _getNavigator(view)?.pushView(_getRoute(action), context);
   },
   'beagle:popView': ({action, view, element, context}) {

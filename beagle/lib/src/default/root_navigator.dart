@@ -49,7 +49,7 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
   final _navigatorKey = _createNavigatorKey();
   final logger = beagleServiceLocator<BeagleLogger>();
   BeagleService _beagleService;
-  final List<StackNavigator> _history = [];
+  List<StackNavigator> _history = [];
 
   Future<void> _startNavigator() async {
     await beagleServiceLocator.allReady();
@@ -69,16 +69,18 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
     );
   }
 
+  Route<dynamic> _createNewRoute(BeagleRoute route, NavigationController controller) {
+    final newStack = _createStackNavigator(route, controller);
+    _history.add(newStack);
+    return MaterialPageRoute(
+      builder: (_) => newStack,
+      settings: RouteSettings(name: _createRouteName()),
+    );
+  }
+
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
     final controller = widget.initialController ?? _beagleService.defaultNavigationController;
-    final stack = _createStackNavigator(widget.initialRoute, controller);
-    _history.add(stack);
-    return [
-      MaterialPageRoute(
-        builder: (_) => stack,
-        settings: RouteSettings(name: _createRouteName()),
-      ),
-    ];
+    return [_createNewRoute(widget.initialRoute, controller)];
   }
 
   NavigationController getControllerById(String id) {
@@ -130,29 +132,23 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
 
   @override
   Future<void> pushStack(BeagleRoute route, _, [String controllerId]) async {
-    final newStack = _createStackNavigator(route, getControllerById(controllerId));
-    final Route<dynamic> materialRoute = MaterialPageRoute(
-      builder: (_) => newStack,
-      settings: RouteSettings(name: _createRouteName()),
-    );
-    Navigator.push(context, materialRoute);
-    _history.add(newStack);
+    Navigator.push(context, _createNewRoute(route, getControllerById(controllerId)));
   }
 
   @override
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
-    logger.info("ROOT NAVIGATOR: PUSH VIEW");
     _history.last.pushView(route, context);
   }
 
   @override
-  Future<void> resetApplication(BeagleRoute route, BuildContext context, [String controllerId]) async {
-    // TODO: implement resetApplication
+  Future<void> resetApplication(BeagleRoute route, _, [String controllerId]) async {
+    _history = [];
+    Navigator.pushAndRemoveUntil(context, _createNewRoute(route, getControllerById(controllerId)), (route) => false);
   }
 
   @override
-  Future<void> resetStack(BeagleRoute route, BuildContext context, [String controllerId]) async {
-    // TODO: implement resetApplication
+  Future<void> resetStack(BeagleRoute route, _, [String controllerId]) async {
+    _history.removeLast();
+    Navigator.pushReplacement(context, _createNewRoute(route, getControllerById(controllerId)));
   }
-
 }
