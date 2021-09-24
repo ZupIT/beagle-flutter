@@ -56,7 +56,6 @@ class _BeagleWidget extends State<BeagleWidget> {
   BeagleService service;
   final logger = beagleServiceLocator<BeagleLogger>();
   final environment = beagleServiceLocator<BeagleEnvironment>();
-  BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
 
   @override
   void initState() {
@@ -123,7 +122,7 @@ class _BeagleWidget extends State<BeagleWidget> {
   }
 
   Widget createWidget(BeagleUIElement tree, Widget widget) {
-    if (widget is RootAsFlexWidget) {
+    if (widget is BeagleRootFlexLayoutWidget) {
       return widget;
     } else {
       return BeagleMetadataWidget(child: widget, beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));

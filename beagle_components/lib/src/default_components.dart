@@ -54,7 +54,7 @@ ComponentBuilder beagleErrorBuilder() {
 
 ComponentBuilder beagleTextBuilder() {
   return (element, _, __) => BeagleText(
-    key: element.getKey(),
+    key:  element.getKey(),
     text: element.getAttributeValue('text'),
     textColor: element.getAttributeValue('textColor'),
     styleId: element.getAttributeValue('styleId'),

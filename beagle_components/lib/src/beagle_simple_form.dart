@@ -20,11 +20,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 /// This component defines a submit handler for a form request.
-class BeagleSimpleForm extends StatefulWidget with RootAsFlexWidget {
+class BeagleSimpleForm extends StatefulWidget with BeagleRootFlexLayoutWidget {
   const BeagleSimpleForm({
     Key key,
     this.onSubmit,
     this.children,
+    this.style,
     this.onValidationError
   }) : super(key: key);
 
@@ -33,6 +34,9 @@ class BeagleSimpleForm extends StatefulWidget with RootAsFlexWidget {
 
   /// Defines the items on the simple form.
   final List<Widget> children;
+
+  /// Property responsible to customize all the flex attributes and general style configuration
+  final BeagleStyle style;
 
   /// Defines the actions to be executed when the form has some field with validation error.
   final Function onValidationError;
@@ -51,6 +55,7 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   @override
   Widget build(BuildContext context) {
     return BeagleFlexWidget(
+      style: widget.style,
       children: widget.children,
     );
   }

@@ -16,9 +16,22 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
-mixin RootAsFlexWidget {}
-BeagleYogaFactory beagleYogaFactory = beagleServiceLocator();
+mixin BeagleRootFlexLayoutWidget {}
+class BeagleFlexWidget extends StatelessWidget {
+  const BeagleFlexWidget({
+    Key key,
+    this.style,
+    this.children,
+  }) : super(key: key);
 
-Widget BeagleFlexWidget({BeagleStyle style, List<Widget> children}) {
-  return beagleYogaFactory.createYogaLayout(style: style, children: children);
+  final BeagleStyle style;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
+      style: style,
+      children: children,
+    );
+  }
 }
