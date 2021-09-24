@@ -69,14 +69,14 @@ class RendererJS implements Renderer {
           contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList())
     ];
     if (componentManager != null) {
-      final componentManagerEventId = '$anchor.componentManagerEvent';
-      // ignore: void_checks
-      // _beagleJSEngine.jsRuntime.onMessage(componentManagerEventId, (args) {
-      //   return componentManager(
-      //       args['component'] as BeagleUIElement, args['index'] as int);
-      // });
+      final componentManagerCallbackId =
+          'global.beagle.doTemplateRender.$anchor.componentManagerCallback';
+      _beagleJSEngine.addJsCallback(componentManagerCallbackId, (args) {
+        return componentManager(
+            args['component'] as BeagleUIElement, args['index'] as int);
+      });
       arguments.add(
-          """function _componentManagerJs(c, i) { return sendMessage("$componentManagerEventId", JSON.stringify({ "component": c, "index": i })); }""");
+          """function _componentManagerJs(c, i) { return sendMessage("$componentManagerCallbackId", JSON.stringify({ "component": c, "index": i })); }""");
     }
     if (mode != null) {
       if (componentManager == null) arguments.add('null');

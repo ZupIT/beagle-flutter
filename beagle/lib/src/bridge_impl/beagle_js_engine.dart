@@ -434,6 +434,10 @@ class BeagleJSEngine {
       callJsFunction(functionId, analyticsProvider.getConfig().toMap());
     }
   }
+
+  void addJsCallback(String callbackName, dynamic Function(dynamic) listener) {
+    _jsRuntime.onMessage(callbackName, listener);
+  }
 }
 
 class BeagleJSEngineException implements Exception {

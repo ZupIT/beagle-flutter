@@ -216,6 +216,8 @@ void main() {
         test(
             'Then it should render a template using the templates that match the conditions and should call the componentManager for each item of the dataSource',
             () async {
+          final componentManagerCallbackId =
+              'global.beagle.doTemplateRender.$templatesContainerId.componentManagerCallback';
           // ignore: prefer_function_declarations_over_variables
           final componentManager = (BeagleUIElement component, int index) {
             return component;
@@ -234,7 +236,35 @@ void main() {
                 .replaceAll(RegExp(r'condition:'), 'case:'),
             "'$templatesContainerId'",
             jsonEncode(dataSource),
-            """function _componentManagerJs(c, i) { return sendMessage("$templatesContainerId.componentManagerEvent", JSON.stringify({ "component": c, "index": i })); }""",
+            """function _componentManagerJs(c, i) { return sendMessage("$componentManagerCallbackId", JSON.stringify({ "component": c, "index": i })); }""",
+            "'${TreeUpdateMode.append.toString().split('.')[1]}'"
+          ];
+
+          expect(
+              verify(beagleJSEngine.evaluateJavascriptCode(captureAny))
+                  .captured
+                  .last,
+              "global.beagle.getViewById('viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
+        });
+      });
+
+      group('Is called without a componentManager and mode', () {
+        test(
+            'Then it should render a template using the templates that match the conditions and should set the componentManager as null and set the mode',
+            () async {
+          templateRenderer.doTemplateRender(
+              templateManager: templateManagerWithCases,
+              anchor: templatesContainerId,
+              contexts: dataSource,
+              mode: TreeUpdateMode.append);
+
+          final arguments = [
+            jsonEncode(templateManagerWithCases.toJson())
+                .replaceAll(RegExp(r'defaultTemplate:'), 'default:')
+                .replaceAll(RegExp(r'condition:'), 'case:'),
+            "'$templatesContainerId'",
+            jsonEncode(dataSource),
+            'null',
             "'${TreeUpdateMode.append.toString().split('.')[1]}'"
           ];
 
