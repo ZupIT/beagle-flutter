@@ -73,7 +73,7 @@ class RendererJS implements Renderer {
           'global.beagle.doTemplateRender.$anchor.componentManagerCallback';
       _beagleJSEngine.addJsCallback(componentManagerCallbackId, (args) {
         return componentManager(
-            args['component'] as BeagleUIElement, args['index'] as int);
+            BeagleUIElement(args['component']), args['index'] as int);
       });
       arguments.add(
           """function _componentManagerJs(c, i) { return sendMessage("$componentManagerCallbackId", JSON.stringify({ "component": c, "index": i })); }""");
