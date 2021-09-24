@@ -17,7 +17,6 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/beagle_metadata_widget.dart';
-import 'package:beagle/src/model/beagle_metadata.dart';
 import 'package:beagle/src/style/style_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
