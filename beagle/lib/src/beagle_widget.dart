@@ -19,7 +19,6 @@ import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
-
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
 

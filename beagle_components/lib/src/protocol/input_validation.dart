@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-apply plugin: 'io.gitlab.arturbosch.detekt'
-
-detekt {
-    config = files("$rootDir/../config/detekt-default-config.yml")
+abstract class InputValidation {
+  bool hasError();
 }
