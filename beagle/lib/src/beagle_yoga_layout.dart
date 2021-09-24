@@ -16,27 +16,18 @@
 
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/beagle_metadata_widget.dart';
-import 'package:beagle/src/style/style_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
 class BeagleYogaLayout extends YogaLayout {
-  BeagleYogaLayout({BeagleStyle style, List<Widget> children}): super(nodeProperties:
-  mapToNodeProperties(style), children: children
-      .map(
-        (child) {
-      if(child is BeagleMetadataWidget) {
-        return YogaNode(
-          nodeProperties: mapToNodeProperties((child.beagleMetadata).beagleStyle),
-          child: child,
-        );
-      } else {
-        return YogaNode(
-          nodeProperties: mapToNodeProperties(BeagleStyle()),
-          child: child,
-        );
-      }
-    },
-  ).toList());
+  BeagleYogaLayout({BeagleStyle style, List<Widget> children})
+      : super(
+            nodeProperties: beagleServiceLocator<BeagleYogaFactory>()
+                .createNodeProperties(style),
+            children: children.map(
+              (child) {
+                return beagleServiceLocator<BeagleYogaFactory>()
+                    .createYogaNode(child);
+              },
+            ).toList());
 }
