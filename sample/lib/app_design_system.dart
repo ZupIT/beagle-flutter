@@ -28,6 +28,12 @@ class AppDesignSystem extends BeagleDesignSystem {
     'informationImage': 'images/info.png'
   };
 
+  final Map<String, BeagleButtonStyle> buttonStyles = {
+  'DesignSystem.Stylish.Button': BeagleButtonStyle(
+        androidButtonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
+        buttonTextStyle: TextStyle(color: HexColor("#6F6F6F"))),
+  };
+
   @override
   String image(String id) {
     return imageMap[id];
@@ -35,20 +41,7 @@ class AppDesignSystem extends BeagleDesignSystem {
 
   @override
   BeagleButtonStyle buttonStyle(String id) {
-    BeagleButtonStyle buttonStyle;
-    switch (id) {
-      case 'DesignSystem.Stylish.Button':
-        buttonStyle = BeagleButtonStyle(
-          androidButtonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
-            buttonTextStyle: TextStyle(color: HexColor("#6F6F6F")));
-        break;
-
-      default:
-        break;
-
-    }
-
-    return buttonStyle;
+    return buttonStyles[id];
   }
 
   @override
