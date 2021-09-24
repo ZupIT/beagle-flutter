@@ -16,7 +16,6 @@
 
 import 'dart:convert';
 
-import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/beagle_service_js.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,13 +26,8 @@ class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 void main() {
   final beagleJSEngineMock = MockBeagleJSEngine();
   const baseUrl = 'https://usebeagle.io';
-  const useBeagleHeaders = true;
   final actions = {'beagle:alert': ({action, view, element, context}) {}};
   final operations = {'operation': ([paramA, paramB]) {}};
-  final navigationControllers = {
-    'general': NavigationController(
-        isDefault: true, loadingComponent: 'custom:loading'),
-  };
 
   setUp(() {
     reset(beagleJSEngineMock);
@@ -43,10 +37,8 @@ void main() {
     final beagleService = BeagleServiceJS(
       beagleJSEngineMock,
       baseUrl: baseUrl,
-      useBeagleHeaders: useBeagleHeaders,
       actions: actions,
       operations: operations,
-      navigationControllers: navigationControllers,
     );
 
     group('When start is called', () {
@@ -63,12 +55,6 @@ void main() {
           'baseUrl': baseUrl,
           'actionKeys': actions.keys.toList(),
           'customOperations': operations.keys.toList(),
-          'useBeagleHeaders': useBeagleHeaders,
-          'navigationControllers': {
-            'general': NavigationController(
-                    isDefault: true, loadingComponent: 'custom:loading')
-                .toMap()
-          },
         };
 
         verify(beagleJSEngineMock.evaluateJavascriptCode(

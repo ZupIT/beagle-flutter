@@ -77,4 +77,8 @@ class BeagleUIElement {
         ? BeagleStyle.fromMap(properties['style'])
         : null;
   }
+
+  static bool isBeagleUIElement(Map<String, dynamic> json) {
+    return json != null && json.containsKey("_beagleComponent_");
+  }
 }

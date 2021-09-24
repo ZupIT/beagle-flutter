@@ -20,6 +20,7 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sample/app_analytics_provider.dart';
 import 'package:sample/app_design_system.dart';
 
 Map<String, ComponentBuilder> myCustomComponents = {
@@ -40,10 +41,12 @@ void main() {
   final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
 
   BeagleSdk.init(
-    baseUrl: "https://gist.githubusercontent.com/Tiagoperes/59e831129f7d5519f06777f975cc8dd2/raw/ed2e702823c973f42bcd6170e83f85a2a4235dcd",
-    environment: kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
+    baseUrl: 'http://$localhost:8080',
+    environment:
+    kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
     components: {...defaultComponents, ...myCustomComponents},
-    actions: myCustomActions,
+    actions: {...myCustomActions, ...defaultActions},
+    analyticsProvider: AppAnalyticsProvider(),
     logger: DefaultLogger(),
     designSystem: AppDesignSystem(),
   );
@@ -57,20 +60,19 @@ class BeagleSampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Beagle sample",
-      theme: Theme.of(context).copyWith(
+      title: 'Beagle Sample',
+      theme: ThemeData(
+        visualDensity: VisualDensity.adaptivePlatformDensity,
         indicatorColor: Colors.white,
         appBarTheme: const AppBarTheme(
           elevation: 0,
         ),
       ),
       home: Scaffold(
-        // body: Text("Hello World"),
-        body: Padding(
-          padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+        body: Center(
           child: ElevatedButton(
-            onPressed: () => BeagleSdk.openScreen(route: RemoteView("/stack1page1.json"), context: context),
-            child: Text("Beagle"),
+            onPressed: () => BeagleSdk.openScreen(route: RemoteView('/components'), context: context),
+            child: Text('Start beagle flow'),
           ),
         ),
       ),

@@ -38,12 +38,6 @@ class _BeagleWidget extends State<BeagleWidget> {
   final beagleService = beagleServiceLocator<BeagleService>();
   Widget widgetState;
 
-  void _updateCurrentUI(BeagleUIElement tree) {
-    if (tree != null) {
-      setState(() => widgetState = _buildViewFromTree(tree));
-    }
-  }
-
   Widget _buildViewFromTree(BeagleUIElement tree) {
     final widgetChildren = tree.getChildren().map(_buildViewFromTree).toList();
     final builder = beagleService.components[tree.getType().toLowerCase()];
@@ -57,6 +51,12 @@ class _BeagleWidget extends State<BeagleWidget> {
       logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       logger.error(error.toString());
       return BeagleUndefinedWidget(environment: environment);
+    }
+  }
+
+  void _updateCurrentUI(BeagleUIElement tree) {
+    if (tree != null) {
+      setState(() => widgetState = _buildViewFromTree(tree));
     }
   }
 
