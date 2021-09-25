@@ -17,7 +17,6 @@
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
-import 'package:beagle/src/model/beagle_template_manager.dart';
 import 'package:flutter/foundation.dart';
 
 class RendererJS implements Renderer {
@@ -58,7 +57,7 @@ class RendererJS implements Renderer {
   void doTemplateRender({
     @required TemplateManager templateManager,
     @required String anchor,
-    @required List<List<DataContext>> contexts,
+    @required List<List<BeagleDataContext>> contexts,
     BeagleUIElement Function(BeagleUIElement, int) componentManager,
     TreeUpdateMode mode,
   }) {

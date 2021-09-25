@@ -18,8 +18,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/beagle_metadata_widget.dart';
-import 'package:beagle/src/model/beagle_metadata.dart';
 import 'package:flutter/widgets.dart';
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
@@ -45,17 +43,23 @@ class BeagleWidget extends StatefulWidget {
   /// get a current BeagleView.
   final OnCreateViewListener onCreateView;
 
+  static BeagleWidgetState of(
+    BuildContext context,
+  ) {
+    return context.findAncestorStateOfType<BeagleWidgetState>();
+  }
+
   @override
-  _BeagleWidget createState() => _BeagleWidget();
+  BeagleWidgetState createState() => BeagleWidgetState();
 }
 
-class _BeagleWidget extends State<BeagleWidget> {
-  BeagleView _view;
+class BeagleWidgetState extends State<BeagleWidget> {
+  BeagleView view;
   Widget widgetState;
 
-  BeagleService service;
-  final logger = beagleServiceLocator<BeagleLogger>();
-  final environment = beagleServiceLocator<BeagleEnvironment>();
+  BeagleService _service;
+  final _logger = beagleServiceLocator<BeagleLogger>();
+  final _environment = beagleServiceLocator<BeagleEnvironment>();
 
   @override
   void initState() {
@@ -65,14 +69,14 @@ class _BeagleWidget extends State<BeagleWidget> {
 
   @override
   void dispose() {
-    _view.destroy();
+    view.destroy();
     super.dispose();
   }
 
   Future<void> _startBeagleView() async {
     await beagleServiceLocator.allReady();
-    service = beagleServiceLocator<BeagleService>();
-    _view = beagleServiceLocator<BeagleViewJS>(
+    _service = beagleServiceLocator<BeagleService>();
+    view = beagleServiceLocator<BeagleViewJS>(
       param1: widget.screenRequest,
     )
       ..subscribe((tree) {
@@ -82,9 +86,9 @@ class _BeagleWidget extends State<BeagleWidget> {
         });
       })
       ..onAction(({action, element, view}) {
-        final handler = service.actions[action.getType().toLowerCase()];
+        final handler = _service.actions[action.getType().toLowerCase()];
         if (handler == null) {
-          return logger.error(
+          return _logger.error(
               "Couldn't find action with name ${action.getType()}. It will be ignored.");
         }
         handler(
@@ -96,9 +100,9 @@ class _BeagleWidget extends State<BeagleWidget> {
       });
 
     if (widget.screenRequest != null) {
-      await _view.getNavigator().pushView(RemoteView(widget.screenRequest.url));
+      await view.getNavigator().pushView(RemoteView(widget.screenRequest.url));
     } else {
-      await _view
+      await view
           .getNavigator()
           .pushView(LocalView(BeagleUIElement(jsonDecode(widget.screenJson))));
     }
@@ -106,18 +110,19 @@ class _BeagleWidget extends State<BeagleWidget> {
 
   Widget _buildViewFromTree(BeagleUIElement tree) {
     final widgetChildren = tree.getChildren().map(_buildViewFromTree).toList();
-    final builder = service.components[tree.getType().toLowerCase()];
+    final builder = _service.components[tree.getType().toLowerCase()];
     if (builder == null) {
-      logger.error("Can't find builder for component ${tree.getType()}");
-      return BeagleUndefinedWidget(environment: environment);
+      _logger.error("Can't find builder for component ${tree.getType()}");
+      return BeagleUndefinedWidget(environment: _environment);
     }
     try {
-      return BeagleFlexWidget(children: [createWidget(tree, builder(tree, widgetChildren, _view))]);
+      return BeagleFlexWidget(
+          children: [createWidget(tree, builder(tree, widgetChildren, view))]);
     } catch (error) {
-      logger.error(
+      _logger.error(
           'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');
-      logger.error(error.toString());
-      return BeagleUndefinedWidget(environment: environment);
+      _logger.error(error.toString());
+      return BeagleUndefinedWidget(environment: _environment);
     }
   }
 
@@ -125,10 +130,12 @@ class _BeagleWidget extends State<BeagleWidget> {
     if (widget is BeagleRootFlexLayoutWidget) {
       return widget;
     } else {
-      return BeagleMetadataWidget(child: widget, beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
+      return BeagleMetadataWidget(
+          child: widget,
+          beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return widgetState ?? const SizedBox.shrink();

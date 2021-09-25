@@ -36,6 +36,8 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
   'beagle:simpleForm': beagleSimpleFormBuilder(),
+  'beagle:listView': beagleListViewBuilder(),
+  'beagle:gridView': beagleGridViewBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -83,6 +85,49 @@ ComponentBuilder beagleScrollViewBuilder() {
         ),
         scrollBarEnabled: element.getAttributeValue('scrollBarEnabled'),
         children: children,
+      );
+}
+
+ComponentBuilder beagleListViewBuilder() {
+  return (element, children, _) => BeagleListView(
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        direction: EnumUtils.fromString(
+          BeagleDynamicListDirection.values,
+          element.getAttributeValue('direction'),
+        ),
+        dataSource: element.getAttributeValue('dataSource'),
+        templates: TemplateManagerItem.fromJsonList(
+            element.getAttributeValue('templates')),
+        isScrollIndicatorVisible:
+            element.getAttributeValue('isScrollIndicatorVisible'),
+        scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+        iteratorName: element.getAttributeValue('iteratorName'),
+        identifierItem: element.getAttributeValue('key'),
+        onScrollEnd: element.getAttributeValue('onScrollEnd'),
+        children: children,
+      );
+}
+
+ComponentBuilder beagleGridViewBuilder() {
+  return (element, children, _) => BeagleGridView(
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        direction: EnumUtils.fromString(
+          BeagleDynamicListDirection.values,
+          element.getAttributeValue('direction'),
+        ),
+        dataSource: element.getAttributeValue('dataSource'),
+        templates: TemplateManagerItem.fromJsonList(
+            element.getAttributeValue('templates')),
+        isScrollIndicatorVisible:
+            element.getAttributeValue('isScrollIndicatorVisible'),
+        scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+        iteratorName: element.getAttributeValue('iteratorName'),
+        identifierItem: element.getAttributeValue('key'),
+        onScrollEnd: element.getAttributeValue('onScrollEnd'),
+        children: children,
+        spanCount: element.getAttributeValue('spanCount'),
       );
 }
 
@@ -190,8 +235,10 @@ ComponentBuilder beagleWebViewBuilder() {
 
 ComponentBuilder beagleScreenComponentBuilder() {
   return (element, children, _) {
-    final Map<String, dynamic> safeArea = element.getAttributeValue('safeArea') ?? {};
-    final Map<String, dynamic> navigationBarMap = element.getAttributeValue('navigationBar');
+    final Map<String, dynamic> safeArea =
+        element.getAttributeValue('safeArea') ?? {};
+    final Map<String, dynamic> navigationBarMap =
+        element.getAttributeValue('navigationBar');
     final BeagleNavigationBar navigationBar = navigationBarMap == null
         ? null
         : BeagleNavigationBar.fromJson(navigationBarMap);
