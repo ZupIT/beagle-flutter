@@ -168,16 +168,14 @@ class BeagleJSEngine {
     );
 
     // Handles getConfig
-    _jsRuntime.onMessage(
-      _analyticsGetConfigChannelName, (dynamic args) {
-        final functionId = args["functionId"];
-        _notifyAnalyticsGetConfigListener(functionId);
-      }
-    );
+    _jsRuntime.onMessage(_analyticsGetConfigChannelName, (dynamic args) {
+      final functionId = args["functionId"];
+      _notifyAnalyticsGetConfigListener(functionId);
+    });
   }
 
   void _notifyAnalyticsCreateRecordListener(dynamic analyticsRecordMap) {
-    if(beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
+    if (beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
       final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
       final record = AnalyticsRecord().fromMap(analyticsRecordMap);
       /*
@@ -431,10 +429,14 @@ class BeagleJSEngine {
   }
 
   void _notifyAnalyticsGetConfigListener(String functionId) {
-    if(beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
+    if (beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
       final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
       callJsFunction(functionId, analyticsProvider.getConfig().toMap());
     }
+  }
+
+  void addJsCallback(String callbackName, dynamic Function(dynamic) listener) {
+    _jsRuntime.onMessage(callbackName, listener);
   }
 }
 
