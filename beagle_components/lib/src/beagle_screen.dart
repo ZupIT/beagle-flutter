@@ -19,7 +19,7 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class BeagleScreen extends StatelessWidget with YogaWidget {
+class BeagleScreen extends StatelessWidget {
   const BeagleScreen({
     Key key,
     this.identifier,
@@ -32,8 +32,6 @@ class BeagleScreen extends StatelessWidget with YogaWidget {
   final BeagleSafeArea safeArea;
   final BeagleNavigationBar navigationBar;
   final Widget child;
-
-  BeagleYogaFactory get _beagleYogaFactory => beagleServiceLocator();
 
   BeagleNavigationBarStyle get _navigationBarStyle =>
       beagleServiceLocator<BeagleDesignSystem>()
@@ -62,7 +60,7 @@ class BeagleScreen extends StatelessWidget with YogaWidget {
           )
         : null;
 
-    final yogaChild = _beagleYogaFactory.createYogaLayout(
+    final yogaChild = BeagleFlexWidget(
       style: BeagleStyle(flex: BeagleFlex(grow: 1.0)),
       children: [child],
     );
@@ -167,7 +165,7 @@ class ItemComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: item.action,
-      icon: BeagleImage(path: ImagePath.local(item.image), style: style),
+        icon: BeagleFlexWidget(children: [BeagleImage(path: ImagePath.local(item.image))], style: style,),
       tooltip: item.text,
     );
   }

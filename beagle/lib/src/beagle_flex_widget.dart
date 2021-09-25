@@ -13,47 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import 'package:beagle/beagle.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-import 'after_layout.dart';
-
-/// A simple container that can execute an action as soon as it gets created
-class BeagleContainer extends StatefulWidget with BeagleRootFlexLayoutWidget {
-  const BeagleContainer({
+mixin BeagleRootFlexLayoutWidget {}
+class BeagleFlexWidget extends StatelessWidget {
+  const BeagleFlexWidget({
     Key key,
-    this.onInit,
     this.style,
     this.children,
   }) : super(key: key);
 
-  /// Optional function to run once the container is created
-  final Function onInit;
-
-  /// Property responsible to customize all the flex attributes and general style configuration
   final BeagleStyle style;
-
-  /// Content of the container
   final List<Widget> children;
 
   @override
-  _BeagleContainer createState() => _BeagleContainer();
-}
-
-class _BeagleContainer extends State<BeagleContainer>
-    with AfterLayoutMixin<BeagleContainer> {
-
-  @override
-  void afterFirstLayout(BuildContext context) {
-    if (widget.onInit != null) widget.onInit();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BeagleFlexWidget(
-      style: widget.style,
-      children: widget.children,
+    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
+      style: style,
+      children: children,
     );
   }
 }

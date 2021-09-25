@@ -62,13 +62,14 @@ export 'package:beagle/src/networking/beagle_screen_request.dart';
 
 export 'package:beagle/src/setup/beagle_design_system.dart';
 
-export 'package:beagle/src/style/style_builder.dart';
+export 'package:beagle/src/style/beagle_yoga_factory.dart';
 
 export 'package:beagle/src/utils/color.dart';
 export 'package:beagle/src/utils/enum.dart';
 
 export 'package:beagle/src/beagle_sdk.dart';
 export 'package:beagle/src/beagle_widget.dart';
+export 'package:beagle/src/beagle_flex_widget.dart';
 
 export 'package:beagle/src/service_locator.dart' show beagleServiceLocator;
 export 'package:beagle/src/analytics/analytics_config.dart';
