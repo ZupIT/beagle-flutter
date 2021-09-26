@@ -106,8 +106,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isScrollIndicatorVisible != null &&
-        widget.isScrollIndicatorVisible) {
+    if (isScrollIndicatorEnabled()) {
       return _getScrollBar();
     }
 
@@ -118,6 +117,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     return Scrollbar(
       child: _getDynamicList(),
       isAlwaysShown: true,
+      controller: _scrollController,
     );
   }
 
@@ -195,7 +195,8 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     return key.value;
   }
 
-  BeagleUIElement _handleComponentManager(BeagleUIElement component, int index) {
+  BeagleUIElement _handleComponentManager(
+      BeagleUIElement component, int index) {
     final test = {'component': component, index: index};
     // BeagleUIElement innerHandleComponentManager(
     //   BeagleUIElement component,
@@ -260,5 +261,10 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   Axis _getScrollDirection() {
     return widget.direction.axis ?? Axis.vertical;
+  }
+
+  bool isScrollIndicatorEnabled() {
+    return widget.isScrollIndicatorVisible != null &&
+        widget.isScrollIndicatorVisible;
   }
 }

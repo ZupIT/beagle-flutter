@@ -199,7 +199,7 @@ void main() {
             onScrollEnd: () {
               runCount++;
             }));
-
+        
         expect(runCount, 1);
       });
     });
@@ -244,6 +244,28 @@ void main() {
         scrollScreenToDown(tester);
 
         expect(runCount, 1);
+      });
+    });
+
+    group('When passing parameter isScrollIndicatorVisible with value true',
+        () {
+      testWidgets('Then it should have a Scrollbar component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(isScrollIndicatorVisible: true));
+
+        final scrollbarFinder = find.byType(Scrollbar);
+        expect(scrollbarFinder, findsOneWidget);
+      });
+    });
+
+    group('When passing parameter isScrollIndicatorVisible with value null',
+        () {
+      testWidgets('Then it should not have a Scrollbar component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(isScrollIndicatorVisible: null));
+
+        final scrollbarFinder = find.byType(Scrollbar);
+        expect(scrollbarFinder, findsNothing);
       });
     });
   });
