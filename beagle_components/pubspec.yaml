@@ -34,6 +34,7 @@ dev_dependencies:
     sdk: flutter
   lints: ^1.0.1
   mockito: ^5.0.14
+  test_cov_console: ^0.0.8
 
 flutter:
   uses-material-design: true

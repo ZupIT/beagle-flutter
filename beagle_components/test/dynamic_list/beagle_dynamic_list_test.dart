@@ -14,246 +14,284 @@
  * limitations under the License.
  */
 
-import 'dart:core';
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+import '../service_locator/service_locator.dart';
 
-/// A simple Wrapper to GriView or ListView
-class BeagleDynamicList extends StatefulWidget {
-  const BeagleDynamicList(
-    Key key, {
-    this.onInit,
-    this.direction,
-    this.dataSource,
-    this.templates,
-    this.isScrollIndicatorVisible,
-    this.scrollEndThreshold,
-    this.iteratorName,
-    this.identifierItem,
-    this.onScrollEnd,
-    this.children,
-    this.spanCount,
-  }) : super(key: key);
-
-  /// Optional function to run once the container is created
-  final Function onInit;
-
-  /// Property responsible to customize all the flex attributes and general style configuration
-  final BeagleDynamicListDirection direction;
-
-  /// dataSource it's an expression that points to a list of values used to populate the Widget.
-  final List<dynamic> dataSource;
-
-  /// dataSource it's an expression that points to a list of values used to populate the Widget.
-  final List<TemplateManagerItem> templates;
-
-  /// this attribute enables or disables the scroll bar.
-  final bool isScrollIndicatorVisible;
-
-  /// sets the scrolled percentage of the list to trigger onScrollEnd.
-  final int scrollEndThreshold;
-
-  /// is the context identifier of each cell.
-  final String iteratorName;
-
-  /// Points to a unique value present in each item of the dataSource to be used as a suffix in the ids of the template components.
-  final String identifierItem;
-
-  /// list of actions performed when the list is scrolled to the end.
-  final Function onScrollEnd;
-
-  /// The number of columns or rows in the grid.
-  final int spanCount;
-
-  /// Define a list of components to be displayed on this view.
-  final List<Widget> children;
-
-  @override
-  _BeagleDynamicList createState() => _BeagleDynamicList();
+Widget createWidget({
+  final Function onInit,
+  final BeagleDynamicListDirection direction,
+  final List<dynamic> dataSource,
+  final List<TemplateManagerItem> templates,
+  final bool isScrollIndicatorVisible,
+  final int scrollEndThreshold,
+  final String iteratorName,
+  final String identifierItem,
+  final Function onScrollEnd,
+  final int spanCount,
+  final List<Widget> children,
+}) {
+  return MaterialApp(
+    key: Key('materialApp'),
+    home: BeagleDynamicList(
+      Key('dynamicList'),
+      onInit: onInit,
+      direction: direction,
+      dataSource: dataSource,
+      templates: templates,
+      isScrollIndicatorVisible: isScrollIndicatorVisible,
+      scrollEndThreshold: scrollEndThreshold,
+      iteratorName: iteratorName,
+      identifierItem: identifierItem,
+      onScrollEnd: onScrollEnd,
+      spanCount: spanCount,
+      children: children,
+    ),
+  );
 }
 
-class _BeagleDynamicList extends State<BeagleDynamicList>
-    with AfterLayoutMixin<BeagleDynamicList> {
-  ScrollController _scrollController;
-  bool _isExecutedActions;
+void main() {
+  setUpAll(() async {
+    await testSetupServiceLocator();
+  });
 
-  @override
-  void didUpdateWidget(covariant BeagleDynamicList oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _doTemplateRender();
+  group('Given a BeagleDynamicList', () {
+    group('When passing parameter spanCount with number one', () {
+      testWidgets('Then it should have a ListView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(spanCount: 1));
 
-    tryExecuteOnScrollEndActions();
-  }
-
-  @override
-  void afterFirstLayout(BuildContext context) {
-    if (widget.onInit != null) widget.onInit();
-
-    _doTemplateRender();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    _isExecutedActions = false;
-
-    _addListenerToScrollController();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.isScrollIndicatorVisible != null &&
-        widget.isScrollIndicatorVisible) {
-      return getScrollBar();
-    }
-
-    return getDynamicList();
-  }
-
-  Widget getScrollBar() {
-    return Scrollbar(
-      child: getDynamicList(),
-      isAlwaysShown: true,
-    );
-  }
-
-  Widget getDynamicList() {
-    return widget.spanCount != null ? _getGridView() : _getListView();
-  }
-
-  Widget _getListView() {
-    return ListView(
-      controller: _scrollController,
-      scrollDirection: widget.direction.axis ?? Axis.vertical,
-      children: widget.children ?? [],
-    );
-  }
-
-  Widget _getGridView() {
-    return GridView.count(
-      controller: _scrollController,
-      scrollDirection: widget.direction.axis ?? Axis.vertical,
-      crossAxisCount: widget.spanCount ?? 1,
-      children: widget.children,
-    );
-  }
-
-  void _doTemplateRender() {
-    if (_isChildrenNotNullAndNotEmpty() || _isDataSourceNullOrEmpty()) {
-      return;
-    }
-
-    final templateManager = _getTemplateManager();
-    final contexts = _getListBeagleDataContext();
-    final anchor = _getAnchor();
-
-    final beagleWidget = BeagleWidget.of(context);
-    beagleWidget.view.getRenderer().doTemplateRender(
-          templateManager: templateManager,
-          anchor: anchor,
-          contexts: contexts,
-          componentManager: handleComponentManager,
-          mode: null,
-        );
-  }
-
-  TemplateManagerItem _getDefaultTemplate() {
-    return widget.templates.firstWhere((element) => element.condition == null);
-  }
-
-  List<TemplateManagerItem> _getTemplatesWithoutDefault(
-      TemplateManagerItem templateDefault) {
-    var templates = widget.templates;
-    templates.remove(templateDefault);
-    return templates;
-  }
-
-  TemplateManager _getTemplateManager() {
-    final defaultTemplate = _getDefaultTemplate();
-
-    var templates = _getTemplatesWithoutDefault(defaultTemplate);
-    return TemplateManager(
-      defaultTemplate: defaultTemplate.view,
-      templates: templates,
-    );
-  }
-
-  List<List<BeagleDataContext>> _getListBeagleDataContext() {
-    return widget.dataSource
-        .map((item) =>
-            [BeagleDataContext(id: widget.iteratorName ?? 'item', value: item)])
-        .toList();
-  }
-
-  String _getAnchor() {
-    final ValueKey<String> key =
-        (widget.key is ValueKey<String>) ? context.widget.key : ValueKey('');
-    return key.value;
-  }
-
-  BeagleUIElement handleComponentManager(BeagleUIElement component, int index) {
-    final test = {'component': component, index: index};
-    // BeagleUIElement innerHandleComponentManager(
-    //   BeagleUIElement component,
-    //   int index,
-    // ) {
-    //   /// TODO IMPLEMENT
-    //   return component;
-    // }
-
-    return test['component'];
-  }
-
-  bool _isChildrenNotNullAndNotEmpty() {
-    return widget.children != null && widget.children.isNotEmpty;
-  }
-
-  bool _isDataSourceNullOrEmpty() {
-    return widget.dataSource == null || widget.dataSource.isEmpty;
-  }
-
-  void _checkIfNeedToCallScrollEndActions() {
-    if (!_isExecutedActions &&
-        _getPercentageScrolled() >= widget.scrollEndThreshold) {
-      _scrollController.dispose();
-      _isExecutedActions = true;
-      widget.onScrollEnd();
-    }
-  }
-
-  double _getPercentageScrolled() {
-    double offset = _scrollController.offset;
-    double maxScrollExtent = _scrollController.position.maxScrollExtent;
-
-    if (maxScrollExtent == 0) return 100;
-
-    final percentage = 100 * offset / maxScrollExtent;
-    beagleServiceLocator.get<BeagleLogger>().info("percentage: $percentage");
-
-    return percentage;
-  }
-
-  void _addListenerToScrollController() {
-    if (_hasScrollEnd()) {
-      _scrollController.addListener(() {
-        _checkIfNeedToCallScrollEndActions();
+        assertHasListViewAndNotHasGridView();
       });
-    }
-  }
-
-  void tryExecuteOnScrollEndActions() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_hasScrollEnd() && _isChildrenNotNullAndNotEmpty()) {
-        _checkIfNeedToCallScrollEndActions();
-      }
     });
-  }
 
-  bool _hasScrollEnd() {
-    return widget.scrollEndThreshold != null && widget.onScrollEnd != null;
-  }
+    group('When passing parameter spanCount with number zero', () {
+      testWidgets('Then it should have a ListView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(spanCount: 0));
+
+        assertHasListViewAndNotHasGridView();
+      });
+    });
+
+    group('When passing parameter spanCount with null', () {
+      testWidgets('Then it should have a ListView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(spanCount: null));
+
+        assertHasListViewAndNotHasGridView();
+      });
+    });
+
+    group('When passing parameter spanCount with number two', () {
+      testWidgets('Then it should have a GridView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(spanCount: 2));
+
+        assertHasGridViewAndNotHasListView();
+      });
+    });
+
+    group('When passing parameter onInit', () {
+      testWidgets('Then it should call function onInit ',
+          (WidgetTester tester) async {
+        var runCount = 0;
+
+        await tester.pumpWidget(createWidget(onInit: () {
+          runCount++;
+        }));
+
+        expect(runCount, 1);
+      });
+    });
+
+    group('When passing parameter direction with value horizontal', () {
+      testWidgets('Then it should have a ListView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          direction: BeagleDynamicListDirection.HORIZONTAL,
+          spanCount: null,
+        ));
+
+        assertHasListViewAndNotHasGridView();
+        assertCorrectDirection(tester, Axis.horizontal);
+      });
+
+      testWidgets('Then it should have a GridView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          direction: BeagleDynamicListDirection.HORIZONTAL,
+          spanCount: 2,
+        ));
+
+        assertHasGridViewAndNotHasListView();
+        assertCorrectDirection(tester, Axis.horizontal);
+      });
+    });
+
+    group('When passing parameter direction with value vertical', () {
+      testWidgets('Then it should have a ListView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          direction: BeagleDynamicListDirection.VERTICAL,
+        ));
+
+        assertHasListViewAndNotHasGridView();
+        assertCorrectDirection(tester, Axis.vertical);
+      });
+
+      testWidgets('Then it should have a GridView component',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          direction: BeagleDynamicListDirection.VERTICAL,
+          spanCount: 2,
+        ));
+
+        assertHasGridViewAndNotHasListView();
+        assertCorrectDirection(tester, Axis.vertical);
+      });
+    });
+
+    group('When passing parameter children', () {
+      testWidgets('Then it should have a ListView component with widgets',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          children: getChildren(),
+        ));
+
+        assertHasListViewAndNotHasGridView();
+        assertHasChildren(tester);
+      });
+
+      testWidgets('Then it should have a GridView component with widgets',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          spanCount: 2,
+          children: getChildren(),
+        ));
+
+        assertHasGridViewAndNotHasListView();
+        assertHasChildren(tester);
+      });
+    });
+
+    group(
+        'When passing parameter onScrollEnd, scrollEndThreshold and call callback didUpdateWidget',
+        () {
+      testWidgets('Then it should have called onScrollEnd',
+          (WidgetTester tester) async {
+        var runCount = 0;
+
+        await tester.pumpWidget(createWidget(
+            children: getChildren(),
+            scrollEndThreshold: 1,
+            onScrollEnd: () {
+              runCount++;
+            }));
+
+        await tester.pumpWidget(createWidget(
+            children: [Text('text'), Text('text two')],
+            scrollEndThreshold: 1,
+            onScrollEnd: () {
+              runCount++;
+            }));
+
+        expect(runCount, 1);
+      });
+    });
+
+    group(
+        'When passing parameter onScrollEnd, scrollEndThreshold and scroll screen',
+        () {
+      testWidgets('Then it should have called onScrollEnd',
+          (WidgetTester tester) async {
+        var runCount = 0;
+
+        final widget = createWidget(
+            children: getChildren(),
+            scrollEndThreshold: 1,
+            onScrollEnd: () {
+              runCount++;
+            });
+
+        await tester.pumpWidget(widget);
+
+        assertHasListViewAndNotHasGridView();
+        scrollScreenToDown(tester);
+
+        expect(runCount, 1);
+      });
+
+      testWidgets('Then it should have called onScrollEnd in GridView',
+          (WidgetTester tester) async {
+        var runCount = 0;
+
+        final widget = createWidget(
+            children: getChildren(),
+            scrollEndThreshold: 1,
+            spanCount: 2,
+            onScrollEnd: () {
+              runCount++;
+            });
+
+        await tester.pumpWidget(widget);
+
+        assertHasGridViewAndNotHasListView();
+        scrollScreenToDown(tester);
+
+        expect(runCount, 1);
+      });
+    });
+  });
+}
+
+void scrollScreenToDown(WidgetTester tester) {
+  final scrollableFinder = find.byType(Scrollable);
+  final scrollable = tester.widget<Scrollable>(scrollableFinder);
+  final controller = scrollable.controller;
+  controller.jumpTo(controller.offset + 300);
+}
+
+void assertCorrectDirection(WidgetTester tester, Axis axis) {
+  final scrollableFinder = find.byType(Scrollable);
+  final scrollable = tester.widget<Scrollable>(scrollableFinder);
+
+  expect(scrollable.axis, axis);
+}
+
+void assertHasListViewAndNotHasGridView() {
+  final listViewFinder = find.byType(ListView);
+
+  final gridViewFinder = find.byType(GridView);
+
+  expect(listViewFinder, findsOneWidget);
+  expect(gridViewFinder, findsNothing);
+}
+
+void assertHasGridViewAndNotHasListView() {
+  final listViewFinder = find.byType(ListView);
+
+  final gridViewFinder = find.byType(GridView);
+
+  expect(gridViewFinder, findsOneWidget);
+  expect(listViewFinder, findsNothing);
+}
+
+void assertHasChildren(
+  WidgetTester tester,
+) {
+  final textFinder = find.byType(Text);
+  final scrollableFinder = find.byType(Scrollable);
+  final scrollable = tester.widget<Scrollable>(scrollableFinder);
+
+  expect(textFinder, findsOneWidget);
+  expect(scrollable.semanticChildCount, 1);
+}
+
+List<Widget> getChildren() {
+  return [Text('Simple Text', key: UniqueKey())];
 }

@@ -21,7 +21,7 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-/// A simple Wrapper to GriView or ListView
+/// The component to generate GriView or ListView
 class BeagleDynamicList extends StatefulWidget {
   const BeagleDynamicList(
     Key key, {
@@ -85,7 +85,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     super.didUpdateWidget(oldWidget);
     _doTemplateRender();
 
-    tryExecuteOnScrollEndActions();
+    _tryExecuteOnScrollEndActions();
   }
 
   @override
@@ -108,27 +108,27 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   Widget build(BuildContext context) {
     if (widget.isScrollIndicatorVisible != null &&
         widget.isScrollIndicatorVisible) {
-      return getScrollBar();
+      return _getScrollBar();
     }
 
-    return getDynamicList();
+    return _getDynamicList();
   }
 
-  Widget getScrollBar() {
+  Widget _getScrollBar() {
     return Scrollbar(
-      child: getDynamicList(),
+      child: _getDynamicList(),
       isAlwaysShown: true,
     );
   }
 
-  Widget getDynamicList() {
-    return widget.spanCount != null ? _getGridView() : _getListView();
+  Widget _getDynamicList() {
+    return _isNotGridView() ? _getListView() : _getGridView();
   }
 
   Widget _getListView() {
     return ListView(
       controller: _scrollController,
-      scrollDirection: widget.direction.axis ?? Axis.vertical,
+      scrollDirection: _getScrollDirection(),
       children: widget.children ?? [],
     );
   }
@@ -136,9 +136,9 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   Widget _getGridView() {
     return GridView.count(
       controller: _scrollController,
-      scrollDirection: widget.direction.axis ?? Axis.vertical,
-      crossAxisCount: widget.spanCount ?? 1,
-      children: widget.children,
+      scrollDirection: _getScrollDirection(),
+      crossAxisCount: widget.spanCount,
+      children: widget.children ?? [],
     );
   }
 
@@ -156,7 +156,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
           templateManager: templateManager,
           anchor: anchor,
           contexts: contexts,
-          componentManager: handleComponentManager,
+          componentManager: _handleComponentManager,
           mode: null,
         );
   }
@@ -195,7 +195,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     return key.value;
   }
 
-  BeagleUIElement handleComponentManager(BeagleUIElement component, int index) {
+  BeagleUIElement _handleComponentManager(BeagleUIElement component, int index) {
     final test = {'component': component, index: index};
     // BeagleUIElement innerHandleComponentManager(
     //   BeagleUIElement component,
@@ -231,10 +231,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
     if (maxScrollExtent == 0) return 100;
 
-    final percentage = 100 * offset / maxScrollExtent;
-    beagleServiceLocator.get<BeagleLogger>().info("percentage: $percentage");
-
-    return percentage;
+    return 100 * offset / maxScrollExtent;
   }
 
   void _addListenerToScrollController() {
@@ -245,7 +242,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     }
   }
 
-  void tryExecuteOnScrollEndActions() {
+  void _tryExecuteOnScrollEndActions() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_hasScrollEnd() && _isChildrenNotNullAndNotEmpty()) {
         _checkIfNeedToCallScrollEndActions();
@@ -255,5 +252,13 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   bool _hasScrollEnd() {
     return widget.scrollEndThreshold != null && widget.onScrollEnd != null;
+  }
+
+  bool _isNotGridView() {
+    return widget.spanCount == null || widget.spanCount <= 1;
+  }
+
+  Axis _getScrollDirection() {
+    return widget.direction.axis ?? Axis.vertical;
   }
 }
