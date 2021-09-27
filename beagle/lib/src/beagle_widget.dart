@@ -35,24 +35,24 @@ class BeagleWidget extends StatefulWidget {
 }
 
 class _BeagleWidget extends State<BeagleWidget> {
-  final logger = beagleServiceLocator<BeagleLogger>();
-  final environment = beagleServiceLocator<BeagleEnvironment>();
-  final beagleService = beagleServiceLocator<BeagleService>();
-  Widget widgetState;
+  final _logger = beagleServiceLocator<BeagleLogger>();
+  final _environment = beagleServiceLocator<BeagleEnvironment>();
+  final _beagleService = beagleServiceLocator<BeagleService>();
+  Widget _widgetState;
 
   Widget _buildViewFromTree(BeagleUIElement tree) {
     final widgetChildren = tree.getChildren().map(_buildViewFromTree).toList();
-    final builder = beagleService.components[tree.getType().toLowerCase()];
+    final builder = _beagleService.components[tree.getType().toLowerCase()];
     if (builder == null) {
-      logger.error("Can't find builder for component ${tree.getType()}");
-      return BeagleUndefinedWidget(environment: environment);
+      _logger.error("Can't find builder for component ${tree.getType()}");
+      return BeagleUndefinedWidget(environment: _environment);
     }
     try {
       return BeagleFlexWidget(children: [_createWidget(tree, builder(tree, widgetChildren, widget.view))]);
     } catch (error) {
-      logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
-      logger.error(error.toString());
-      return BeagleUndefinedWidget(environment: environment);
+      _logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
+      _logger.error(error.toString());
+      return BeagleUndefinedWidget(environment: _environment);
     }
   }
 
@@ -66,7 +66,7 @@ class _BeagleWidget extends State<BeagleWidget> {
 
   void _updateCurrentUI(BeagleUIElement tree) {
     if (tree != null) {
-      setState(() => widgetState = _buildViewFromTree(tree));
+      setState(() => _widgetState = _buildViewFromTree(tree));
     }
   }
 
@@ -82,9 +82,9 @@ class _BeagleWidget extends State<BeagleWidget> {
 
     // setup actions
     widget.view.onAction(({action, element, view}) {
-      final handler = beagleService.actions[action.getType().toLowerCase()];
+      final handler = _beagleService.actions[action.getType().toLowerCase()];
       if (handler == null) {
-        return logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
+        return _logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
       }
       handler(
         action: action,
@@ -103,6 +103,6 @@ class _BeagleWidget extends State<BeagleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widgetState ?? const SizedBox.shrink();
+    return _widgetState ?? const SizedBox.shrink();
   }
 }
