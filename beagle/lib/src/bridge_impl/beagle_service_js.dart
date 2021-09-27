@@ -17,7 +17,6 @@
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/network_strategy.dart';
 
 import 'beagle_js_engine.dart';
 
@@ -26,10 +25,10 @@ class BeagleServiceJS implements BeagleService {
     this._beagleJSEngine, {
     this.baseUrl,
     this.httpClient,
+    this.viewClient,
     this.components,
-    this.useBeagleHeaders,
     this.actions,
-    this.strategy,
+    this.defaultNavigationController,
     this.navigationControllers,
     this.operations,
   });
@@ -39,31 +38,19 @@ class BeagleServiceJS implements BeagleService {
   @override
   HttpClient httpClient;
   @override
-  Map<String, ComponentBuilder> components;
+  ViewClient viewClient;
   @override
-  bool useBeagleHeaders;
+  Map<String, ComponentBuilder> components;
   @override
   Map<String, ActionHandler> actions;
   @override
-  BeagleNetworkStrategy strategy;
+  NavigationController defaultNavigationController;
   @override
   Map<String, NavigationController> navigationControllers;
   @override
   Map<String, Operation> operations;
 
   final BeagleJSEngine _beagleJSEngine;
-
-  Map<String, dynamic> _getNavigationControllersAsMap() {
-    if (navigationControllers == null) {
-      return null;
-    }
-    final result = <String, dynamic>{};
-    for (final key in navigationControllers.keys) {
-      final controller = navigationControllers[key];
-      result[key] = controller.toMap();
-    }
-    return result;
-  }
 
   @override
   Future<void> start() async {
@@ -78,15 +65,8 @@ class BeagleServiceJS implements BeagleService {
       'baseUrl': baseUrl,
       'actionKeys': actions.keys.toList(),
       'customOperations': operations.keys.toList(),
-      'useBeagleHeaders': useBeagleHeaders,
-      'strategy': NetworkStrategyUtils.getJsStrategyName(strategy),
     };
-    final navigationControllers = _getNavigationControllersAsMap();
-    if (navigationControllers != null) {
-      params['navigationControllers'] = navigationControllers;
-    }
-    _beagleJSEngine
-        .evaluateJavascriptCode('global.beagle.start(${json.encode(params)})');
+    _beagleJSEngine.evaluateJavascriptCode('global.beagle.start(${json.encode(params)})');
   }
 
   void _registerHttpListener() {

@@ -41,26 +41,22 @@ abstract class BeagleService {
   /// used.
   HttpClient httpClient;
 
+  ViewClient viewClient;
+
   /// The map of components to be used when rendering a view. The key must be the
   /// `_beagleComponent_` identifier and the value must be a ComponentBuilder, which is a function
   /// that transforms a BeagleUIElement into a Widget. The key must always start with `beagle:` or
   /// `custom:`.
   Map<String, ComponentBuilder> components;
 
-  /// Wether or not to send specific beagle headers in the requests to fetch a view. Default is
-  /// true.
-  bool useBeagleHeaders;
-
   /// The map of custom actions. The key must be the `_beagleAction_` identifier and the value
   /// must be the action handler. The key must always start with `beagle:` or `custom:`.
   Map<String, ActionHandler> actions;
 
-  /// The default cache strategy for fetching views from the backend. By default uses
-  /// `beagle-with-fallback-to-cache`.
-  BeagleNetworkStrategy strategy;
+  /// Sets the default navigation controller.
+  NavigationController defaultNavigationController;
 
-  /// Options for the visual feedback when navigating from a view to another. To set the default
-  /// options, use `default: true` in the navigation controller.
+  /// Controls the behavior of the navigator when handling events like loading, error and success.
   Map<String, NavigationController> navigationControllers;
 
   /*

@@ -34,12 +34,6 @@ void main() {
   BeagleSdk.init(
     baseUrl: 'http://$localhost:8080',
     components: myComponents,
-    navigationControllers: {
-      'general': NavigationController(
-        isDefault: true,
-        loadingComponent: 'custom:loading',
-      ),
-    },
   );
   runApp(BeagleExample());
 }
@@ -54,8 +48,9 @@ class BeagleExample extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Beagle example'),
         ),
-        body: BeagleWidget(
-          screenRequest: BeagleScreenRequest('components'),
+        body: ElevatedButton(
+          onPressed: () => BeagleSdk.openScreen(route: RemoteView('components'), context: context),
+          child: Text("Start Beagle flow"),
         ),
       ),
     );

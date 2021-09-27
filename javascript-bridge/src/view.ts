@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { BeagleService, BeagleView, BeagleUIElement, NetworkOptions } from '@zup-it/beagle-web'
+import { BeagleService, BeagleView, BeagleViewImpl, BeagleUIElement } from '@zup-it/beagle-web'
 import get from 'lodash/get'
 
 export interface JsBridgeBeagleView extends BeagleView {
   id: string,
   executeFunction: (functionId: string, argumentsMap: Record<string, any>) => void,
+  getTreeAsJson: () => string,
 }
 
 const map: Record<string, JsBridgeBeagleView> = {}
@@ -47,12 +48,12 @@ function serializeFunctions(value: any, path = '__beagleFn:'): any {
   return value
 }
 
-export function createBeagleView(service: BeagleService, networkOptions?: NetworkOptions, initialControllerId?: string) {
-  const view = service.createView(networkOptions, initialControllerId) as JsBridgeBeagleView
+export function createBeagleView(service: BeagleService) {
+  const view = BeagleViewImpl.create(service) as JsBridgeBeagleView
   view.id = `${nextViewId++}`
   let currentTree: BeagleUIElement | null = null
 
-  view.subscribe((tree) => {
+  view.onChange((tree) => {
     currentTree = tree
 
     sendMessage(
@@ -60,11 +61,6 @@ export function createBeagleView(service: BeagleService, networkOptions?: Networ
       JSON.stringify({ id: view.id, tree: serializeFunctions(tree) }),
     )
   })
-
-  view.getNavigator().subscribe(route => sendMessage(
-    'beagleNavigator',
-    JSON.stringify({ viewId: view.id, route }),
-  ))
   
   view.executeFunction = (functionId: string, argumentsMap: Record<string, any>) => {
     if (!currentTree) return
@@ -76,6 +72,8 @@ export function createBeagleView(service: BeagleService, networkOptions?: Networ
     }
     fn(argumentsMap)
   }
+
+  view.getTreeAsJson = () => JSON.stringify(view.getTree())
   
   map[view.id] = view
   return view.id

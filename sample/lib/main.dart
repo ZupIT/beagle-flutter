@@ -43,15 +43,9 @@ void main() {
   BeagleSdk.init(
     baseUrl: 'http://$localhost:8080',
     environment:
-        kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
+    kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
     components: {...defaultComponents, ...myCustomComponents},
     actions: {...myCustomActions, ...defaultActions},
-    navigationControllers: {
-      'general': NavigationController(
-        isDefault: true,
-        loadingComponent: 'custom:loading',
-      ),
-    },
     analyticsProvider: AppAnalyticsProvider(),
     logger: DefaultLogger(),
     designSystem: AppDesignSystem(),
@@ -75,13 +69,11 @@ class BeagleSampleApp extends StatelessWidget {
         ),
       ),
       home: Scaffold(
-        body: BeagleWidget(
-          screenRequest: BeagleScreenRequest('components'),
-          onCreateView: (view) => {
-            view.addErrorListener((errors) {
-              //TODO
-            })
-          },
+        body: Center(
+          child: ElevatedButton(
+            onPressed: () => BeagleSdk.openScreen(route: RemoteView('/components'), context: context),
+            child: Text('Start beagle flow'),
+          ),
         ),
       ),
     );

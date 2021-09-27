@@ -16,6 +16,8 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/service_locator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 import 'package:beagle/src/default/default_actions.dart';
 
@@ -32,12 +34,11 @@ class BeagleSdk {
 
     /// Interface that provides client to beagle make the requests.
     HttpClient httpClient,
+    ViewClient viewClient,
     Map<String, ComponentBuilder> components,
-    Storage storage,
-    bool useBeagleHeaders,
     Map<String, ActionHandler> actions,
-    BeagleNetworkStrategy strategy,
-    Map<String, NavigationController> navigationControllers,
+    NavigationController defaultNavigationController,
+    Map<String, NavigationController> navigationControllers = const {},
 
     /// [BeagleDesignSystem] interface that provides design system to beagle components.
     BeagleDesignSystem designSystem,
@@ -53,19 +54,18 @@ class BeagleSdk {
     Yoga.init();
 
     baseUrl = baseUrl ?? "";
+    final urlBuilder = UrlBuilder(baseUrl);
     httpClient = httpClient ?? const DefaultHttpClient();
+    logger = logger ?? DefaultEmptyLogger();
+    viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: urlBuilder);
     environment = environment ?? BeagleEnvironment.debug;
-    useBeagleHeaders = useBeagleHeaders ?? true;
-    storage = storage ?? DefaultStorage();
     designSystem = designSystem ?? DefaultEmptyDesignSystem();
+    defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
     imageDownloader =
         imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
-    strategy = strategy ?? BeagleNetworkStrategy.beagleWithFallbackToCache;
-    logger = logger ?? DefaultEmptyLogger();
     operations = operations ?? {};
 
-    actions =
-        actions == null ? defaultActions : {...defaultActions, ...actions};
+    actions = actions == null ? defaultActions : {...defaultActions, ...actions};
 
     Map<String, ComponentBuilder> lowercaseComponents =
         components.map((key, value) => MapEntry(key.toLowerCase(), value));
@@ -76,18 +76,33 @@ class BeagleSdk {
     setupServiceLocator(
       baseUrl: baseUrl,
       httpClient: httpClient,
+      viewClient: viewClient,
       environment: environment,
       components: lowercaseComponents,
-      storage: storage,
-      useBeagleHeaders: useBeagleHeaders,
       actions: lowercaseActions,
+      defaultNavigationController: defaultNavigationController,
       navigationControllers: navigationControllers,
       designSystem: designSystem,
       imageDownloader: imageDownloader,
-      strategy: strategy,
       logger: logger,
       operations: operations,
       analyticsProvider: analyticsProvider
     );
+  }
+
+  static void openScreen({
+    @required BeagleRoute route,
+    @required BuildContext context,
+    ScreenBuilder screenBuilder,
+    NavigationController initialController,
+  }) async {
+    await beagleServiceLocator.allReady();
+    final navigator = RootNavigator(
+      initialRoute: route,
+      screenBuilder: screenBuilder ?? (widget, _) => widget,
+      initialController: initialController,
+    );
+    final pageRoute = MaterialPageRoute<dynamic>(builder: (_) => navigator);
+    Navigator.push(context, pageRoute);
   }
 }

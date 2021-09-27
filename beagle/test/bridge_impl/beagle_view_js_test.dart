@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
@@ -38,18 +40,6 @@ void main() {
   group('Given a BeagleViewJS', () {
     final beagleView = BeagleViewJS(jsEngineMock);
 
-    group('When addErrorListener is called', () {
-      test(
-          'Then should register the view update error listener at BeagleJSEngine',
-          () {
-        void onErrorListener(errors) {}
-
-        beagleView.addErrorListener(onErrorListener);
-
-        verify(jsEngineMock.onViewUpdateError(createdViewId, onErrorListener));
-      });
-    });
-
     group('When destroy is called', () {
       test(
           'Then should remove all view listeners for this view id at BeagleJSEngine',
@@ -68,31 +58,46 @@ void main() {
         };
 
         when(
-          jsEngineMock.evaluateJavascriptCode(
-              "global.beagle.getViewById('$createdViewId').getTree()"),
+          jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
-          JsEvalResult(
-            'stringResult',
-            properties,
-          ),
+          JsEvalResult(json.encode(properties), null),
         );
-        final expectedBeagleUIElement = BeagleUIElement(properties);
 
+        final expectedBeagleUIElement = BeagleUIElement(properties);
         final result = beagleView.getTree();
 
         expect(result.properties, properties);
         expect(result.getType(), expectedBeagleUIElement.getType());
-        expect(result.getAttributeValue('text'),
-            expectedBeagleUIElement.getAttributeValue('text'));
+        expect(result.getAttributeValue('text'), expectedBeagleUIElement.getAttributeValue('text'));
+      });
+
+      test('Then it should return null if no tree exists', () {
+        when(
+          jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+        ).thenReturn(
+          JsEvalResult("null", null),
+        );
+        final result = beagleView.getTree();
+        expect(result, null);
+      });
+
+      test('Then it should return null if tree is invalid', () {
+        when(
+          jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+        ).thenReturn(
+          JsEvalResult("{}", null),
+        );
+        final result = beagleView.getTree();
+        expect(result, null);
       });
     });
 
-    group('When subscribe is called', () {
+    group('When onChange is called', () {
       test('Then should register the view update listener at BeagleJSEngine',
           () {
         void onUpdateListener(uiElement) {}
 
-        beagleView.subscribe(onUpdateListener);
+        beagleView.onChange(onUpdateListener);
 
         verify(jsEngineMock.onViewUpdate(createdViewId, onUpdateListener));
       });

@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import createBeagleService, {
-  BeagleService,
-  logger,
-  NavigationController,
-  NetworkOptions,
-  Strategy
-} from '@zup-it/beagle-web'
+import createBeagleService, { BeagleService, logger } from '@zup-it/beagle-web'
 import { createCustomActionMap } from './action'
 import { createBeagleView, getView } from './view'
-import { storage } from './storage'
 import { callFunction } from './function'
 import { httpClient, respondHttpRequest } from './http-client'
 import { resolvePromise, rejectPromise } from './promise'
@@ -35,9 +28,6 @@ interface StartParams {
   baseUrl: string,
   actionKeys: string[],
   customOperations: string[]
-  navigationControllers: Record<string, NavigationController>,
-  useBeagleHeaders: boolean,
-  strategy: Strategy,
 }
 
 // @ts-ignore
@@ -52,7 +42,6 @@ window.beagle = (() => {
         components: {},
         disableCssTransformation: true,
         fetchData: httpClient.fetch,
-        customStorage: storage,
         customActions: createCustomActionMap(actionKeys),
         customOperations: createCustomOperationMap(customOperations),
         analyticsProvider: analyticsProvider,
@@ -62,7 +51,7 @@ window.beagle = (() => {
       
       logger.setCustomLogFunction(logToFlutter)
     },
-    createBeagleView: (networkOptions?: NetworkOptions, initialControllerId?: string) => createBeagleView(service, networkOptions, initialControllerId),
+    createBeagleView: () => createBeagleView(service),
     httpClient: { respond: respondHttpRequest },
     call: (id: string, argumentsMap?: Record<string, any>) => {
       console.log(`js: called function with id ${id} and argument map: ${JSON.stringify(argumentsMap)}`)

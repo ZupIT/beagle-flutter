@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import 'dart:developer';
+
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/action/beagle_confirm.dart';
+
+BeagleRoute _getRoute(BeagleAction action) {
+  final json = action.getAttributeValue("route");
+  return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
+}
 
 final Map<String, ActionHandler> defaultActions = {
   'beagle:confirm': ({action, view, element, context}) {
@@ -38,11 +45,34 @@ final Map<String, ActionHandler> defaultActions = {
       title: action.getAttributeValue('title', 'Alert'),
     );
   },
+  // Native navigation
   'beagle:openNativeRoute': ({action, view, element, context}) {
     BeagleOpenNativeRoute()
         .navigate(context, action.getAttributeValue('route'));
   },
   'beagle:openExternalURL': ({action, view, element, context}) {
     BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
-  }
+  },
+  // Beagle Navigation
+  'beagle:pushView': ({action, view, element, context}) {
+    view.getNavigator().pushView(_getRoute(action), context);
+  },
+  'beagle:popView': ({action, view, element, context}) {
+    view.getNavigator().popView(context);
+  },
+  'beagle:popToView': ({action, view, element, context}) {
+    view.getNavigator().popToView(action.getAttributeValue("route"), context);
+  },
+  'beagle:pushStack': ({action, view, element, context}) {
+    view.getNavigator().pushStack(_getRoute(action), context);
+  },
+  'beagle:popStack': ({action, view, element, context}) {
+    view.getNavigator().popStack(context);
+  },
+  'beagle:resetStack': ({action, view, element, context}) {
+    view.getNavigator().resetStack(_getRoute(action), context);
+  },
+  'beagle:resetApplication': ({action, view, element, context}) {
+    view.getNavigator().resetApplication(_getRoute(action), context);
+  },
 };
