@@ -36,6 +36,7 @@ class BeagleGridView extends StatelessWidget {
     this.onScrollEnd,
     this.spanCount,
     this.children,
+    this.suffix,
   }) : super(key: key);
 
   /// Optional function to run once the container is created
@@ -71,6 +72,9 @@ class BeagleGridView extends StatelessWidget {
   /// Define a list of components to be displayed on this view.
   final List<Widget> children;
 
+  /// TODO
+  final String suffix;
+
   @override
   Widget build(BuildContext context) {
     return BeagleDynamicList(
@@ -86,6 +90,7 @@ class BeagleGridView extends StatelessWidget {
       onScrollEnd: onScrollEnd,
       spanCount: spanCount,
       children: children,
+      suffix: suffix,
     );
   }
 }

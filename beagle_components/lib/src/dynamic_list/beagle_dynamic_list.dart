@@ -36,6 +36,7 @@ class BeagleDynamicList extends StatefulWidget {
     this.onScrollEnd,
     this.children,
     this.spanCount,
+    this.suffix,
   }) : super(key: key);
 
   /// Optional function to run once the container is created
@@ -70,6 +71,8 @@ class BeagleDynamicList extends StatefulWidget {
 
   /// Define a list of components to be displayed on this view.
   final List<Widget> children;
+
+  final String suffix;
 
   @override
   _BeagleDynamicList createState() => _BeagleDynamicList();
@@ -197,63 +200,52 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   BeagleUIElement _handleComponentManager(
       BeagleUIElement component, int index) {
-    final test = {'component': component, index: index};
-
-    BeagleUIElement uiElement = iterateComponent(component, index);
-    // BeagleUIElement innerHandleComponentManager(
-    //   BeagleUIElement component,
-    //   int index,
-    // ) {
-    //   /// TODO IMPLEMENT
-    //   return component;
-    // }
-
-    return component;
+    return _iterateComponent(component, index);
   }
 
-  String getIterationKey(int index) {
-    //TODO vai dar merda
+  String _getIterationKey(int index) {
     final iteratorNameInDataSource =
         widget.dataSource[index][widget.iteratorName];
     final hasKey =
         widget.iteratorName != null && widget.iteratorName.isNotEmpty;
-    return hasKey && iteratorNameInDataSource
+    return hasKey && iteratorNameInDataSource != null
         ? iteratorNameInDataSource
         : index.toString();
   }
 
-  String getBaseId(
+  String _getBaseId(
       BeagleUIElement component, int componentIndex, String suffix) {
-    return component.getId() != null && component.getId().isNotEmpty
+    return component.getId() != null &&
+            component.getId().isNotEmpty &&
+            suffix.isNotEmpty
         ? "${component.getId()}$suffix"
         : "${_getAnchor()}:$componentIndex";
   }
 
-  // const getBaseId = (
-  //     component: IdentifiableBeagleUIElement,
-  //     componentIndex: number,
-  //     suffix: string,
-  // ) => component.id ? `${component.id}${suffix}` : `${element.id}:${componentIndex}`
-
-  BeagleUIElement iterateComponent(BeagleUIElement element, int indexElement) {
+  BeagleUIElement _iterateComponent(BeagleUIElement element, int indexElement) {
     if (element.hasChildren()) {
       for (var indexComponent = 0;
           indexComponent < element.getChildren().length;
           indexComponent++) {
-        // const iterationKey = getIterationKey(index)
-        // const baseId = getBaseId(treeComponent, componentIndex, suffix)
-        // const hasSuffix = ['beagle:listview', 'beagle:gridview'].includes(componentTag)
-        // treeComponent.id = `${baseId}:${iterationKey}`
-        // if (hasSuffix) {
-        // treeComponent.__suffix__ = `${suffix}:${iterationKey}`
-        // }
-
         final component = element.getChildren()[indexComponent];
 
-        final iteratorKey = getIterationKey(indexElement);
-        // final baseId = getBaseId(component, indexComponent, );
+        final iterationKey = _getIterationKey(indexElement);
+        final baseId = _getBaseId(
+          component,
+          indexComponent,
+          widget.suffix ?? '',
+        );
 
-        // iterateComponent(element, index);
+        final hasSuffix = ['beagle:listview', 'beagle:gridview']
+            .contains(component.getType());
+
+        component.setId("$baseId:$iterationKey");
+
+        if (hasSuffix) {
+          component.properties['__suffix__'] = "${widget.suffix}:$iterationKey";
+        }
+
+        _iterateComponent(element, indexElement);
       }
     }
 
