@@ -199,7 +199,7 @@ void main() {
             onScrollEnd: () {
               runCount++;
             }));
-        
+
         expect(runCount, 1);
       });
     });

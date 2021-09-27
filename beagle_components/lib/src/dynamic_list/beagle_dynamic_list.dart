@@ -151,8 +151,8 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     final contexts = _getListBeagleDataContext();
     final anchor = _getAnchor();
 
-    final beagleWidget = BeagleWidget.of(context);
-    beagleWidget.view.getRenderer().doTemplateRender(
+    final beagleWidgetState = BeagleWidget.of(context);
+    beagleWidgetState.view.getRenderer().doTemplateRender(
           templateManager: templateManager,
           anchor: anchor,
           contexts: contexts,
@@ -198,6 +198,8 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   BeagleUIElement _handleComponentManager(
       BeagleUIElement component, int index) {
     final test = {'component': component, index: index};
+
+    BeagleUIElement uiElement = iterateComponent(component, index);
     // BeagleUIElement innerHandleComponentManager(
     //   BeagleUIElement component,
     //   int index,
@@ -206,7 +208,56 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     //   return component;
     // }
 
-    return test['component'];
+    return component;
+  }
+
+  String getIterationKey(int index) {
+    //TODO vai dar merda
+    final iteratorNameInDataSource =
+        widget.dataSource[index][widget.iteratorName];
+    final hasKey =
+        widget.iteratorName != null && widget.iteratorName.isNotEmpty;
+    return hasKey && iteratorNameInDataSource
+        ? iteratorNameInDataSource
+        : index.toString();
+  }
+
+  String getBaseId(
+      BeagleUIElement component, int componentIndex, String suffix) {
+    return component.getId() != null && component.getId().isNotEmpty
+        ? "${component.getId()}$suffix"
+        : "${_getAnchor()}:$componentIndex";
+  }
+
+  // const getBaseId = (
+  //     component: IdentifiableBeagleUIElement,
+  //     componentIndex: number,
+  //     suffix: string,
+  // ) => component.id ? `${component.id}${suffix}` : `${element.id}:${componentIndex}`
+
+  BeagleUIElement iterateComponent(BeagleUIElement element, int indexElement) {
+    if (element.hasChildren()) {
+      for (var indexComponent = 0;
+          indexComponent < element.getChildren().length;
+          indexComponent++) {
+        // const iterationKey = getIterationKey(index)
+        // const baseId = getBaseId(treeComponent, componentIndex, suffix)
+        // const hasSuffix = ['beagle:listview', 'beagle:gridview'].includes(componentTag)
+        // treeComponent.id = `${baseId}:${iterationKey}`
+        // if (hasSuffix) {
+        // treeComponent.__suffix__ = `${suffix}:${iterationKey}`
+        // }
+
+        final component = element.getChildren()[indexComponent];
+
+        final iteratorKey = getIterationKey(indexElement);
+        // final baseId = getBaseId(component, indexComponent, );
+
+        // iterateComponent(element, index);
+      }
+    }
+
+    return element;
   }
 
   bool _isChildrenNotNullAndNotEmpty() {
