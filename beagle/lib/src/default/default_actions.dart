@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:developer';
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/action/beagle_confirm.dart';
 
