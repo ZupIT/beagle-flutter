@@ -55,7 +55,7 @@ class BeagleWidget extends StatefulWidget {
 
 class BeagleWidgetState extends State<BeagleWidget> {
   BeagleView view;
-  Widget widgetState;
+  Widget _widgetState;
 
   BeagleService _service;
   final _logger = beagleServiceLocator<BeagleLogger>();
@@ -82,7 +82,7 @@ class BeagleWidgetState extends State<BeagleWidget> {
       ..subscribe((tree) {
         final widgetLoaded = _buildViewFromTree(tree);
         setState(() {
-          widgetState = widgetLoaded;
+          _widgetState = widgetLoaded;
         });
       })
       ..onAction(({action, element, view}) {
@@ -116,8 +116,15 @@ class BeagleWidgetState extends State<BeagleWidget> {
       return BeagleUndefinedWidget(environment: _environment);
     }
     try {
-      return BeagleFlexWidget(
-          children: [createWidget(tree, builder(tree, widgetChildren, view))]);
+      return BeagleFlexWidget(children: [
+        createWidget(
+            tree,
+            builder(
+              tree,
+              widgetChildren,
+              view,
+            ))
+      ]);
     } catch (error) {
       _logger.error(
           'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');
@@ -138,6 +145,6 @@ class BeagleWidgetState extends State<BeagleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widgetState ?? const SizedBox.shrink();
+    return _widgetState ?? const SizedBox.shrink();
   }
 }
