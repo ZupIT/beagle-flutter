@@ -187,8 +187,12 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   List<List<BeagleDataContext>> _getListBeagleDataContext() {
     return widget.dataSource
-        .map((item) =>
-            [BeagleDataContext(id: widget.iteratorName ?? 'item', value: item)])
+        .map((item) => [
+              BeagleDataContext(
+                id: widget.iteratorName ?? 'item',
+                value: item,
+              )
+            ])
         .toList();
   }
 
@@ -204,21 +208,22 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   }
 
   String _getIterationKey(int index) {
-    final iteratorNameInDataSource =
-        widget.dataSource[index][widget.iteratorName];
+    String valueInIteratorNameInDataSource;
+    try {
+      final value = widget.dataSource[index][widget.iteratorName];
+      valueInIteratorNameInDataSource = value ? value : null;
+    } catch (_) {}
     final hasKey =
         widget.iteratorName != null && widget.iteratorName.isNotEmpty;
-    return hasKey && iteratorNameInDataSource != null
-        ? iteratorNameInDataSource
+
+    return hasKey && valueInIteratorNameInDataSource != null
+        ? valueInIteratorNameInDataSource
         : index.toString();
   }
 
-  String _getBaseId(
-      BeagleUIElement component, int componentIndex, String suffix) {
-    return component.getId() != null &&
-            component.getId().isNotEmpty &&
-            suffix.isNotEmpty
-        ? "${component.getId()}$suffix"
+  String _getBaseId(String componentId, int componentIndex, String suffix) {
+    return componentId.isNotEmpty
+        ? "$componentId$suffix"
         : "${_getAnchor()}:$componentIndex";
   }
 
@@ -230,22 +235,24 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
         final component = element.getChildren()[indexComponent];
 
         final iterationKey = _getIterationKey(indexElement);
+
+        final suffix = widget.suffix ?? '';
         final baseId = _getBaseId(
-          component,
+          component.getId() ?? '',
           indexComponent,
-          widget.suffix ?? '',
+          suffix,
         );
 
         final hasSuffix = ['beagle:listview', 'beagle:gridview']
-            .contains(component.getType());
+            .contains(component.getType().toLowerCase());
 
         component.setId("$baseId:$iterationKey");
 
         if (hasSuffix) {
-          component.properties['__suffix__'] = "${widget.suffix}:$iterationKey";
+          component.properties['__suffix__'] = "$suffix:$iterationKey";
         }
 
-        _iterateComponent(element, indexElement);
+        _iterateComponent(component, indexElement);
       }
     }
 

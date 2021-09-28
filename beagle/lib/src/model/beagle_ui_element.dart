@@ -23,11 +23,15 @@ class BeagleUIElement {
   Map<String, dynamic> properties;
 
   String getId() {
-    return properties['id'].toString();
+    return properties['id'];
+  }
+
+  void setId(String id) {
+    properties['id'] = id;
   }
 
   Key getKey() {
-    return ValueKey(properties['id'].toString());
+    return ValueKey(getId());
   }
 
   String getType() {
