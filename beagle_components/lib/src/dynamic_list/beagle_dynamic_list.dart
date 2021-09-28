@@ -23,8 +23,8 @@ import 'package:flutter/widgets.dart';
 
 /// The component to generate GriView or ListView
 class BeagleDynamicList extends StatefulWidget {
-  const BeagleDynamicList(
-    Key key, {
+  const BeagleDynamicList({
+    Key key,
     this.onInit,
     this.direction,
     this.dataSource,

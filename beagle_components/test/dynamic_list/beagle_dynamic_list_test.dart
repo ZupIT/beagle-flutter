@@ -38,7 +38,7 @@ Widget createWidget({
   return MaterialApp(
     key: Key('materialApp'),
     home: BeagleDynamicList(
-      Key('dynamicList'),
+      key: Key('dynamicList'),
       onInit: onInit,
       direction: direction,
       dataSource: dataSource,

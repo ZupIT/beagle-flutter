@@ -89,7 +89,7 @@ ComponentBuilder beagleScrollViewBuilder() {
 }
 
 ComponentBuilder beagleListViewBuilder() {
-  return (element, children, _) => BeagleListView(
+  return (element, children, _) => BeagleDynamicList(
         key: element.getKey(),
         onInit: element.getAttributeValue('onInit'),
         direction: EnumUtils.fromString(
@@ -111,7 +111,7 @@ ComponentBuilder beagleListViewBuilder() {
 }
 
 ComponentBuilder beagleGridViewBuilder() {
-  return (element, children, _) => BeagleGridView(
+  return (element, children, _) => BeagleDynamicList(
         key: element.getKey(),
         onInit: element.getAttributeValue('onInit'),
         direction: EnumUtils.fromString(
