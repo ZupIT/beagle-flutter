@@ -107,6 +107,7 @@ ComponentBuilder beagleListViewBuilder() {
         onScrollEnd: element.getAttributeValue('onScrollEnd'),
         children: children,
         suffix: element.getAttributeValue('__suffix__'),
+        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
       );
 }
 
@@ -130,6 +131,7 @@ ComponentBuilder beagleGridViewBuilder() {
         children: children,
         spanCount: element.getAttributeValue('spanCount'),
         suffix: element.getAttributeValue('__suffix__'),
+        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
       );
 }
 

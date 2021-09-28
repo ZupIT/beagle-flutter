@@ -43,12 +43,6 @@ class BeagleWidget extends StatefulWidget {
   /// get a current BeagleView.
   final OnCreateViewListener onCreateView;
 
-  static BeagleWidgetState of(
-    BuildContext context,
-  ) {
-    return context.findAncestorStateOfType<BeagleWidgetState>();
-  }
-
   @override
   BeagleWidgetState createState() => BeagleWidgetState();
 }

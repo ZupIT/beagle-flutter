@@ -38,3 +38,4 @@ export 'package:beagle_components/src/beagle_simple_form.dart';
 export 'package:beagle_components/src/action/beagle_submit_form.dart';
 export 'package:beagle_components/src/dynamic_list/beagle_dynamic_list.dart';
 export 'package:beagle_components/src/dynamic_list/beagle_dynamic_list_direction.dart';
+export 'package:beagle_components/src/utils/beagle_widget_state_provider.dart';

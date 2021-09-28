@@ -20,6 +20,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import '../service_locator/service_locator.dart';
 
 Widget createWidget({
@@ -34,6 +35,7 @@ Widget createWidget({
   final Function onScrollEnd,
   final int spanCount,
   final List<Widget> children,
+  final BeagleWidgetStateProvider provider,
 }) {
   return MaterialApp(
     key: Key('materialApp'),
@@ -50,6 +52,7 @@ Widget createWidget({
       onScrollEnd: onScrollEnd,
       spanCount: spanCount,
       children: children,
+      beagleWidgetStateProvider: provider,
     ),
   );
 }
@@ -268,6 +271,37 @@ void main() {
         expect(scrollbarFinder, findsNothing);
       });
     });
+
+    group('When passing dataSource', () {
+      testWidgets('Then it should render items', (WidgetTester tester) async {
+        final templates = [
+          TemplateManagerItem(
+              condition: null,
+              view: BeagleUIElement({
+                '_beagleComponent_': 'beagle:text',
+                'text': "This is @{item.name}"
+              }))
+        ];
+
+        final dataSource = [
+          {
+            "name": "text_1",
+          },
+          {
+            "name": "text_2",
+          },
+          {
+            "name": "text_3",
+          }
+        ];
+
+        await tester.pumpWidget(createWidget(
+          iteratorName: "name",
+          templates: templates,
+          dataSource: dataSource,
+        ));
+      });
+    });
   });
 }
 
@@ -316,4 +350,38 @@ void assertHasChildren(
 
 List<Widget> getChildren() {
   return [Text('Simple Text', key: UniqueKey())];
+}
+
+class RendererMock extends Mock implements Renderer {
+  @override
+  void doTemplateRender(
+      {TemplateManager templateManager,
+      String anchor,
+      List<List<BeagleDataContext>> contexts,
+      BeagleUIElement Function(BeagleUIElement p1, int p2) componentManager,
+      TreeUpdateMode mode}) {
+    print("dddd");
+  }
+}
+
+class BeagleViewMock extends Mock implements BeagleView {
+  @override
+  Renderer getRenderer() {
+    return RendererMock();
+  }
+}
+
+class BeagleWidgetStateMock extends Mock implements BeagleWidgetState {
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return "";
+  }
+}
+
+class MockBeagleWidgetStateProvider extends Mock
+    implements BeagleWidgetStateProvider {
+  @override
+  BeagleWidgetState of(BuildContext context) {
+    return BeagleWidgetStateMock();
+  }
 }
