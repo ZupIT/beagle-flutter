@@ -164,7 +164,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
           anchor: anchor,
           contexts: contexts,
           componentManager: _iterateComponent,
-          mode: null,
+          mode: TreeUpdateMode.replace,
         );
   }
 

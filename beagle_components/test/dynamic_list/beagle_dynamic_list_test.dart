@@ -328,7 +328,7 @@ void main() {
         expect(beagleDataContextListActual.length, 3);
         expect(capturedValues[3], isNotNull);
         final modeActual = capturedValues[4];
-        expect(modeActual, null);
+        expect(modeActual, TreeUpdateMode.replace);
       });
     });
 
