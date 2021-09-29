@@ -68,7 +68,7 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 1));
 
-        assertHasListViewAndNotHasGridView();
+        _assertHasListViewAndNotHasGridView();
       });
     });
 
@@ -77,7 +77,7 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 0));
 
-        assertHasListViewAndNotHasGridView();
+        _assertHasListViewAndNotHasGridView();
       });
     });
 
@@ -86,7 +86,7 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: null));
 
-        assertHasListViewAndNotHasGridView();
+        _assertHasListViewAndNotHasGridView();
       });
     });
 
@@ -95,7 +95,7 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 2));
 
-        assertHasGridViewAndNotHasListView();
+        _assertHasGridViewAndNotHasListView();
       });
     });
 
@@ -120,8 +120,8 @@ void main() {
           spanCount: null,
         ));
 
-        assertHasListViewAndNotHasGridView();
-        assertCorrectDirection(tester, Axis.horizontal);
+        _assertHasListViewAndNotHasGridView();
+        _assertCorrectDirection(tester, Axis.horizontal);
       });
 
       testWidgets('Then it should have a GridView component',
@@ -131,8 +131,8 @@ void main() {
           spanCount: 2,
         ));
 
-        assertHasGridViewAndNotHasListView();
-        assertCorrectDirection(tester, Axis.horizontal);
+        _assertHasGridViewAndNotHasListView();
+        _assertCorrectDirection(tester, Axis.horizontal);
       });
     });
 
@@ -143,8 +143,8 @@ void main() {
           direction: BeagleDynamicListDirection.VERTICAL,
         ));
 
-        assertHasListViewAndNotHasGridView();
-        assertCorrectDirection(tester, Axis.vertical);
+        _assertHasListViewAndNotHasGridView();
+        _assertCorrectDirection(tester, Axis.vertical);
       });
 
       testWidgets('Then it should have a GridView component',
@@ -154,8 +154,8 @@ void main() {
           spanCount: 2,
         ));
 
-        assertHasGridViewAndNotHasListView();
-        assertCorrectDirection(tester, Axis.vertical);
+        _assertHasGridViewAndNotHasListView();
+        _assertCorrectDirection(tester, Axis.vertical);
       });
     });
 
@@ -163,22 +163,22 @@ void main() {
       testWidgets('Then it should have a ListView component with widgets',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
-          children: getChildren(),
+          children: _getChildren(),
         ));
 
-        assertHasListViewAndNotHasGridView();
-        assertHasChildren(tester);
+        _assertHasListViewAndNotHasGridView();
+        _assertHasChildren(tester);
       });
 
       testWidgets('Then it should have a GridView component with widgets',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           spanCount: 2,
-          children: getChildren(),
+          children: _getChildren(),
         ));
 
-        assertHasGridViewAndNotHasListView();
-        assertHasChildren(tester);
+        _assertHasGridViewAndNotHasListView();
+        _assertHasChildren(tester);
       });
     });
 
@@ -190,7 +190,7 @@ void main() {
         var runCount = 0;
 
         await tester.pumpWidget(createWidget(
-            children: getChildren(),
+            children: _getChildren(),
             scrollEndThreshold: 1,
             onScrollEnd: () {
               runCount++;
@@ -215,7 +215,7 @@ void main() {
         var runCount = 0;
 
         final widget = createWidget(
-            children: getChildren(),
+            children: _getChildren(),
             scrollEndThreshold: 1,
             onScrollEnd: () {
               runCount++;
@@ -223,8 +223,8 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        assertHasListViewAndNotHasGridView();
-        scrollScreenToDown(tester);
+        _assertHasListViewAndNotHasGridView();
+        _scrollScreenToDown(tester);
 
         expect(runCount, 1);
       });
@@ -234,7 +234,7 @@ void main() {
         var runCount = 0;
 
         final widget = createWidget(
-            children: getChildren(),
+            children: _getChildren(),
             scrollEndThreshold: 1,
             spanCount: 2,
             onScrollEnd: () {
@@ -243,8 +243,8 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        assertHasGridViewAndNotHasListView();
-        scrollScreenToDown(tester);
+        _assertHasGridViewAndNotHasListView();
+        _scrollScreenToDown(tester);
 
         expect(runCount, 1);
       });
@@ -451,21 +451,21 @@ List<TemplateManagerItem> _getTemplates() {
   ];
 }
 
-void scrollScreenToDown(WidgetTester tester) {
+void _scrollScreenToDown(WidgetTester tester) {
   final scrollableFinder = find.byType(Scrollable);
   final scrollable = tester.widget<Scrollable>(scrollableFinder);
   final controller = scrollable.controller;
   controller.jumpTo(controller.offset + 300);
 }
 
-void assertCorrectDirection(WidgetTester tester, Axis axis) {
+void _assertCorrectDirection(WidgetTester tester, Axis axis) {
   final scrollableFinder = find.byType(Scrollable);
   final scrollable = tester.widget<Scrollable>(scrollableFinder);
 
   expect(scrollable.axis, axis);
 }
 
-void assertHasListViewAndNotHasGridView() {
+void _assertHasListViewAndNotHasGridView() {
   final listViewFinder = find.byType(ListView);
 
   final gridViewFinder = find.byType(GridView);
@@ -474,7 +474,7 @@ void assertHasListViewAndNotHasGridView() {
   expect(gridViewFinder, findsNothing);
 }
 
-void assertHasGridViewAndNotHasListView() {
+void _assertHasGridViewAndNotHasListView() {
   final listViewFinder = find.byType(ListView);
 
   final gridViewFinder = find.byType(GridView);
@@ -483,7 +483,7 @@ void assertHasGridViewAndNotHasListView() {
   expect(listViewFinder, findsNothing);
 }
 
-void assertHasChildren(
+void _assertHasChildren(
   WidgetTester tester,
 ) {
   final textFinder = find.byType(Text);
@@ -494,7 +494,7 @@ void assertHasChildren(
   expect(scrollable.semanticChildCount, 1);
 }
 
-List<Widget> getChildren() {
+List<Widget> _getChildren() {
   return [Text('Simple Text', key: UniqueKey())];
 }
 
