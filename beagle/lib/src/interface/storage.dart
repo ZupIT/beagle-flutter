@@ -21,7 +21,7 @@ abstract class Storage {
 
   /// Retrieves the value identified by the [key] passed as parameter. If the key doesn't exist,
   /// null is returned. The return value is wrapped in a Future (promise).
-  Future<String> getItem(String key);
+  Future<String?> getItem(String key);
 
   /// Removes a [key] from the storage. The Future (promise) returned resolves as soon as the
   /// operation completes.

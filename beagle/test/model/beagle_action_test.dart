@@ -31,6 +31,7 @@ void main() {
         expect(result, actionType);
       });
     });
+
     group('When getAttributeValue is called by passing an existent attribute',
         () {
       test('Then should return the correct value of the attribute', () {

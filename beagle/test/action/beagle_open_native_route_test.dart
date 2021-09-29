@@ -26,10 +26,15 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 class MockOpenNativeRoute extends Mock implements BeagleOpenNativeRoute {}
 
+class MockRoute extends flutter.Route<dynamic> {
+  MockRoute();
+}
+
 void main() {
   group('Given Beagle Open Native Route Action ', () {
     ContextMock _mockContext = ContextMock();
     const mockRoute = '/route';
+    registerFallbackValue<flutter.Route<dynamic>>(MockRoute());
     NavigatorObserver mockObserver = NavigatorObserver();
     final BeagleOpenNativeRoute mockOpenNativeRoute = MockOpenNativeRoute();
 
@@ -58,9 +63,7 @@ void main() {
       testWidgets('Then it should push a route', (WidgetTester tester) async {
         await _buildPage(tester);
         await _navigate(tester);
-        verify(() => mockObserver.didPush(
-            any<flutter.Route<dynamic>>(named: 'route', that: isNotNull),
-            any<flutter.Route<dynamic>>(named: 'previousRoute')));
+        verify(() => mockObserver.didPush(any(), any()));
       });
     });
   });

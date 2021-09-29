@@ -54,12 +54,14 @@ void main() {
 
     group('When start is called', () {
       test('Then should start BeagleJSEngine', () async {
+        when(() => beagleJSEngineMock.start()).thenAnswer((_) async => {});
         await beagleService.start();
 
         verify(beagleJSEngineMock.start).called(1);
       });
 
       test('Then should start beagle javascript core', () async {
+        when(() => beagleJSEngineMock.start()).thenAnswer((_) async => {});
         await beagleService.start();
 
         final expectedParams = {
@@ -80,10 +82,10 @@ void main() {
       });
 
       test('Then should register http request listener', () async {
+        when(() => beagleJSEngineMock.start()).thenAnswer((_) async => {});
         await beagleService.start();
 
-        verify(() => beagleJSEngineMock
-            .onHttpRequest(any(named: 'listener', that: isNotNull))).called(1);
+        verify(() => beagleJSEngineMock.onHttpRequest(any())).called(1);
       });
     });
   });

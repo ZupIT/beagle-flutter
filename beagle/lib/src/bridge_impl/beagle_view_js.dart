@@ -36,10 +36,10 @@ class BeagleViewJS implements BeagleView {
   BeagleViewJS(
     this._beagleJSEngine, {
     BeagleNetworkOptions? networkOptions,
-    String initialControllerId = '',
+    String? initialControllerId,
   }) {
     _id = _beagleJSEngine.createBeagleView(
-      networkOptions: networkOptions!,
+      networkOptions: networkOptions ?? BeagleNetworkOptions(),
       initialControllerId: initialControllerId,
     );
     BeagleViewJS.views[_id] = this;

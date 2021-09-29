@@ -36,8 +36,8 @@ void main() {
       test('Then it should do full render', () {
         renderer.doFullRender(tree);
         expect(
-            verify(() => beagleJSEngine.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
+            verify(() =>
+                    beagleJSEngine.evaluateJavascriptCode(captureAny<String>()))
                 .captured
                 .single,
             "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)})");
@@ -49,8 +49,8 @@ void main() {
           () {
         renderer.doFullRender(tree, 'elementId');
         expect(
-            verify(() => beagleJSEngine.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
+            verify(() =>
+                    beagleJSEngine.evaluateJavascriptCode(captureAny<String>()))
                 .captured
                 .single,
             "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId')");
@@ -63,8 +63,8 @@ void main() {
           () {
         renderer.doFullRender(tree, 'elementId', TreeUpdateMode.append);
         expect(
-            verify(() => beagleJSEngine.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
+            verify(() =>
+                    beagleJSEngine.evaluateJavascriptCode(captureAny<String>()))
                 .captured
                 .single,
             "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId', 'append')");
@@ -80,8 +80,8 @@ void main() {
         });
         renderer.doPartialRender(tree);
         expect(
-            verify(() => beagleJSEngine.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
+            verify(() =>
+                    beagleJSEngine.evaluateJavascriptCode(captureAny<String>()))
                 .captured
                 .single,
             "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)})");
@@ -93,8 +93,8 @@ void main() {
           () {
         renderer.doPartialRender(tree, 'elementId');
         expect(
-            verify(() => beagleJSEngine.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
+            verify(() =>
+                    beagleJSEngine.evaluateJavascriptCode(captureAny<String>()))
                 .captured
                 .single,
             "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)}, 'elementId')");
@@ -108,8 +108,8 @@ void main() {
           () {
         renderer.doPartialRender(tree, 'elementId', TreeUpdateMode.prepend);
         expect(
-            verify(() => beagleJSEngine.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
+            verify(() =>
+                    beagleJSEngine.evaluateJavascriptCode(captureAny<String>()))
                 .captured
                 .single,
             "global.beagle.getViewById('viewId').getRenderer().doPartialRender(${jsonEncode(tree.properties)}, 'elementId', 'prepend')");

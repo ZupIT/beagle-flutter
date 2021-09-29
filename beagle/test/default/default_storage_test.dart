@@ -32,6 +32,7 @@ void main() {
         expect(retrievedValue, value);
       });
     });
+
     group('When setItem is called by passing a key that already exists', () {
       test('Then it should override the value stored for the key', () async {
         const key = 'key1';

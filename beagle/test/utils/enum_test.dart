@@ -38,11 +38,7 @@ void main() {
         'When fromString is called by passing a list of enum values and a string that does not represents an enum value',
         () {
       test('Then it should return null', () {
-        const stringValue = 'UONE';
-
-        final evaluatedValue =
-            EnumUtils.fromString(FakeEnum.values, stringValue);
-
+        final evaluatedValue = EnumUtils.fromString(FakeEnum.values, 'Five');
         expect(evaluatedValue, isNull);
       });
     });

@@ -29,8 +29,10 @@ class BuildContextMock extends Mock implements BuildContext {}
 void main() {
   const createdViewId = 'viewId';
   final jsEngineMock = BeagleJSEngineMock();
+  registerFallbackValue<BeagleNetworkOptions>(BeagleNetworkOptions());
   when(() => jsEngineMock.createBeagleView(
-      networkOptions: null as BeagleNetworkOptions)).thenReturn(createdViewId);
+          networkOptions: (any(named: 'networkOptions', that: isNotNull))))
+      .thenReturn(createdViewId);
 
   setUp(() {
     reset(jsEngineMock);
@@ -44,10 +46,11 @@ void main() {
           'Then should register the view update error listener at BeagleJSEngine',
           () {
         void onErrorListener(errors) {}
-
+        when(() => beagleView.addErrorListener(any())).thenReturn(() {});
         beagleView.addErrorListener(onErrorListener);
 
-        verify(jsEngineMock.onViewUpdateError(createdViewId, onErrorListener));
+        verify(() =>
+            jsEngineMock.onViewUpdateError(createdViewId, onErrorListener));
       });
     });
 
@@ -92,24 +95,35 @@ void main() {
       test('Then should register the view update listener at BeagleJSEngine',
           () {
         void onUpdateListener(uiElement) {}
-
+        when(() => beagleView.subscribe(any())).thenReturn(() {});
         beagleView.subscribe(onUpdateListener);
 
-        verify(jsEngineMock.onViewUpdate(createdViewId, onUpdateListener));
+        verify(
+            () => jsEngineMock.onViewUpdate(createdViewId, onUpdateListener));
       });
     });
 
     group('When onAction is called', () {
       test('Then should register the view action listener at BeagleJSEngine',
           () {
+        registerFallbackValue<
+                void Function(
+                    {BeagleAction? action,
+                    BeagleUIElement? element,
+                    BeagleView? view})>(
+            (
+                    {BeagleAction? action,
+                    BeagleUIElement? element,
+                    BeagleView? view}) =>
+                {});
         void onActionListener(
             {BeagleAction? action,
             BeagleView? view,
             BeagleUIElement? element}) {}
-
+        when(() => beagleView.onAction(any())).thenReturn(() {});
         beagleView.onAction(onActionListener);
 
-        verify(jsEngineMock.onAction(createdViewId, onActionListener));
+        verify(() => jsEngineMock.onAction(createdViewId, onActionListener));
       });
     });
   });

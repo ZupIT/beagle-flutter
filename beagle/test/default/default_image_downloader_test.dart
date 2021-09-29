@@ -23,16 +23,19 @@ import 'package:mocktail/mocktail.dart';
 
 class MockHttpClient extends Mock implements HttpClient {}
 
+class FakeBeagleRequest extends Fake implements BeagleRequest {}
+
 void main() {
   group('Given a DefaultBeagleImageDownloader', () {
     group(
         'When downloadImage is called and http response is different than 200',
         () {
+      registerFallbackValue(FakeBeagleRequest());
+
       test('Then it should throw BeagleImageDownloaderException', () {
         final fakeResponse = Response(404, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();
-        when(() => httpClientMock
-                .sendRequest(any<BeagleRequest>(named: 'req', that: isNotNull)))
+        when(() => httpClientMock.sendRequest(any<BeagleRequest>()))
             .thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
@@ -50,8 +53,7 @@ void main() {
       test('Then it should throw an Exception', () {
         final fakeResponse = Response(200, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();
-        when(() => httpClientMock
-                .sendRequest(any<BeagleRequest>(named: 'req', that: isNotNull)))
+        when(() => httpClientMock.sendRequest(any<BeagleRequest>()))
             .thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
@@ -70,8 +72,7 @@ void main() {
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
         final fakeResponse = Response(200, '', {}, fakeImage);
         final httpClientMock = MockHttpClient();
-        when(() => httpClientMock
-                .sendRequest(any<BeagleRequest>(named: 'req', that: isNotNull)))
+        when(() => httpClientMock.sendRequest(any<BeagleRequest>()))
             .thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });

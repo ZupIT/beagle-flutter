@@ -45,10 +45,8 @@ void main() {
         };
         GlobalContextJS(beagleJSEngineMock).set(value);
         expect(
-            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
-                .captured
-                .single,
+            verify(() => beagleJSEngineMock
+                .evaluateJavascriptCode(captureAny<String>())).captured.single,
             'global.beagle.getService().globalContext.set(${jsonEncode(value)})');
       });
     });
@@ -57,10 +55,8 @@ void main() {
       test('Then it should set value in global context at specific path', () {
         GlobalContextJS(beagleJSEngineMock).set('test', 'order.cart.name');
         expect(
-            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
-                .captured
-                .single,
+            verify(() => beagleJSEngineMock
+                .evaluateJavascriptCode(captureAny<String>())).captured.single,
             "global.beagle.getService().globalContext.set(\"test\", 'order.cart.name')");
       });
     });
@@ -71,8 +67,8 @@ void main() {
         final user = User('Fulano', 30);
         expect(() => GlobalContextJS(beagleJSEngineMock).set(user, 'user'),
             throwsA(isInstanceOf<GlobalContextSerializationError>()));
-        verifyNever(() => beagleJSEngineMock.evaluateJavascriptCode(
-            captureAny<String>(named: 'code', that: isNotNull)));
+        verifyNever(() =>
+            beagleJSEngineMock.evaluateJavascriptCode(captureAny<String>()));
       });
     });
 
@@ -119,10 +115,8 @@ void main() {
         clearInteractions(beagleJSEngineMock);
         GlobalContextJS(beagleJSEngineMock).clear();
         expect(
-            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
-                .captured
-                .single,
+            verify(() => beagleJSEngineMock
+                .evaluateJavascriptCode(captureAny<String>())).captured.single,
             'global.beagle.getService().globalContext.clear()');
       });
     });
@@ -131,10 +125,8 @@ void main() {
       test('Then it should clear global context at specific path', () {
         GlobalContextJS(beagleJSEngineMock).clear('order.cart.name');
         expect(
-            verify(() => beagleJSEngineMock.evaluateJavascriptCode(
-                    captureAny<String>(named: 'code', that: isNotNull)))
-                .captured
-                .single,
+            verify(() => beagleJSEngineMock
+                .evaluateJavascriptCode(captureAny<String>())).captured.single,
             "global.beagle.getService().globalContext.clear('order.cart.name')");
       });
     });

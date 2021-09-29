@@ -32,6 +32,8 @@ void main() {
     group('When evaluate is called', () {
       test('Then should call JavascriptRuntime evaluate with correct parameter',
           () {
+        when(() => jsRuntimeWrapper.evaluate(any()))
+            .thenReturn(JsEvalResult('', ''));
         const jsCode = 'some js code';
         jsRuntimeWrapper.evaluate(jsCode);
 
@@ -43,6 +45,11 @@ void main() {
       test(
           'Then should call JavascriptRuntime evaluateAsync with correct parameter',
           () async {
+        when(() => jsRuntimeWrapper.evaluateAsync(any()))
+            .thenAnswer((_) async => Future.delayed(
+                  const Duration(milliseconds: 1),
+                  () => JsEvalResult('', ''),
+                ));
         const jsCode = 'some js code';
         await jsRuntimeWrapper.evaluateAsync(jsCode);
 
@@ -59,7 +66,7 @@ void main() {
 
         jsRuntimeWrapper.onMessage(channelName, function);
 
-        verify(jsRuntimeMock.onMessage(channelName, function)).called(1);
+        verify(() => jsRuntimeMock.onMessage(channelName, function)).called(1);
       });
     });
   });
