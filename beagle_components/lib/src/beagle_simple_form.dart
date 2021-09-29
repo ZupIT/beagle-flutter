@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 /// This component defines a submit handler for a form request.
-class BeagleSimpleForm extends StatefulWidget with BeagleRootFlexLayoutWidget {
+class BeagleSimpleForm extends StatefulWidget {
   const BeagleSimpleForm({
     Key key,
     this.onSubmit,

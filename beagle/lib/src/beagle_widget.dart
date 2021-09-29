@@ -122,11 +122,7 @@ class _BeagleWidget extends State<BeagleWidget> {
   }
 
   Widget createWidget(BeagleUIElement tree, Widget widget) {
-    if (widget is BeagleRootFlexLayoutWidget) {
-      return widget;
-    } else {
       return BeagleMetadataWidget(child: widget, beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
-    }
   }
   
   @override

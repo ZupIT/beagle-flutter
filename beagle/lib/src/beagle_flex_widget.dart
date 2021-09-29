@@ -16,7 +16,6 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
-mixin BeagleRootFlexLayoutWidget {}
 class BeagleFlexWidget extends StatelessWidget {
   const BeagleFlexWidget({
     Key key,
