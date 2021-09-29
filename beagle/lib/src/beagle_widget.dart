@@ -18,8 +18,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/beagle_metadata_widget.dart';
-import 'package:beagle/src/model/beagle_metadata.dart';
 import 'package:flutter/widgets.dart';
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
@@ -46,11 +44,11 @@ class BeagleWidget extends StatefulWidget {
   final OnCreateViewListener onCreateView;
 
   @override
-  _BeagleWidget createState() => _BeagleWidget();
+  BeagleWidgetState createState() => BeagleWidgetState();
 }
 
-class _BeagleWidget extends State<BeagleWidget> {
-  BeagleView _view;
+class BeagleWidgetState extends State<BeagleWidget> {
+  BeagleView view;
   Widget _widgetState;
 
   BeagleService _service;
@@ -65,14 +63,14 @@ class _BeagleWidget extends State<BeagleWidget> {
 
   @override
   void dispose() {
-    _view.destroy();
+    view.destroy();
     super.dispose();
   }
 
   Future<void> _startBeagleView() async {
     await beagleServiceLocator.allReady();
     _service = beagleServiceLocator<BeagleService>();
-    _view = beagleServiceLocator<BeagleViewJS>(
+    view = beagleServiceLocator<BeagleViewJS>(
       param1: widget.screenRequest,
     )
       ..subscribe((tree) {
@@ -96,9 +94,9 @@ class _BeagleWidget extends State<BeagleWidget> {
       });
 
     if (widget.screenRequest != null) {
-      await _view.getNavigator().pushView(RemoteView(widget.screenRequest.url));
+      await view.getNavigator().pushView(RemoteView(widget.screenRequest.url));
     } else {
-      await _view
+      await view
           .getNavigator()
           .pushView(LocalView(BeagleUIElement(jsonDecode(widget.screenJson))));
     }
@@ -112,7 +110,15 @@ class _BeagleWidget extends State<BeagleWidget> {
       return BeagleUndefinedWidget(environment: _environment);
     }
     try {
-      return BeagleFlexWidget(children: [createWidget(tree, builder(tree, widgetChildren, _view))]);
+      return BeagleFlexWidget(children: [
+        createWidget(
+            tree,
+            builder(
+              tree,
+              widgetChildren,
+              view,
+            ))
+      ]);
     } catch (error) {
       _logger.error(
           'Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:');
@@ -124,7 +130,7 @@ class _BeagleWidget extends State<BeagleWidget> {
   Widget createWidget(BeagleUIElement tree, Widget widget) {
       return BeagleMetadataWidget(child: widget, beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return _widgetState ?? const SizedBox.shrink();

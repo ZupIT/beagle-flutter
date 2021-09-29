@@ -17,22 +17,45 @@
 import 'package:beagle/beagle.dart';
 
 class TemplateManagerItem {
+  TemplateManagerItem({
+    this.condition,
+    this.view,
+  });
+
   String condition;
   BeagleUIElement view;
 
-  TemplateManagerItem(this.condition, this.view);
+  Map<String, dynamic> toJson() => {
+    _jsonBeagleCase: condition,
+    _jsonBeagleView: view.properties,
+  };
 
-  Map<String, dynamic> toJson() => {'case': condition, 'view': view.properties};
+  factory TemplateManagerItem.fromJson(Map<String, dynamic> json) {
+    return TemplateManagerItem(
+      condition: json[_jsonBeagleCase],
+      view: BeagleUIElement(json[_jsonBeagleView]),
+    );
+  }
+
+  static List<TemplateManagerItem> fromJsonList(List<dynamic> items) {
+    return items.map((json) => TemplateManagerItem.fromJson(json)).toList();
+  }
+
+  static const _jsonBeagleCase = 'case';
+  static const _jsonBeagleView = 'view';
 }
 
 class TemplateManager {
+  TemplateManager({
+    this.defaultTemplate,
+    this.templates,
+  });
+
   BeagleUIElement defaultTemplate;
   List<TemplateManagerItem> templates;
 
-  TemplateManager(this.defaultTemplate, this.templates);
-
   Map<String, dynamic> toJson() => {
-        'default': defaultTemplate.properties,
-        'templates': templates.map((t) => t.toJson()).toList(),
-      };
+    'default': defaultTemplate.properties,
+    'templates': templates.map((t) => t.toJson()).toList(),
+  };
 }

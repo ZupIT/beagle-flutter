@@ -15,8 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/model/beagle_template_manager.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 abstract class Renderer {
   /// Does a partial render to the BeagleView. Compared to the full render, it will skip every step
@@ -98,7 +97,7 @@ abstract class Renderer {
   void doTemplateRender({
     @required TemplateManager templateManager,
     @required String anchor,
-    @required List<List<DataContext>> contexts,
+    @required List<List<BeagleDataContext>> contexts,
     BeagleUIElement Function(BeagleUIElement, int) componentManager,
     TreeUpdateMode mode,
   });

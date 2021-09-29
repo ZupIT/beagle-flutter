@@ -34,7 +34,7 @@ class BeagleContainer extends StatefulWidget {
   /// Property responsible to customize all the flex attributes and general style configuration
   final BeagleStyle style;
 
-  /// Content of the container
+  /// Define a list of components to be displayed on this view.
   final List<Widget> children;
 
   @override

@@ -36,6 +36,8 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
   'beagle:simpleForm': beagleSimpleFormBuilder(),
+  'beagle:listView': beagleListViewBuilder(),
+  'beagle:gridView': beagleGridViewBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -54,24 +56,24 @@ ComponentBuilder beagleErrorBuilder() {
 
 ComponentBuilder beagleTextBuilder() {
   return (element, _, __) => BeagleText(
-    key:  element.getKey(),
-    text: element.getAttributeValue('text'),
-    textColor: element.getAttributeValue('textColor'),
-    styleId: element.getAttributeValue('styleId'),
-    alignment: EnumUtils.fromString(
-      TextAlignment.values,
-      element.getAttributeValue('alignment') ?? '',
-    ),
-  );
+        key: element.getKey(),
+        text: element.getAttributeValue('text'),
+        textColor: element.getAttributeValue('textColor'),
+        styleId: element.getAttributeValue('styleId'),
+        alignment: EnumUtils.fromString(
+          TextAlignment.values,
+          element.getAttributeValue('alignment') ?? '',
+        ),
+      );
 }
 
 ComponentBuilder beagleContainerBuilder() {
   return (element, children, _) => BeagleContainer(
-    key: element.getKey(),
-    onInit: element.getAttributeValue('onInit'),
-    style: element.getStyle(),
-    children: children,
-  );
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        style: element.getStyle(),
+        children: children,
+      );
 }
 
 ComponentBuilder beagleScrollViewBuilder() {
@@ -83,6 +85,53 @@ ComponentBuilder beagleScrollViewBuilder() {
         ),
         scrollBarEnabled: element.getAttributeValue('scrollBarEnabled'),
         children: children,
+      );
+}
+
+ComponentBuilder beagleListViewBuilder() {
+  return (element, children, _) => BeagleDynamicList(
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        direction: EnumUtils.fromString(
+          BeagleDynamicListDirection.values,
+          element.getAttributeValue('direction'),
+        ),
+        dataSource: element.getAttributeValue('dataSource'),
+        templates: TemplateManagerItem.fromJsonList(
+            element.getAttributeValue('templates')),
+        isScrollIndicatorVisible:
+            element.getAttributeValue('isScrollIndicatorVisible'),
+        scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+        iteratorName: element.getAttributeValue('iteratorName'),
+        identifierItem: element.getAttributeValue('key'),
+        onScrollEnd: element.getAttributeValue('onScrollEnd'),
+        children: children,
+        suffix: element.getAttributeValue('__suffix__'),
+        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
+      );
+}
+
+ComponentBuilder beagleGridViewBuilder() {
+  return (element, children, _) => BeagleDynamicList(
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        direction: EnumUtils.fromString(
+          BeagleDynamicListDirection.values,
+          element.getAttributeValue('direction'),
+        ),
+        dataSource: element.getAttributeValue('dataSource'),
+        templates: TemplateManagerItem.fromJsonList(
+            element.getAttributeValue('templates')),
+        isScrollIndicatorVisible:
+            element.getAttributeValue('isScrollIndicatorVisible'),
+        scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+        iteratorName: element.getAttributeValue('iteratorName'),
+        identifierItem: element.getAttributeValue('key'),
+        onScrollEnd: element.getAttributeValue('onScrollEnd'),
+        children: children,
+        spanCount: element.getAttributeValue('spanCount'),
+        suffix: element.getAttributeValue('__suffix__'),
+        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
       );
 }
 
@@ -190,8 +239,10 @@ ComponentBuilder beagleWebViewBuilder() {
 
 ComponentBuilder beagleScreenComponentBuilder() {
   return (element, children, _) {
-    final Map<String, dynamic> safeArea = element.getAttributeValue('safeArea') ?? {};
-    final Map<String, dynamic> navigationBarMap = element.getAttributeValue('navigationBar');
+    final Map<String, dynamic> safeArea =
+        element.getAttributeValue('safeArea') ?? {};
+    final Map<String, dynamic> navigationBarMap =
+        element.getAttributeValue('navigationBar');
     final BeagleNavigationBar navigationBar = navigationBarMap == null
         ? null
         : BeagleNavigationBar.fromJson(navigationBarMap);
