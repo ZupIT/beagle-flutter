@@ -20,7 +20,6 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/js_runtime_wrapper.dart';
 import 'package:beagle/src/bridge_impl/renderer_js.dart';
-import 'package:beagle/src/model/beagle_template_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -37,7 +36,7 @@ void main() {
           {'_beagleComponent_': 'beagle:button', 'text': 'Click me!'});
       final renderer = RendererJS(beagleJSEngine, 'viewId');
 
-      group('Is called', () {
+      group('When doFullRender is called', () {
         test('Then it should do full render', () {
           renderer.doFullRender(tree);
           expect(
@@ -48,7 +47,7 @@ void main() {
         });
       });
 
-      group('Is called passing an anchor', () {
+      group('When doFullRender is called passing an anchor', () {
         test('Then it should do full render by replacing a branch of the tree',
             () {
           renderer.doFullRender(tree, 'elementId');
@@ -60,7 +59,8 @@ void main() {
         });
       });
 
-      group('Is called passing an anchor and append mode', () {
+      group('When doFullRender is called passing an anchor and append mode',
+          () {
         test(
             'Then it should do full render by appending an element to a branch of the tree',
             () {
@@ -72,15 +72,8 @@ void main() {
               "global.beagle.getViewById('viewId').getRenderer().doFullRender(${jsonEncode(tree.properties)}, 'elementId', 'append')");
         });
       });
-    });
 
-    group('When doPartialRender', () {
-      final beagleJSEngine = MockBeagleJSEngine();
-      final tree = BeagleUIElement(
-          {'_beagleComponent_': 'beagle:button', 'text': 'Click me!'});
-      final renderer = RendererJS(beagleJSEngine, 'viewId');
-
-      group('Is called', () {
+      group('When doPartialRender is called', () {
         test('Then it should do partial render', () {
           final tree = BeagleUIElement({
             '_beagleComponent_': 'beagle:button',
@@ -96,7 +89,7 @@ void main() {
         });
       });
 
-      group('Is called passing an anchor', () {
+      group('When doPartialRender is called passing an anchor', () {
         test(
             'Then it should do partial render by replacing a branch of the tree',
             () {
@@ -142,20 +135,47 @@ void main() {
         'text':
             "This is @{item.name} and SHE lives at @{item.address.street}, @{item.address.number}"
       });
-      final templateManagerWithCases = TemplateManager(defaultText, [
-        TemplateManagerItem("@{eq(item.sex, 'M')}", maleText),
-        TemplateManagerItem("@{eq(item.sex, 'F')}", femaleText)
-      ]);
+      final templateManagerWithCases = TemplateManager(
+        defaultTemplate: defaultText,
+        templates: [
+          TemplateManagerItem(
+            condition: "@{eq(item.sex, 'M')}",
+            view: maleText,
+          ),
+          TemplateManagerItem(
+            condition: "@{eq(item.sex, 'F')}",
+            view: femaleText,
+          )
+        ],
+      );
       final dataSource = [
         [
-          DataContext('name', 'John'),
-          DataContext('sex', 'M'),
-          DataContext('address', {'street': '42 Avenue TT', 'number': '256'})
+          BeagleDataContext(
+            id: 'name',
+            value: 'John',
+          ),
+          BeagleDataContext(
+            id: 'sex',
+            value: 'M',
+          ),
+          BeagleDataContext(
+            id: 'address',
+            value: {'street': '42 Avenue TT', 'number': '256'},
+          )
         ],
         [
-          DataContext('name', 'Alex'),
-          DataContext('sex', 'F'),
-          DataContext('address', {'street': 'St Monica St', 'number': '852'})
+          BeagleDataContext(
+            id: 'name',
+            value: 'Alex',
+          ),
+          BeagleDataContext(
+            id: 'sex',
+            value: 'F',
+          ),
+          BeagleDataContext(
+            id: 'address',
+            value: {'street': 'St Monica St', 'number': '852'},
+          )
         ]
       ];
 
@@ -163,7 +183,10 @@ void main() {
         test(
             'Then it should render using this as default template without templates',
             () {
-          final templateManager = TemplateManager(defaultText, []);
+          final templateManager = TemplateManager(
+            defaultTemplate: defaultText,
+            templates: [],
+          );
           templateRenderer.doTemplateRender(
               templateManager: templateManager,
               anchor: templatesContainerId,

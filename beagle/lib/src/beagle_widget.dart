@@ -50,7 +50,6 @@ class _BeagleWidget extends State<BeagleWidget> with AfterBeagleInitialization {
   }
 }
 
-
 /// The same as BeagleWidget, but it assumes the Beagle Service has already initialized. This is useful for components
 /// like navigators, that are sure the Beagle Service has started and need direct access to the Beagle View. Prefer
 /// using BeagleWidget for other cases.
@@ -61,10 +60,10 @@ class UnsafeBeagleWidget extends StatefulWidget {
   final BeagleView view;
 
   @override
-  _UnsafeBeagleWidget createState() => _UnsafeBeagleWidget();
+  BeagleWidgetState createState() => BeagleWidgetState();
 }
 
-class _UnsafeBeagleWidget extends State<UnsafeBeagleWidget> {
+class BeagleWidgetState extends State<UnsafeBeagleWidget> {
   final _logger = beagleServiceLocator<BeagleLogger>();
   final _environment = beagleServiceLocator<BeagleEnvironment>();
   final _beagleService = beagleServiceLocator<BeagleService>();
@@ -78,7 +77,15 @@ class _UnsafeBeagleWidget extends State<UnsafeBeagleWidget> {
       return BeagleUndefinedWidget(environment: _environment);
     }
     try {
-      return BeagleFlexWidget(children: [_createWidget(tree, builder(tree, widgetChildren, widget.view))]);
+      return BeagleFlexWidget(children: [
+        _createWidget(
+            tree,
+            builder(
+              tree,
+              widgetChildren,
+              widget.view,
+            ))
+      ]);
     } catch (error) {
       _logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       _logger.error(error.toString());
@@ -90,7 +97,9 @@ class _UnsafeBeagleWidget extends State<UnsafeBeagleWidget> {
     if (widget is BeagleRootFlexLayoutWidget) {
       return widget;
     } else {
-      return BeagleMetadataWidget(child: widget, beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
+      return BeagleMetadataWidget(
+          child: widget,
+          beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()));
     }
   }
 
@@ -129,6 +138,10 @@ class _UnsafeBeagleWidget extends State<UnsafeBeagleWidget> {
 
     // first render:
     _updateCurrentUI(widget.view.getTree());
+  }
+
+  BeagleView getView() {
+    return widget.view;
   }
 
   @override
