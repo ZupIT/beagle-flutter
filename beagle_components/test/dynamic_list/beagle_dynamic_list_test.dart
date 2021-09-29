@@ -273,36 +273,182 @@ void main() {
     });
 
     group('When passing dataSource', () {
-      testWidgets('Then it should render items', (WidgetTester tester) async {
-        final templates = [
-          TemplateManagerItem(
-              condition: null,
-              view: BeagleUIElement({
-                '_beagleComponent_': 'beagle:text',
-                'text': "This is @{item.name}"
-              }))
-        ];
+      testWidgets('Then it should call doTemplateRender with correct parameter',
+          (WidgetTester tester) async {
+        final templates = _getTemplates();
 
-        final dataSource = [
-          {
-            "name": "text_1",
-          },
-          {
-            "name": "text_2",
-          },
-          {
-            "name": "text_3",
-          }
-        ];
+        final dataSource = _getDataSource();
+
+        final providerMock = BeagleWidgetStateProviderMock();
+        final beagleWidgetStateMock = BeagleWidgetStateMock();
+        final beagleViewMock = BeagleViewMock();
+        final renderMock = RendererMock();
+
+        when(providerMock.of(any)).thenReturn(beagleWidgetStateMock);
+        when(beagleWidgetStateMock.view).thenReturn(beagleViewMock);
+        when(beagleViewMock.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
-          iteratorName: "name",
+          iteratorName: 'name',
           templates: templates,
           dataSource: dataSource,
+          provider: providerMock,
         ));
+
+        final capturedValues = verify(renderMock.doTemplateRender(
+                templateManager: captureAnyNamed('templateManager'),
+                anchor: captureAnyNamed('anchor'),
+                contexts: captureAnyNamed('contexts'),
+                componentManager: captureAnyNamed('componentManager'),
+                mode: captureAnyNamed('mode')))
+            .captured;
+
+        final templateManagerActual =
+            (capturedValues[0] as TemplateManager).toJson();
+        final templateManagerExpected = TemplateManager(
+          defaultTemplate: _getTemplates().first.view,
+          templates: [_getTemplates()[1]],
+        ).toJson();
+
+        expect(templateManagerActual, templateManagerExpected);
+
+        final anchorCaptured = capturedValues[1];
+        expect(anchorCaptured, 'dynamicList');
+        final beagleDataContextListActual =
+            capturedValues[2] as List<List<BeagleDataContext>>;
+        final beagleDataContextActual =
+            beagleDataContextListActual[0][0].toJson();
+        final beagleDataContextExpected = BeagleDataContext(
+          id: 'name',
+          value: {
+            'name': 'text_1',
+          },
+        ).toJson();
+        expect(beagleDataContextActual, beagleDataContextExpected);
+        expect(beagleDataContextListActual.length, 3);
+        expect(capturedValues[3], isNotNull);
+        final modeActual = capturedValues[4];
+        expect(modeActual, null);
+      });
+    });
+
+    group('When doTemplateRender', () {
+      testWidgets('Then it should generate id correct',
+          (WidgetTester tester) async {
+        final templates = _getTemplates();
+
+        final dataSource = _getDataSource();
+
+        final providerMock = BeagleWidgetStateProviderMock();
+        final beagleWidgetStateMock = BeagleWidgetStateMock();
+        final beagleViewMock = BeagleViewMock();
+        final renderMock = RendererMock();
+
+        when(providerMock.of(any)).thenReturn(beagleWidgetStateMock);
+        when(beagleWidgetStateMock.view).thenReturn(beagleViewMock);
+        when(beagleViewMock.getRenderer()).thenReturn(renderMock);
+
+        await tester.pumpWidget(createWidget(
+          iteratorName: 'name',
+          templates: templates,
+          dataSource: dataSource,
+          provider: providerMock,
+        ));
+
+        final capturedValues = verify(renderMock.doTemplateRender(
+                templateManager: captureAnyNamed('templateManager'),
+                anchor: captureAnyNamed('anchor'),
+                contexts: captureAnyNamed('contexts'),
+                componentManager: captureAnyNamed('componentManager'),
+                mode: captureAnyNamed('mode')))
+            .captured;
+
+        final componentManager =
+            capturedValues[3] as BeagleUIElement Function(BeagleUIElement, int);
+
+        final beagleUiElementActual =
+            componentManager(_getBeagleUiElement(), 0);
+        expect(beagleUiElementActual.properties, _getPropertiesExpected());
       });
     });
   });
+}
+
+BeagleUIElement _getBeagleUiElement() {
+  return BeagleUIElement({
+    "_beagleComponent_": "beagle:container",
+    "children": [
+      {
+        "_beagleComponent_": "beagle:text",
+      },
+      {
+        "_beagleComponent_": "beagle:text",
+      },
+      {
+        "_beagleComponent_": "beagle:listview",
+      },
+      {
+        "_beagleComponent_": "beagle:gridview",
+      },
+      {
+        "_beagleComponent_": "beagle:text",
+      },
+    ]
+  });
+}
+
+Map<String, dynamic> _getPropertiesExpected() {
+  return {
+    "_beagleComponent_": "beagle:container",
+    "children": [
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:0:0"},
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:1:0"},
+      {
+        "_beagleComponent_": "beagle:listview",
+        "id": "dynamicList:2:0",
+        "__suffix__": ":0"
+      },
+      {
+        "_beagleComponent_": "beagle:gridview",
+        "id": "dynamicList:3:0",
+        "__suffix__": ":0"
+      },
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:4:0"}
+    ]
+  };
+}
+
+List<dynamic> _getDataSource() {
+  return [
+    {
+      "name": "text_1",
+    },
+    {
+      "name": "text_2",
+    },
+    {
+      "name": "text_3",
+    }
+  ];
+}
+
+List<TemplateManagerItem> _getTemplates() {
+  return [
+    TemplateManagerItem(
+      condition: null,
+      view: BeagleUIElement({
+        '_beagleComponent_': 'beagle:text',
+        'text': "This is @{item.name}",
+      }),
+    ),
+    TemplateManagerItem(
+      condition: "@{item}",
+      view: BeagleUIElement({
+        '_beagleComponent_': 'beagle:text',
+        'text': "This is @{item.name}",
+      }),
+    )
+  ];
 }
 
 void scrollScreenToDown(WidgetTester tester) {
@@ -352,36 +498,16 @@ List<Widget> getChildren() {
   return [Text('Simple Text', key: UniqueKey())];
 }
 
-class RendererMock extends Mock implements Renderer {
-  @override
-  void doTemplateRender(
-      {TemplateManager templateManager,
-      String anchor,
-      List<List<BeagleDataContext>> contexts,
-      BeagleUIElement Function(BeagleUIElement p1, int p2) componentManager,
-      TreeUpdateMode mode}) {
-    print("dddd");
-  }
-}
+class RendererMock extends Mock implements Renderer {}
 
-class BeagleViewMock extends Mock implements BeagleView {
-  @override
-  Renderer getRenderer() {
-    return RendererMock();
-  }
-}
+class BeagleViewMock extends Mock implements BeagleView {}
 
 class BeagleWidgetStateMock extends Mock implements BeagleWidgetState {
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return "";
+    return '';
   }
 }
 
-class MockBeagleWidgetStateProvider extends Mock
-    implements BeagleWidgetStateProvider {
-  @override
-  BeagleWidgetState of(BuildContext context) {
-    return BeagleWidgetStateMock();
-  }
-}
+class BeagleWidgetStateProviderMock extends Mock
+    implements BeagleWidgetStateProvider {}

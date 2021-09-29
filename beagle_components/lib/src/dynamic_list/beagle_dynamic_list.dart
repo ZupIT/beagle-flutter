@@ -163,7 +163,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
           templateManager: templateManager,
           anchor: anchor,
           contexts: contexts,
-          componentManager: _handleComponentManager,
+          componentManager: _iterateComponent,
           mode: null,
         );
   }
@@ -206,10 +206,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     return key.value;
   }
 
-  BeagleUIElement _handleComponentManager(
-      BeagleUIElement component, int index) {
-    return _iterateComponent(component, index);
-  }
 
   String _getIterationKey(int index) {
     String valueInIteratorNameInDataSource;
