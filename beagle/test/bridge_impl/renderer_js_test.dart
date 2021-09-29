@@ -28,8 +28,6 @@ class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 class MockJavascriptRuntimeWrapper extends Mock
     implements JavascriptRuntimeWrapper {}
 
-class MockStorage extends Mock implements Storage {}
-
 void main() {
   group('Given a RendererJS object', () {
     group('When doFullRender', () {

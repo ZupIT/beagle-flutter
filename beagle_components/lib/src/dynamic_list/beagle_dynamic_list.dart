@@ -159,7 +159,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
     final beagleWidgetState = widget.beagleWidgetStateProvider.of(context);
 
-    beagleWidgetState.view.getRenderer().doTemplateRender(
+    beagleWidgetState.getView().getRenderer().doTemplateRender(
           templateManager: templateManager,
           anchor: anchor,
           contexts: contexts,
