@@ -15,9 +15,10 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/after_beagle_initialization.dart';
 import 'package:flutter/material.dart';
 
-typedef ScreenBuilder = Widget Function(BeagleWidget beagleWidget, BuildContext context);
+typedef ScreenBuilder = Widget Function(UnsafeBeagleWidget beagleWidget, BuildContext context);
 
 int _nextStackId = 0;
 
@@ -25,8 +26,7 @@ String _createRouteName() {
   return "beagle-root-navigator-stack-${++_nextStackId}";
 }
 
-/// Main Beagle Navigator. This component assumes the BeagleService is ready to use. To make sure it's ready, call
-/// `await beagleServiceLocator.allReady()`.
+/// Main Beagle Navigator
 class RootNavigator extends StatefulWidget {
   RootNavigator({
     @required this.initialRoute,
@@ -42,9 +42,8 @@ class RootNavigator extends StatefulWidget {
   _RootNavigator createState() => _RootNavigator();
 }
 
-class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
+class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization implements BeagleNavigator {
   final logger = beagleServiceLocator<BeagleLogger>();
-  final BeagleService _beagleService = beagleServiceLocator<BeagleService>();
   List<StackNavigator> _history = [];
 
   StackNavigator _createStackNavigator(BeagleRoute route, NavigationController controller) {
@@ -53,7 +52,7 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
       screenBuilder: widget.screenBuilder,
       rootNavigator: this,
       logger: logger,
-      viewClient: _beagleService.viewClient,
+      viewClient: beagleService.viewClient,
       controller: controller,
     );
   }
@@ -68,20 +67,20 @@ class _RootNavigator extends State<RootNavigator> implements BeagleNavigator {
   }
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
-    final controller = widget.initialController ?? _beagleService.defaultNavigationController;
+    final controller = widget.initialController ?? beagleService.defaultNavigationController;
     return [_createNewRoute(widget.initialRoute, controller)];
   }
 
   NavigationController _getControllerById(String id) {
-    final entry = _beagleService.navigationControllers.entries.firstWhere(
+    final entry = beagleService.navigationControllers.entries.firstWhere(
       (element) => element.key == id,
       orElse: () => null,
     );
-    return entry?.value ?? _beagleService.defaultNavigationController;
+    return entry?.value ?? beagleService.defaultNavigationController;
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildAfterBeagleInitialization(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => true,
       child: Scaffold(

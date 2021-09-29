@@ -15,26 +15,51 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/after_beagle_initialization.dart';
 import 'package:beagle/src/beagle_metadata_widget.dart';
 import 'package:beagle/src/model/beagle_metadata.dart';
 import 'package:flutter/widgets.dart';
 import 'bridge_impl/beagle_view_js.dart';
 import 'service_locator.dart';
 
-// TODO: THE UNIT TEST WILL BE WRITE AFTER RESOLVE DEPENDENCY INJECTION
-/// A widget that displays content of Beagle. Attention: This component assumes the dependency BeagleService is ready to
-/// use. To make sure it's ready, call `await beagleServiceLocator.allReady()`.
-class BeagleWidget extends StatefulWidget {
-  BeagleWidget(this.navigator) : view = beagleServiceLocator<BeagleViewJS>(param1: navigator);
+typedef OnCreateViewListener = void Function(BeagleView view);
 
-  final BeagleNavigator navigator;
-  final BeagleView view;
+// TODO: THE UNIT TEST WILL BE WRITE AFTER RESOLVE DEPENDENCY INJECTION
+/// A widget that displays content of beagle. Be aware that by using the BeagleWidget directly you won't be able
+/// to control the navigation. Prefer using `RootNavigator` or `BeagleSdk.openScreen`.
+class BeagleWidget extends StatefulWidget {
+  BeagleWidget(this.onCreateView);
+
+  final OnCreateViewListener onCreateView;
 
   @override
   _BeagleWidget createState() => _BeagleWidget();
 }
 
-class _BeagleWidget extends State<BeagleWidget> {
+class _BeagleWidget extends State<BeagleWidget> with AfterBeagleInitialization {
+  @override
+  Widget buildAfterBeagleInitialization(BuildContext context) {
+    final unsafeBeagleWidget = UnsafeBeagleWidget(null);
+    widget.onCreateView(unsafeBeagleWidget.view);
+    return unsafeBeagleWidget;
+  }
+}
+
+
+/// The same as BeagleWidget, but it assumes the Beagle Service has already initialized. This is useful for components
+/// like navigators, that are sure the Beagle Service has started and need direct access to the Beagle View. Prefer
+/// using BeagleWidget for other cases.
+class UnsafeBeagleWidget extends StatefulWidget {
+  UnsafeBeagleWidget(this.navigator) : view = beagleServiceLocator<BeagleViewJS>(param1: navigator);
+
+  final BeagleNavigator navigator;
+  final BeagleView view;
+
+  @override
+  _UnsafeBeagleWidget createState() => _UnsafeBeagleWidget();
+}
+
+class _UnsafeBeagleWidget extends State<UnsafeBeagleWidget> {
   final _logger = beagleServiceLocator<BeagleLogger>();
   final _environment = beagleServiceLocator<BeagleEnvironment>();
   final _beagleService = beagleServiceLocator<BeagleService>();

@@ -17,6 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
+/// This Navigator is internally used by the RootNavigator. It should never be used outside a RootNavigator.
 class StackNavigator extends StatelessWidget {
   StackNavigator({
     @required this.initialRoute,
@@ -35,7 +36,7 @@ class StackNavigator extends StatelessWidget {
   final BeagleLogger logger;
   final List<String> _history = [];
 
-  Route<dynamic> _buildRoute(BeagleWidget beagleWidget, String routeName) {
+  Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
       builder: (context) => screenBuilder(beagleWidget, context),
       settings: RouteSettings(name: routeName),
@@ -43,7 +44,7 @@ class StackNavigator extends StatelessWidget {
   }
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
-    final beagleWidget = BeagleWidget(rootNavigator);
+    final beagleWidget = UnsafeBeagleWidget(rootNavigator);
     _fetchContentAndUpdateView(
       view: beagleWidget.view,
       context: state.context,
@@ -110,7 +111,7 @@ class StackNavigator extends StatelessWidget {
 
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
     final routeId = _getRouteId(route);
-    final beagleWidget = BeagleWidget(rootNavigator);
+    final beagleWidget = UnsafeBeagleWidget(rootNavigator);
     bool completed = false;
 
     void complete() {
