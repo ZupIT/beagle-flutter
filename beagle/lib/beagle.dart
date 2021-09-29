@@ -75,3 +75,10 @@ export 'package:beagle/src/service_locator.dart' show beagleServiceLocator;
 export 'package:beagle/src/analytics/analytics_config.dart';
 export 'package:beagle/src/analytics/analytics_provider.dart';
 export 'package:beagle/src/analytics/analytics_record.dart';
+
+export 'package:beagle/src/model/beagle_template_manager.dart';
+export 'package:beagle/src/model/beagle_ui_element.dart';
+export 'package:beagle/src/model/beagle_data_context.dart';
+
+export 'package:beagle/src/beagle_metadata_widget.dart';
+export 'package:beagle/src/model/beagle_metadata.dart';

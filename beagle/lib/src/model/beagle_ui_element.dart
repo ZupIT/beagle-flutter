@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
-
-class DataContext {
-  String id;
-  dynamic value;
-
-  DataContext(this.id, this.value);
-
-  Map<String, dynamic> toJson() => {'id': id, 'value': jsonEncode(value)};
-}
 
 class BeagleUIElement {
   BeagleUIElement(this.properties);
@@ -34,23 +23,30 @@ class BeagleUIElement {
   Map<String, dynamic> properties;
 
   String getId() {
-    return properties['id'].toString();
+    return properties['id'];
+  }
+
+  void setId(String id) {
+    properties['id'] = id;
   }
 
   Key getKey() {
-    return ValueKey(properties['id'].toString());
+    return ValueKey(getId());
   }
 
   String getType() {
     return properties['_beagleComponent_'].toString();
   }
 
-  DataContext getContext() {
+  BeagleDataContext getContext() {
     if (!properties.containsKey('context')) {
       return null;
     }
     final Map<String, dynamic> contextMap = properties['context'];
-    return DataContext(contextMap['id'], contextMap['value']);
+    return BeagleDataContext(
+      id: contextMap['id'],
+      value: contextMap['value'],
+    );
   }
 
   bool hasChildren() {
