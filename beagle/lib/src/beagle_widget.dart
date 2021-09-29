@@ -37,10 +37,15 @@ class BeagleWidget extends StatefulWidget {
 }
 
 class _BeagleWidget extends State<BeagleWidget> with AfterBeagleInitialization {
+  bool _isViewCreated = false;
+
   @override
   Widget buildAfterBeagleInitialization(BuildContext context) {
     final unsafeBeagleWidget = UnsafeBeagleWidget(null);
-    widget.onCreateView(unsafeBeagleWidget.view);
+    if (!_isViewCreated) {
+      widget.onCreateView(unsafeBeagleWidget.view);
+      _isViewCreated = true;
+    }
     return unsafeBeagleWidget;
   }
 }
