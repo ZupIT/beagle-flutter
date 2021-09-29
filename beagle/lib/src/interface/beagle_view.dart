@@ -17,17 +17,12 @@
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 
-typedef ViewUpdateListener = void Function(BeagleUIElement tree);
-typedef ViewErrorListener = void Function(List<String> errors);
+typedef ViewChangeListener = void Function(BeagleUIElement tree);
 
 abstract class BeagleView {
   /// Subscribes [listener] to every change to the beagle tree. This method returns a function that,
   /// when called, undoes the subscription (removes the listener).
-  RemoveListener subscribe(ViewUpdateListener listener);
-
-  /// Subscribes [listener] to every error in the fetch and rendering process of a view. This method
-  /// returns a function that, when called, undoes the subscription (removes the listener).
-  RemoveListener addErrorListener(ViewErrorListener listener);
+  RemoveListener onChange(ViewChangeListener listener);
 
   /// Gets the renderer of the current BeagleView. Can be used to control the rendering directly.
   Renderer getRenderer();
@@ -35,7 +30,7 @@ abstract class BeagleView {
   /// Gets a copy of the currently rendered tree.
   BeagleUIElement getTree();
 
-  /// Gets the navigator of the Beagle View.
+  /// Gets the navigator that spawned this Beagle View, if any.
   BeagleNavigator getNavigator();
 
   /// Destroys the current view. Should be used when the BeagleView won't be used anymore. Avoids

@@ -15,27 +15,28 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:flutter/widgets.dart';
 
-class DefaultStorage implements Storage {
-  Map<String, String> storage = {};
+mixin AfterBeagleInitialization<T extends StatefulWidget> on State<T> {
+  BeagleService beagleService;
 
-  @override
-  Future<void> clear() async {
-    storage.clear();
+  Future<void> _startBeagleService() async {
+    await beagleServiceLocator.allReady();
+    setState(() {
+      beagleService = beagleServiceLocator<BeagleService>();
+    });
   }
 
   @override
-  Future<String> getItem(String key) async {
-    return storage[key];
+  void initState() {
+    super.initState();
+    _startBeagleService();
   }
 
   @override
-  Future<void> removeItem(String key) async {
-    storage.remove(key);
+  Widget build(BuildContext context) {
+    return beagleService == null ? const SizedBox.shrink() : buildAfterBeagleInitialization(context);
   }
 
-  @override
-  Future<void> setItem(String key, String value) async {
-    storage[key] = value;
-  }
+  Widget buildAfterBeagleInitialization(BuildContext context);
 }

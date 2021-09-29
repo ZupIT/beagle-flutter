@@ -285,7 +285,7 @@ void main() {
         final renderMock = RendererMock();
 
         when(providerMock.of(any)).thenReturn(beagleWidgetStateMock);
-        when(beagleWidgetStateMock.view).thenReturn(beagleViewMock);
+        when(beagleWidgetStateMock.getView()).thenReturn(beagleViewMock);
         when(beagleViewMock.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
@@ -345,7 +345,7 @@ void main() {
         final renderMock = RendererMock();
 
         when(providerMock.of(any)).thenReturn(beagleWidgetStateMock);
-        when(beagleWidgetStateMock.view).thenReturn(beagleViewMock);
+        when(beagleWidgetStateMock.getView()).thenReturn(beagleViewMock);
         when(beagleViewMock.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
