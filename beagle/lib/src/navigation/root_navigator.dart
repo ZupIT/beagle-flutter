@@ -85,8 +85,8 @@ class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization
       onWillPop: () async => true,
       child: Scaffold(
         body: Navigator(
-        initialRoute: "$_nextStackId",
-        onGenerateInitialRoutes: _onGenerateInitialRoutes,
+          initialRoute: "$_nextStackId",
+          onGenerateInitialRoutes: _onGenerateInitialRoutes,
         ),
       ),
     );
