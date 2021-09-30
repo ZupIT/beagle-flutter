@@ -24,8 +24,8 @@ class BeagleYogaFactory {
   YogaNode createYogaNode(Widget child) {
     if(child is BeagleMetadataWidget) {
       return YogaNode(
-        nodeProperties: createNodeProperties((child.beagleMetadata).beagleStyle),
-        child: child,
+        nodeProperties: createNodeProperties(child.beagleMetadata.beagleStyle),
+        child: child.child,
       );
     } else {
       return YogaNode(
