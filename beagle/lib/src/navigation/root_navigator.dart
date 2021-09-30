@@ -84,13 +84,9 @@ class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization
     return WillPopScope(
       onWillPop: () async => true,
       child: Scaffold(
-        body: BeagleFlexWidget(
-          children: [
-            Navigator(
-            initialRoute: "$_nextStackId",
-            onGenerateInitialRoutes: _onGenerateInitialRoutes,
-            )
-          ],
+        body: Navigator(
+        initialRoute: "$_nextStackId",
+        onGenerateInitialRoutes: _onGenerateInitialRoutes,
         ),
       ),
     );
