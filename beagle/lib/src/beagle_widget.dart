@@ -77,15 +77,13 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
       return BeagleUndefinedWidget(environment: _environment);
     }
     try {
-      return BeagleFlexWidget(children: [
-        _createWidget(
+      return _createWidget(
             tree,
             builder(
               tree,
               widgetChildren,
               widget.view,
-            ))
-      ]);
+            ));
     } catch (error) {
       _logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       _logger.error(error.toString());
@@ -140,6 +138,6 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _widgetState ?? const SizedBox.shrink();
+    return BeagleFlexWidget(children: [_widgetState ?? const SizedBox.shrink()]);
   }
 }
