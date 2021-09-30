@@ -63,7 +63,7 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
      */
     return BeagleRefreshIndicator(
       color: HexColor(widget.color),
-      child: _buildScrollableContent()!,
+      child: _buildScrollableContent(),
       onRefresh: _onRefreshHandler,
       isRefreshing: widget.isRefreshing,
     );

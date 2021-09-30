@@ -19,7 +19,7 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'service_locator/service_locator.dart';
 
@@ -33,7 +33,8 @@ void main() {
   final designSystemMock = MockDesignSystem();
   final beagleLoggerMock = MockBeagleLogger();
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  when(designSystemMock.image(any as String)).thenReturn('images/beagle.png');
+
+  when(() => designSystemMock.image(any())).thenReturn('images/beagle.png');
 
   const tabBarKey = Key('BeagleTabBar');
   final tabBarItems = <TabBarItem>[
@@ -55,10 +56,10 @@ void main() {
       beagleYogaFactory: beagleYogaFactoryMock,
     );
 
-    when(beagleYogaFactoryMock.createYogaLayout(
-      style: anyNamed('style'),
-      children: anyNamed('children') ?? [],
-    )).thenAnswer((realInvocation) {
+    when(() => beagleYogaFactoryMock.createYogaLayout(
+          style: any(named: 'style'),
+          children: any(named: 'children'),
+        )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
     });
@@ -69,7 +70,7 @@ void main() {
           key: tabBarKey,
           items: items,
           currentTab: currentTab,
-          onTabSelection: onTabSelection!,
+          onTabSelection: onTabSelection ?? (_) {},
         ),
       ),
     );

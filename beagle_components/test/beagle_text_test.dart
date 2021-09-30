@@ -43,8 +43,8 @@ Widget createWidget({
       key: key,
       text: text,
       textColor: textColor,
-      alignment: alignment!,
-      styleId: styleId!,
+      alignment: alignment ?? TextAlignment.LEFT,
+      styleId: styleId ?? '',
     ),
   );
 }
@@ -96,11 +96,11 @@ void main() {
     });
 
     group('When a text alignment is not specified', () {
-      testWidgets('Then it should not set text alignment',
+      testWidgets('Then it should set the alignment as left',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(alignment: null));
 
-        expect(tester.widget<Text>(find.text(text)).textAlign, null);
+        expect(tester.widget<Text>(find.text(text)).textAlign, TextAlign.left);
       });
     });
 

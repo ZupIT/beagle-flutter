@@ -21,7 +21,7 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'image/image_mock_data.dart';
 import 'service_locator/service_locator.dart';
@@ -56,23 +56,24 @@ void main() {
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
 
-  when(beagleYogaFactoryMock.createYogaLayout(
-    style: anyNamed('style'),
-    children: anyNamed('children') ?? [],
-  )).thenAnswer((realInvocation) {
+  when(() => beagleYogaFactoryMock.createYogaLayout(
+        style: any(named: 'style'),
+        children: any(named: 'children'),
+      )).thenAnswer((realInvocation) {
     final List<Widget> children = realInvocation.namedArguments.values.last;
     return children.first;
   });
 
-  when(designSystemMock.image(defaultPlaceholder))
+  when(() => designSystemMock.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');
 
-  when(designSystemMock.image(invalidPlaceholder)).thenReturn('');
+  when(() => designSystemMock.image(invalidPlaceholder)).thenReturn('');
 
-  when(imageDownloaderMock.downloadImage(imageUrl)).thenAnswer((invocation) {
+  when(() => imageDownloaderMock.downloadImage(imageUrl))
+      .thenAnswer((invocation) {
     return Future<Uint8List>.value(mockedBeagleImageData);
   });
-  when(imageDownloaderMock.downloadImage(imageNotFoundUrl))
+  when(() => imageDownloaderMock.downloadImage(imageNotFoundUrl))
       .thenAnswer((invocation) {
     throw BeagleImageDownloaderException(
         statusCode: errorStatusCode, url: imageNotFoundUrl);
@@ -269,6 +270,7 @@ void main() {
         );
       });
     });
+
     group('When remote image url is not found and placeholder is invalid', () {
       testWidgets('Then it should render an empty container',
           (WidgetTester tester) async {

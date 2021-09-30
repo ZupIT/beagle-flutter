@@ -24,20 +24,17 @@ environment:
   flutter: ">=2.0.0"
 
 dependencies:
-  beagle: ^0.9.3-alpha
+  beagle:
+    path: ../beagle/
   flutter:
     sdk: flutter
   webview_flutter: ^2.0.10
-
-dependency_overrides:
-  beagle:
-    path: ../beagle/
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   lints: ^1.0.1
-  mockito: ^5.0.12
+  mocktail: ^0.1.4
 
 flutter:
   uses-material-design: true

@@ -120,12 +120,15 @@ class _BeagleImageState extends State<BeagleImage> {
 
   String? getAssetName(LocalImagePath imagePath) {
     final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-
     return designSystem.image(imagePath.mobileId);
   }
 
-  bool isPlaceHolderValid(LocalImagePath? path) =>
-      path != null && getAssetName(path) != null;
+  bool isPlaceHolderValid(LocalImagePath? path) {
+    if (path == null) return false;
+
+    final assetName = getAssetName(path);
+    return assetName != null && assetName.isNotEmpty;
+  }
 
   BoxFit getBoxFit(ImageContentMode mode) {
     if (mode == ImageContentMode.CENTER) {

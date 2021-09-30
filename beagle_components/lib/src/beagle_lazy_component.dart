@@ -99,6 +99,6 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
 
   @override
   Widget build(BuildContext context) {
-    return widget.child ?? Container();
+    return widget.child;
   }
 }

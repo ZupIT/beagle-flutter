@@ -54,6 +54,7 @@ void main() {
         expect(dotFinder, findsNWidgets(2));
       });
     });
+
     group('When currentPage is 0', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 0);
       testWidgets(
@@ -70,6 +71,7 @@ void main() {
         expect(expectedSecondDotColor, widgets.elementAt(1).color);
       });
     });
+
     group('When currentPage is 1', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 1);
       testWidgets(

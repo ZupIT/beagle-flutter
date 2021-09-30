@@ -43,12 +43,12 @@ class BeagleButton extends StatelessWidget {
   final bool? enabled;
 
   BeagleButtonStyle? get _buttonStyle =>
-      beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId!);
+      beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: _buttonStyle!.androidButtonStyle,
+      style: _buttonStyle?.androidButtonStyle,
       onPressed: getOnPressedFunction() as void Function()?,
       child: buildButtonChild(),
     );
@@ -57,7 +57,7 @@ class BeagleButton extends StatelessWidget {
   Widget buildButtonChild() {
     return Text(
       text,
-      style: _buttonStyle!.buttonTextStyle,
+      style: _buttonStyle?.buttonTextStyle,
     );
   }
 
