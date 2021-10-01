@@ -17,36 +17,36 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
-class DataContext {
-  DataContext(this.id, this.value);
-
-  String id;
-  dynamic value;
-}
-
 class BeagleUIElement {
   BeagleUIElement(this.properties);
 
   Map<String, dynamic> properties;
 
   String getId() {
-    return properties['id'].toString();
+    return properties['id'];
+  }
+
+  void setId(String id) {
+    properties['id'] = id;
   }
 
   Key getKey() {
-    return ValueKey(properties['id'].toString());
+    return ValueKey(getId());
   }
 
   String getType() {
     return properties['_beagleComponent_'].toString();
   }
 
-  DataContext getContext() {
+  BeagleDataContext getContext() {
     if (!properties.containsKey('context')) {
       return null;
     }
     final Map<String, dynamic> contextMap = properties['context'];
-    return DataContext(contextMap['id'], contextMap['value']);
+    return BeagleDataContext(
+      id: contextMap['id'],
+      value: contextMap['value'],
+    );
   }
 
   bool hasChildren() {
@@ -61,7 +61,6 @@ class BeagleUIElement {
     }
 
     final list =
-        // ignore: avoid_as
         (properties['children'] as List<dynamic>).cast<Map<String, dynamic>>();
     return list.map((child) => BeagleUIElement(child)).toList();
   }
@@ -76,5 +75,9 @@ class BeagleUIElement {
     return properties.containsKey('style')
         ? BeagleStyle.fromMap(properties['style'])
         : null;
+  }
+
+  static bool isBeagleUIElement(Map<String, dynamic> json) {
+    return json != null && json.containsKey("_beagleComponent_");
   }
 }

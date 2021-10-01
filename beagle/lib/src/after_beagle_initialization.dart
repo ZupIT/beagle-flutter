@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
+import 'package:flutter/widgets.dart';
 
-class BeagleNetworkOptions {
-  BeagleNetworkOptions({this.method, this.headers});
+mixin AfterBeagleInitialization<T extends StatefulWidget> on State<T> {
+  BeagleService beagleService;
 
-  BeagleHttpMethod method;
-  Map<String, String> headers;
-
-  static String toJsonEncode(BeagleNetworkOptions networkOptions) {
-    final params = <String, dynamic>{};
-
-    if (networkOptions == null) {
-      return jsonEncode(params);
-    }
-
-    if (networkOptions.method != null) {
-      params['method'] = EnumUtils.getEnumValueName(networkOptions.method);
-    }
-    if (networkOptions.headers != null) {
-      params['headers'] = networkOptions.headers;
-    }
-
-    return jsonEncode(params);
+  Future<void> _startBeagleService() async {
+    await beagleServiceLocator.allReady();
+    setState(() {
+      beagleService = beagleServiceLocator<BeagleService>();
+    });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _startBeagleService();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return beagleService == null ? const SizedBox.shrink() : buildAfterBeagleInitialization(context);
+  }
+
+  Widget buildAfterBeagleInitialization(BuildContext context);
 }

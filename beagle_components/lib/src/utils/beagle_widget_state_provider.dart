@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
+import 'package:flutter/widgets.dart';
 
-class BeagleNetworkOptions {
-  BeagleNetworkOptions({this.method, this.headers});
+class BeagleWidgetStateProvider {
+  static final BeagleWidgetStateProvider _singleton =
+  BeagleWidgetStateProvider._internal();
 
-  BeagleHttpMethod method;
-  Map<String, String> headers;
+  factory BeagleWidgetStateProvider() {
+    return _singleton;
+  }
 
-  static String toJsonEncode(BeagleNetworkOptions networkOptions) {
-    final params = <String, dynamic>{};
+  BeagleWidgetStateProvider._internal();
 
-    if (networkOptions == null) {
-      return jsonEncode(params);
-    }
-
-    if (networkOptions.method != null) {
-      params['method'] = EnumUtils.getEnumValueName(networkOptions.method);
-    }
-    if (networkOptions.headers != null) {
-      params['headers'] = networkOptions.headers;
-    }
-
-    return jsonEncode(params);
+  BeagleWidgetState of(
+      BuildContext context,
+      ) {
+    return context.findAncestorStateOfType<BeagleWidgetState>();
   }
 }

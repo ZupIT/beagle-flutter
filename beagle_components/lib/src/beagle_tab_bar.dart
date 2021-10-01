@@ -100,7 +100,7 @@ class _BeagleTabBarState extends State<BeagleTabBar>
             text: tabBarItem.title,
             icon: tabBarItem.icon == null
                 ? null
-                : BeagleImage(path: tabBarItem.icon, style: imageStyle),
+                : BeagleFlexWidget(children: [BeagleImage(path: tabBarItem.icon)], style: imageStyle),
           ),
         )
         .toList();

@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
+import 'dart:convert';
 
-typedef RetryFunction = Future<void> Function();
+class BeagleDataContext {
+  String id;
+  dynamic value;
 
-abstract class NavigationController {
-  void onLoading({BeagleView view, BuildContext context, Function completeNavigation});
-  void onError({
-    BeagleView view,
-    BuildContext context,
-    dynamic error,
-    StackTrace stackTrace,
-    RetryFunction retry,
-    Function completeNavigation,
+  BeagleDataContext({
+    this.id,
+    this.value,
   });
-  void onSuccess({
-    BeagleView view,
-    BuildContext context,
-    BeagleUIElement screen,
-  });
+
+  Map<String, dynamic> toJson() => {'id': id, 'value': jsonEncode(value)};
 }

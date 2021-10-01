@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
+import 'package:beagle/src/model/beagle_metadata.dart';
+import 'package:flutter/widgets.dart';
 
-class NetworkStrategyUtils {
-  // transforms the enum NetworkStrategy into the string expected by beagle web (js)
-  static String getJsStrategyName(BeagleNetworkStrategy strategy) {
-    if (strategy == null) {
-      return null;
-    }
-
-    return EnumUtils.getEnumValueNameInKebabCase(strategy);
-  }
+class BeagleMetadataWidget extends MetaData {
+  const BeagleMetadataWidget({Widget child, BeagleMetadata beagleMetadata}) : super(child: child, metaData: beagleMetadata);
+  BeagleMetadata get beagleMetadata => metaData;
 }

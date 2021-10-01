@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-//TODO: NEEDS ADD DOCUMENTATION
-enum BeagleNetworkStrategy {
-  beagleCacheOnly,
-  beagleWithFallbackToCache,
-  networkWithFallbackToCache,
-  cacheWithFallbackToNetwork,
-  cacheOnly,
-  networkOnly,
-  cacheFirst,
+import 'package:flutter/widgets.dart';
+
+/// The direction attribute will define the list direction.
+enum BeagleDynamicListDirection {
+  /// Items list are displayed in vertical direction like LINES.
+  VERTICAL,
+
+  ///Items list are displayed in Horizontal direction like COLUMNS.
+  HORIZONTAL,
+}
+
+extension BeagleDynamicListDirectionExtension on BeagleDynamicListDirection {
+  Axis get axis {
+    if (this == BeagleDynamicListDirection.VERTICAL) {
+      return Axis.vertical;
+    } else {
+      return Axis.horizontal;
+    }
+  }
 }

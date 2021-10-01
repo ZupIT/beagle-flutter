@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
+
 import 'package:beagle/beagle.dart';
+import 'package:flutter/widgets.dart';
+import 'package:yoga_engine/yoga_engine.dart';
 
-/// BeagleRequest is used to do requests.
-class BeagleScreenRequest implements BeagleNetworkOptions {
-  BeagleScreenRequest(
-    this.url, {
-    this.method,
-    this.headers,
-    this.strategy,
-    this.body,
-  });
-
-  /// Server URL
-  String url;
-
-  //TODO: NEEDS IMPLEMENTS
-  /// Content that will be deliver with the request.
-  String body;
-
-  @override
-  Map<String, String> headers;
-
-  @override
-  BeagleHttpMethod method;
-
-  @override
-  BeagleNetworkStrategy strategy;
+class BeagleYogaLayout extends YogaLayout {
+  BeagleYogaLayout({BeagleStyle style, List<Widget> children})
+      : super(
+            nodeProperties: beagleServiceLocator<BeagleYogaFactory>()
+                .createNodeProperties(style),
+            children: children.map(
+              (child) {
+                return beagleServiceLocator<BeagleYogaFactory>()
+                    .createYogaNode(child);
+              },
+            ).toList());
 }

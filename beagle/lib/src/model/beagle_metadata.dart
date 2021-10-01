@@ -16,26 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 
-class DefaultStorage implements Storage {
-  Map<String, String> storage = {};
-
-  @override
-  Future<void> clear() async {
-    storage.clear();
-  }
-
-  @override
-  Future<String> getItem(String key) async {
-    return storage[key];
-  }
-
-  @override
-  Future<void> removeItem(String key) async {
-    storage.remove(key);
-  }
-
-  @override
-  Future<void> setItem(String key, String value) async {
-    storage[key] = value;
-  }
+class BeagleMetadata  {
+  const BeagleMetadata({this.beagleStyle});
+  final BeagleStyle beagleStyle;
 }

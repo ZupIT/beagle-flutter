@@ -13,32 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
+import 'package:flutter/widgets.dart';
 
-class BeagleNetworkOptions {
-  BeagleNetworkOptions({this.method, this.headers});
+class BeagleFlexWidget extends StatelessWidget {
+  const BeagleFlexWidget({
+    Key key,
+    this.style,
+    this.children,
+  }) : super(key: key);
 
-  BeagleHttpMethod method;
-  Map<String, String> headers;
+  final BeagleStyle style;
+  final List<Widget> children;
 
-  static String toJsonEncode(BeagleNetworkOptions networkOptions) {
-    final params = <String, dynamic>{};
-
-    if (networkOptions == null) {
-      return jsonEncode(params);
-    }
-
-    if (networkOptions.method != null) {
-      params['method'] = EnumUtils.getEnumValueName(networkOptions.method);
-    }
-    if (networkOptions.headers != null) {
-      params['headers'] = networkOptions.headers;
-    }
-
-    return jsonEncode(params);
+  @override
+  Widget build(BuildContext context) {
+    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
+      style: style,
+      children: children,
+    );
   }
 }

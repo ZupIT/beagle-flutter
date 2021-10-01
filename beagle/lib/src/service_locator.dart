@@ -30,11 +30,11 @@ void setupServiceLocator({
   String baseUrl,
   BeagleEnvironment environment,
   HttpClient httpClient,
+  ViewClient viewClient,
   Map<String, ComponentBuilder> components,
-  Storage storage,
   bool useBeagleHeaders,
   Map<String, ActionHandler> actions,
-  BeagleNetworkStrategy strategy,
+  NavigationController defaultNavigationController,
   Map<String, NavigationController> navigationControllers,
   BeagleDesignSystem designSystem,
   BeagleImageDownloader imageDownloader,
@@ -48,7 +48,7 @@ void setupServiceLocator({
       createJavascriptRuntimeWrapperInstance(),
     )
     ..registerSingleton<BeagleJSEngine>(
-      createBeagleJSEngineInstance(storage),
+      createBeagleJSEngineInstance(),
     )
     ..registerSingleton<GlobalContext>(
       GlobalContextJS(beagleServiceLocator<BeagleJSEngine>()),
@@ -62,10 +62,10 @@ void setupServiceLocator({
         beagleServiceLocator<BeagleJSEngine>(),
         baseUrl: baseUrl,
         httpClient: httpClient,
+        viewClient: viewClient,
         components: components,
-        useBeagleHeaders: useBeagleHeaders,
         actions: actions,
-        strategy: strategy,
+        defaultNavigationController: defaultNavigationController,
         navigationControllers: navigationControllers,
         operations: operations,
       );
@@ -73,11 +73,10 @@ void setupServiceLocator({
       await configService.start();
       return configService;
     })
-    ..registerFactoryParam<BeagleViewJS, BeagleNetworkOptions, String>(
-      (networkOptions, initialControllerId) => BeagleViewJS(
+    ..registerFactoryParam<BeagleViewJS, BeagleNavigator, void>(
+      (BeagleNavigator parentNavigator, _) => BeagleViewJS(
         beagleServiceLocator<BeagleJSEngine>(),
-        networkOptions: networkOptions,
-        initialControllerId: initialControllerId,
+        parentNavigator,
       ),
     )
     ..registerFactory<UrlBuilder>(() => UrlBuilder(baseUrl));
@@ -91,5 +90,5 @@ JavascriptRuntimeWrapper createJavascriptRuntimeWrapperInstance() =>
     JavascriptRuntimeWrapper(
         getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false));
 
-BeagleJSEngine createBeagleJSEngineInstance(Storage storage) =>
-    BeagleJSEngine(beagleServiceLocator<JavascriptRuntimeWrapper>(), storage);
+BeagleJSEngine createBeagleJSEngineInstance() =>
+    BeagleJSEngine(beagleServiceLocator<JavascriptRuntimeWrapper>());
