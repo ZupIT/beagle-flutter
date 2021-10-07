@@ -255,15 +255,17 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     }
     if (indicatorAtTopNow != _isIndicatorAtTop) {
       if (_mode == _RefreshIndicatorMode.drag ||
-          _mode == _RefreshIndicatorMode.armed)
+          _mode == _RefreshIndicatorMode.armed) {
         _dismiss(_RefreshIndicatorMode.canceled);
+      }
     } else if (notification is ScrollUpdateNotification) {
       if (_mode == _RefreshIndicatorMode.drag ||
           _mode == _RefreshIndicatorMode.armed) {
         if (notification.metrics.extentBefore > 0.0) {
           _dismiss(_RefreshIndicatorMode.canceled);
         } else {
-          _dragOffset = (_dragOffset! - notification.scrollDelta!);
+          _dragOffset =
+              ((_dragOffset ?? 0.0) - (notification.scrollDelta ?? 0.0));
           _checkDragOffset(notification.metrics.viewportDimension);
         }
       }
@@ -277,7 +279,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     } else if (notification is OverscrollNotification) {
       if (_mode == _RefreshIndicatorMode.drag ||
           _mode == _RefreshIndicatorMode.armed) {
-        _dragOffset = (_dragOffset! - notification.overscroll);
+        _dragOffset = ((_dragOffset ?? 0.0) - notification.overscroll);
         _checkDragOffset(notification.metrics.viewportDimension);
       }
     } else if (notification is ScrollEndNotification) {
@@ -331,14 +333,17 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
   void _checkDragOffset(double containerExtent) {
     assert(_mode == _RefreshIndicatorMode.drag ||
         _mode == _RefreshIndicatorMode.armed);
-    double newValue =
-        _dragOffset! / (containerExtent * _kDragContainerExtentPercentage);
-    if (_mode == _RefreshIndicatorMode.armed)
+    double newValue = ((_dragOffset ?? 0.0) /
+        (containerExtent * _kDragContainerExtentPercentage));
+    if (_mode == _RefreshIndicatorMode.armed) {
       newValue = math.max(newValue, 1.0 / _kDragSizeFactorLimit);
+    }
     _positionController.value =
         newValue.clamp(0.0, 1.0); // this triggers various rebuilds
-    if (_mode == _RefreshIndicatorMode.drag && _valueColor.value!.alpha == 0xFF)
+    if (_mode == _RefreshIndicatorMode.drag &&
+        _valueColor.value?.alpha == 0xFF) {
       _mode = _RefreshIndicatorMode.armed;
+    }
   }
 
   // Stop showing the refresh indicator.

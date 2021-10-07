@@ -63,8 +63,7 @@ void main() {
       testWidgets('Then it should have a PageView child',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-        final pageViewFinder = find.byType(PageView);
-        expect(pageViewFinder, findsOneWidget);
+        expect(find.byType(PageView), findsOneWidget);
       });
     });
 
@@ -74,28 +73,23 @@ void main() {
         await tester.pumpWidget(createWidget(onPageChange: (int page) {}));
 
         // check first page
-        var textFinder = find.text(pageOneText);
-        expect(textFinder, findsOneWidget);
+        expect(find.text(pageOneText), findsOneWidget);
 
         // check second page
         await swipePageViewRight(tester);
-        textFinder = find.text(pageTwoText);
-        expect(textFinder, findsOneWidget);
+        expect(find.text(pageTwoText), findsOneWidget);
 
         // check third page
         await swipePageViewRight(tester);
-        textFinder = find.text(pageThreeText);
-        expect(textFinder, findsOneWidget);
+        expect(find.text(pageThreeText), findsOneWidget);
 
         // back to second page
         await swipePageViewLeft(tester);
-        textFinder = find.text(pageTwoText);
-        expect(textFinder, findsOneWidget);
+        expect(find.text(pageTwoText), findsOneWidget);
 
         // back to first page
         await swipePageViewLeft(tester);
-        textFinder = find.text(pageOneText);
-        expect(textFinder, findsOneWidget);
+        expect(find.text(pageOneText), findsOneWidget);
       });
 
       testWidgets(

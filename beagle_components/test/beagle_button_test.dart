@@ -56,10 +56,7 @@ void main() {
       testWidgets('Then it should have a ElevatedButton child',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
-        final buttonFinder = find.byType(ElevatedButton);
-
-        expect(buttonFinder, findsOneWidget);
+        expect(find.byType(ElevatedButton), findsOneWidget);
       });
     });
 
@@ -68,11 +65,7 @@ void main() {
           (WidgetTester tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         await tester.pumpWidget(createWidget());
-
-        final buttonFinder = find.byType(ElevatedButton);
-
-        expect(buttonFinder, findsOneWidget);
-
+        expect(find.byType(ElevatedButton), findsOneWidget);
         debugDefaultTargetPlatformOverride = null;
       });
     });
@@ -81,10 +74,7 @@ void main() {
       testWidgets('Then it should have a Text widget with specified text',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
-        final textFinder = find.text(buttonText);
-
-        expect(textFinder, findsOneWidget);
+        expect(find.text(buttonText), findsOneWidget);
       });
     });
 
@@ -92,7 +82,6 @@ void main() {
       testWidgets('Then the button widget should be enabled',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
         expect(
             tester.widget<ElevatedButton>(find.byType(ElevatedButton)).enabled,
             isTrue);
@@ -116,7 +105,6 @@ void main() {
       testWidgets('Then the button widget should be disabled',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(buttonEnabled: false));
-
         expect(
             tester.widget<ElevatedButton>(find.byType(ElevatedButton)).enabled,
             isFalse);
@@ -152,11 +140,8 @@ void main() {
 
         // THEN
         final buttonFinder = find.byType(ElevatedButton);
-        final textFinder = find.text(buttonText);
-
         final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(textFinder);
-
+        final textCreated = tester.widget<Text>(find.text(buttonText));
         final buttonOne = ButtonOneStyle();
 
         expect(buttonFinder, findsOneWidget);
@@ -165,7 +150,6 @@ void main() {
                 .resolve({MaterialState.pressed}),
             buttonOne.androidButtonStyle.backgroundColor!
                 .resolve({MaterialState.pressed}));
-
         expect(textCreated.style, buttonOne.buttonTextStyle);
 
         debugDefaultTargetPlatformOverride = null;
@@ -183,11 +167,8 @@ void main() {
 
         // THEN
         final buttonFinder = find.byType(ElevatedButton);
-        final textFinder = find.text(buttonText);
-
         final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(textFinder);
-
+        final textCreated = tester.widget<Text>(find.text(buttonText));
         final buttonOne = ButtonOneStyle();
 
         expect(buttonFinder, findsOneWidget);
@@ -196,7 +177,6 @@ void main() {
                 .resolve({MaterialState.pressed}),
             buttonOne.androidButtonStyle.backgroundColor!
                 .resolve({MaterialState.pressed}));
-
         expect(textCreated.style, buttonOne.buttonTextStyle);
 
         debugDefaultTargetPlatformOverride = null;
@@ -215,13 +195,11 @@ void main() {
         // THEN
         final buttonFinder = find.byType(ElevatedButton);
         final textFinder = find.text(buttonText);
-
         final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
         final textCreated = tester.widget<Text>(textFinder);
 
         expect(buttonFinder, findsOneWidget);
         expect(buttonCreated.style, null);
-
         expect(textCreated.style, null);
 
         debugDefaultTargetPlatformOverride = null;
@@ -239,14 +217,11 @@ void main() {
 
         // THEN
         final buttonFinder = find.byType(ElevatedButton);
-        final textFinder = find.text(buttonText);
-
         final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(textFinder);
+        final textCreated = tester.widget<Text>(find.text(buttonText));
 
         expect(buttonFinder, findsOneWidget);
         expect(buttonCreated.style, null);
-
         expect(textCreated.style, null);
 
         debugDefaultTargetPlatformOverride = null;

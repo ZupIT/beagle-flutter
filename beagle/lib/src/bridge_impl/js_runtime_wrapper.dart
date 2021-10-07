@@ -33,7 +33,7 @@ class JavascriptRuntimeWrapper {
     return _jsRuntime.onMessage(channelName, fn);
   }
 
-  Future<JsEvalResult>? handlePromise(JsEvalResult value, {Duration? timeout}) {
+  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration? timeout}) {
     return _jsRuntime.handlePromise(value, timeout: timeout);
   }
 

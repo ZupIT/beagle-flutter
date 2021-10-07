@@ -49,9 +49,7 @@ void main() {
       testWidgets('Then it should have two material widgets',
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
-
-        final dotFinder = find.byType(Material);
-        expect(dotFinder, findsNWidgets(2));
+        expect(find.byType(Material), findsNWidgets(2));
       });
     });
 
@@ -62,13 +60,9 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
 
-        final expectedFirstDotColor = HexColor(selectedColor);
-        final expectedSecondDotColor = HexColor(unselectedColor);
-
         final widgets = tester.widgetList<Material>(find.byType(Material));
-
-        expect(expectedFirstDotColor, widgets.elementAt(0).color);
-        expect(expectedSecondDotColor, widgets.elementAt(1).color);
+        expect(HexColor(selectedColor), widgets.elementAt(0).color);
+        expect(HexColor(unselectedColor), widgets.elementAt(1).color);
       });
     });
 
@@ -79,13 +73,9 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
 
-        final expectedFirstDotColor = HexColor(unselectedColor);
-        final expectedSecondDotColor = HexColor(selectedColor);
-
         final widgets = tester.widgetList<Material>(find.byType(Material));
-
-        expect(expectedFirstDotColor, widgets.elementAt(0).color);
-        expect(expectedSecondDotColor, widgets.elementAt(1).color);
+        expect(HexColor(unselectedColor), widgets.elementAt(0).color);
+        expect(HexColor(selectedColor), widgets.elementAt(1).color);
       });
     });
   });

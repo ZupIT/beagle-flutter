@@ -20,15 +20,25 @@ import 'package:flutter_test/flutter_test.dart';
 
 const showAlertButtonText = 'Show Alert';
 
-MaterialApp _buildApp(String title, String message, Function onPressOk) {
+MaterialApp _buildApp({
+  String? title,
+  String? message,
+  Function? onPressOk,
+  String? labelOk,
+}) {
   return MaterialApp(
     home: Builder(
       builder: (context) {
         return Center(
           child: ElevatedButton(
             onPressed: () {
-              BeagleAlert.showAlertDialog(context,
-                  title: title, message: message, onPressOk: onPressOk);
+              BeagleAlert.showAlertDialog(
+                context,
+                title: title,
+                message: message,
+                onPressOk: onPressOk,
+                labelOk: labelOk,
+              );
             },
             child: const Text(showAlertButtonText),
           ),
@@ -43,7 +53,7 @@ void main() {
     group('When I call showAlertDialog', () {
       testWidgets('Then it should show an AlertDialog widget',
           (WidgetTester tester) async {
-        await tester.pumpWidget(_buildApp('', '', () {}));
+        await tester.pumpWidget(_buildApp());
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 
@@ -57,8 +67,8 @@ void main() {
         const expectedTitle = 'Title';
         const expectedMessage = 'This is a message.';
 
-        await tester
-            .pumpWidget(_buildApp(expectedTitle, expectedMessage, () {}));
+        await tester.pumpWidget(
+            _buildApp(title: expectedTitle, message: expectedMessage));
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 
@@ -72,7 +82,19 @@ void main() {
       testWidgets('Then it should have a button with OK text',
           (WidgetTester tester) async {
         const buttonText = 'OK';
-        await tester.pumpWidget(_buildApp('', '', () {}));
+        await tester.pumpWidget(_buildApp());
+        await tester.tap(find.text(showAlertButtonText));
+        await tester.pumpAndSettle();
+
+        final textFinder = find.text(buttonText);
+
+        expect(textFinder, findsOneWidget);
+      });
+
+      testWidgets('Then it should have a button with Yes text',
+          (WidgetTester tester) async {
+        const buttonText = 'Yes';
+        await tester.pumpWidget(_buildApp(labelOk: buttonText));
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 
@@ -90,7 +112,7 @@ void main() {
           didPressOk = true;
         }
 
-        await tester.pumpWidget(_buildApp('', '', onPressOK));
+        await tester.pumpWidget(_buildApp(onPressOk: onPressOK));
         await tester.tap(find.text(showAlertButtonText));
         await tester.pumpAndSettle();
 

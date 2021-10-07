@@ -15,30 +15,21 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:flutter/widgets.dart';
 
-/// BeagleRequest is used to do requests.
-class BeagleScreenRequest implements BeagleNetworkOptions {
-  BeagleScreenRequest(
-    this.url, {
-    this.method,
-    this.headers,
-    this.strategy,
-    this.body,
-  });
+class BeagleWidgetStateProvider {
+  static final BeagleWidgetStateProvider _singleton =
+      BeagleWidgetStateProvider._internal();
 
-  /// Server URL
-  late String url;
+  factory BeagleWidgetStateProvider() {
+    return _singleton;
+  }
 
-  //TODO: NEEDS IMPLEMENTS
-  /// Content that will be deliver with the request.
-  late String? body;
+  BeagleWidgetStateProvider._internal();
 
-  @override
-  late Map<String, String>? headers;
-
-  @override
-  late BeagleHttpMethod? method;
-
-  @override
-  late BeagleNetworkStrategy? strategy;
+  BeagleWidgetState? of(
+    BuildContext context,
+  ) {
+    return context.findAncestorStateOfType<BeagleWidgetState>();
+  }
 }

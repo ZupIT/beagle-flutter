@@ -15,24 +15,11 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/interface/types.dart';
+import 'package:flutter/widgets.dart';
 
-typedef NavigationListener = void Function(Route route);
+typedef NavigationListener = void Function(BeagleRoute route);
 
 abstract class BeagleNavigator {
-  /// Subscribes to view navigations. The [listener] is executed before any change is done to the
-  /// navigation history. If a [listener] throws an error, the navigation is aborted, i.e. the
-  /// navigation history is not changed. The navigation history only changes after all listeners
-  /// are successfully executed.
-  ///
-  /// The [listener] is called with two parameters: the first is the resulting route of the
-  /// navigation. The second is the navigation controller to use for this navigation. A navigation
-  /// controller is nothing more than a set of options to perform the navigation.
-  ///
-  /// Returns a function that, when called, unsubscribes the listener from the Navigator
-  /// todo: add the navigation controller as second parameter to the listener
-  RemoveListener subscribe(NavigationListener listener);
-
   /// Creates and navigates to a new navigation stack where the first route is the parameter
   /// [route].
   ///
@@ -40,24 +27,25 @@ abstract class BeagleNavigator {
   /// for this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> pushStack(Route route, [String controllerId]);
+  Future<void> pushStack(BeagleRoute route, BuildContext context,
+      [String controllerId]);
 
   /// Removes the entire current navigation stack and navigates back to the last route of the
   /// previous stack. Throws an error if there's only one navigation stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> popStack();
+  void popStack(BuildContext context);
 
   /// Navigates to [route] by pushing it to the navigation history of the current navigation stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> pushView(Route route);
+  Future<void> pushView(BeagleRoute route, BuildContext context);
 
   /// Goes back one entry in the navigation history. If the current stack has only one view, this
   /// also pops the current stack. If only one stack and one view exist, it will throw an error.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> popView();
+  void popView(BuildContext context);
 
   /// Removes every navigation entry in the current stack until the route identified by
   /// [routeIdentifier] is found. A route is identified by a string if its url equals to the string
@@ -67,7 +55,7 @@ abstract class BeagleNavigator {
   /// the route isn't found in the current stack, an error is thrown.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> popToView(String routeIdentifier);
+  void popToView(String routeIdentifier, BuildContext context);
 
   /// Removes the current navigation stack and navigates to the a new stack where the first [route]
   /// is the one passed as parameter.
@@ -76,7 +64,8 @@ abstract class BeagleNavigator {
   /// this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> resetStack(Route route, [String controllerId]);
+  Future<void> resetStack(BeagleRoute route, BuildContext context,
+      [String controllerId]);
 
   /// Removes the entire navigation history and starts it over by navigating to a new initial
   /// [route] (passed as parameter).
@@ -85,11 +74,6 @@ abstract class BeagleNavigator {
   /// this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> resetApplication(Route route, [String controllerId]);
-
-  /// Verifies if the navigation history is empty, i.e. if there are no registered routes.
-  bool isEmpty();
-
-  /// Returns the current route or null if the navigator has not loaded its first route yet.
-  T? getCurrentRoute<T extends Route?>();
+  Future<void> resetApplication(BeagleRoute route, BuildContext context,
+      [String controllerId]);
 }

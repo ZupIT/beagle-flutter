@@ -21,24 +21,17 @@ NodeProperties mapToNodeProperties(BeagleStyle? style) {
   if (style == null) {
     return NodeProperties();
   }
-  final nodeProperties = NodeProperties()
-    ..setPositionType(_mapPositionType(style.positionType!))
-    ..setDisplay(_mapDisplay(style.display!));
-
-  _mapFlex(nodeProperties, style.flex!);
-  if (style.size != null) {
-    _mapSize(nodeProperties, style.size!);
+  final nodeProps = NodeProperties();
+  if (style.positionType != null) {
+    nodeProps.setPositionType(_mapPositionType(style.positionType!));
   }
-  if (style.margin != null) {
-    _mapMargin(nodeProperties, style.margin!);
-  }
-  if (style.padding != null) {
-    _mapPadding(nodeProperties, style.padding!);
-  }
-  if (style.position != null) {
-    _mapPosition(nodeProperties, style.position!);
-  }
-  return nodeProperties;
+  if (style.display != null) nodeProps.setDisplay(_mapDisplay(style.display!));
+  if (style.flex != null) _mapFlex(nodeProps, style.flex!);
+  if (style.size != null) _mapSize(nodeProps, style.size!);
+  if (style.margin != null) _mapMargin(nodeProps, style.margin!);
+  if (style.padding != null) _mapPadding(nodeProps, style.padding!);
+  if (style.position != null) _mapPosition(nodeProps, style.position!);
+  return nodeProps;
 }
 
 const Map<FlexPosition, YGPositionType> _flexPositionMap = {
@@ -59,25 +52,41 @@ YGDisplay _mapDisplay(FlexDisplay flexDisplay) {
   return _flexDisplayMap[flexDisplay] ?? YGDisplay.YGDisplayFlex;
 }
 
-void _mapFlex(NodeProperties nodeProperties, BeagleFlex flex) {
-  nodeProperties
-    ..setAlignContent(_mapAlignContent(flex.alignContent!))
-    ..setAlignItems(_mapAlignItems(flex.alignItems!))
-    ..setAlignSelf(_mapAlignSelf(flex.alignSelf!))
-    ..setFlex(flex.flex!.toDouble())
-    ..setFlexDirection(_mapFlexDirection(flex.flexDirection!))
-    ..setFlexWrap(_mapWrap(flex.flexWrap!))
-    ..setGrow(flex.grow!.toDouble())
-    ..setJustifyContent(_mapJustify(flex.justifyContent!))
-    ..setShrink(flex.shrink!.toDouble());
+double defaultNumToDoubleCastFunction(dynamic value) =>
+    value is double ? value : (value as num).toDouble();
 
-  if (flex.basis!.value == null || flex.basis!.value == 0) {
-    nodeProperties.setBasisAuto();
+void _mapFlex(NodeProperties nodeProps, BeagleFlex? flex) {
+  if (flex == null) return;
+
+  if (flex.alignContent != null) {
+    nodeProps.setAlignContent(_mapAlignContent(flex.alignContent!));
+  }
+  if (flex.alignItems != null) {
+    nodeProps.setAlignItems(_mapAlignItems(flex.alignItems!));
+  }
+  if (flex.alignSelf != null) {
+    nodeProps.setAlignSelf(_mapAlignSelf(flex.alignSelf!));
+  }
+  if (flex.flex != null) nodeProps.setFlex(flex.flex?.toDouble() ?? 0.0);
+  if (flex.flexDirection != null) {
+    nodeProps.setFlexDirection(_mapFlexDirection(flex.flexDirection!));
+  }
+  if (flex.flexWrap != null) nodeProps.setFlexWrap(_mapWrap(flex.flexWrap!));
+  if (flex.grow != null) nodeProps.setGrow(flex.grow?.toDouble() ?? 0.0);
+  if (flex.justifyContent != null) {
+    nodeProps.setJustifyContent(_mapJustify(flex.justifyContent!));
+  }
+  if (flex.shrink != null) nodeProps.setShrink(flex.shrink?.toDouble() ?? 1.0);
+
+  if (flex.basis?.value == null || flex.basis?.value == 0) {
+    nodeProps.setBasisAuto();
   } else {
-    if (flex.basis!.type == UnitType.PERCENT) {
-      nodeProperties.setBasisPercent(flex.basis!.value!.toDouble());
-    } else {
-      nodeProperties.setBasis(flex.basis!.value!.toDouble());
+    if (flex.basis?.type != null &&
+        flex.basis?.type == UnitType.PERCENT &&
+        flex.basis?.value != null) {
+      nodeProps.setBasisPercent(flex.basis!.value!.toDouble());
+    } else if (flex.basis?.value != null) {
+      nodeProps.setBasis(flex.basis!.value!.toDouble());
     }
   }
 }

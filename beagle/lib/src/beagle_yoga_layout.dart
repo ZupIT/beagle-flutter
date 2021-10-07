@@ -15,15 +15,19 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
+import 'package:flutter/widgets.dart';
+import 'package:yoga_engine/yoga_engine.dart';
 
-class NetworkStrategyUtils {
-  // transforms the enum NetworkStrategy into the string expected by beagle web (js)
-  static String? getJsStrategyName(BeagleNetworkStrategy? strategy) {
-    if (strategy == null) {
-      return null;
-    }
-
-    return EnumUtils.getEnumValueNameInKebabCase(strategy);
-  }
+class BeagleYogaLayout extends YogaLayout {
+  BeagleYogaLayout({BeagleStyle? style, List<Widget>? children})
+      : super(
+            nodeProperties: beagleServiceLocator<BeagleYogaFactory>()
+                .createNodeProperties(style),
+            children: children?.map(
+                  (child) {
+                    return beagleServiceLocator<BeagleYogaFactory>()
+                        .createYogaNode(child);
+                  },
+                ).toList() ??
+                []);
 }

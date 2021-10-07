@@ -59,30 +59,20 @@ void main() {
       testWidgets('Then it should have the correct text',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
-        final textFinder = find.text(text);
-
-        expect(textFinder, findsOneWidget);
+        expect(find.text(text), findsOneWidget);
       });
 
       testWidgets('Then it should have the correct text color',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
-        final expectedTextColor = HexColor(textColor);
-
         expect(tester.widget<Text>(find.text(text)).style!.color,
-            expectedTextColor);
+            HexColor(textColor));
       });
 
       testWidgets('Then it should have the correct text alignment',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
-        const expectedTextAlign = TextAlign.right;
-
-        expect(
-            tester.widget<Text>(find.text(text)).textAlign, expectedTextAlign);
+        expect(tester.widget<Text>(find.text(text)).textAlign, TextAlign.right);
       });
     });
 
@@ -90,7 +80,6 @@ void main() {
       testWidgets('Then it should not set text color',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(textColor: null));
-
         expect(tester.widget<Text>(find.text(text)).style!.color, null);
       });
     });
@@ -99,7 +88,6 @@ void main() {
       testWidgets('Then it should set the alignment as left',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(alignment: null));
-
         expect(tester.widget<Text>(find.text(text)).textAlign, TextAlign.left);
       });
     });
@@ -112,10 +100,9 @@ void main() {
             .pumpWidget(createWidget(styleId: 'text-one', textColor: null));
 
         //THEN
-        final textFinder = find.text(text);
         final textCreated = tester.widget<Text>(find.text(text));
 
-        expect(textFinder, findsOneWidget);
+        expect(find.text(text), findsOneWidget);
         expect(textCreated.style!.color, textStyle.color);
         expect(textCreated.style!.backgroundColor, textStyle.backgroundColor);
       });
@@ -129,12 +116,10 @@ void main() {
       await tester.pumpWidget(createWidget(styleId: 'text-one'));
 
       //THEN
-      final textFinder = find.text(text);
       final textCreated = tester.widget<Text>(find.text(text));
-      final expectedTextColor = HexColor(textColor);
 
-      expect(textFinder, findsOneWidget);
-      expect(textCreated.style!.color, expectedTextColor);
+      expect(find.text(text), findsOneWidget);
+      expect(textCreated.style!.color, HexColor(textColor));
       expect(textCreated.style!.backgroundColor, textStyle.backgroundColor);
     });
   });
@@ -146,15 +131,12 @@ void main() {
       await tester.pumpWidget(createWidget(alignment: TextAlignment.CENTER));
 
       //THEN
-      final textFinder = find.text(text);
       final centerFinder = find.byType(Center);
       final centerCreated = tester.widget<Center>(centerFinder);
-      final textCreated = centerCreated.child as Text;
-      const expectedTextAlign = TextAlign.center;
 
       expect(centerFinder, findsOneWidget);
-      expect(textFinder, findsOneWidget);
-      expect(textCreated.textAlign, expectedTextAlign);
+      expect(find.text(text), findsOneWidget);
+      expect((centerCreated.child as Text).textAlign, TextAlign.center);
     });
   });
 }

@@ -118,8 +118,8 @@ class UnitValue {
     type = EnumUtils.fromString(UnitType.values, map['type']);
   }
 
-  late num? value;
-  late UnitType? type;
+  num? value;
+  UnitType? type;
 }
 
 class BeagleSize {
@@ -157,13 +157,13 @@ class BeagleSize {
     }
   }
 
-  late UnitValue? width;
-  late UnitValue? height;
-  late UnitValue? maxWidth;
-  late UnitValue? maxHeight;
-  late UnitValue? minWidth;
-  late UnitValue? minHeight;
-  late num? aspectRatio;
+  UnitValue? width;
+  UnitValue? height;
+  UnitValue? maxWidth;
+  UnitValue? maxHeight;
+  UnitValue? minWidth;
+  UnitValue? minHeight;
+  num? aspectRatio;
 }
 
 class EdgeValue {
@@ -178,6 +178,20 @@ class EdgeValue {
     this.top,
     this.vertical,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'all': all,
+      'bottom': bottom,
+      'end': end,
+      'horizontal': horizontal,
+      'left': left,
+      'right': right,
+      'start': start,
+      'top': top,
+      'vertical': vertical,
+    };
+  }
 
   EdgeValue.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('left')) {
@@ -209,15 +223,15 @@ class EdgeValue {
     }
   }
 
-  late UnitValue? left;
-  late UnitValue? top;
-  late UnitValue? right;
-  late UnitValue? bottom;
-  late UnitValue? start;
-  late UnitValue? end;
-  late UnitValue? horizontal;
-  late UnitValue? vertical;
-  late UnitValue? all;
+  UnitValue? left;
+  UnitValue? top;
+  UnitValue? right;
+  UnitValue? bottom;
+  UnitValue? start;
+  UnitValue? end;
+  UnitValue? horizontal;
+  UnitValue? vertical;
+  UnitValue? all;
 }
 
 class CornerRadius {
@@ -284,15 +298,15 @@ class BeagleStyle {
     }
   }
 
-  late String? backgroundColor;
-  late CornerRadius? cornerRadius;
-  late BeagleFlex? flex;
-  late FlexPosition? positionType = FlexPosition.RELATIVE;
-  late FlexDisplay? display = FlexDisplay.FLEX;
-  late BeagleSize? size;
-  late EdgeValue? margin;
-  late EdgeValue? padding;
-  late EdgeValue? position;
-  late num? borderWidth;
-  late String? borderColor;
+  String? backgroundColor;
+  CornerRadius? cornerRadius;
+  BeagleFlex? flex;
+  FlexPosition? positionType = FlexPosition.RELATIVE;
+  FlexDisplay? display = FlexDisplay.FLEX;
+  BeagleSize? size;
+  EdgeValue? margin;
+  EdgeValue? padding;
+  EdgeValue? position;
+  num? borderWidth;
+  String? borderColor;
 }

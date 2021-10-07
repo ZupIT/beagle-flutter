@@ -138,23 +138,18 @@ void main() {
       testWidgets('Then it should have a Image widget child',
           (WidgetTester tester) async {
         await tester.pumpWidget(localImage);
-        final imageFinder = find.byType(Image);
-
-        expect(imageFinder, findsOneWidget);
+        expect(find.byType(Image), findsOneWidget);
       });
 
       testWidgets('Then it should present the correct local image',
           (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(localImage);
-
           await precacheImageForTest(tester);
         });
 
-        final imageFinder = find.byType(Image);
-
         await expectLater(
-          imageFinder,
+          find.byType(Image),
           matchesGoldenFile('goldens/beagle_image_local.png'),
         );
       });
@@ -165,10 +160,7 @@ void main() {
           (WidgetTester tester) async {
         await tester
             .pumpWidget(createLocalWidget(placeholder: invalidPlaceholder));
-
-        final containerFinder = find.byType(Container);
-
-        expect(containerFinder, findsOneWidget);
+        expect(find.byType(Container), findsOneWidget);
       });
     });
 
@@ -177,7 +169,6 @@ void main() {
           (WidgetTester tester) async {
         await tester
             .pumpWidget(createLocalWidget(mode: ImageContentMode.CENTER));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.none);
       });
     });
@@ -188,7 +179,6 @@ void main() {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.CENTER_CROP,
         ));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.cover);
       });
     });
@@ -199,7 +189,6 @@ void main() {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_CENTER,
         ));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });
@@ -210,7 +199,6 @@ void main() {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_XY,
         ));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.fill);
       });
     });
@@ -219,7 +207,6 @@ void main() {
       testWidgets('Then the widget should have BoxFit.contain',
           (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget());
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });
@@ -230,24 +217,18 @@ void main() {
       testWidgets('Then it should have a Image widget child',
           (WidgetTester tester) async {
         await tester.pumpWidget(createRemoteWidget());
-
-        final imageFinder = find.byType(Image);
-
-        expect(imageFinder, findsOneWidget);
+        expect(find.byType(Image), findsOneWidget);
       });
 
       testWidgets('Then it should present the correct remote image',
           (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget());
-
           await precacheImageForTest(tester);
         });
 
-        final imageFinder = find.byType(Image);
-
         await expectLater(
-          imageFinder,
+          find.byType(Image),
           matchesGoldenFile('goldens/beagle_image_remote.png'),
         );
       });
@@ -258,14 +239,11 @@ void main() {
           (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(url: imageNotFoundUrl));
-
           await precacheImageForTest(tester);
         });
 
-        final imageFinder = find.byType(Image);
-
         await expectLater(
-          imageFinder,
+          find.byType(Image),
           matchesGoldenFile('goldens/beagle_image_remote_not_found.png'),
         );
       });
@@ -276,10 +254,7 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(createRemoteWidget(
             url: imageNotFoundUrl, placeholder: invalidPlaceholder));
-
-        final containerFinder = find.byType(Container);
-
-        expect(containerFinder, findsOneWidget);
+        expect(find.byType(Container), findsOneWidget);
       });
     });
 
@@ -290,7 +265,6 @@ void main() {
           await tester.pumpWidget(
             createRemoteWidget(mode: ImageContentMode.CENTER),
           );
-
           await precacheImageForTest(tester);
         });
 
@@ -307,7 +281,6 @@ void main() {
           ));
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.cover);
       });
     });
@@ -321,7 +294,6 @@ void main() {
           ));
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });
@@ -335,7 +307,6 @@ void main() {
           ));
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.fill);
       });
     });
@@ -347,7 +318,6 @@ void main() {
           await tester.pumpWidget(createRemoteWidget());
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });

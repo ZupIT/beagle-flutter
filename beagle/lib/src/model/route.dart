@@ -16,18 +16,61 @@
 
 import 'package:beagle/beagle.dart';
 
-abstract class Route {}
+abstract class BeagleRoute {}
 
-class RemoteView extends Route {
-  RemoteView(this.url, {this.fallback, this.shouldPrefetch});
+class HttpAdditionalData {
+  const HttpAdditionalData({
+    this.method,
+    this.headers,
+    this.body,
+  });
 
-  final String url;
-  final BeagleUIElement? fallback;
-  final bool? shouldPrefetch;
+  factory HttpAdditionalData.fromJson(Map<String, dynamic> json) {
+    return HttpAdditionalData(
+        method: json["method"], headers: json["headers"], body: json["body"]);
+  }
+
+  final BeagleHttpMethod? method;
+  final Map<String, String>? headers;
+  final dynamic body;
 }
 
-class LocalView extends Route {
+class RemoteView extends BeagleRoute {
+  RemoteView(this.url,
+      {this.fallback, this.shouldPrefetch, this.httpAdditionalData});
+
+  final String url;
+  final BeagleUIElement? fallback; // optional
+  final bool? shouldPrefetch; // optional
+  final HttpAdditionalData? httpAdditionalData; // optional
+
+  static bool isRemoteView(Map<String, dynamic> json) {
+    return json.containsKey("url");
+  }
+
+  factory RemoteView.fromJson(Map<String, dynamic> json) {
+    return RemoteView(
+      json["url"],
+      fallback: json.containsKey("fallback")
+          ? BeagleUIElement(json["fallback"])
+          : null,
+      httpAdditionalData: json.containsKey("httpAdditionalData")
+          ? HttpAdditionalData.fromJson(json["httpAdditionalData"])
+          : null,
+    );
+  }
+}
+
+class LocalView extends BeagleRoute {
   LocalView(this.screen);
+
+  static bool isLocalView(Map<String, dynamic> json) {
+    return json.containsKey("screen");
+  }
+
+  factory LocalView.fromJson(Map<String, dynamic> json) {
+    return LocalView(BeagleUIElement(json["screen"]));
+  }
 
   final BeagleUIElement screen;
 }

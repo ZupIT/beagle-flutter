@@ -28,32 +28,32 @@ import 'after_layout.dart';
 class BeagleLazyComponent extends StatefulWidget {
   const BeagleLazyComponent(
       {Key? key,
-      required this.path,
-      required this.beagleId,
-      required this.view,
+      this.path,
+      this.beagleId,
+      this.view,
       this.initialState,
-      required this.child})
+      this.child})
       : super(key: key);
 
   /// An URL that can be either absolute or a relative path from Beagle's base
   /// url.
-  final String path;
+  final String? path;
 
   /// An element that will be displayed while the component is being fetched.
   final BeagleUIElement? initialState;
 
   /// [BeagleUIElement] id. Identifies this component on Beagle's components
   /// tree.
-  final String beagleId;
+  final String? beagleId;
 
   /// Used to access the render engine to re-render the component when the fetch
   /// ends.
-  final BeagleView view;
+  final BeagleView? view;
 
   /// Initially, [BeagleLazyComponent] has no child. When loading ends, the
   /// loaded component becomes its child and [BeagleLazyComponent] is
   /// re-rendered.
-  final Widget child;
+  final Widget? child;
 
   @override
   _BeagleLazyComponent createState() => _BeagleLazyComponent();
@@ -65,7 +65,7 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
 
   String _buildUrl() {
     final urlBuilder = beagleServiceLocator<UrlBuilder>();
-    return urlBuilder.build(widget.path);
+    return urlBuilder.build(widget.path ?? '');
   }
 
   Future<void> _fetchLazyView() async {
@@ -75,9 +75,8 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
       if (result.status >= 200 && result.status < 400) {
         final jsonMap = jsonDecode(result.body);
         final component = BeagleUIElement(jsonMap);
-        widget.view
-            .getRenderer()
-            .doFullRender(component, widget.beagleId, TreeUpdateMode.replace);
+        widget.view?.getRenderer().doFullRender(
+            component, widget.beagleId ?? '', TreeUpdateMode.replace);
       } else {
         beagleServiceLocator<BeagleLogger>().error(
             'BeagleLazyComponent: connection error: ${result.status} ${result.body}');
@@ -91,14 +90,14 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
   @override
   void afterFirstLayout(BuildContext context) {
     if (widget.initialState != null) {
-      widget.view.getRenderer().doFullRender(
-          widget.initialState!, widget.beagleId, TreeUpdateMode.replace);
+      widget.view?.getRenderer().doFullRender(
+          widget.initialState!, widget.beagleId ?? '', TreeUpdateMode.replace);
     }
     _fetchLazyView();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return widget.child ?? Container();
   }
 }

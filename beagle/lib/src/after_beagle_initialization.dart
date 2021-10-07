@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
+import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
-extension BuildContextUtils on BuildContext {
-  BuildContext findBuildContextForWidgetKey(String widgetKey) {
-    if (_compareWidgetKey(this, widgetKey)) {
-      return this;
-    }
+mixin AfterBeagleInitialization<T extends StatefulWidget> on State<T> {
+  BeagleService? beagleService;
 
-    late BuildContext widgetContext;
-
-    void visitor(Element element) {
-      if (_compareWidgetKey(element, widgetKey)) {
-        widgetContext = element;
-      } else {
-        element.visitChildElements(visitor);
-      }
-    }
-
-    visitChildElements(visitor);
-
-    return widgetContext;
+  Future<void> _startBeagleService() async {
+    await beagleServiceLocator.allReady();
+    setState(() {
+      beagleService = beagleServiceLocator<BeagleService>();
+    });
   }
 
-  bool _compareWidgetKey(BuildContext context, String widgetKey) {
-    final ValueKey<String>? key = context.widget.key as ValueKey<String>?;
-    return key != null && key.value == widgetKey;
+  @override
+  void initState() {
+    super.initState();
+    _startBeagleService();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return beagleService == null
+        ? const SizedBox.shrink()
+        : buildAfterBeagleInitialization(context);
+  }
+
+  Widget buildAfterBeagleInitialization(BuildContext context);
 }

@@ -14,37 +14,25 @@
  * limitations under the License.
  */
 
-class NavigationController {
-  NavigationController({
-    this.errorComponent,
-    this.isDefault,
-    this.loadingComponent,
-    this.shouldShowError,
-    this.shouldShowLoading,
+import 'package:beagle/beagle.dart';
+import 'package:flutter/widgets.dart';
+
+typedef RetryFunction = Future<void> Function();
+
+abstract class NavigationController {
+  void onLoading(
+      {BeagleView view, BuildContext context, Function completeNavigation});
+  void onError({
+    BeagleView view,
+    BuildContext context,
+    dynamic error,
+    StackTrace stackTrace,
+    RetryFunction retry,
+    Function completeNavigation,
   });
-
-  /// If true, uses this as the default navigation controller.
-  bool? isDefault = false;
-
-  /// Wether to show a loading component or not. True by default.
-  bool? shouldShowLoading = true;
-
-  /// Wether to show an error component or not. True by default.
-  bool? shouldShowError = true;
-
-  /// A custom loading component to use. The default value is "beagle:loading"
-  String? loadingComponent = 'beagle:loading';
-
-  /// A custom error component to use. The default value is "beagle:error"
-  String? errorComponent = 'beagle:error';
-
-  Map<String, dynamic> toMap() {
-    return {
-      'errorComponent': errorComponent,
-      'isDefault': isDefault,
-      'loadingComponent': loadingComponent,
-      'shouldShowError': shouldShowError,
-      'shouldShowLoading': shouldShowLoading,
-    };
-  }
+  void onSuccess({
+    BeagleView view,
+    BuildContext context,
+    BeagleUIElement screen,
+  });
 }

@@ -23,23 +23,23 @@ import 'package:flutter/widgets.dart';
 class BeaglePageIndicator extends StatelessWidget {
   const BeaglePageIndicator({
     Key? key,
-    required this.selectedColor,
-    required this.unselectedColor,
-    required this.numberOfPages,
-    required this.currentPage,
+    this.selectedColor,
+    this.unselectedColor,
+    this.numberOfPages,
+    this.currentPage,
   }) : super(key: key);
 
   /// This is a string value and it must be filled as HEX (Hexadecimal).
-  final String selectedColor;
+  final String? selectedColor;
 
   /// This is a string value and it must be filled as HEX (Hexadecimal).
-  final String unselectedColor;
+  final String? unselectedColor;
 
   /// Numbers of pages.
-  final int numberOfPages;
+  final int? numberOfPages;
 
   /// Identify the selected page.
-  final int currentPage;
+  final int? currentPage;
 
   static const double dotSpacing = 25;
   static const double dotSize = 8;
@@ -50,8 +50,9 @@ class BeaglePageIndicator extends StatelessWidget {
       height: dotSpacing,
       child: Center(
         child: Material(
-          color:
-              HexColor(index == currentPage ? selectedColor : unselectedColor),
+          color: HexColor(index == (currentPage ?? 0)
+              ? (selectedColor ?? '#ffffff')
+              : (unselectedColor ?? '#ffffff')),
           type: MaterialType.circle,
           child: const SizedBox(
             width: dotSize,
@@ -66,7 +67,7 @@ class BeaglePageIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List<Widget>.generate(numberOfPages, buildDot),
+      children: List<Widget>.generate(numberOfPages ?? 0, buildDot),
     );
   }
 }

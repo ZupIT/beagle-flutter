@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-apply plugin: 'io.gitlab.arturbosch.detekt'
+import 'package:beagle/beagle.dart';
 
-detekt {
-    config = files("$rootDir/../config/detekt-default-config.yml")
+abstract class ViewClient {
+  Future<BeagleUIElement?> fetch(RemoteView route);
+  void preFetch(RemoteView route);
 }

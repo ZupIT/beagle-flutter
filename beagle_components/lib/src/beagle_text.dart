@@ -24,8 +24,8 @@ class BeagleText extends StatelessWidget {
     Key? key,
     this.text,
     this.textColor,
-    this.alignment = TextAlignment.LEFT,
-    this.styleId = '',
+    this.alignment,
+    this.styleId,
   }) : super(key: key);
 
   /// The text to display.
@@ -35,17 +35,17 @@ class BeagleText extends StatelessWidget {
   final String? textColor;
 
   /// Defines the content alignment inside the widget.
-  final TextAlignment alignment;
+  final TextAlignment? alignment;
 
   /// Reference a native style in your local styles file to be applied on this
   /// Text.
-  final String styleId;
+  final String? styleId;
 
   @override
   Widget build(BuildContext context) {
     final beagleText = Text(
       text.toString(),
-      textAlign: getTextAlign(alignment),
+      textAlign: getTextAlign(alignment ?? TextAlignment.LEFT),
       style: getTextStyle(),
     );
     return alignment == TextAlignment.CENTER
@@ -70,11 +70,13 @@ class BeagleText extends StatelessWidget {
 
   TextStyle getTextStyle() {
     final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-    var textStyle = designSystem.textStyle(styleId) ?? const TextStyle();
+    var textStyle = styleId != null && styleId!.isNotEmpty
+        ? designSystem.textStyle(styleId!)
+        : TextStyle();
     if (textColor != null && textColor!.isNotEmpty) {
-      textStyle = textStyle.copyWith(color: getTextColor(textColor));
+      textStyle = textStyle!.copyWith(color: getTextColor(textColor));
     }
-    return textStyle;
+    return textStyle!;
   }
 }
 

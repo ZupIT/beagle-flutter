@@ -26,8 +26,8 @@ class BeagleTabBar extends StatefulWidget {
   const BeagleTabBar({
     Key? key,
     this.items,
-    required this.currentTab,
-    required this.onTabSelection,
+    this.currentTab,
+    this.onTabSelection,
   }) : super(key: key);
 
   /// List of tabs that will be displayed. Note that the number of tabs of a TabView is final and cannot be changed
@@ -35,10 +35,10 @@ class BeagleTabBar extends StatefulWidget {
   final List<TabBarItem>? items;
 
   /// Currently selected Tab.
-  final int currentTab;
+  final int? currentTab;
 
   /// Action that will be performed when a tab is pressed.
-  final void Function(int) onTabSelection;
+  final void Function(int)? onTabSelection;
 
   @override
   _BeagleTabBarState createState() => _BeagleTabBarState();
@@ -57,8 +57,8 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   void initState() {
     super.initState();
     _tabController = TabController(
-      initialIndex: widget.currentTab,
-      length: widget.items == null ? 0 : widget.items!.length,
+      initialIndex: widget.currentTab ?? 0,
+      length: widget.items == null ? 0 : (widget.items ?? []).length,
       vsync: this,
     );
   }
@@ -70,7 +70,7 @@ class _BeagleTabBarState extends State<BeagleTabBar>
     final previousSelectedTab = oldWidget.currentTab;
 
     if (previousSelectedTab != currentSelectedTab) {
-      _tabController.animateTo(widget.currentTab);
+      _tabController.animateTo(widget.currentTab ?? 0);
     }
   }
 
@@ -94,13 +94,17 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   }
 
   List<Widget> buildTabs() {
-    return widget.items!
+    return (widget.items ?? [])
         .map(
           (tabBarItem) => Tab(
             text: tabBarItem.title,
             icon: tabBarItem.icon == null
                 ? null
-                : BeagleImage(path: tabBarItem.icon!, style: imageStyle),
+                : BeagleFlexWidget(
+                    children: tabBarItem.icon != null
+                        ? [BeagleImage(path: tabBarItem.icon!)]
+                        : [],
+                    style: imageStyle),
           ),
         )
         .toList();

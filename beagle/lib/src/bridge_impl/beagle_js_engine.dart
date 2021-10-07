@@ -41,11 +41,7 @@ typedef OperationListener = void Function(
 /// Provides an interface to run javascript code and listen to Beagle's core
 /// events.
 class BeagleJSEngine {
-  BeagleJSEngine(
-    JavascriptRuntimeWrapper jsRuntime,
-    Storage storage,
-  )   : _jsRuntime = jsRuntime,
-        _storage = storage;
+  BeagleJSEngine(JavascriptRuntimeWrapper jsRuntime) : _jsRuntime = jsRuntime;
 
   final JavascriptRuntimeWrapper _jsRuntime;
   BeagleJSEngineState _engineState = BeagleJSEngineState.CREATED;
@@ -53,17 +49,16 @@ class BeagleJSEngine {
   final _httpRequestChannelName = 'httpClient.request';
   final _actionChannelName = 'action';
   final _operationChannelName = 'operation';
-  final _viewUpdateChannelName = 'beagleView.update';
-  final _navigatorChannelName = 'beagleNavigator';
+  final _viewChangeChannelName = 'beagleView.update';
   final _loggerChannelName = 'logger';
+  final _analyticsCreateRecordChannelName = 'analytics.createRecord';
+  final _analyticsGetConfigChannelName = 'analytics.getConfig';
 
   HttpListener? _httpListener;
   final Map<String, List<ActionListener>> _viewActionListenerMap = {};
   OperationListener? _operationListener;
-  final Map<String, List<ViewUpdateListener>> _viewUpdateListenerMap = {};
-  final Map<String, List<ViewErrorListener>> _viewErrorListenerMap = {};
   final Map<String, List<NavigationListener>> _navigationListenerMap = {};
-  final Storage _storage;
+  final Map<String, List<ViewChangeListener>> _viewChangeListenerMap = {};
 
   /// Runs javascript [code].
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
@@ -126,10 +121,9 @@ class BeagleJSEngine {
     _setupHttpMessages();
     _setupActionMessages();
     _setupBeagleViewMessages();
-    _setupBeagleNavigatorMessages();
-    _setupStorageMessages();
     _setupOperationMessages();
     _setupLoggerMessage();
+    _setupAnalyticsMessage();
   }
 
   void _setupHttpMessages() {
@@ -157,6 +151,33 @@ class BeagleJSEngine {
       _loggerChannelName,
       notifyLoggerListener,
     );
+  }
+
+  void _setupAnalyticsMessage() {
+    // Handles createRecord
+    _jsRuntime.onMessage(
+      _analyticsCreateRecordChannelName,
+      _notifyAnalyticsCreateRecordListener,
+    );
+
+    // Handles getConfig
+    _jsRuntime.onMessage(_analyticsGetConfigChannelName, (dynamic args) {
+      final functionId = args["functionId"];
+      _notifyAnalyticsGetConfigListener(functionId);
+    });
+  }
+
+  void _notifyAnalyticsCreateRecordListener(dynamic analyticsRecordMap) {
+    if (beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
+      final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
+      final record = AnalyticsRecord().fromMap(analyticsRecordMap);
+      /*
+       * TODO find a way to extract x,y of the component that triggered the event. Example:
+       *  final componentId = analyticsRecord[analytics.component['id']];
+       *  final position = findPositionByComponentId(componentId); // position.x, position.y
+       */
+      analyticsProvider.createRecord(record);
+    }
   }
 
   @visibleForTesting
@@ -198,7 +219,7 @@ class BeagleJSEngine {
         ? BeagleUIElement(actionMessage['element'])
         : null;
 
-    for (final listener in _viewActionListenerMap[viewId]!) {
+    for (final listener in (_viewActionListenerMap[viewId] ?? [])) {
       listener(action: action, view: view, element: element);
     }
   }
@@ -221,7 +242,7 @@ class BeagleJSEngine {
 
   void _setupBeagleViewMessages() {
     _jsRuntime.onMessage(
-      _viewUpdateChannelName,
+      _viewChangeChannelName,
       notifyViewUpdateListeners,
     );
   }
@@ -237,16 +258,9 @@ class BeagleJSEngine {
     final deserialized = _deserializeJsFunctions(updateMessage['tree'], viewId);
     final uiElement = BeagleUIElement(deserialized);
 
-    for (final listener in _viewUpdateListenerMap[viewId]!) {
+    for (final listener in (_viewChangeListenerMap[viewId] ?? [])) {
       listener(uiElement);
     }
-  }
-
-  void _setupBeagleNavigatorMessages() {
-    _jsRuntime.onMessage(
-      _navigatorChannelName,
-      notifyNavigationListeners,
-    );
   }
 
   @visibleForTesting
@@ -259,8 +273,8 @@ class BeagleJSEngine {
 
     final route = BeagleNavigatorJS.mapToRoute(navigationMessage['route']);
 
-    for (final listener in _navigationListenerMap[viewId]!) {
-      listener(route!);
+    for (final listener in (_navigationListenerMap[viewId] ?? [])) {
+      listener(route);
     }
   }
 
@@ -273,7 +287,7 @@ class BeagleJSEngine {
   }
 
   bool _hasUpdateListenerForView(String viewId) {
-    return _handleListenerForView(viewId, _viewUpdateListenerMap);
+    return _handleListenerForView(viewId, _viewChangeListenerMap);
   }
 
   bool _hasNavigationListenerForView(String viewId) {
@@ -283,43 +297,11 @@ class BeagleJSEngine {
   void evaluateOnJSRuntime(String promiseId, String? result) => _jsRuntime.evaluate(
       "global.beagle.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
 
-  @visibleForTesting
-  void notifyStorageSetListeners(dynamic args) async {
-    await _storage.setItem(args['key'], args['value']);
-    evaluateOnJSRuntime(args['promiseId'], null);
-  }
-
-  @visibleForTesting
-  void notifyStorageGetListeners(dynamic args) async {
-    final result = await _storage.getItem(args['key']);
-    evaluateOnJSRuntime(args['promiseId'], result);
-  }
-
-  @visibleForTesting
-  void notifyStorageRemoveListeners(dynamic args) async {
-    await _storage.removeItem(args['key']);
-    evaluateOnJSRuntime(args['promiseId'], null);
-  }
-
-  @visibleForTesting
-  void notifyStorageClearListeners(dynamic args) async {
-    await _storage.clear();
-    evaluateOnJSRuntime(args['promiseId'], null);
-  }
-
-  void _setupStorageMessages() {
-    _jsRuntime
-      ..onMessage('storage.set', notifyStorageSetListeners)
-      ..onMessage('storage.get', notifyStorageGetListeners)
-      ..onMessage('storage.remove', notifyStorageRemoveListeners)
-      ..onMessage('storage.clear', notifyStorageClearListeners);
-  }
-
   /// Handles a javascript promise.
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  Future<JsEvalResult>? promiseToFuture(JsEvalResult? result) {
+  Future<JsEvalResult> promiseToFuture(JsEvalResult? result) {
     _checkEngineIsStarted();
-    return _jsRuntime.handlePromise(result!);
+    return _jsRuntime.handlePromise(result ?? JsEvalResult("null", null));
   }
 
   /// Lazily starts the [BeagleJSEngine].
@@ -338,18 +320,9 @@ class BeagleJSEngine {
   }
 
   /// Creates a new BeagleView and returns the created view id.
-  String createBeagleView({
-    required BeagleNetworkOptions networkOptions,
-    String? initialControllerId,
-  }) {
-    final params = [BeagleNetworkOptions.toJsonEncode(networkOptions)];
-    if (initialControllerId != null) {
-      params.add(initialControllerId);
-    }
-    final script = 'global.beagle.createBeagleView(${params.join(', ')})';
-    final id = _jsRuntime.evaluate(script)?.stringResult ?? '';
-
-    return id;
+  String createBeagleView() {
+    final script = 'global.beagle.createBeagleView()';
+    return _jsRuntime.evaluate(script)?.stringResult ?? '';
   }
 
   // ignore: use_setters_to_change_properties
@@ -376,24 +349,18 @@ class BeagleJSEngine {
         viewId, _viewActionListenerMap, listener);
   }
 
-  RemoveListener onViewUpdate(String viewId, ViewUpdateListener listener) {
-    return handleListenerRemoval<ViewUpdateListener>(
-        viewId, _viewUpdateListenerMap, listener);
-  }
-
-  RemoveListener onViewUpdateError(String viewId, ViewErrorListener listener) {
-    return handleListenerRemoval<ViewErrorListener>(
-        viewId, _viewErrorListenerMap, listener);
-  }
-
   RemoveListener onNavigate(String viewId, NavigationListener listener) {
     return handleListenerRemoval<NavigationListener>(
         viewId, _navigationListenerMap, listener);
   }
 
+  RemoveListener onViewUpdate(String viewId, ViewChangeListener listener) {
+    return handleListenerRemoval<ViewChangeListener>(
+        viewId, _viewChangeListenerMap, listener);
+  }
+
   void removeViewListeners(String viewId) {
-    _viewUpdateListenerMap.remove(viewId);
-    _viewErrorListenerMap.remove(viewId);
+    _viewChangeListenerMap.remove(viewId);
     _viewActionListenerMap.remove(viewId);
   }
 
@@ -405,6 +372,17 @@ class BeagleJSEngine {
   void respondHttpRequest(String id, Response? response) {
     _jsRuntime.evaluate(
         'global.beagle.httpClient.respond($id, ${response?.toJson()})');
+  }
+
+  void _notifyAnalyticsGetConfigListener(String functionId) {
+    if (beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
+      final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
+      callJsFunction(functionId, analyticsProvider.getConfig().toMap());
+    }
+  }
+
+  void addJsCallback(String callbackName, dynamic Function(dynamic) listener) {
+    _jsRuntime.onMessage(callbackName, listener);
   }
 }
 

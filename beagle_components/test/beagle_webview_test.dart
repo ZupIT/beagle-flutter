@@ -41,8 +41,7 @@ void main() {
       testWidgets('Then it should have a WebView child widget',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-        final webViewFinder = find.byType(WebView);
-        expect(webViewFinder, findsOneWidget);
+        expect(find.byType(WebView), findsOneWidget);
       });
     });
 
@@ -50,7 +49,6 @@ void main() {
       testWidgets('Then it should load the correct initial URL',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-
         expect(tester.widget<WebView>(find.byType(WebView)).initialUrl,
             defaultUrl);
       });

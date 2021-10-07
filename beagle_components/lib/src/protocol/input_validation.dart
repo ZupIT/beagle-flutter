@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-apply plugin: "com.vanniktech.maven.publish"
-
-def versionName = System.env.VERSION_DEPLOY != null ? System.env.VERSION_DEPLOY : VERSION_NAME ?: ""
-
-version = versionName
-
-mavenPublish {
-    releaseSigningEnabled = System.env.VERSION_DEPLOY != null ? true : false
-    nexus {
-        stagingProfile = "br.com.zup"
-    }
+abstract class InputValidation {
+  bool hasError();
 }

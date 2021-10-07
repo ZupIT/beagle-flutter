@@ -33,7 +33,7 @@ void main() {
       test('Then should call JavascriptRuntime evaluate with correct parameter',
           () {
         when(() => jsRuntimeWrapper.evaluate(any()))
-            .thenReturn(JsEvalResult('', ''));
+            .thenReturn(JsEvalResult("null", null));
         const jsCode = 'some js code';
         jsRuntimeWrapper.evaluate(jsCode);
 
@@ -48,7 +48,7 @@ void main() {
         when(() => jsRuntimeWrapper.evaluateAsync(any()))
             .thenAnswer((_) async => Future.delayed(
                   const Duration(milliseconds: 1),
-                  () => JsEvalResult('', ''),
+                  () => JsEvalResult("null", null),
                 ));
         const jsCode = 'some js code';
         await jsRuntimeWrapper.evaluateAsync(jsCode);

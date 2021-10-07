@@ -19,21 +19,21 @@ import 'package:flutter/widgets.dart';
 
 /// Defines a container that makes its content scrollable
 class BeagleScrollView extends StatelessWidget {
-  const BeagleScrollView({
+  BeagleScrollView({
     Key? key,
-    required this.scrollDirection,
-    required this.scrollBarEnabled,
-    required this.children,
+    this.scrollDirection,
+    this.scrollBarEnabled,
+    this.children,
   }) : super(key: key);
 
   /// Defines if the content is scrollable in the vertical direction or horizontal. Default is vertical.
-  final ScrollAxis scrollDirection;
+  final ScrollAxis? scrollDirection;
 
   /// Shows or hide the scroll bar. By default, it's visible.
-  final bool scrollBarEnabled;
+  final bool? scrollBarEnabled;
 
   /// The content of the scroll view.
-  final List<Widget> children;
+  final List<Widget>? children;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +41,9 @@ class BeagleScrollView extends StatelessWidget {
       scrollDirection: scrollDirection == ScrollAxis.HORIZONTAL
           ? Axis.horizontal
           : Axis.vertical,
-      children: children,
+      children: children ?? [],
     );
-    return scrollBarEnabled == false
+    return (scrollBarEnabled ?? false) == false
         ? scrollView
         : Scrollbar(child: scrollView);
   }

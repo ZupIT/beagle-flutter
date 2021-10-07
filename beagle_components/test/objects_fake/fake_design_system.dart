@@ -52,4 +52,9 @@ class FakeDesignSystem extends BeagleDesignSystem {
 
     return style;
   }
+
+  @override
+  BeagleNavigationBarStyle? navigationBarStyle(String id) {
+    return null;
+  }
 }

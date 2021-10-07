@@ -15,22 +15,8 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-
-import 'beagle_button.dart';
-import 'beagle_container.dart';
-import 'beagle_image.dart';
-import 'beagle_lazy_component.dart';
-import 'beagle_page_indicator.dart';
-import 'beagle_page_view.dart';
-import 'beagle_scroll_view.dart';
-import 'beagle_tab_bar.dart';
-import 'beagle_text.dart';
-import 'beagle_text_input.dart';
-import 'beagle_touchable.dart';
-import 'beagle_webview.dart';
-import 'text_input_type.dart';
-import 'beagle_pull_to_refresh.dart';
 
 final Map<String, ComponentBuilder> defaultComponents = {
   'custom:loading': beagleLoadingBuilder(),
@@ -49,6 +35,9 @@ final Map<String, ComponentBuilder> defaultComponents = {
   'beagle:screenComponent': beagleScreenComponentBuilder(),
   'beagle:pullToRefresh': beaglePullToRefreshBuilder(),
   'beagle:scrollView': beagleScrollViewBuilder(),
+  'beagle:simpleForm': beagleSimpleFormBuilder(),
+  'beagle:listView': beagleListViewBuilder(),
+  'beagle:gridView': beagleGridViewBuilder(),
 };
 
 ComponentBuilder beagleLoadingBuilder() {
@@ -72,9 +61,10 @@ ComponentBuilder beagleTextBuilder() {
         textColor: element.getAttributeValue('textColor'),
         styleId: element.getAttributeValue('styleId'),
         alignment: EnumUtils.fromString(
-          TextAlignment.values,
-          element.getAttributeValue('alignment') ?? '',
-        )!,
+              TextAlignment.values,
+              element.getAttributeValue('alignment') ?? '',
+            ) ??
+            TextAlignment.LEFT,
       );
 }
 
@@ -93,9 +83,56 @@ ComponentBuilder beagleScrollViewBuilder() {
         scrollDirection: EnumUtils.fromString(
           ScrollAxis.values,
           element.getAttributeValue('scrollDirection'),
-        )!,
+        ),
         scrollBarEnabled: element.getAttributeValue('scrollBarEnabled'),
         children: children,
+      );
+}
+
+ComponentBuilder beagleListViewBuilder() {
+  return (element, children, _) => BeagleDynamicList(
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        direction: EnumUtils.fromString(
+          BeagleDynamicListDirection.values,
+          element.getAttributeValue('direction'),
+        ),
+        dataSource: element.getAttributeValue('dataSource'),
+        templates: TemplateManagerItem.fromJsonList(
+            element.getAttributeValue('templates')),
+        isScrollIndicatorVisible:
+            element.getAttributeValue('isScrollIndicatorVisible'),
+        scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+        iteratorName: element.getAttributeValue('iteratorName'),
+        identifierItem: element.getAttributeValue('key'),
+        onScrollEnd: element.getAttributeValue('onScrollEnd'),
+        children: children,
+        suffix: element.getAttributeValue('__suffix__'),
+        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
+      );
+}
+
+ComponentBuilder beagleGridViewBuilder() {
+  return (element, children, _) => BeagleDynamicList(
+        key: element.getKey(),
+        onInit: element.getAttributeValue('onInit'),
+        direction: EnumUtils.fromString(
+          BeagleDynamicListDirection.values,
+          element.getAttributeValue('direction'),
+        ),
+        dataSource: element.getAttributeValue('dataSource'),
+        templates: TemplateManagerItem.fromJsonList(
+            element.getAttributeValue('templates')),
+        isScrollIndicatorVisible:
+            element.getAttributeValue('isScrollIndicatorVisible'),
+        scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+        iteratorName: element.getAttributeValue('iteratorName'),
+        identifierItem: element.getAttributeValue('key'),
+        onScrollEnd: element.getAttributeValue('onScrollEnd'),
+        children: children,
+        spanCount: element.getAttributeValue('spanCount'),
+        suffix: element.getAttributeValue('__suffix__'),
+        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
       );
 }
 
@@ -112,9 +149,10 @@ ComponentBuilder beagleTextInputBuilder() {
         error: element.getAttributeValue('error'),
         showError: element.getAttributeValue('showError'),
         type: EnumUtils.fromString(
-          BeagleTextInputType.values,
-          element.getAttributeValue('type'),
-        )!,
+              BeagleTextInputType.values,
+              element.getAttributeValue('type'),
+            ) ??
+            BeagleTextInputType.TEXT,
       );
 }
 
@@ -171,8 +209,7 @@ ComponentBuilder beagleImageBuilder() {
       mode: EnumUtils.fromString(
         ImageContentMode.values,
         element.getAttributeValue('mode') ?? '',
-      )!,
-      style: element.getStyle(),
+      ),
     );
   };
 }
@@ -203,10 +240,23 @@ ComponentBuilder beagleWebViewBuilder() {
 }
 
 ComponentBuilder beagleScreenComponentBuilder() {
-  return (element, children, __) => Container(
-        key: element.getKey(),
-        child: children[0],
-      );
+  return (element, children, _) {
+    final Map<String, dynamic> safeArea =
+        element.getAttributeValue('safeArea') ?? {};
+    final Map<String, dynamic>? navigationBarMap =
+        element.getAttributeValue('navigationBar');
+    final BeagleNavigationBar? navigationBar = navigationBarMap == null
+        ? null
+        : BeagleNavigationBar.fromJson(navigationBarMap);
+
+    return BeagleScreen(
+      key: element.getKey(),
+      identifier: element.getAttributeValue('identifier'),
+      safeArea: safeArea.isNotEmpty ? BeagleSafeArea.fromJson(safeArea) : null,
+      navigationBar: navigationBar,
+      child: children[0],
+    );
+  };
 }
 
 ComponentBuilder beaglePullToRefreshBuilder() {
@@ -217,5 +267,15 @@ ComponentBuilder beaglePullToRefreshBuilder() {
         isRefreshing: element.getAttributeValue('isRefreshing'),
         color: element.getAttributeValue('color'),
         child: children.isEmpty ? null : children[0]);
+  };
+}
+
+ComponentBuilder beagleSimpleFormBuilder() {
+  return (element, children, view) {
+    return BeagleSimpleForm(
+        key: element.getKey(),
+        onSubmit: element.getAttributeValue('onSubmit'),
+        onValidationError: element.getAttributeValue('onValidationError'),
+        children: children);
   };
 }

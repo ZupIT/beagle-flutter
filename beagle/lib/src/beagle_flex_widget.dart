@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import 'package:beagle/beagle.dart';
+import 'package:flutter/widgets.dart';
 
-class DefaultStorage implements Storage {
-  Map<String, String> storage = {};
+class BeagleFlexWidget extends StatelessWidget {
+  BeagleFlexWidget({
+    Key? key,
+    this.style,
+    required this.children,
+  }) : super(key: key);
 
-  @override
-  Future<void> clear() async {
-    storage.clear();
-  }
-
-  @override
-  Future<String?> getItem(String key) async {
-    return storage[key];
-  }
+  final BeagleStyle? style;
+  final List<Widget> children;
 
   @override
-  Future<void> removeItem(String key) async {
-    storage.remove(key);
-  }
-
-  @override
-  Future<void> setItem(String key, String value) async {
-    storage[key] = value;
+  Widget build(BuildContext context) {
+    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
+      style: style,
+      children: children,
+    );
   }
 }

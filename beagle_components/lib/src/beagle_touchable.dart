@@ -21,7 +21,7 @@ class BeagleTouchable extends StatelessWidget {
   const BeagleTouchable({
     Key? key,
     this.onPress,
-    required this.child,
+    this.child,
   }) : super(key: key);
 
   /// Action that will be performed when [child] is pressed.
@@ -29,7 +29,7 @@ class BeagleTouchable extends StatelessWidget {
 
   /// A [Widget] that will be rendered inside [BeagleTouchable] and listen to
   /// press events.
-  final Widget child;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {

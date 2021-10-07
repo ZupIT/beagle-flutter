@@ -17,18 +17,19 @@
 import 'package:flutter/material.dart';
 
 class BeagleAlert {
-  static void showAlertDialog(
+  static Future<void> showAlertDialog(
     BuildContext context, {
-    String title = '',
-    String message = '',
+    String? title,
+    String? message,
+    String? labelOk,
     Function? onPressOk,
-  }) {
-    showDialog(
+  }) async {
+    await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(message),
+          title: Text(title ?? ''),
+          content: Text(message ?? ''),
           actions: [
             TextButton(
               onPressed: () {
@@ -37,7 +38,7 @@ class BeagleAlert {
                   onPressOk();
                 }
               },
-              child: const Text('OK'),
+              child: Text(labelOk ?? 'OK'),
             ),
           ],
         );

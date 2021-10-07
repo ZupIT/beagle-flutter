@@ -60,8 +60,7 @@ void main() {
         await tester.drag(find.byKey(keyContent), const Offset(0.0, 300));
         await tester.pumpAndSettle();
 
-        const expectedTapCount = 1;
-        expect(tapCount, expectedTapCount);
+        expect(tapCount, 1);
       });
     });
 
@@ -81,8 +80,7 @@ void main() {
             child: childContent,
             color: color));
 
-        const expectedTapCount = 0;
-        expect(tapCount, expectedTapCount);
+        expect(tapCount, 0);
         expect(find.byType(RefreshProgressIndicator), findsOneWidget);
       });
     });
@@ -103,8 +101,7 @@ void main() {
             child: childContent,
             color: color));
 
-        const expectedTapCount = 0;
-        expect(tapCount, expectedTapCount);
+        expect(tapCount, 0);
         expect(find.byType(RefreshProgressIndicator), findsNothing);
       });
     });

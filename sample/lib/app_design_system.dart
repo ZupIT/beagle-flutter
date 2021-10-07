@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class AppDesignSystem extends BeagleDesignSystem {
@@ -24,20 +25,34 @@ class AppDesignSystem extends BeagleDesignSystem {
     'person': 'images/person.png',
     'beagle': 'images/beagle.png',
     'delete': 'images/delete.png',
+    'informationImage': 'images/info.png'
+  };
+
+  final Map<String, BeagleButtonStyle> buttonStyles = {
+    'DesignSystem.Stylish.Button': BeagleButtonStyle(
+        androidButtonStyle: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
+        buttonTextStyle: TextStyle(color: HexColor("#6F6F6F"))),
   };
 
   @override
   String image(String id) {
-    return imageMap[id];
+    return imageMap[id] ?? '';
   }
 
   @override
   BeagleButtonStyle buttonStyle(String id) {
-    return null;
+    return buttonStyles[id] ?? BeagleButtonStyle();
   }
 
   @override
   TextStyle textStyle(String id) {
-    return null;
+    return TextStyle();
+  }
+
+  @override
+  BeagleNavigationBarStyle navigationBarStyle(String id) {
+    return BeagleNavigationBarStyle();
   }
 }

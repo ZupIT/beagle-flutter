@@ -28,15 +28,15 @@ import 'internal/beagle_refresh_indicator.dart';
 class PullToRefresh extends StatefulWidget {
   const PullToRefresh({
     Key? key,
-    required this.onPull,
+    this.onPull,
     this.isRefreshing = false,
     this.color = '',
-    required this.child,
+    this.child,
   }) : super(key: key);
 
   /// Function called when the user scrolls down the content
   /// This is required
-  final Function onPull;
+  final Function? onPull;
 
   /// Defines if the the refresh indicator should be running
   final bool isRefreshing;
@@ -79,6 +79,6 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
       widget is ScrollView || widget is SingleChildScrollView;
 
   Future<void> _onRefreshHandler() async {
-    widget.onPull();
+    if (widget.onPull != null) widget.onPull!();
   }
 }

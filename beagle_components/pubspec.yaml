@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-
 name: beagle_components
 description: Beagle Components is a set of tools and components to be used with the Beagle package.
 version: 0.9.4-alpha
@@ -25,7 +24,7 @@ environment:
 
 dependencies:
   beagle:
-    path: ../beagle/
+    path: ../beagle
   flutter:
     sdk: flutter
   webview_flutter: ^2.0.10
