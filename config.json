@@ -13,14 +13,12 @@
     "limitations under the License."
   ],
   "ignore": [
-    "beagle_refresh_indicator.dart",
     ".github",
     ".git",
     "/.gradle",
     "/.xcworkspace",
     ".idea",
     "/build",
-    "local.properties",
     "beagle/assets/js/beagle.js",
     ".flutter-plugins",
     ".flutter-plugins-dependencies",
