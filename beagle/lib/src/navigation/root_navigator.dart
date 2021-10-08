@@ -16,7 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/after_beagle_initialization.dart';
-import 'package:collection/src/iterable_extensions.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 typedef ScreenBuilder = Widget Function(

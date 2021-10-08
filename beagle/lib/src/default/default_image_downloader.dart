@@ -16,9 +16,7 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:beagle/beagle.dart';
-import 'package:flutter/foundation.dart';
 
 class DefaultBeagleImageDownloader implements BeagleImageDownloader {
   DefaultBeagleImageDownloader({

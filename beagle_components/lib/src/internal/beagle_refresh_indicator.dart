@@ -301,7 +301,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
   bool _handleGlowNotification(OverscrollIndicatorNotification notification) {
     if (notification.depth != 0 || !notification.leading) return false;
     if (_mode == _RefreshIndicatorMode.drag) {
-      notification.disallowGlow();
+      notification.disallowIndicator();
       return true;
     }
     return false;

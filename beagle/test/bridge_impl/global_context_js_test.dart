@@ -93,6 +93,7 @@ void main() {
         when(() => beagleJSEngineMock.evaluateJavascriptCode(
                 'global.beagle.getService().globalContext.get()'))
             .thenReturn(JsEvalResult(value.toString(), value));
+        // ignore: inference_failure_on_function_invocation
         final result = GlobalContextJS(beagleJSEngineMock).get();
         expect(result, value);
       });
@@ -105,6 +106,7 @@ void main() {
                 "global.beagle.getService().globalContext.get('order.cart.name')"))
             .thenReturn(JsEvalResult(value, value));
         final result =
+            // ignore: inference_failure_on_function_invocation
             GlobalContextJS(beagleJSEngineMock).get('order.cart.name');
         expect(result, value);
       });

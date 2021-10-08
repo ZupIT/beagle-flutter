@@ -25,7 +25,8 @@ class AppDesignSystem extends BeagleDesignSystem {
     'person': 'images/person.png',
     'beagle': 'images/beagle.png',
     'delete': 'images/delete.png',
-    'informationImage': 'images/info.png'
+    'informationImage': 'images/info.png',
+    'imageBeagle': 'images/beagle.png',
   };
 
   final Map<String, BeagleButtonStyle> buttonStyles = {

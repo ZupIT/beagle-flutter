@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
 
 abstract class Renderer {
   /// Does a partial render to the BeagleView. Compared to the full render, it will skip every step

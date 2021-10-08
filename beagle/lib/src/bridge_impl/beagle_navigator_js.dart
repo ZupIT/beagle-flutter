@@ -17,7 +17,6 @@
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_js/flutter_js.dart';
 import 'beagle_js_engine.dart';
 
 class BeagleNavigatorJS implements BeagleNavigator {

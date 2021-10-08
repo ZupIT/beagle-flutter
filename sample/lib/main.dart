@@ -15,7 +15,6 @@
  */
 
 import 'dart:io' show Platform;
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
@@ -25,12 +24,7 @@ import 'package:sample/app_design_system.dart';
 
 Map<String, ComponentBuilder> myCustomComponents = {
   'custom:loading': (element, _, __) {
-    return Center(
-      key: element.getKey(),
-      child: Text('My custom loading.'),
-      widthFactor: 1,
-      heightFactor: 1,
-    );
+    return Center(key: element.getKey(), child: Text('My custom loading.'));
   }
 };
 Map<String, ActionHandler> myCustomActions = {

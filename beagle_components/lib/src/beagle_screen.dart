@@ -52,7 +52,6 @@ class BeagleScreen extends StatelessWidget {
             backgroundColor: _navigationBarStyle?.backgroundColor,
             iconTheme: _navigationBarStyle?.iconTheme,
             actionsIconTheme: _navigationBarStyle?.actionsIconTheme,
-            textTheme: _navigationBarStyle?.textTheme,
             centerTitle: _navigationBarStyle?.centerTitle,
             titleSpacing: _navigationBarStyle?.titleSpacing,
             toolbarHeight: _navigationBarStyle?.toolbarHeight,

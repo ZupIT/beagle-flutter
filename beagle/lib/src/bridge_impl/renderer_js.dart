@@ -17,7 +17,6 @@
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
-import 'package:flutter/foundation.dart';
 
 class RendererJS implements Renderer {
   final String _viewId;
