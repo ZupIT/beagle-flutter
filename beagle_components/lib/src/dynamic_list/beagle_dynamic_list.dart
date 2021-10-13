@@ -132,19 +132,27 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   }
 
   Widget _getListView() {
-    return ListView(
+    return ListView.builder(
       controller: _scrollController,
       scrollDirection: _getScrollDirection(),
-      children: widget.children ?? [],
+      itemBuilder: (buildContext, index) {
+        return widget.children[index];
+      },
+      itemCount: widget.children?.length ?? 0,
     );
   }
 
   Widget _getGridView() {
-    return GridView.count(
+    return GridView.builder(
       controller: _scrollController,
       scrollDirection: _getScrollDirection(),
-      crossAxisCount: widget.spanCount,
-      children: widget.children ?? [],
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: widget.spanCount,
+      ),
+      itemBuilder: (buildContext, index) {
+        return widget.children[index];
+      },
+      itemCount: widget.children?.length ?? 0,
     );
   }
 
@@ -205,7 +213,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
         (widget.key is ValueKey<String>) ? context.widget.key : ValueKey('');
     return key.value;
   }
-
 
   String _getIterationKey(int index) {
     String valueInIteratorNameInDataSource;
