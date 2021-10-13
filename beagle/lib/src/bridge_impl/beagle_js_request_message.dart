@@ -26,11 +26,12 @@ class BeagleJSRequestMessage {
   late String _body;
 
   BeagleJSRequestMessage.fromJson(Map<String, dynamic> json) {
-    _requestId = json['id'];
-    _url = json['url'];
-    _method = _getHttpMethod(json);
-    _headers = _getHeaders(json);
-    _body = json['body'];
+    _requestId = BeagleCaster.castToString(json['id']);
+    _url = BeagleCaster.castToString(json['url']);
+    _method = BeagleCaster.cast<BeagleHttpMethod>(
+        _getHttpMethod(json), BeagleHttpMethod.get);
+    _headers = BeagleCaster.castToMap<String, String>(_getHeaders(json));
+    _body = BeagleCaster.castToString(json['body']);
   }
 
   BeagleHttpMethod _getHttpMethod(Map<String, dynamic> json) {

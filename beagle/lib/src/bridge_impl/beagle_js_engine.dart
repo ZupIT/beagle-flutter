@@ -102,7 +102,6 @@ class BeagleJSEngine {
 
     if (value.runtimeType.toString() ==
         '_InternalLinkedHashMap<String, dynamic>') {
-      // ignore: avoid_as
       final map = value as Map<String, dynamic>;
       final result = <String, dynamic>{};
       final keys = map.keys;

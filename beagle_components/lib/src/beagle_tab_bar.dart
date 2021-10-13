@@ -113,11 +113,10 @@ class _BeagleTabBarState extends State<BeagleTabBar>
 
 class TabBarItem {
   TabBarItem(this.title, this.icon);
-
   TabBarItem.fromJson(Map<String, dynamic> json)
-      : title = json['title'] ?? '',
+      : title = BeagleCaster.castToString(json['title']),
         icon =
-            json['icon'] == null ? null : LocalImagePath.fromJson(json['icon']);
+            json['icon'] != null ? LocalImagePath.fromJson(json['icon']) : null;
 
   final String title;
   final LocalImagePath? icon;

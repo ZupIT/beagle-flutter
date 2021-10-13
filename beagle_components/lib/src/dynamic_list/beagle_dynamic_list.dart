@@ -20,6 +20,7 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:collection/collection.dart';
 
 /// The component to generate GriView or ListView
 class BeagleDynamicList extends StatefulWidget {
@@ -168,7 +169,8 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   }
 
   TemplateManagerItem? _getDefaultTemplate() {
-    return widget.templates?.firstWhere((element) => element.condition == null);
+    return widget.templates
+        ?.firstWhereOrNull((element) => element.condition == null);
   }
 
   List<TemplateManagerItem> _getTemplatesWithoutDefault(

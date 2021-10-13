@@ -96,10 +96,10 @@ class BeagleSafeArea {
   final bool? trailing;
 
   BeagleSafeArea.fromJson(Map<String, dynamic> json)
-      : top = json['top'] ?? false,
-        leading = json['leading'] ?? false,
-        bottom = json['bottom'] ?? false,
-        trailing = json['trailing'] ?? false;
+      : top = BeagleCaster.castToBool(json['top']),
+        leading = BeagleCaster.castToBool(json['leading']),
+        bottom = BeagleCaster.castToBool(json['bottom']),
+        trailing = BeagleCaster.castToBool(json['trailing']);
 }
 
 class NavigationBarItem {
@@ -115,10 +115,9 @@ class NavigationBarItem {
 
   factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
     return NavigationBarItem(
-      text: json['text'],
-      image: json['image'],
-      action: json['action'],
-    );
+        text: BeagleCaster.castToString(json['text']),
+        image: BeagleCaster.castToString(json['image']),
+        action: BeagleCaster.castToFunction(json['action']));
   }
 }
 
@@ -136,16 +135,15 @@ class BeagleNavigationBar {
   final List<NavigationBarItem>? navigationBarItems;
 
   factory BeagleNavigationBar.fromJson(Map<String, dynamic> json) {
-    final List<dynamic>? itemsJsonArray = json['navigationBarItems'];
-    final List<NavigationBarItem> items = itemsJsonArray == null
-        ? []
-        : itemsJsonArray.map((e) => NavigationBarItem.fromJson(e)).toList();
+    final List<dynamic> itemsJsonArray =
+        BeagleCaster.castToList(json['navigationBarItems']);
+    final List<NavigationBarItem> items =
+        itemsJsonArray.map((e) => NavigationBarItem.fromJson(e)).toList();
     return BeagleNavigationBar(
-      title: json['title'],
-      showBackButton: json['showBackButton'],
-      styleId: json['styleId'] ?? '',
-      navigationBarItems: items,
-    );
+        title: BeagleCaster.castToString(json['title']),
+        showBackButton: BeagleCaster.castToBool(json['showBackButton']),
+        styleId: BeagleCaster.castToString(json['styleId']),
+        navigationBarItems: items);
   }
 }
 
@@ -163,7 +161,7 @@ class ItemComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: item.action as void Function()?,
+      onPressed: BeagleCaster.cast<void Function()?>(item.action, () {}),
       icon: BeagleFlexWidget(
         children: [BeagleImage(path: ImagePath.local(item.image))],
         style: style,
