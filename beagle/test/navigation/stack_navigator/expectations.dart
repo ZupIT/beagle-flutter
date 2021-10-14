@@ -33,13 +33,17 @@ class StackNavigatorExpectations {
   });
 
   final NavigationMocks mocks;
-  final RemoteView route;
+  final BeagleRoute route;
   final BeagleUIElement screen;
   final Type expectedCompleteFnType;
   final Error expectedError;
 
   void shouldFetchRoute([int times = 1]) {
     verify(mocks.viewClient.fetch(route)).called(times);
+  }
+
+  void shouldNotFetchRoute([int times = 1]) {
+    verifyNever(mocks.viewClient.fetch(any));
   }
 
   void shouldCreateBeagleWidget() {
@@ -56,6 +60,14 @@ class StackNavigatorExpectations {
     result.called(times);
     expect(result.captured[0].runtimeType, expectedCompleteFnType);
     expect(result.captured[1], isA<BuildContext>());
+  }
+
+  void shouldNotHandleOnLoading() {
+    verifyNever(mocks.controller.onLoading(
+      view: anyNamed('view'),
+      completeNavigation: anyNamed('completeNavigation'),
+      context: anyNamed('context'),
+    ));
   }
 
   void shouldHandleOnError() {
@@ -103,13 +115,22 @@ class StackNavigatorExpectations {
     ));
   }
 
-  /*void shouldPushView() {
-    verify(mocks.navigationObserver.didPush(any, any)).called(1);
+  void shouldNotUpdateHistory(StackNavigator navigator, [int numberOfInitialPages = 0]) {
+    final List<String> initialPageNames = [];
+    for (int i = 0; i < numberOfInitialPages; i++) {
+      initialPageNames.add(createPageName(i));
+    }
+    expect(navigator.getHistory(), initialPageNames);
   }
 
-  void shouldNotPushView() {
-    verifyNever(mocks.navigationObserver.didPush(any, any));
-  }*/
+  void shouldUpdateHistory(StackNavigator navigator, [int numberOfInitialPages = 0]) {
+    final routeId = route is LocalView ? (route as LocalView).screen.getId() : (route as RemoteView).url;
+    final List<String> initialPageNames = [];
+    for (int i = 0; i < numberOfInitialPages; i++) {
+      initialPageNames.add(createPageName(i));
+    }
+    expect(navigator.getHistory(), [...initialPageNames, routeId]);
+  }
 
   void shouldRenderScreen() {
     final result = verify(mocks.screenBuilder(any, captureAny));

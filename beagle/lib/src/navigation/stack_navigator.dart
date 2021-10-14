@@ -39,7 +39,7 @@ class StackNavigator extends StatelessWidget {
     @required this.rootNavigator,
     @required this.logger,
     _BeagleWidgetFactory beagleWidgetFactory,
-    this.firstPage,
+    this.initialPages,
   }) : _beagleWidgetFactory = beagleWidgetFactory ?? defaultBeagleWidgetFactory;
 
   final BeagleRoute initialRoute;
@@ -53,7 +53,7 @@ class StackNavigator extends StatelessWidget {
   // The following attributes are only used for testing purposes
   final progress = _NavigationProgress();
   final _BeagleWidgetFactory _beagleWidgetFactory;
-  final Route<dynamic> firstPage;
+  final List<Route<dynamic>> initialPages;
 
   Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
@@ -64,18 +64,25 @@ class StackNavigator extends StatelessWidget {
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
     // for testing purposes
-    if (firstPage != null) {
-      _history.add("INITIAL");
-      return [firstPage];
+    if (initialPages != null) {
+      for (Route<dynamic> page in initialPages) {
+        _history.add(page.settings.name);
+      }
+      return initialPages;
     }
 
     final beagleWidget = _beagleWidgetFactory(rootNavigator);
-    _fetchContentAndUpdateView(
-      view: beagleWidget.view,
-      context: state.context,
-      completeNavigation: () => null,
-      route: initialRoute,
-    );
+
+    if (initialRoute is LocalView) {
+      controller.onSuccess(view: beagleWidget.view, context: state.context, screen: (initialRoute as LocalView).screen);
+    } else {
+      _fetchContentAndUpdateView(
+        view: beagleWidget.view,
+        context: state.context,
+        completeNavigation: () => null,
+        route: initialRoute,
+      );
+    }
 
     _history.add(routeName);
     return [_buildRoute(beagleWidget, routeName)];
@@ -116,6 +123,7 @@ class StackNavigator extends StatelessWidget {
         retry: retry,
         completeNavigation: completeNavigation,
       );
+      asyncCompleter.complete();
     }
   }
 
@@ -161,6 +169,11 @@ class StackNavigator extends StatelessWidget {
         completeNavigation: complete,
       );
     }
+  }
+
+  /// Returns a copy of the navigation history. Used for testing purposes.
+  List<String> getHistory() {
+    return [..._history];
   }
 
   @override
