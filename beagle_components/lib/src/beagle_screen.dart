@@ -45,8 +45,9 @@ class BeagleScreen extends StatelessWidget {
             automaticallyImplyLeading: navigationBar?.showBackButton ?? true,
             title: Text(navigationBar?.title ?? ''),
             actions: navigationBar?.navigationBarItems
-                ?.map((e) => ItemComponent(item: e))
-                .toList(growable: false),
+                    ?.map((e) => ItemComponent(item: e))
+                    .toList(growable: false) ??
+                [],
             elevation: _navigationBarStyle?.elevation,
             shadowColor: _navigationBarStyle?.shadowColor,
             backgroundColor: _navigationBarStyle?.backgroundColor,
@@ -57,8 +58,7 @@ class BeagleScreen extends StatelessWidget {
             toolbarHeight: _navigationBarStyle?.toolbarHeight,
             leadingWidth: _navigationBarStyle?.leadingWidth,
             toolbarTextStyle: _navigationBarStyle?.toolbarTextStyle,
-            titleTextStyle: _navigationBarStyle?.titleTextStyle,
-          )
+            titleTextStyle: _navigationBarStyle?.titleTextStyle)
         : null;
 
     final yogaChild = BeagleFlexWidget(
@@ -71,14 +71,10 @@ class BeagleScreen extends StatelessWidget {
             left: safeArea?.leading ?? true,
             bottom: safeArea?.bottom ?? true,
             right: safeArea?.trailing ?? true,
-            child: yogaChild,
-          )
+            child: yogaChild)
         : yogaChild;
 
-    return Scaffold(
-      appBar: appBar,
-      body: body,
-    );
+    return Scaffold(appBar: appBar, body: body);
   }
 }
 
@@ -116,7 +112,7 @@ class NavigationBarItem {
   factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
     return NavigationBarItem(
         text: BeagleCaster.castToString(json['text']),
-        image: BeagleCaster.castToString(json['image']),
+        image: BeagleCaster.castToString(json['image']?['mobileId']),
         action: BeagleCaster.castToFunction(json['action']));
   }
 }
@@ -154,19 +150,19 @@ class ItemComponent extends StatelessWidget {
 
   static final style = BeagleStyle(
       size: BeagleSize(
-    width: UnitValue(value: 32, type: UnitType.REAL),
-    height: UnitValue(value: 32, type: UnitType.REAL),
-  ));
+          width: UnitValue(value: 32, type: UnitType.REAL),
+          height: UnitValue(value: 32, type: UnitType.REAL)));
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: BeagleCaster.cast<void Function()?>(item.action, () {}),
-      icon: BeagleFlexWidget(
-        children: [BeagleImage(path: ImagePath.local(item.image))],
-        style: style,
-      ),
-      tooltip: item.text,
-    );
+        onPressed: BeagleCaster.cast<void Function()?>(item.action, () {}),
+        icon: BeagleFlexWidget(
+          children: item.image.isNotEmpty
+              ? [BeagleImage(path: ImagePath.local(item.image))]
+              : [],
+          style: style,
+        ),
+        tooltip: item.text);
   }
 }
