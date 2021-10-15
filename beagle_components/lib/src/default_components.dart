@@ -98,8 +98,7 @@ ComponentBuilder beagleListViewBuilder() {
       dataSource: BeagleCaster.castToList<dynamic>(
           element.getAttributeValue('dataSource')),
       templates: TemplateManagerItem.fromJsonList(
-          BeagleCaster.castToList<dynamic>(
-              element.getAttributeValue('templates'))),
+          element.getAttributeValue('templates')),
       isScrollIndicatorVisible: BeagleCaster.castToBool(
           element.getAttributeValue('isScrollIndicatorVisible'),
           defaultValue: null),
@@ -109,12 +108,14 @@ ComponentBuilder beagleListViewBuilder() {
       iteratorName: BeagleCaster.castToString(
           element.getAttributeValue('iteratorName'),
           defaultValue: null),
-      identifierItem: BeagleCaster.castToString(element.getAttributeValue('key'),
+      identifierItem: BeagleCaster.castToString(
+          element.getAttributeValue('key'),
           defaultValue: null),
-      onScrollEnd:
-          BeagleCaster.castToNullableFunction(element.getAttributeValue('onScrollEnd')),
+      onScrollEnd: BeagleCaster.castToNullableFunction(
+          element.getAttributeValue('onScrollEnd')),
       children: BeagleCaster.castToList<Widget>(children),
-      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'), defaultValue: null),
+      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'),
+          defaultValue: null),
       beagleWidgetStateProvider: BeagleWidgetStateProvider());
 }
 
@@ -130,8 +131,7 @@ ComponentBuilder beagleGridViewBuilder() {
       dataSource: BeagleCaster.castToList<dynamic>(
           element.getAttributeValue('dataSource')),
       templates: TemplateManagerItem.fromJsonList(
-          BeagleCaster.castToList<dynamic>(
-              element.getAttributeValue('templates'))),
+          element.getAttributeValue('templates')),
       isScrollIndicatorVisible: BeagleCaster.castToBool(
           element.getAttributeValue('isScrollIndicatorVisible'),
           defaultValue: null),
@@ -143,11 +143,13 @@ ComponentBuilder beagleGridViewBuilder() {
           defaultValue: null),
       identifierItem: BeagleCaster.castToString(element.getAttributeValue('key'),
           defaultValue: null),
-      onScrollEnd:
-          BeagleCaster.castToNullableFunction(element.getAttributeValue('onScrollEnd')),
+      onScrollEnd: BeagleCaster.castToNullableFunction(
+          element.getAttributeValue('onScrollEnd')),
       children: BeagleCaster.castToList<Widget>(children),
-      spanCount: BeagleCaster.castToInt(element.getAttributeValue('spanCount'), defaultValue: null),
-      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'), defaultValue: null),
+      spanCount: BeagleCaster.castToInt(element.getAttributeValue('spanCount'),
+          defaultValue: null),
+      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'),
+          defaultValue: null),
       beagleWidgetStateProvider: BeagleWidgetStateProvider());
 }
 
@@ -175,7 +177,7 @@ ComponentBuilder beagleTextInputBuilder() {
           defaultValue: null),
       type: EnumUtils.fromString(
             BeagleTextInputType.values,
-            element.getAttributeValue('type'),
+            element.getAttributeValue('type')
           ) ??
           BeagleTextInputType.TEXT);
 }

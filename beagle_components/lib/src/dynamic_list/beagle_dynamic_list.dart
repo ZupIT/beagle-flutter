@@ -144,16 +144,15 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   Widget _getGridView() {
     return GridView.builder(
-      controller: _scrollController,
-      scrollDirection: _getScrollDirection(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: widget.spanCount ?? 0,
-      ),
-      itemBuilder: (buildContext, index) {
-        return widget.children![index];
-      },
-      itemCount: widget.children?.length ?? 0,
-    );
+        controller: _scrollController,
+        scrollDirection: _getScrollDirection(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: widget.spanCount ?? 0,
+        ),
+        itemBuilder: (buildContext, index) {
+          return widget.children![index];
+        },
+        itemCount: widget.children?.length ?? 0);
   }
 
   void _doTemplateRender() {
@@ -168,17 +167,16 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     final beagleWidgetState = widget.beagleWidgetStateProvider?.of(context);
 
     beagleWidgetState?.getView().getRenderer().doTemplateRender(
-          templateManager: templateManager,
-          anchor: anchor,
-          contexts: contexts,
-          componentManager: _iterateComponent,
-          mode: TreeUpdateMode.replace,
-        );
+        templateManager: templateManager,
+        anchor: anchor,
+        contexts: contexts,
+        componentManager: _iterateComponent,
+        mode: TreeUpdateMode.replace);
   }
 
   TemplateManagerItem? _getDefaultTemplate() {
-    return widget.templates
-        ?.firstWhereOrNull((element) => element.condition == null);
+    return widget.templates?.firstWhereOrNull(
+        (element) => element.condition == null || element.condition!.isEmpty);
   }
 
   List<TemplateManagerItem> _getTemplatesWithoutDefault(

@@ -48,19 +48,17 @@ class _BeagleTabBarState extends State<BeagleTabBar>
     with TickerProviderStateMixin {
   late TabController _tabController;
   static final imageStyle = BeagleStyle(
-    size: BeagleSize(
-      height: UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL),
-    ),
-  );
+      size: BeagleSize(
+          height:
+              UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL)));
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
-      initialIndex: widget.currentTab ?? 0,
-      length: widget.items == null ? 0 : (widget.items ?? []).length,
-      vsync: this,
-    );
+        initialIndex: widget.currentTab ?? 0,
+        length: widget.items == null ? 0 : (widget.items ?? []).length,
+        vsync: this);
   }
 
   @override
@@ -83,20 +81,17 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   @override
   Widget build(BuildContext context) {
     return Container(
-      // TODO: check if its viable to maintain this
-      color: Theme.of(context).primaryColor,
-      child: TabBar(
-        controller: _tabController,
-        onTap: widget.onTabSelection,
-        tabs: buildTabs(),
-      ),
-    );
+        // TODO: check if its viable to maintain this
+        color: Theme.of(context).primaryColor,
+        child: TabBar(
+            controller: _tabController,
+            onTap: widget.onTabSelection,
+            tabs: buildTabs()));
   }
 
   List<Widget> buildTabs() {
     return (widget.items ?? [])
-        .map(
-          (tabBarItem) => Tab(
+        .map((tabBarItem) => Tab(
             text: tabBarItem.title,
             icon: tabBarItem.icon == null
                 ? null
@@ -104,9 +99,7 @@ class _BeagleTabBarState extends State<BeagleTabBar>
                     children: tabBarItem.icon != null
                         ? [BeagleImage(path: tabBarItem.icon!)]
                         : [],
-                    style: imageStyle),
-          ),
-        )
+                    style: imageStyle)))
         .toList();
   }
 }

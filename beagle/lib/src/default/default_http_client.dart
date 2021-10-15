@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:beagle/beagle.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,19 +23,24 @@ class DefaultHttpClient implements HttpClient {
   const DefaultHttpClient();
   @override
   Future<Response> sendRequest(BeagleRequest req) async {
-    final uri = Uri.parse(req.url);
-    final handlers = {
-      BeagleHttpMethod.get: () => http.get(uri, headers: req.headers),
-      BeagleHttpMethod.post: () =>
-          http.post(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.put: () =>
-          http.put(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.patch: () =>
-          http.patch(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.delete: () => http.delete(uri, headers: req.headers),
-    };
-    final response = await handlers[req.method]!();
-    return Response(response.statusCode, response.body, response.headers,
-        response.bodyBytes);
+    try {
+      final uri = Uri.parse(req.url);
+      final handlers = {
+        BeagleHttpMethod.get: () => http.get(uri, headers: req.headers),
+        BeagleHttpMethod.post: () =>
+            http.post(uri, headers: req.headers, body: req.body),
+        BeagleHttpMethod.put: () =>
+            http.put(uri, headers: req.headers, body: req.body),
+        BeagleHttpMethod.patch: () =>
+            http.patch(uri, headers: req.headers, body: req.body),
+        BeagleHttpMethod.delete: () => http.delete(uri, headers: req.headers),
+      };
+      final response = await handlers[req.method]!();
+      return Response(response.statusCode, response.body, response.headers,
+          response.bodyBytes);
+    } catch (e) {
+      return Response(500, 'Failed to "${req.method}" the URL: "${req.url}"',
+          {}, Uint8List.fromList([]));
+    }
   }
 }

@@ -63,7 +63,8 @@ class _BeagleImageState extends State<BeagleImage> {
     try {
       final RemoteImagePath path = widget.path as RemoteImagePath;
       final imageDownloader = beagleServiceLocator<BeagleImageDownloader>();
-      imageBytes = imageDownloader.downloadImage(path.url);
+      final urlBuilder = beagleServiceLocator<UrlBuilder>();
+      imageBytes = imageDownloader.downloadImage(urlBuilder.build(path.url));
     } catch (e) {
       logger.errorWithException(e.toString(), e as Exception);
     }
