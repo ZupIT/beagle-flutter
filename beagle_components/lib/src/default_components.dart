@@ -82,7 +82,8 @@ ComponentBuilder beagleScrollViewBuilder() {
         BeagleCaster.castToString(element.getAttributeValue('scrollDirection')),
       ),
       scrollBarEnabled: BeagleCaster.castToBool(
-          element.getAttributeValue('scrollBarEnabled')),
+          element.getAttributeValue('scrollBarEnabled'),
+          defaultValue: true),
       children: BeagleCaster.castToList<Widget>(children, defaultValue: []));
 }
 
@@ -162,8 +163,7 @@ ComponentBuilder beagleTextInputBuilder() {
           element.getAttributeValue('onFocus')),
       onBlur: BeagleCaster.castToNullableFunction(
           element.getAttributeValue('onBlur')),
-      placeholder: BeagleCaster.castToString(
-          element.getAttributeValue('placeholder'),
+      placeholder: BeagleCaster.castToString(element.getAttributeValue('placeholder'),
           defaultValue: null),
       value: BeagleCaster.castToString(element.getAttributeValue('value'),
           defaultValue: null),
@@ -176,9 +176,7 @@ ComponentBuilder beagleTextInputBuilder() {
       showError: BeagleCaster.castToBool(element.getAttributeValue('showError'),
           defaultValue: null),
       type: EnumUtils.fromString(
-            BeagleTextInputType.values,
-            element.getAttributeValue('type')
-          ) ??
+              BeagleTextInputType.values, element.getAttributeValue('type')) ??
           BeagleTextInputType.TEXT);
 }
 

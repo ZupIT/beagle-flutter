@@ -7,7 +7,7 @@ PODS:
     - Flutter
   - url_launcher (0.0.1):
     - Flutter
-  - webview_flutter (0.0.1):
+  - webview_flutter_wkwebview (0.0.1):
     - Flutter
   - yoga_engine (0.0.1):
     - BeagleYoga
@@ -18,7 +18,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_js (from `.symlinks/plugins/flutter_js/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
-  - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
   - yoga_engine (from `.symlinks/plugins/yoga_engine/ios`)
 
 SPEC REPOS:
@@ -34,8 +34,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_js/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
-  webview_flutter:
-    :path: ".symlinks/plugins/webview_flutter/ios"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
   yoga_engine:
     :path: ".symlinks/plugins/yoga_engine/ios"
 
@@ -44,8 +44,8 @@ SPEC CHECKSUMS:
   BeagleYoga: 09c09f226e5bbabaea81e9b0c113676ad1c67fa3
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_js: 95929d4e146e8ceb1c8e1889d8c2065c5d840076
-  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
-  webview_flutter: 3603125dfd3bcbc9d8d418c3f80aeecf331c068b
+  url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
+  webview_flutter_wkwebview: 44aa025fbcf6730d808f1e0d86a5af5ac25fa8de
   yoga_engine: 1ce78f562aea40afd366771690b1a1d267182be7
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
