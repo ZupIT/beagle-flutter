@@ -65,12 +65,30 @@ class RootNavigatorExpectations {
     expect(navigatorState.getHistory(), expectedHistory);
   }
 
-  void shouldNotUpdateHistory() {
-    expect(navigatorState.getHistory(), mocks.initialPages);
+  void shouldUpdateHistoryByReplacingStack() {
+    final expectedHistory = [...mocks.initialPages];
+    expectedHistory.removeLast();
+    expectedHistory.add(mocks.lastStackNavigator);
+    expect(navigatorState.getHistory(), expectedHistory);
+  }
+
+  void shouldUpdateHistoryByResettingStacks() {
+    expect(navigatorState.getHistory(), [mocks.lastStackNavigator]);
   }
 
   void shouldPushNewRoute() {
     verify(mocks.rootNavigatorObserver.didPush(any, any)).called(mocks.initialPages.length + 1);
+  }
+
+  void shouldReplaceLastRouteWithNew() {
+    verify(mocks.rootNavigatorObserver.didReplace(
+      newRoute: anyNamed('newRoute'),
+      oldRoute: anyNamed('oldRoute'),
+    )).called(1);
+  }
+
+  void shouldRemoveEveryRoute() {
+    verify(mocks.rootNavigatorObserver.didRemove(any, any)).called(mocks.initialPages.length);
   }
 
   void shouldPopRoute() {
