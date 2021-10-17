@@ -16,8 +16,6 @@
 
 import 'dart:async';
 
-import 'package:beagle/beagle.dart';
-import 'expectations.dart';
 import 'mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
