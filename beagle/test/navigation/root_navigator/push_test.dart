@@ -15,33 +15,21 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'expectations.dart';
 import 'mock.dart';
+import 'setup.dart';
 
 void main() {
   group('Given a RootNavigator', () {
     final route = RemoteView('/test');
     RootNavigatorState navigator;
 
-    Future<RootNavigatorExpectations> _setup(WidgetTester tester) {
-      return tester.runAsync(() async {
-        final mocks = RootNavigatorMocks(1);
-        final rootNavigator = RootNavigator(
-          initialRoute: RemoteView('https://it.doesnt-matter.com'),
-          screenBuilder: mocks.screenBuilder,
-          stackNavigatorFactory: mocks.stackNavigatorFactory,
-          initialPages: mocks.initialPages,
-          navigatorObservers: [mocks.rootNavigatorObserver],
-        );
-        await tester.pumpWidget(MaterialApp(home: Material(child: rootNavigator)));
-        await beagleServiceLocator.allReady();
-        await tester.pump();
-        navigator = tester.state(find.byType(RootNavigator));
-        return RootNavigatorExpectations(mocks: mocks, route: route, tester: tester);
-      });
+    Future<RootNavigatorExpectations> _setup(WidgetTester tester) async {
+      final result = await setup(tester: tester, expectedRoute: route, numberOfInitialStacks: 1);
+      navigator = result.navigator;
+      return result.expectations;
     }
 
     group("When we push a stack", () {

@@ -15,36 +15,19 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 
 import 'expectations.dart';
-import 'mock.dart';
+import 'setup.dart';
 
 void main() {
   group('Given a RootNavigator', () {
     RootNavigatorState navigator;
 
-    Future<RootNavigatorExpectations> _setup(WidgetTester tester, int numberOfInitialStacks) {
-      return tester.runAsync(() async {
-        final mocks = RootNavigatorMocks(numberOfInitialStacks);
-        final rootNavigator = RootNavigator(
-          initialRoute: RemoteView('https://it.doesnt-matter.com'),
-          screenBuilder: mocks.screenBuilder,
-          stackNavigatorFactory: mocks.stackNavigatorFactory,
-          initialPages: mocks.initialPages,
-          navigatorObservers: [mocks.rootNavigatorObserver],
-        );
-        await tester.pumpWidget(MaterialApp(
-          home: Material(child: rootNavigator),
-          navigatorObservers: [mocks.topNavigatorObserver],
-        ));
-        await beagleServiceLocator.allReady();
-        await tester.pump();
-        navigator = tester.state(find.byType(RootNavigator));
-        return RootNavigatorExpectations(mocks: mocks, tester: tester);
-      });
+    Future<RootNavigatorExpectations> _setup(WidgetTester tester, int numberOfInitialStacks) async {
+      final result = await setup(tester: tester, numberOfInitialStacks: numberOfInitialStacks);
+      navigator = result.navigator;
+      return result.expectations;
     }
 
     group("When we pop a stack from a navigator with 3 stacks", () {

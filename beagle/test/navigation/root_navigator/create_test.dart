@@ -15,33 +15,23 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 
 import 'expectations.dart';
 import 'mock.dart';
+import 'setup.dart';
 
 void main() {
   group('Given a RootNavigator', () {
-    Future<RootNavigatorExpectations> _setup(WidgetTester tester, [String customController]) async {
-      final mocks = RootNavigatorMocks();
+    Future<RootNavigatorExpectations> _setup(WidgetTester tester, [String initialController]) async {
       final route = RemoteView('/test');
-      final navigator = RootNavigator(
+      final result = await setup(
+        tester: tester,
         initialRoute: route,
-        screenBuilder: mocks.screenBuilder,
-        stackNavigatorFactory: mocks.stackNavigatorFactory,
-        navigatorObservers: [mocks.rootNavigatorObserver],
-        initialController: customController == null
-          ? null
-          : mocks.beagleService.navigationControllers[customController],
+        expectedRoute: route,
+        initialController: initialController,
       );
-      await tester.pumpWidget(MaterialApp(
-        home: Material(child: navigator),
-      ));
-      await beagleServiceLocator.allReady();
-      await tester.pump();
-      return RootNavigatorExpectations(mocks: mocks, route: route, tester: tester);
+      return result.expectations;
     }
 
     group("When it's created", () {
