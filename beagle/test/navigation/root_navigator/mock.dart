@@ -92,9 +92,6 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   }
 
   @override
-  get progress => navigator.progress;
-
-  @override
   Future<void> pushView(BeagleRoute route, BuildContext context) {
     return navigator.pushView(route, context);
   }
@@ -128,6 +125,11 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
 
   @override
   List<NavigatorObserver> get navigatorObservers => navigator.navigatorObservers;
+
+  @override
+  Future<void> untilFirstLoadCompletes() {
+    return navigator.untilFirstLoadCompletes();
+  }
 }
 
 class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {

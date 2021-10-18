@@ -21,11 +21,7 @@ import 'package:flutter/material.dart';
 
 typedef _BeagleWidgetFactory = UnsafeBeagleWidget Function(BeagleNavigator rootNavigator);
 
-class _NavigationProgress {
-  Future<void> current = Future.value();
-}
-
-UnsafeBeagleWidget defaultBeagleWidgetFactory(BeagleNavigator navigator) {
+UnsafeBeagleWidget _defaultBeagleWidgetFactory(BeagleNavigator navigator) {
   return UnsafeBeagleWidget(navigator);
 }
 
@@ -41,7 +37,7 @@ class StackNavigator extends StatelessWidget {
     _BeagleWidgetFactory beagleWidgetFactory,
     this.initialPages = const [],
     this.navigatorObservers = const [],
-  }) : _beagleWidgetFactory = beagleWidgetFactory ?? defaultBeagleWidgetFactory;
+  }) : _beagleWidgetFactory = beagleWidgetFactory ?? _defaultBeagleWidgetFactory;
 
   final BeagleRoute initialRoute;
   final ScreenBuilder screenBuilder;
@@ -52,7 +48,7 @@ class StackNavigator extends StatelessWidget {
   final List<String> _history = [];
   
   // The following attributes are only used for testing purposes
-  final progress = _NavigationProgress();
+  final _firstLoadCompleter = Completer();
   final _BeagleWidgetFactory _beagleWidgetFactory;
   final List<Route<dynamic>> initialPages;
   final List<NavigatorObserver> navigatorObservers;
@@ -71,6 +67,7 @@ class StackNavigator extends StatelessWidget {
       for (Route<dynamic> page in initialPages) {
         _history.add(page.settings.name);
       }
+      _firstLoadCompleter.complete();
       return initialPages;
     }
 
@@ -78,13 +75,17 @@ class StackNavigator extends StatelessWidget {
 
     if (initialRoute is LocalView) {
       controller.onSuccess(view: beagleWidget.view, context: state.context, screen: (initialRoute as LocalView).screen);
+      _firstLoadCompleter.complete();
     } else {
-      _fetchContentAndUpdateView(
-        view: beagleWidget.view,
-        context: state.context,
-        completeNavigation: () => null,
-        route: initialRoute,
-      );
+      () async {
+        await _fetchContentAndUpdateView(
+          view: beagleWidget.view,
+          context: state.context,
+          completeNavigation: () => null,
+          route: initialRoute,
+        );
+        _firstLoadCompleter.complete();
+      }();
     }
 
     _history.add(routeName);
@@ -101,14 +102,11 @@ class StackNavigator extends StatelessWidget {
     BeagleView view,
     Function completeNavigation,
   }) async {
-    final asyncCompleter = Completer<void>();
-    progress.current = asyncCompleter.future;
     try {
       controller.onLoading(view: view, context: context, completeNavigation: completeNavigation);
       final screen = await viewClient.fetch(route);
       controller.onSuccess(view: view, context: context, screen: screen);
       completeNavigation();
-      asyncCompleter.complete();
     } catch (error, stackTrace) {
       Future<void> retry() {
         return _fetchContentAndUpdateView(
@@ -126,8 +124,11 @@ class StackNavigator extends StatelessWidget {
         retry: retry,
         completeNavigation: completeNavigation,
       );
-      asyncCompleter.complete();
     }
+  }
+
+  Future<void> untilFirstLoadCompletes() {
+    return _firstLoadCompleter.future;
   }
 
   void popToView(String routeIdentifier) {

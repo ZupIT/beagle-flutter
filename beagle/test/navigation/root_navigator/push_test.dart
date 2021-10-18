@@ -42,7 +42,7 @@ void main() {
         'Then it should create a StackNavigator with the new route and default controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.pushStack(route, null);
+          await navigator.pushStack(route);
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithDefaultController();
           expectations.shouldUpdateHistoryByAddingStack();
@@ -74,6 +74,19 @@ void main() {
           expectations.shouldCreateStackNavigatorWithDefaultController();
         }
       );
+    });
+
+    group("When we push multiple stacks", () {
+      testWidgets('Then it should create the new pages with the correct names', (WidgetTester tester) async {
+        final expectations = await _setup(tester);
+        await navigator.pushStack(route);
+        await tester.pump();
+        await navigator.pushStack(route);
+        await tester.pump();
+        await navigator.pushStack(route);
+        await tester.pump();
+        expectations.shouldPushNewRoutesWithCorrectNames(3);
+      });
     });
 
     group("When we push a view", () {

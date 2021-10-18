@@ -80,6 +80,22 @@ class RootNavigatorExpectations {
     verify(mocks.rootNavigatorObserver.didPush(any, any)).called(mocks.initialPages.length + 1);
   }
 
+  void shouldPushNewRoutesWithCorrectNames(int times) {
+    final verified = verify(mocks.rootNavigatorObserver.didPush(captureAny, any));
+    verified.called(mocks.initialPages.length + times);
+    final indexes = verified.captured.map((route) {
+      final exp = RegExp(r"beagle-root-navigator-stack-(\d+)");
+      final routeName = (route as Route<dynamic>).settings.name;
+      final match = exp.firstMatch(routeName);
+      expect(match == null, false);
+      return int.parse(match.group(1));
+    }).toList();
+    // should be sequential
+    for (int i = 0; i < indexes.length; i++) {
+      expect(indexes[i], indexes[0] + i);
+    }
+  }
+
   void shouldReplaceLastRouteWithNew() {
     verify(mocks.rootNavigatorObserver.didReplace(
       newRoute: anyNamed('newRoute'),

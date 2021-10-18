@@ -59,6 +59,6 @@ Future<_SetupResult> setupStackNavigatorTests({
   await tester.pumpWidget(MaterialApp(
     home: Material(child: navigator),
   ));
-  await navigator.progress.current;
+  await navigator.untilFirstLoadCompletes();
   return _SetupResult(expectations, navigator);
 }
