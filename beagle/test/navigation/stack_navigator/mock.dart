@@ -17,7 +17,10 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+
+const SERVER_DELAY_MS = 50;
 
 String createPageName(int index) {
   return 'INITIAL_$index';
@@ -52,6 +55,10 @@ abstract class _NavigationMocks {
 
 int _nextId = 0;
 
+class _Ref<T> {
+  T current;
+}
+
 class NavigationMocks extends Mock implements _NavigationMocks {
   final controller = _NavigationControllerMock();
   final viewClient = _ViewClientMock();
@@ -59,10 +66,21 @@ class NavigationMocks extends Mock implements _NavigationMocks {
   final logger = _LoggerMock();
   final navigationObserver = _MockNavigatorObserver();
   final screenKey = Key('beagle_widget_${_nextId++}');
+  final List<PageRoute<dynamic>> initialPages = [];
+  final WidgetTester tester;
   BuildContext lastBuildContext;
   UnsafeBeagleWidget lastWidget;
 
-  NavigationMocks() {
+  NavigationMocks(this.tester, [int numberOfInitialPages = 0]) {
+    for (int i = 0; i < numberOfInitialPages; i++) {
+      initialPages.add(MaterialPageRoute<dynamic>(
+        builder: (context) {
+          lastBuildContext = context;
+          return Container(key: Key(createPageName(i)));
+        },
+        settings: RouteSettings(name: createPageName(i)),
+      ));
+    }
     _mockFunctions();
   }
 
@@ -76,6 +94,56 @@ class NavigationMocks extends Mock implements _NavigationMocks {
       lastWidget = _BeagleWidgetMock();
       return lastWidget;
     });
+  }
+
+  void mockSuccessfulRequest(RemoteView route, BeagleUIElement result) {
+    when(viewClient.fetch(route)).thenAnswer((_) async {
+      await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
+      return result;
+    });
+  }
+
+  void mockUnsuccessfulRequest(RemoteView route, dynamic error) {
+    when(viewClient.fetch(route)).thenAnswer((_) async {
+      await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
+      throw error;
+    });
+  }
+
+  void mockCompletionOnLoading() {
+    when(controller.onLoading(
+      context: anyNamed('context'),
+      view: anyNamed('view'),
+      completeNavigation: anyNamed('completeNavigation'),
+    )).thenAnswer((realInvocation) => realInvocation.namedArguments[Symbol('completeNavigation')]());
+  }
+
+  void mockCompletionOnError() {
+    when(controller.onError(
+      context: anyNamed('context'),
+      view: anyNamed('view'),
+      completeNavigation: anyNamed('completeNavigation'),
+      stackTrace: anyNamed('stackTrace'),
+      retry: anyNamed('retry'),
+      error: anyNamed('error'),
+    )).thenAnswer((realInvocation) {
+      realInvocation.namedArguments[Symbol('completeNavigation')]();
+    });
+  }
+
+  _Ref<Future<void> Function()> mockRetryOnError() {
+    final retry = _Ref<Future<void> Function()>();
+    when(controller.onError(
+      context: anyNamed('context'),
+      view: anyNamed('view'),
+      completeNavigation: anyNamed('completeNavigation'),
+      stackTrace: anyNamed('stackTrace'),
+      retry: anyNamed('retry'),
+      error: anyNamed('error'),
+    )).thenAnswer((realInvocation) {
+      retry.current = realInvocation.namedArguments[Symbol('retry')];
+    });
+    return retry;
   }
 }
 

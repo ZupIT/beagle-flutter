@@ -39,7 +39,7 @@ class StackNavigator extends StatelessWidget {
     @required this.rootNavigator,
     @required this.logger,
     _BeagleWidgetFactory beagleWidgetFactory,
-    this.initialPages,
+    this.initialPages = const [],
   }) : _beagleWidgetFactory = beagleWidgetFactory ?? defaultBeagleWidgetFactory;
 
   final BeagleRoute initialRoute;
@@ -64,7 +64,7 @@ class StackNavigator extends StatelessWidget {
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
     // for testing purposes
-    if (initialPages != null) {
+    if (initialPages.isNotEmpty) {
       for (Route<dynamic> page in initialPages) {
         _history.add(page.settings.name);
       }

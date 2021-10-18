@@ -61,7 +61,7 @@ class RootNavigator extends StatefulWidget {
     this.initialController,
     this.navigatorObservers = const [],
     _StackNavigatorFactory stackNavigatorFactory,
-    this.initialPages,
+    this.initialPages = const [],
   }) : this.stackNavigatorFactory = stackNavigatorFactory ?? _defaultStackNavigatorFactory;
 
   final BeagleRoute initialRoute;
@@ -104,7 +104,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
     // for testing purposes
-    if (widget.initialPages != null) {
+    if (widget.initialPages.isNotEmpty) {
       final List<Route<dynamic>> pages = [];
       for (StackNavigator navigator in widget.initialPages) {
         pages.add(MaterialPageRoute(

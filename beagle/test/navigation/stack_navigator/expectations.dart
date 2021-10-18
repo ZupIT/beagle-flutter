@@ -28,15 +28,15 @@ class StackNavigatorExpectations {
     @required this.mocks,
     @required this.screen,
     @required this.route,
-    @required this.expectedCompleteFnType,
+    @required this.navigator,
     this.expectedError,
   });
 
   final NavigationMocks mocks;
   final BeagleRoute route;
   final BeagleUIElement screen;
-  final Type expectedCompleteFnType;
   final Error expectedError;
+  final StackNavigator navigator;
 
   void shouldFetchRoute([int times = 1]) {
     verify(mocks.viewClient.fetch(route)).called(times);
@@ -58,7 +58,7 @@ class StackNavigatorExpectations {
       context: captureAnyNamed('context'),
     ));
     result.called(times);
-    expect(result.captured[0].runtimeType, expectedCompleteFnType);
+    expect(result.captured[0], isA<Function>());
     expect(result.captured[1], isA<BuildContext>());
   }
 
@@ -80,7 +80,7 @@ class StackNavigatorExpectations {
       stackTrace: captureAnyNamed('stackTrace'),
     ));
     result.called(1);
-    expect(result.captured[0].runtimeType, expectedCompleteFnType);
+    expect(result.captured[0], isA<Function>());
     expect(result.captured[1], isA<BuildContext>());
     expect(result.captured[2], isA<RetryFn>());
     expect(result.captured[3], isA<StackTrace>());
@@ -115,21 +115,29 @@ class StackNavigatorExpectations {
     ));
   }
 
-  void shouldNotUpdateHistory(StackNavigator navigator, [int numberOfInitialPages = 0]) {
+  void shouldNotUpdateHistory() {
     final List<String> initialPageNames = [];
-    for (int i = 0; i < numberOfInitialPages; i++) {
+    for (int i = 0; i < mocks.initialPages.length; i++) {
       initialPageNames.add(createPageName(i));
     }
     expect(navigator.getHistory(), initialPageNames);
   }
 
-  void shouldUpdateHistory(StackNavigator navigator, [int numberOfInitialPages = 0]) {
+  void shouldUpdateHistoryByAddingRoute() {
     final routeId = route is LocalView ? (route as LocalView).screen.getId() : (route as RemoteView).url;
     final List<String> initialPageNames = [];
-    for (int i = 0; i < numberOfInitialPages; i++) {
+    for (int i = 0; i < mocks.initialPages.length; i++) {
       initialPageNames.add(createPageName(i));
     }
     expect(navigator.getHistory(), [...initialPageNames, routeId]);
+  }
+
+  void shouldUpdateHistoryByRemovingRoute([int numberOfRoutes = 1]) {
+    final List<String> initialPageNames = [];
+    for (int i = 0; i < mocks.initialPages.length - numberOfRoutes; i++) {
+      initialPageNames.add(createPageName(i));
+    }
+    expect(navigator.getHistory(), [...initialPageNames]);
   }
 
   void shouldRenderScreen() {
@@ -139,8 +147,24 @@ class StackNavigatorExpectations {
     expect(find.byKey(mocks.screenKey), findsOneWidget);
   }
 
+  void shouldRenderInitialPage(int index) {
+    expect(find.byKey(Key(createPageName(index))), findsOneWidget);
+  }
+
   void shouldNotRenderScreen() {
     verifyNever(mocks.screenBuilder(any, any));
     expect(find.byKey(mocks.screenKey), findsNothing);
+  }
+
+  void shouldPopStack() {
+    verify(mocks.rootNavigator.popStack(mocks.lastBuildContext)).called(1);
+  }
+
+  void shouldLogError() {
+    verify(mocks.logger.error(any)).called(1);
+  }
+
+  void shouldNotChangeRenderedPage() {
+    expect(find.byKey(Key(createPageName(mocks.initialPages.length - 1))), findsOneWidget);
   }
 }

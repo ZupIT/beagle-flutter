@@ -15,87 +15,71 @@
  */
 
 import 'dart:async';
-
+import 'package:beagle/beagle.dart';
+import 'expectations.dart';
 import 'mock.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'setup.dart';
 
 void main() {
   group('Given a StackNavigator class', () {
-    group('When a view is popped from a StackNavigator with 3 pages', () {
-      final mocks = NavigationMocks();
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 3);
+    NavigationMocks mocks;
+    StackNavigator navigator;
 
-      Future<void> _setup(WidgetTester tester) async {
-        await tester.pumpWidget(MaterialApp(
-          home: Material(child: navigator),
-        ));
+    Future<StackNavigatorExpectations> _setup(
+      WidgetTester tester,
+      int numberOfInitialPages,
+    ) async {
+      mocks = NavigationMocks(tester, numberOfInitialPages);
+      final result = await setup(
+        tester: tester,
+        mocks: mocks,
+      );
+      navigator = result.navigator;
+      return result.expectations;
+    }
+
+    group('When a view is popped from a StackNavigator with 3 pages', () {
+      testWidgets('Then it should pop the last page and render the previous', (WidgetTester tester) async {
+        final expectations = await _setup(tester, 3);
         navigator.popView(mocks.lastBuildContext);
         await tester.pump();
-      }
 
-      testWidgets('Then it should pop the last page and render the previous', (WidgetTester tester) async {
-        await _setup(tester);
-        expect(navigator.getHistory(), [createPageName(0), createPageName(1)]);
-        expect(find.byKey(Key(createPageName(1))), findsOneWidget);
+        expectations.shouldUpdateHistoryByRemovingRoute();
+        expectations.shouldRenderInitialPage(1);
       });
     });
 
     group('When a view is popped from a StackNavigator with 1 page', () {
-      final mocks = NavigationMocks();
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) async {
-        await tester.pumpWidget(MaterialApp(
-          home: Material(child: navigator),
-        ));
+      testWidgets("Then it should pop the rootNavigator's stack", (WidgetTester tester) async {
+        final expectations = await _setup(tester, 1);
         navigator.popView(mocks.lastBuildContext);
         await tester.pump();
-      }
 
-      testWidgets("Then it should pop the rootNavigator's stack", (WidgetTester tester) async {
-        await _setup(tester);
-        verify(mocks.rootNavigator.popStack(mocks.lastBuildContext)).called(1);
+        expectations.shouldPopStack();
       });
     });
 
     group('When a popToView is called for existing view', () {
-      final mocks = NavigationMocks();
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 4);
-
-      Future<void> _setup(WidgetTester tester) async {
-        await tester.pumpWidget(MaterialApp(
-          home: Material(child: navigator),
-        ));
+      testWidgets("Then it should pop pages until the one we're looking for is found", (WidgetTester tester) async {
+        final expectations = await _setup(tester, 4);
         navigator.popToView(createPageName(1), mocks.lastBuildContext);
         await tester.pump();
-      }
 
-      testWidgets('Then it should pop the last page and render the previous', (WidgetTester tester) async {
-        await _setup(tester);
-        expect(navigator.getHistory(), [createPageName(0), createPageName(1)]);
-        expect(find.byKey(Key(createPageName(1))), findsOneWidget);
+        expectations.shouldUpdateHistoryByRemovingRoute(2);
+        expectations.shouldRenderInitialPage(1);
       });
     });
 
     group("When a popToView is called for view that doesn't exist", () {
-      final mocks = NavigationMocks();
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 4);
-
-      Future<void> _setup(WidgetTester tester) async {
-        await tester.pumpWidget(MaterialApp(
-          home: Material(child: navigator),
-        ));
-        navigator.popToView('fake_view', mocks.lastBuildContext);
-        await tester.pump();
-      }
-
       testWidgets('Then it should not navigate and log error', (WidgetTester tester) async {
-        await _setup(tester);
-        verify(mocks.logger.error(any)).called(1);
-        expect(navigator.getHistory(), [createPageName(0), createPageName(1), createPageName(2), createPageName(3)]);
-        expect(find.byKey(Key(createPageName(3))), findsOneWidget);
+        final expectations = await _setup(tester, 4);
+        navigator.popToView('/fake_view', mocks.lastBuildContext);
+        await tester.pump();
+
+        expectations.shouldLogError();
+        expectations.shouldNotUpdateHistory();
+        expectations.shouldNotChangeRenderedPage();
       });
     });
   });

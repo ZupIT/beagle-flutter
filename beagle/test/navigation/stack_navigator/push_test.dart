@@ -21,227 +21,132 @@ import 'expectations.dart';
 import 'mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-
-typedef CompleteFn = void Function();
-
-const SERVER_DELAY_MS = 50;
+import 'setup.dart';
 
 void main() {
   group('Given a StackNavigator class', () {
     final remoteView = RemoteView('/test');
     final screen = BeagleUIElement({ 'id': 'test', '_beagleComponent_': 'beagle:container' });
-    final localView = LocalView(screen);
     final error = Error();
+    StackNavigator navigator;
 
-    StackNavigatorExpectations _createTestSuit(NavigationMocks mocks, [BeagleRoute route]) {
-      return StackNavigatorExpectations(
-        screen: screen,
-        route: route ?? remoteView,
+    Future<StackNavigatorExpectations> _setup({
+      @required WidgetTester tester,
+      @required NavigationMocks mocks,
+      BeagleRoute route,
+      dynamic expectedError,
+    }) async {
+      final result = await setup(
+        tester: tester,
         mocks: mocks,
-        expectedCompleteFnType: CompleteFn,
-        expectedError: error,
+        expectedRoute: route ?? remoteView,
+        expectedScreen: screen,
+        expectedError: expectedError,
       );
-    }
-
-    void mockSuccessfulRequest(NavigationMocks mocks) {
-      when(mocks.viewClient.fetch(remoteView)).thenAnswer(
-        (_) => Future.delayed(Duration(milliseconds: SERVER_DELAY_MS), () => Future.value(screen)),
-      );
-    }
-
-    void mockUnsuccessfulRequest(NavigationMocks mocks) {
-      when(mocks.viewClient.fetch(remoteView)).thenAnswer(
-        (_) => Future.delayed(Duration(milliseconds: SERVER_DELAY_MS), () => Future.error(error)),
-      );
+      navigator = result.navigator;
+      return result.expectations;
     }
 
     group("When a RemoteView is pushed to a StackNavigator", () {
-      final mocks = NavigationMocks();
-      final expectations = _createTestSuit(mocks);
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) {
-        return tester.runAsync(() async {
-          await tester.pumpWidget(MaterialApp(
-            home: Material(child: navigator),
-          ));
-          mockSuccessfulRequest(mocks);
-          await navigator.pushView(remoteView, mocks.lastBuildContext);
-          await tester.pump();
-        });
-      }
-
       testWidgets('Then it should fetch and render the new route', (WidgetTester tester) async {
-        await _setup(tester);
+        final mocks = NavigationMocks(tester, 1);
+        final expectations = await _setup(tester: tester, mocks: mocks);
+        mocks.mockSuccessfulRequest(remoteView, screen);
+        await navigator.pushView(remoteView, mocks.lastBuildContext);
+        await tester.pump();
+
         expectations.shouldFetchRoute();
         expectations.shouldCreateBeagleWidget();
         expectations.shouldHandleOnLoading();
         expectations.shouldNotHandleOnError();
         expectations.shouldHandleOnSuccess();
-        expectations.shouldUpdateHistory(navigator, 1);
+        expectations.shouldUpdateHistoryByAddingRoute();
         expectations.shouldRenderScreen();
       });
     });
 
     group("When a RemoteView is pushed and the navigation completes inside the onLoading handler", () {
-      final mocks = NavigationMocks();
-      final expectations = _createTestSuit(mocks);
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) {
-        return tester.runAsync(() async {
-          await tester.pumpWidget(MaterialApp(
-            home: Material(child: navigator),
-          ));
-          mockSuccessfulRequest(mocks);
-          // completes the navigation when the loading starts
-          when(mocks.controller.onLoading(
-            context: anyNamed('context'),
-            view: anyNamed('view'),
-            completeNavigation: anyNamed('completeNavigation'),
-          )).thenAnswer((realInvocation) {
-            realInvocation.namedArguments[Symbol('completeNavigation')]();
-          });
-          // It's important not to await the next line
-          navigator.pushView(remoteView, mocks.lastBuildContext);
-          await tester.pump();
-        });
-      }
-
       testWidgets('Then it should render the Beagle screen as soon as pushView is called', (WidgetTester tester) async {
-        await _setup(tester);
+        final mocks = NavigationMocks(tester, 1);
+        final expectations = await _setup(tester: tester, mocks: mocks);
+        mocks.mockSuccessfulRequest(remoteView, screen);
+        mocks.mockCompletionOnLoading();
+        // It's important not to await the next line
+        navigator.pushView(remoteView, mocks.lastBuildContext);
+        await tester.pump();
+
         expectations.shouldHandleOnLoading();
-        expectations.shouldUpdateHistory(navigator, 1);
+        expectations.shouldUpdateHistoryByAddingRoute();
         expectations.shouldRenderScreen();
       });
     });
 
     group("When a RemoteView is pushed, but the fetch fails", () {
-      final mocks = NavigationMocks();
-      final expectations = _createTestSuit(mocks);
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) {
-        return tester.runAsync(() async {
-          await tester.pumpWidget(MaterialApp(
-            home: Material(child: navigator),
-          ));
-          mockUnsuccessfulRequest(mocks);
-          await navigator.pushView(remoteView, mocks.lastBuildContext);
-          await tester.pump();
-        });
-      }
-
       testWidgets('Then it should call error and not render anything', (WidgetTester tester) async {
-        await _setup(tester);
+        final mocks = NavigationMocks(tester, 1);
+        final expectations = await _setup(tester: tester, mocks: mocks, expectedError: error);
+        mocks.mockUnsuccessfulRequest(remoteView, error);
+        await navigator.pushView(remoteView, mocks.lastBuildContext);
+        await tester.pump();
+
         expectations.shouldHandleOnError();
         expectations.shouldNotHandleOnSuccess();
-        expectations.shouldNotUpdateHistory(navigator, 1);
+        expectations.shouldNotUpdateHistory();
         expectations.shouldNotRenderScreen();
       });
     });
 
     group("When a RemoteView is pushed, the fetch fails and the onError handler completes the navigation", () {
-      final mocks = NavigationMocks();
-      final expectations = _createTestSuit(mocks);
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) {
-        return tester.runAsync(() async {
-          await tester.pumpWidget(MaterialApp(
-            home: Material(child: navigator),
-          ));
-          mockUnsuccessfulRequest(mocks);
-          // completes the navigation when the loading starts
-          when(mocks.controller.onError(
-            context: anyNamed('context'),
-            view: anyNamed('view'),
-            completeNavigation: anyNamed('completeNavigation'),
-            stackTrace: anyNamed('stackTrace'),
-            retry: anyNamed('retry'),
-            error: anyNamed('error'),
-          )).thenAnswer((realInvocation) {
-            realInvocation.namedArguments[Symbol('completeNavigation')]();
-          });
-          await navigator.pushView(remoteView, mocks.lastBuildContext);
-          await tester.pump();
-        });
-      }
-
       testWidgets('Then it should render even with an error', (WidgetTester tester) async {
-        await _setup(tester);
-        expectations.shouldUpdateHistory(navigator, 1);
+        final mocks = NavigationMocks(tester, 1);
+        final expectations = await _setup(tester: tester, mocks: mocks);
+        mocks.mockUnsuccessfulRequest(remoteView, error);
+        mocks.mockCompletionOnError();
+        await navigator.pushView(remoteView, mocks.lastBuildContext);
+        await tester.pump();
+
+        expectations.shouldUpdateHistoryByAddingRoute();
         expectations.shouldRenderScreen();
       });
     });
 
     group("When a RemoteView is pushed, the fetch fails and a successful retrial is made", () {
-      final mocks = NavigationMocks();
-      final expectations = _createTestSuit(mocks);
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) {
-        return tester.runAsync(() async {
-          Future<void> Function() retry;
-          await tester.pumpWidget(MaterialApp(
-            home: Material(child: navigator),
-          ));
-          mockUnsuccessfulRequest(mocks);
-          // completes the navigation when the loading starts
-          when(mocks.controller.onError(
-            context: anyNamed('context'),
-            view: anyNamed('view'),
-            completeNavigation: anyNamed('completeNavigation'),
-            stackTrace: anyNamed('stackTrace'),
-            retry: anyNamed('retry'),
-            error: anyNamed('error'),
-          )).thenAnswer((realInvocation) {
-            retry = realInvocation.namedArguments[Symbol('retry')];
-          });
-          await navigator.pushView(remoteView, mocks.lastBuildContext);
-          mockSuccessfulRequest(mocks);
-          await retry();
-          await tester.pump();
-        });
-      }
-
       testWidgets('Then it should render the resulting screen', (WidgetTester tester) async {
-        await _setup(tester);
+        final mocks = NavigationMocks(tester, 1);
+        final expectations = await _setup(tester: tester, mocks: mocks);
+        mocks.mockUnsuccessfulRequest(remoteView, error);
+        final retryRef = mocks.mockRetryOnError();
+        await navigator.pushView(remoteView, mocks.lastBuildContext);
+        await tester.pump();
+        mocks.mockSuccessfulRequest(remoteView, screen);
+        await retryRef.current();
+        await tester.pump();
+
         expectations.shouldFetchRoute(2);
         expectations.shouldHandleOnLoading(2);
         expectations.shouldHandleOnSuccess();
-        expectations.shouldUpdateHistory(navigator, 1);
+        expectations.shouldUpdateHistoryByAddingRoute();
         expectations.shouldRenderScreen();
       });
     });
 
     group("When a LocalView is pushed", () {
-      final mocks = NavigationMocks();
-      final expectations = _createTestSuit(mocks, localView);
-      final navigator = createStackNavigator(mocks: mocks, initialNumberOfPages: 1);
-
-      Future<void> _setup(WidgetTester tester) {
-        return tester.runAsync(() async {
-          await tester.pumpWidget(MaterialApp(
-            home: Material(child: navigator),
-          ));
-          // It's important not to await the next line
-          navigator.pushView(localView, mocks.lastBuildContext);
-          await tester.pump();
-        });
-      }
-
       testWidgets(
         'Then it should render the screen immediately, without contacting the backend',
         (WidgetTester tester) async {
-          await _setup(tester);
+          final localView = LocalView(screen);
+          final mocks = NavigationMocks(tester, 1);
+          final expectations = await _setup(tester: tester, mocks: mocks, route: localView);
+          // It's important not to await the next line
+          navigator.pushView(localView, mocks.lastBuildContext);
+          await tester.pump();
+
           expectations.shouldNotFetchRoute();
           expectations.shouldCreateBeagleWidget();
           expectations.shouldNotHandleOnLoading();
           expectations.shouldNotHandleOnError();
           expectations.shouldHandleOnSuccess();
-          expectations.shouldUpdateHistory(navigator, 1);
+          expectations.shouldUpdateHistoryByAddingRoute();
           expectations.shouldRenderScreen();
         },
       );
