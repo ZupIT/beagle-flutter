@@ -52,7 +52,7 @@ void main() {
         'Then it should replace the current (top) StackNavigator with the new one and use the custom controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.resetStack(route, null, CUSTOM_CONTROLLER_NAME);
+          await navigator.resetStack(route, CUSTOM_CONTROLLER_NAME);
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithCustomController(CUSTOM_CONTROLLER_NAME);
         }
@@ -64,7 +64,7 @@ void main() {
         'Then it should replace the current (top) StackNavigator with the new one and use the default controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.resetStack(route, null, 'fakeController');
+          await navigator.resetStack(route, 'fakeController');
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithDefaultController();
         }
@@ -76,7 +76,7 @@ void main() {
         'Then it should remove every stack and push a new one using the default controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.resetApplication(route, null);
+          await navigator.resetApplication(route);
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithDefaultController();
           expectations.shouldUpdateHistoryByResettingStacks();
@@ -92,7 +92,7 @@ void main() {
         'Then it should remove every stack and push a new one using the custom controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.resetApplication(route, null, CUSTOM_CONTROLLER_NAME);
+          await navigator.resetApplication(route, CUSTOM_CONTROLLER_NAME);
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithCustomController(CUSTOM_CONTROLLER_NAME);
         }
@@ -104,7 +104,7 @@ void main() {
         'Then it should remove every stack and push a new one using the default controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.resetApplication(route, null, 'fakeController');
+          await navigator.resetApplication(route, 'fakeController');
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithDefaultController();
         }

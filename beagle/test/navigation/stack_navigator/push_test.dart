@@ -157,5 +157,37 @@ void main() {
         },
       );
     });
+
+    /* This is an uncommon scenario where a custom Beagle component would create another navigator. This test ensures
+    the correct navigator will be used no matter what. */
+    group("When a view is pushed from a context where another navigator is the closest ancestor", () {
+      BuildContext buildContext;
+
+      final initialPageOfAnotherNavigator = MaterialPageRoute<dynamic>(
+        builder: (BuildContext context) {
+          buildContext = context;
+          return Container();
+        },
+        settings: RouteSettings(name: 'test'),
+      );
+
+      final pageContainingAnotherNavigator = MaterialPageRoute<dynamic>(
+        builder: (_) => Navigator(
+          onGenerateInitialRoutes: (NavigatorState state, String routeName) => [initialPageOfAnotherNavigator],
+        ),
+      );
+
+      testWidgets('Then it should push the view to the StackNavigator anyway', (WidgetTester tester) async {
+        final localView = LocalView(screen);
+        final mocks = NavigationMocks(tester);
+        mocks.initialPages.add(pageContainingAnotherNavigator);
+        final expectations = await _setup(tester: tester, mocks: mocks, route: localView);
+        await navigator.pushView(localView, buildContext);
+        await tester.pump();
+
+        expectations.shouldPushNewRoute();
+      });
+    });
+
   });
 }

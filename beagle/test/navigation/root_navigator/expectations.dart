@@ -108,14 +108,14 @@ class RootNavigatorExpectations {
   }
 
   void shouldPushViewToCurrentStack(BeagleRoute route) {
-    verify(mocks.initialPages.last.pushView(route, any)).called(1);
+    verify(mocks.initialPages.last.pushView(route, mocks.lastStackNavigator.buildContext)).called(1);
   }
 
   void shouldPopViewFromCurrentStack() {
-    verify(mocks.initialPages.last.popView(any)).called(1);
+    verify(mocks.initialPages.last.popView()).called(1);
   }
 
   void shouldPopToViewOfCurrentStack(String viewName) {
-    verify(mocks.initialPages.last.popToView(viewName, any)).called(1);
+    verify(mocks.initialPages.last.popToView(viewName)).called(1);
   }
 }

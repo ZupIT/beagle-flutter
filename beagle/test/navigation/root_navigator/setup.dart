@@ -33,8 +33,9 @@ Future<_SetupResult> setupRootNavigatorTests({
   int numberOfInitialStacks = 0,
   BeagleRoute initialRoute,
   BeagleRoute expectedRoute,
+  RootNavigatorMocks mocks,
 }) async {
-  final mocks = RootNavigatorMocks(numberOfInitialStacks);
+  mocks = mocks ?? RootNavigatorMocks(numberOfInitialStacks);
   final rootNavigator = RootNavigator(
     initialRoute: initialRoute ?? RemoteView('https://it.doesnt-matter.com'),
     screenBuilder: mocks.screenBuilder,

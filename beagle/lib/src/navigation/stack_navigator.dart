@@ -56,6 +56,7 @@ class StackNavigator extends StatelessWidget {
   final _BeagleWidgetFactory _beagleWidgetFactory;
   final List<Route<dynamic>> initialPages;
   final List<NavigatorObserver> navigatorObservers;
+  final GlobalKey<NavigatorState> _thisNavigatorKey = GlobalKey();
 
   Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
@@ -129,21 +130,21 @@ class StackNavigator extends StatelessWidget {
     }
   }
 
-  void popToView(String routeIdentifier, BuildContext context) {
+  void popToView(String routeIdentifier) {
     if (!_history.contains(routeIdentifier)) {
       return logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
-    Navigator.popUntil(context, (route) => route.settings.name == routeIdentifier);
+    _thisNavigatorKey.currentState.popUntil((route) => route.settings.name == routeIdentifier);
     while (_history.last != routeIdentifier) {
       _history.removeLast();
     }
   }
 
-  void popView(BuildContext context) {
+  void popView() {
     if (_history.length == 1) {
-      return rootNavigator.popStack(context);
+      return rootNavigator.popStack();
     }
-    Navigator.pop(context);
+    _thisNavigatorKey.currentState.pop();
     _history.removeLast();
   }
 
@@ -155,7 +156,7 @@ class StackNavigator extends StatelessWidget {
     void complete() {
       if (completed) return;
       final Route<dynamic> materialRoute = _buildRoute(beagleWidget, routeId);
-      Navigator.push(context, materialRoute);
+      _thisNavigatorKey.currentState.push(materialRoute);
       _history.add(routeId);
       completed = true;
     }
@@ -187,6 +188,7 @@ class StackNavigator extends StatelessWidget {
           initialRoute: _getRouteId(initialRoute),
           onGenerateInitialRoutes: _onGenerateInitialRoutes,
           observers: navigatorObservers,
+          key: _thisNavigatorKey,
         ),
       ),
     );

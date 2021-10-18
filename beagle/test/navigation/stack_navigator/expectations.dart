@@ -157,7 +157,7 @@ class StackNavigatorExpectations {
   }
 
   void shouldPopStack() {
-    verify(mocks.rootNavigator.popStack(mocks.lastBuildContext)).called(1);
+    verify(mocks.rootNavigator.popStack()).called(1);
   }
 
   void shouldPushNewRoute() {

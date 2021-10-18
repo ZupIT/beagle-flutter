@@ -82,13 +82,13 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   BeagleLogger get logger => navigator.logger;
 
   @override
-  void popToView(String routeIdentifier, BuildContext context) {
-    navigator.popToView(routeIdentifier, context);
+  void popToView(String routeIdentifier) {
+    navigator.popToView(routeIdentifier);
   }
 
   @override
-  void popView(BuildContext context) {
-    navigator.popView(context);
+  void popView() {
+    navigator.popView();
   }
 
   @override
@@ -114,7 +114,7 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   Widget build(_) {
     // It's important to render a dummy navigator so we can simulate the dynamic of having multiple navigators
     return Navigator(
-      onGenerateInitialRoutes: (NavigatorState state, String routeName){
+      onGenerateInitialRoutes: (NavigatorState state, String routeName) {
         return [MaterialPageRoute(
           builder: (BuildContext context){
             buildContext = context;

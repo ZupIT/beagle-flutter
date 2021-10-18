@@ -149,7 +149,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   }
 
   @override
-  void popStack(_) {
+  void popStack() {
     if (_history.length == 1) {
       // pops the whole RootNavigator from its parent navigator
       return Navigator.of(context).pop();
@@ -159,17 +159,17 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   }
 
   @override
-  void popToView(String routeIdentifier, BuildContext context) {
-    _history.last.popToView(routeIdentifier, context);
+  void popToView(String routeIdentifier) {
+    _history.last.popToView(routeIdentifier);
   }
 
   @override
-  void popView(BuildContext context) {
-    _history.last.popView(context);
+  void popView() {
+    _history.last.popView();
   }
 
   @override
-  Future<void> pushStack(BeagleRoute route, _, [String controllerId]) async {
+  Future<void> pushStack(BeagleRoute route, [String controllerId]) async {
     _thisNavigatorKey.currentState.push(_createNewRoute(route, _getControllerById(controllerId)));
   }
 
@@ -179,7 +179,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   }
 
   @override
-  Future<void> resetApplication(BeagleRoute route, _, [String controllerId]) async {
+  Future<void> resetApplication(BeagleRoute route, [String controllerId]) async {
     _history = [];
     _thisNavigatorKey.currentState.pushAndRemoveUntil(
       _createNewRoute(route, _getControllerById(controllerId)),
@@ -188,7 +188,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   }
 
   @override
-  Future<void> resetStack(BeagleRoute route, _, [String controllerId]) async {
+  Future<void> resetStack(BeagleRoute route, [String controllerId]) async {
     _history.removeLast();
     _thisNavigatorKey.currentState.pushReplacement(_createNewRoute(route, _getControllerById(controllerId)));
   }

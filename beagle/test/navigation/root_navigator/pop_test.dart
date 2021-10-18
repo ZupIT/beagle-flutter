@@ -33,7 +33,7 @@ void main() {
     group("When we pop a stack from a navigator with 3 stacks", () {
       testWidgets('Then it should remove the third stack and navigate to the second', (WidgetTester tester) async {
         final expectations = await _setup(tester, 3);
-        navigator.popStack(null);
+        navigator.popStack();
         await tester.pump();
         expectations.shouldUpdateHistoryByRemovingStack();
         expectations.shouldPopRoute();
@@ -44,7 +44,7 @@ void main() {
     group("When we pop a stack from a navigator with a single stack", () {
       testWidgets('Then it should remove the RootNavigator', (WidgetTester tester) async {
         final expectations = await _setup(tester, 1);
-        navigator.popStack(null);
+        navigator.popStack();
         await tester.pump();
         expectations.shouldPopRootNavigator();
       });
@@ -53,7 +53,7 @@ void main() {
     group("When we pop a view", () {
       testWidgets('Then it should call the popView method of the current stack', (WidgetTester tester) async {
         final expectations = await _setup(tester, 1);
-        navigator.popView(null);
+        navigator.popView();
         expectations.shouldPopViewFromCurrentStack();
       });
     });
@@ -61,7 +61,7 @@ void main() {
     group("When we pop to a view", () {
       testWidgets('Then it should call the popToView method of the current stack', (WidgetTester tester) async {
         final expectations = await _setup(tester, 1);
-        navigator.popToView('/test', null);
+        navigator.popToView('/test');
         expectations.shouldPopToViewOfCurrentStack('/test');
       });
     });

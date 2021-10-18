@@ -26,8 +26,13 @@ void main() {
     final route = RemoteView('/test');
     RootNavigatorState navigator;
 
-    Future<RootNavigatorExpectations> _setup(WidgetTester tester) async {
-      final result = await setupRootNavigatorTests(tester: tester, expectedRoute: route, numberOfInitialStacks: 1);
+    Future<RootNavigatorExpectations> _setup(WidgetTester tester, [RootNavigatorMocks mocks]) async {
+      final result = await setupRootNavigatorTests(
+        tester: tester,
+        expectedRoute: route,
+        numberOfInitialStacks: 1,
+        mocks: mocks,
+      );
       navigator = result.navigator;
       return result.expectations;
     }
@@ -52,7 +57,7 @@ void main() {
         'Then it should create a StackNavigator with the new route and the custom controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.pushStack(route, null, CUSTOM_CONTROLLER_NAME);
+          await navigator.pushStack(route, CUSTOM_CONTROLLER_NAME);
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithCustomController(CUSTOM_CONTROLLER_NAME);
         }
@@ -64,7 +69,7 @@ void main() {
         'Then it should create a StackNavigator with the new route and the default controller',
         (WidgetTester tester) async {
           final expectations = await _setup(tester);
-          await navigator.pushStack(route, null, 'fakeController');
+          await navigator.pushStack(route, 'fakeController');
           await tester.pump();
           expectations.shouldCreateStackNavigatorWithDefaultController();
         }
@@ -73,9 +78,10 @@ void main() {
 
     group("When we push a view", () {
       testWidgets('Then it should call the pushView method of the current stack', (WidgetTester tester) async {
-        final expectations = await _setup(tester);
+        final mocks = RootNavigatorMocks(1);
+        final expectations = await _setup(tester, mocks);
         final route = RemoteView('/push-test');
-        navigator.pushView(route, null);
+        navigator.pushView(route, mocks.lastStackNavigator.buildContext);
         expectations.shouldPushViewToCurrentStack(route);
       });
     });
