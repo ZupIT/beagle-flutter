@@ -24,6 +24,8 @@ class MockBeagleImageDownloader extends Mock implements BeagleImageDownloader {}
 
 class MockBeagleLogger extends Mock implements BeagleLogger {}
 
+class MockUrlBuilder extends Mock implements UrlBuilder {}
+
 Future<void> testSetupServiceLocator({
   String? baseUrl,
   BeagleEnvironment? environment,
@@ -36,6 +38,7 @@ Future<void> testSetupServiceLocator({
   BeagleImageDownloader? imageDownloader,
   BeagleLogger? logger,
   BeagleYogaFactory? beagleYogaFactory,
+  UrlBuilder? urlBuilder,
 }) async {
   await beagleServiceLocator.reset();
 
@@ -45,5 +48,6 @@ Future<void> testSetupServiceLocator({
     ..registerSingleton<BeagleDesignSystem>(designSystem ?? FakeDesignSystem())
     ..registerSingleton<BeagleImageDownloader>(
         imageDownloader ?? MockBeagleImageDownloader())
-    ..registerSingleton<BeagleLogger>(logger ?? MockBeagleLogger());
+    ..registerSingleton<BeagleLogger>(logger ?? MockBeagleLogger())
+    ..registerSingleton<UrlBuilder>(urlBuilder ?? MockUrlBuilder());
 }

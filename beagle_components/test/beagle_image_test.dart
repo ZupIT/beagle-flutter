@@ -34,11 +34,14 @@ class MockBeagleLogger extends Mock implements BeagleLogger {}
 
 class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
 
+class MockUrlBuilder extends Mock implements UrlBuilder {}
+
 void main() {
   final designSystemMock = MockDesignSystem();
   final imageDownloaderMock = MockBeagleImageDownloader();
   final beagleLoggerMock = MockBeagleLogger();
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
+  final urlBuilderMock = MockUrlBuilder();
 
   setUpAll(() async {
     await testSetupServiceLocator(
@@ -46,6 +49,7 @@ void main() {
       imageDownloader: imageDownloaderMock,
       logger: beagleLoggerMock,
       beagleYogaFactory: beagleYogaFactoryMock,
+      urlBuilder: urlBuilderMock,
     );
   });
 
@@ -66,6 +70,11 @@ void main() {
 
   when(() => designSystemMock.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');
+
+  when(() => urlBuilderMock.build(imageUrl)).thenReturn(imageUrl);
+
+  when(() => urlBuilderMock.build(imageNotFoundUrl))
+      .thenReturn(imageNotFoundUrl);
 
   when(() => designSystemMock.image(invalidPlaceholder)).thenReturn('');
 
