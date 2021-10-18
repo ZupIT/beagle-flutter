@@ -144,15 +144,16 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   Widget _getGridView() {
     return GridView.builder(
-        controller: _scrollController,
-        scrollDirection: _getScrollDirection(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: widget.spanCount ?? 0,
-        ),
-        itemBuilder: (buildContext, index) {
-          return widget.children![index];
-        },
-        itemCount: widget.children?.length ?? 0);
+      controller: _scrollController,
+      scrollDirection: _getScrollDirection(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: widget.spanCount ?? 0,
+      ),
+      itemBuilder: (buildContext, index) {
+        return widget.children![index];
+      },
+      itemCount: widget.children?.length ?? 0,
+    );
   }
 
   void _doTemplateRender() {
