@@ -36,7 +36,7 @@ class _LoggerMock extends Mock implements BeagleLogger {}
 
 class _BeagleViewMock extends Mock implements BeagleView {}
 
-class _MockNavigatorObserver extends Mock implements NavigatorObserver {}
+class _NavigatorObserverMock extends Mock implements NavigatorObserver {}
 
 class _BeagleWidgetMock extends Mock implements UnsafeBeagleWidget {
   @override
@@ -64,7 +64,7 @@ class NavigationMocks extends Mock implements _NavigationMocks {
   final viewClient = _ViewClientMock();
   final rootNavigator = _RootNavigatorMock();
   final logger = _LoggerMock();
-  final navigationObserver = _MockNavigatorObserver();
+  final navigatorObserver = _NavigatorObserverMock();
   final screenKey = Key('beagle_widget_${_nextId++}');
   final List<PageRoute<dynamic>> initialPages = [];
   final WidgetTester tester;

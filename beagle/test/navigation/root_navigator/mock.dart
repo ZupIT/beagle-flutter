@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
@@ -40,7 +41,7 @@ class _ViewClientMock extends Mock implements ViewClient {}
 
 class _NavigationControllerMock extends Mock implements NavigationController {}
 
-class NavigatorObserverMock extends Mock implements NavigatorObserver {}
+class _NavigatorObserverMock extends Mock implements NavigatorObserver {}
 
 class _BeagleServiceMock extends Mock implements BeagleService {
   @override
@@ -110,17 +111,30 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   BuildContext buildContext;
 
   @override
-  Widget build(BuildContext context) {
-    buildContext = context;
-    return Container();
+  Widget build(_) {
+    // It's important to render a dummy navigator so we can simulate the dynamic of having multiple navigators
+    return Navigator(
+      onGenerateInitialRoutes: (NavigatorState state, String routeName){
+        return [MaterialPageRoute(
+          builder: (BuildContext context){
+            buildContext = context;
+            return Container();
+          },
+          settings: RouteSettings(name: 'test'),
+        )];
+      },
+    );
   }
+
+  @override
+  List<NavigatorObserver> get navigatorObservers => navigator.navigatorObservers;
 }
 
 class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {
   final logger = _LoggerMock();
   final beagleService = _BeagleServiceMock();
-  final rootNavigatorObserver = NavigatorObserverMock();
-  final topNavigatorObserver = NavigatorObserverMock();
+  final rootNavigatorObserver = _NavigatorObserverMock();
+  final topNavigatorObserver = _NavigatorObserverMock();
   final List<StackNavigatorMock> initialPages = [];
   StackNavigatorMock lastStackNavigator;
 

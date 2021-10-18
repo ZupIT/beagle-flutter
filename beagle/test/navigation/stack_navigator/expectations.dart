@@ -160,6 +160,26 @@ class StackNavigatorExpectations {
     verify(mocks.rootNavigator.popStack(mocks.lastBuildContext)).called(1);
   }
 
+  void shouldPushNewRoute() {
+    verify(mocks.navigatorObserver.didPush(any, any)).called(mocks.initialPages.length + 1);
+  }
+
+  void shouldNotPushNewRoute() {
+    if (mocks.initialPages.isEmpty) {
+      verifyNever(mocks.navigatorObserver.didPush(any, any));
+    } else {
+      verify(mocks.navigatorObserver.didPush(any, any)).called(mocks.initialPages.length);
+    }
+  }
+
+  void shouldPopRoute([int times = 1]) {
+    verify(mocks.navigatorObserver.didPop(any, any)).called(times);
+  }
+
+  void shouldNotPopRoute() {
+    verifyNever(mocks.navigatorObserver.didPop(any, any));
+  }
+
   void shouldLogError() {
     verify(mocks.logger.error(any)).called(1);
   }

@@ -102,7 +102,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
     );
   }
 
-  List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
+  List<Route<dynamic>> _onGenerateInitialRoutes(_, __) {
     // for testing purposes
     if (widget.initialPages.isNotEmpty) {
       final List<Route<dynamic>> pages = [];

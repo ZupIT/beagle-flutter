@@ -35,7 +35,7 @@ void main() {
       BeagleRoute initialRoute,
       dynamic expectedError,
     }) async {
-      final result = await setup(
+      final result = await setupStackNavigatorTests(
         tester: tester,
         mocks: mocks,
         initialRoute: initialRoute ?? initialRemoteView,
@@ -58,6 +58,7 @@ void main() {
         expectations.shouldNotHandleOnError();
         expectations.shouldHandleOnSuccess();
         expectations.shouldUpdateHistoryByAddingRoute();
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
     });
@@ -72,6 +73,7 @@ void main() {
 
           final expectations = await _setup(tester: tester, mocks: mocks);
           expectations.shouldHandleOnLoading();
+          expectations.shouldPushNewRoute();
           expectations.shouldRenderScreen();
         }
       );
@@ -86,8 +88,10 @@ void main() {
         expectations.shouldHandleOnError();
         expectations.shouldNotHandleOnSuccess();
         /* The expectations below might be unwanted behavior, but it should indeed happen given the current
-        implementation. The ideal would be the next lines to be `expectations.shouldNotRenderScreen();` and
-        `expectations.shouldNotUpdateHistory(navigator)`. Issue: https://github.com/ZupIT/beagle/issues/1770 */
+        implementation. The ideal would be the next lines to be `expectations.shouldNotPushNewRoute();`,
+        `expectations.shouldNotRenderScreen();` and `expectations.shouldNotUpdateHistory(navigator)`.
+        Issue: https://github.com/ZupIT/beagle/issues/1770 */
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
         expectations.shouldUpdateHistoryByAddingRoute();
       });
@@ -101,6 +105,7 @@ void main() {
         final expectations = await _setup(tester: tester, mocks: mocks);
 
         expectations.shouldRenderScreen();
+        expectations.shouldPushNewRoute();
         expectations.shouldUpdateHistoryByAddingRoute();
       });
     });
@@ -119,6 +124,7 @@ void main() {
         expectations.shouldHandleOnLoading(2);
         expectations.shouldHandleOnSuccess();
         expectations.shouldUpdateHistoryByAddingRoute();
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
     });
@@ -137,6 +143,7 @@ void main() {
           expectations.shouldNotHandleOnError();
           expectations.shouldHandleOnSuccess();
           expectations.shouldUpdateHistoryByAddingRoute();
+          expectations.shouldPushNewRoute();
           expectations.shouldRenderScreen();
         },
       );

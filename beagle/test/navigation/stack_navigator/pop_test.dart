@@ -31,7 +31,7 @@ void main() {
       int numberOfInitialPages,
     ) async {
       mocks = NavigationMocks(tester, numberOfInitialPages);
-      final result = await setup(
+      final result = await setupStackNavigatorTests(
         tester: tester,
         mocks: mocks,
       );
@@ -46,6 +46,7 @@ void main() {
         await tester.pump();
 
         expectations.shouldUpdateHistoryByRemovingRoute();
+        expectations.shouldPopRoute();
         expectations.shouldRenderInitialPage(1);
       });
     });
@@ -67,6 +68,7 @@ void main() {
         await tester.pump();
 
         expectations.shouldUpdateHistoryByRemovingRoute(2);
+        expectations.shouldPopRoute(2);
         expectations.shouldRenderInitialPage(1);
       });
     });
@@ -79,6 +81,7 @@ void main() {
 
         expectations.shouldLogError();
         expectations.shouldNotUpdateHistory();
+        expectations.shouldNotPopRoute();
         expectations.shouldNotChangeRenderedPage();
       });
     });

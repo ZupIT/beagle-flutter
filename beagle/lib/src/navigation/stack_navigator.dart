@@ -40,6 +40,7 @@ class StackNavigator extends StatelessWidget {
     @required this.logger,
     _BeagleWidgetFactory beagleWidgetFactory,
     this.initialPages = const [],
+    this.navigatorObservers = const [],
   }) : _beagleWidgetFactory = beagleWidgetFactory ?? defaultBeagleWidgetFactory;
 
   final BeagleRoute initialRoute;
@@ -54,6 +55,7 @@ class StackNavigator extends StatelessWidget {
   final progress = _NavigationProgress();
   final _BeagleWidgetFactory _beagleWidgetFactory;
   final List<Route<dynamic>> initialPages;
+  final List<NavigatorObserver> navigatorObservers;
 
   Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
@@ -184,6 +186,7 @@ class StackNavigator extends StatelessWidget {
         body: Navigator(
           initialRoute: _getRouteId(initialRoute),
           onGenerateInitialRoutes: _onGenerateInitialRoutes,
+          observers: navigatorObservers,
         ),
       ),
     );

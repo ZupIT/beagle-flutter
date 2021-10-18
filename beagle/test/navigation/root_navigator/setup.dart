@@ -27,7 +27,7 @@ class _SetupResult {
   RootNavigatorState navigator;
 }
 
-Future<_SetupResult> setup({
+Future<_SetupResult> setupRootNavigatorTests({
   @required WidgetTester tester,
   String initialController,
   int numberOfInitialStacks = 0,

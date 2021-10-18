@@ -25,7 +25,7 @@ void main() {
     RootNavigatorState navigator;
 
     Future<RootNavigatorExpectations> _setup(WidgetTester tester, int numberOfInitialStacks) async {
-      final result = await setup(tester: tester, numberOfInitialStacks: numberOfInitialStacks);
+      final result = await setupRootNavigatorTests(tester: tester, numberOfInitialStacks: numberOfInitialStacks);
       navigator = result.navigator;
       return result.expectations;
     }

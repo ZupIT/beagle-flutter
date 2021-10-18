@@ -25,7 +25,7 @@ void main() {
   group('Given a RootNavigator', () {
     Future<RootNavigatorExpectations> _setup(WidgetTester tester, [String initialController]) async {
       final route = RemoteView('/test');
-      final result = await setup(
+      final result = await setupRootNavigatorTests(
         tester: tester,
         initialRoute: route,
         expectedRoute: route,

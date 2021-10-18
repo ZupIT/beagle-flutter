@@ -28,7 +28,7 @@ class _SetupResult {
   StackNavigator navigator;
 }
 
-Future<_SetupResult> setup({
+Future<_SetupResult> setupStackNavigatorTests({
   @required WidgetTester tester,
   @required NavigationMocks mocks,
   BeagleRoute initialRoute,
@@ -45,6 +45,7 @@ Future<_SetupResult> setup({
     logger: mocks.logger,
     beagleWidgetFactory: mocks.beagleWidgetFactory,
     initialPages: mocks.initialPages,
+    navigatorObservers: [mocks.navigatorObserver],
   );
 
   final expectations = StackNavigatorExpectations(

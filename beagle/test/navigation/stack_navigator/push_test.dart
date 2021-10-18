@@ -36,7 +36,7 @@ void main() {
       BeagleRoute route,
       dynamic expectedError,
     }) async {
-      final result = await setup(
+      final result = await setupStackNavigatorTests(
         tester: tester,
         mocks: mocks,
         expectedRoute: route ?? remoteView,
@@ -61,6 +61,7 @@ void main() {
         expectations.shouldNotHandleOnError();
         expectations.shouldHandleOnSuccess();
         expectations.shouldUpdateHistoryByAddingRoute();
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
     });
@@ -77,6 +78,7 @@ void main() {
 
         expectations.shouldHandleOnLoading();
         expectations.shouldUpdateHistoryByAddingRoute();
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
     });
@@ -92,6 +94,7 @@ void main() {
         expectations.shouldHandleOnError();
         expectations.shouldNotHandleOnSuccess();
         expectations.shouldNotUpdateHistory();
+        expectations.shouldNotPushNewRoute();
         expectations.shouldNotRenderScreen();
       });
     });
@@ -106,6 +109,7 @@ void main() {
         await tester.pump();
 
         expectations.shouldUpdateHistoryByAddingRoute();
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
     });
@@ -126,6 +130,7 @@ void main() {
         expectations.shouldHandleOnLoading(2);
         expectations.shouldHandleOnSuccess();
         expectations.shouldUpdateHistoryByAddingRoute();
+        expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
     });
@@ -147,6 +152,7 @@ void main() {
           expectations.shouldNotHandleOnError();
           expectations.shouldHandleOnSuccess();
           expectations.shouldUpdateHistoryByAddingRoute();
+          expectations.shouldPushNewRoute();
           expectations.shouldRenderScreen();
         },
       );
