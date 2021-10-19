@@ -23,7 +23,7 @@ import 'package:mockito/mockito.dart';
 class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
 
 class _BeagleViewMock extends Mock implements BeagleView {
-  final BeagleNavigator navigator = _BeagleNavigatorMock();
+  final navigator = _BeagleNavigatorMock();
 
   @override
   BeagleNavigator getNavigator() {
