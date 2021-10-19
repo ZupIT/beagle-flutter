@@ -62,7 +62,7 @@ class RootNavigator extends StatefulWidget {
     this.navigatorObservers = const [],
     _StackNavigatorFactory stackNavigatorFactory,
     this.initialPages = const [],
-  }) : this.stackNavigatorFactory = stackNavigatorFactory ?? _defaultStackNavigatorFactory;
+  }) : stackNavigatorFactory = stackNavigatorFactory ?? _defaultStackNavigatorFactory;
 
   final BeagleRoute initialRoute;
   final ScreenBuilder screenBuilder;

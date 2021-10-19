@@ -73,7 +73,7 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   }
 
   @override
-  List<Route> get initialPages => navigator.initialPages;
+  List<Route<dynamic>> get initialPages => navigator.initialPages;
 
   @override
   BeagleRoute get initialRoute => navigator.initialRoute;
