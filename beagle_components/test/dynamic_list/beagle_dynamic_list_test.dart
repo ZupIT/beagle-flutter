@@ -26,10 +26,10 @@ import '../service_locator/service_locator.dart';
 class MockBuildContext extends Mock implements BuildContext {}
 
 Widget createWidget({
-  final Function? onInit,
-  final BeagleDynamicListDirection? direction,
   final List<dynamic>? dataSource,
   final List<TemplateManagerItem>? templates,
+  final Function? onInit,
+  final BeagleDynamicListDirection? direction,
   final bool? isScrollIndicatorVisible,
   final int? scrollEndThreshold,
   final String? iteratorName,
@@ -45,8 +45,8 @@ Widget createWidget({
       key: Key('dynamicList'),
       onInit: onInit,
       direction: direction,
-      dataSource: dataSource,
-      templates: templates,
+      dataSource: dataSource ?? [],
+      templates: templates ?? [],
       isScrollIndicatorVisible: isScrollIndicatorVisible,
       scrollEndThreshold: scrollEndThreshold,
       iteratorName: iteratorName,
@@ -68,8 +68,7 @@ void main() {
 
   group('Given a BeagleDynamicList', () {
     group('When passing parameter spanCount with number one', () {
-      testWidgets('Then it should have a ListView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a ListView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 1));
 
         _assertHasListViewAndNotHasGridView();
@@ -77,8 +76,7 @@ void main() {
     });
 
     group('When passing parameter spanCount with number zero', () {
-      testWidgets('Then it should have a ListView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a ListView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 0));
 
         _assertHasListViewAndNotHasGridView();
@@ -86,8 +84,7 @@ void main() {
     });
 
     group('When passing parameter spanCount with null', () {
-      testWidgets('Then it should have a ListView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a ListView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: null));
 
         _assertHasListViewAndNotHasGridView();
@@ -95,8 +92,7 @@ void main() {
     });
 
     group('When passing parameter spanCount with number two', () {
-      testWidgets('Then it should have a GridView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a GridView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 2));
 
         _assertHasGridViewAndNotHasListView();
@@ -104,8 +100,7 @@ void main() {
     });
 
     group('When passing parameter onInit', () {
-      testWidgets('Then it should call function onInit ',
-          (WidgetTester tester) async {
+      testWidgets('Then it should call function onInit ', (WidgetTester tester) async {
         var runCount = 0;
 
         await tester.pumpWidget(createWidget(onInit: () {
@@ -117,8 +112,7 @@ void main() {
     });
 
     group('When passing parameter direction with value horizontal', () {
-      testWidgets('Then it should have a ListView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a ListView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           direction: BeagleDynamicListDirection.HORIZONTAL,
           spanCount: null,
@@ -128,8 +122,7 @@ void main() {
         _assertCorrectDirection(tester, Axis.horizontal);
       });
 
-      testWidgets('Then it should have a GridView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a GridView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           direction: BeagleDynamicListDirection.HORIZONTAL,
           spanCount: 2,
@@ -141,8 +134,7 @@ void main() {
     });
 
     group('When passing parameter direction with value vertical', () {
-      testWidgets('Then it should have a ListView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a ListView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           direction: BeagleDynamicListDirection.VERTICAL,
         ));
@@ -151,8 +143,7 @@ void main() {
         _assertCorrectDirection(tester, Axis.vertical);
       });
 
-      testWidgets('Then it should have a GridView component',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a GridView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           direction: BeagleDynamicListDirection.VERTICAL,
           spanCount: 2,
@@ -164,8 +155,7 @@ void main() {
     });
 
     group('When passing parameter children', () {
-      testWidgets('Then it should have a ListView component with widgets',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a ListView component with widgets', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           children: _getChildren(),
         ));
@@ -174,8 +164,7 @@ void main() {
         _assertHasChildren(tester);
       });
 
-      testWidgets('Then it should have a GridView component with widgets',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a GridView component with widgets', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
           spanCount: 2,
           children: _getChildren(),
@@ -186,11 +175,8 @@ void main() {
       });
     });
 
-    group(
-        'When passing parameter onScrollEnd, scrollEndThreshold and call callback didUpdateWidget',
-        () {
-      testWidgets('Then it should have called onScrollEnd',
-          (WidgetTester tester) async {
+    group('When passing parameter onScrollEnd, scrollEndThreshold and call callback didUpdateWidget', () {
+      testWidgets('Then it should have called onScrollEnd', (WidgetTester tester) async {
         var runCount = 0;
 
         await tester.pumpWidget(createWidget(
@@ -211,11 +197,8 @@ void main() {
       });
     });
 
-    group(
-        'When passing parameter onScrollEnd, scrollEndThreshold and scroll screen',
-        () {
-      testWidgets('Then it should have called onScrollEnd',
-          (WidgetTester tester) async {
+    group('When passing parameter onScrollEnd, scrollEndThreshold and scroll screen', () {
+      testWidgets('Then it should have called onScrollEnd', (WidgetTester tester) async {
         var runCount = 0;
 
         final widget = createWidget(
@@ -233,8 +216,7 @@ void main() {
         expect(runCount, 1);
       });
 
-      testWidgets('Then it should have called onScrollEnd in GridView',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have called onScrollEnd in GridView', (WidgetTester tester) async {
         var runCount = 0;
 
         final widget = createWidget(
@@ -254,10 +236,8 @@ void main() {
       });
     });
 
-    group('When passing parameter isScrollIndicatorVisible with value true',
-        () {
-      testWidgets('Then it should have a Scrollbar component',
-          (WidgetTester tester) async {
+    group('When passing parameter isScrollIndicatorVisible with value true', () {
+      testWidgets('Then it should have a Scrollbar component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(isScrollIndicatorVisible: true));
 
         final scrollbarFinder = find.byType(Scrollbar);
@@ -265,10 +245,8 @@ void main() {
       });
     });
 
-    group('When passing parameter isScrollIndicatorVisible with value null',
-        () {
-      testWidgets('Then it should not have a Scrollbar component',
-          (WidgetTester tester) async {
+    group('When passing parameter isScrollIndicatorVisible with value null', () {
+      testWidgets('Then it should not have a Scrollbar component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(isScrollIndicatorVisible: null));
 
         final scrollbarFinder = find.byType(Scrollbar);
@@ -277,8 +255,7 @@ void main() {
     });
 
     group('When passing dataSource', () {
-      testWidgets('Then it should call doTemplateRender with correct parameter',
-          (WidgetTester tester) async {
+      testWidgets('Then it should call doTemplateRender with correct parameter', (WidgetTester tester) async {
         final templates = _getTemplates();
         final dataSource = _getDataSource();
         final providerMock = BeagleWidgetStateProviderMock();
@@ -304,8 +281,7 @@ void main() {
             componentManager: captureAny(named: 'componentManager'),
             mode: captureAny(named: 'mode'))).captured;
 
-        final templateManagerActual =
-            (capturedValues[0] as TemplateManager).toJson();
+        final templateManagerActual = (capturedValues[0] as TemplateManager).toJson();
         final templateManagerExpected = TemplateManager(
           defaultTemplate: _getTemplates().first.view,
           templates: [_getTemplates()[1]],
@@ -315,10 +291,8 @@ void main() {
 
         final anchorCaptured = capturedValues[1];
         expect(anchorCaptured, 'dynamicList');
-        final beagleDataContextListActual =
-            capturedValues[2] as List<List<BeagleDataContext>>;
-        final beagleDataContextActual =
-            beagleDataContextListActual[0][0].toJson();
+        final beagleDataContextListActual = capturedValues[2] as List<List<BeagleDataContext>>;
+        final beagleDataContextActual = beagleDataContextListActual[0][0].toJson();
         final beagleDataContextExpected = BeagleDataContext(
           id: 'name',
           value: {
@@ -334,8 +308,7 @@ void main() {
     });
 
     group('When doTemplateRender', () {
-      testWidgets('Then it should generate id correct',
-          (WidgetTester tester) async {
+      testWidgets('Then it should generate id correct', (WidgetTester tester) async {
         final templates = _getTemplates();
         final dataSource = _getDataSource();
         final providerMock = BeagleWidgetStateProviderMock();
@@ -361,11 +334,9 @@ void main() {
             componentManager: captureAny(named: 'componentManager'),
             mode: captureAny(named: 'mode'))).captured;
 
-        final componentManager =
-            capturedValues[3] as BeagleUIElement Function(BeagleUIElement, int);
+        final componentManager = capturedValues[3] as BeagleUIElement Function(BeagleUIElement, int);
 
-        final beagleUiElementActual =
-            componentManager(_getBeagleUiElement(), 0);
+        final beagleUiElementActual = componentManager(_getBeagleUiElement(), 0);
         expect(beagleUiElementActual.properties, _getPropertiesExpected());
       });
     });
@@ -401,16 +372,8 @@ Map<String, dynamic> _getPropertiesExpected() {
     "children": [
       {"_beagleComponent_": "beagle:text", "id": "dynamicList:0:0"},
       {"_beagleComponent_": "beagle:text", "id": "dynamicList:1:0"},
-      {
-        "_beagleComponent_": "beagle:listview",
-        "id": "dynamicList:2:0",
-        "__suffix__": ":0"
-      },
-      {
-        "_beagleComponent_": "beagle:gridview",
-        "id": "dynamicList:3:0",
-        "__suffix__": ":0"
-      },
+      {"_beagleComponent_": "beagle:listview", "id": "dynamicList:2:0", "__suffix__": ":0"},
+      {"_beagleComponent_": "beagle:gridview", "id": "dynamicList:3:0", "__suffix__": ":0"},
       {"_beagleComponent_": "beagle:text", "id": "dynamicList:4:0"}
     ]
   };
@@ -507,5 +470,4 @@ class BeagleWidgetStateMock extends Mock implements BeagleWidgetState {
   }
 }
 
-class BeagleWidgetStateProviderMock extends Mock
-    implements BeagleWidgetStateProvider {}
+class BeagleWidgetStateProviderMock extends Mock implements BeagleWidgetStateProvider {}

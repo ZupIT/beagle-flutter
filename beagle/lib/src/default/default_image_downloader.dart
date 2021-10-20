@@ -21,18 +21,18 @@ import 'package:beagle/beagle.dart';
 class DefaultBeagleImageDownloader implements BeagleImageDownloader {
   DefaultBeagleImageDownloader({
     required this.httpClient,
+    // ignore: unnecessary_null_comparison
   }) : assert(httpClient != null);
 
-  final HttpClient? httpClient;
+  final HttpClient httpClient;
 
   @override
   Future<Uint8List> downloadImage(String url) async {
     final request = BeagleRequest(url);
-    final response = await httpClient!.sendRequest(request);
+    final response = await httpClient.sendRequest(request);
 
     if (response.status != HttpStatus.ok) {
-      throw BeagleImageDownloaderException(
-          statusCode: response.status, url: request.url);
+      throw BeagleImageDownloaderException(statusCode: response.status, url: request.url);
     }
 
     final bytes = response.bodyBytes;

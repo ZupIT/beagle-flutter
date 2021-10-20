@@ -19,19 +19,19 @@ import 'package:flutter/material.dart';
 class BeagleConfirm {
   static Future<void> showAlertDialog(
     BuildContext context, {
-    String? title,
-    String? message,
+    required String title,
+    required String message,
     String? labelOk,
-    Function? onPressOk,
     String? labelCancel,
+    Function? onPressOk,
     Function? onPressCancel,
   }) async {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title ?? ''),
-          content: Text(message ?? ''),
+          title: Text(title),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () {

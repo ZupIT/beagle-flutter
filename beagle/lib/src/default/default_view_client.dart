@@ -22,10 +22,7 @@ import 'package:flutter/widgets.dart';
 import 'dart:convert';
 
 class DefaultViewClient implements ViewClient {
-  DefaultViewClient(
-      {required this.httpClient,
-      required this.logger,
-      required this.urlBuilder});
+  DefaultViewClient({required this.httpClient, required this.logger, required this.urlBuilder});
 
   final HttpClient httpClient;
   final BeagleLogger logger;
@@ -49,9 +46,9 @@ class DefaultViewClient implements ViewClient {
   }
 
   @override
-  Future<BeagleUIElement?> fetch(RemoteView route) async {
+  Future<BeagleUIElement> fetch(RemoteView route) async {
     if (_preFetched[route.url] != null) {
-      final result = _preFetched[route.url];
+      final result = _preFetched[route.url] as BeagleUIElement;
       _preFetched.remove(route.url);
       return result;
     }

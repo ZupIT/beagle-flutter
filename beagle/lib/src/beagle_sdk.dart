@@ -25,75 +25,69 @@ class BeagleSdk {
   /// Starts the BeagleService. Only a single instance of this service is allowed.
   /// The parameters are all the attributes of the class BeagleService. Please check its
   /// documentation for more details.
-  static void init(
-      {
+  static void init({
+    /// Attribute responsible for informing Beagle about the current build status of the application.
+    BeagleEnvironment? environment,
 
-      /// Attribute responsible for informing Beagle about the current build status of the application.
-      BeagleEnvironment? environment,
+    /// Informs the base URL used in Beagle in the application.
+    String? baseUrl,
 
-      /// Informs the base URL used in Beagle in the application.
-      String? baseUrl,
+    /// Interface that provides client to beagle make the requests.
+    HttpClient? httpClient,
+    ViewClient? viewClient,
+    Map<String, ComponentBuilder>? components,
+    Map<String, ActionHandler>? actions,
+    NavigationController? defaultNavigationController,
+    Map<String, NavigationController> navigationControllers = const {},
 
-      /// Interface that provides client to beagle make the requests.
-      HttpClient? httpClient,
-      ViewClient? viewClient,
-      Map<String, ComponentBuilder>? components,
-      Map<String, ActionHandler>? actions,
-      NavigationController? defaultNavigationController,
-      Map<String, NavigationController> navigationControllers = const {},
+    /// [BeagleDesignSystem] interface that provides design system to beagle components.
+    BeagleDesignSystem? designSystem,
 
-      /// [BeagleDesignSystem] interface that provides design system to beagle components.
-      BeagleDesignSystem? designSystem,
+    /// [BeagleImageDownloader] interface that provides image resource from network.
+    BeagleImageDownloader? imageDownloader,
 
-      /// [BeagleImageDownloader] interface that provides image resource from network.
-      BeagleImageDownloader? imageDownloader,
-
-      /// [BeagleLogger] interface that provides logger to beagle use in application.
-      BeagleLogger? logger,
-      Map<String, Operation>? operations,
-      AnalyticsProvider? analyticsProvider,
-      bool? useBeagleHeaders}) {
+    /// [BeagleLogger] interface that provides logger to beagle use in application.
+    BeagleLogger? logger,
+    Map<String, Operation>? operations,
+    AnalyticsProvider? analyticsProvider,
+    bool? useBeagleHeaders,
+  }) {
     Yoga.init();
 
     baseUrl = baseUrl ?? "";
     final urlBuilder = UrlBuilder(baseUrl);
     httpClient = httpClient ?? const DefaultHttpClient();
     logger = logger ?? DefaultEmptyLogger();
-    viewClient = viewClient ??
-        DefaultViewClient(
-            httpClient: httpClient, logger: logger, urlBuilder: urlBuilder);
+    viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: urlBuilder);
     environment = environment ?? BeagleEnvironment.debug;
     designSystem = designSystem ?? DefaultEmptyDesignSystem();
-    defaultNavigationController =
-        defaultNavigationController ?? DefaultNavigationController(logger);
-    imageDownloader =
-        imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
+    defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
+    imageDownloader = imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
     operations = operations ?? {};
 
-    actions =
-        actions == null ? defaultActions : {...defaultActions, ...actions};
+    actions = actions == null ? defaultActions : {...defaultActions, ...actions};
 
-    Map<String, ComponentBuilder> lowercaseComponents = (components ?? {})
-        .map((key, value) => MapEntry(key.toLowerCase(), value));
+    Map<String, ComponentBuilder> lowercaseComponents =
+        (components ?? {}).map((key, value) => MapEntry(key.toLowerCase(), value));
 
-    Map<String, ActionHandler> lowercaseActions =
-        actions.map((key, value) => MapEntry(key.toLowerCase(), value));
+    Map<String, ActionHandler> lowercaseActions = actions.map((key, value) => MapEntry(key.toLowerCase(), value));
 
     setupServiceLocator(
-        baseUrl: baseUrl,
-        httpClient: httpClient,
-        viewClient: viewClient,
-        environment: environment,
-        components: lowercaseComponents,
-        actions: lowercaseActions,
-        defaultNavigationController: defaultNavigationController,
-        navigationControllers: navigationControllers,
-        designSystem: designSystem,
-        imageDownloader: imageDownloader,
-        logger: logger,
-        operations: operations,
-        analyticsProvider: analyticsProvider,
-        useBeagleHeaders: useBeagleHeaders ?? false);
+      baseUrl: baseUrl,
+      httpClient: httpClient,
+      viewClient: viewClient,
+      environment: environment,
+      components: lowercaseComponents,
+      actions: lowercaseActions,
+      defaultNavigationController: defaultNavigationController,
+      navigationControllers: navigationControllers,
+      designSystem: designSystem,
+      imageDownloader: imageDownloader,
+      logger: logger,
+      operations: operations,
+      analyticsProvider: analyticsProvider,
+      useBeagleHeaders: useBeagleHeaders ?? false,
+    );
   }
 
   static void openScreen({

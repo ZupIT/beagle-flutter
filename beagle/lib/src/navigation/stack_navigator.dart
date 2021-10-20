@@ -36,16 +36,14 @@ class StackNavigator extends StatelessWidget {
   final BeagleLogger logger;
   final List<String> _history = [];
 
-  Route<dynamic> _buildRoute(
-      UnsafeBeagleWidget beagleWidget, String routeName) {
+  Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
       builder: (context) => screenBuilder(beagleWidget, context),
       settings: RouteSettings(name: routeName),
     );
   }
 
-  List<Route<dynamic>> _onGenerateInitialRoutes(
-      NavigatorState state, String routeName) {
+  List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
     final beagleWidget = UnsafeBeagleWidget(rootNavigator);
     _fetchContentAndUpdateView(
       view: beagleWidget.view,
@@ -59,9 +57,7 @@ class StackNavigator extends StatelessWidget {
   }
 
   String _getRouteId(BeagleRoute route) {
-    return route is LocalView
-        ? route.screen.getId()
-        : (route as RemoteView).url;
+    return route is LocalView ? route.screen.getId() : (route as RemoteView).url;
   }
 
   Future<void> _fetchContentAndUpdateView({
@@ -71,10 +67,9 @@ class StackNavigator extends StatelessWidget {
     required Function completeNavigation,
   }) async {
     try {
-      controller.onLoading(
-          view: view, context: context, completeNavigation: completeNavigation);
+      controller.onLoading(view: view, context: context, completeNavigation: completeNavigation);
       final screen = await viewClient.fetch(route);
-      controller.onSuccess(view: view, context: context, screen: screen!);
+      controller.onSuccess(view: view, context: context, screen: screen);
       completeNavigation();
     } catch (error, stackTrace) {
       Future<void> retry() {
@@ -99,11 +94,9 @@ class StackNavigator extends StatelessWidget {
 
   void popToView(String routeIdentifier, BuildContext context) {
     if (!_history.contains(routeIdentifier)) {
-      return logger.error(
-          "Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
+      return logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
-    Navigator.popUntil(
-        context, (route) => route.settings.name == routeIdentifier);
+    Navigator.popUntil(context, (route) => route.settings.name == routeIdentifier);
     while (_history.last != routeIdentifier) {
       _history.removeLast();
     }
@@ -131,8 +124,7 @@ class StackNavigator extends StatelessWidget {
     }
 
     if (route is LocalView) {
-      controller.onSuccess(
-          view: beagleWidget.view, context: context, screen: route.screen);
+      controller.onSuccess(view: beagleWidget.view, context: context, screen: route.screen);
       complete();
     } else {
       await _fetchContentAndUpdateView(

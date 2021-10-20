@@ -28,8 +28,8 @@ class BeagleDynamicList extends StatefulWidget {
     Key? key,
     this.onInit,
     this.direction,
-    this.dataSource,
-    this.templates,
+    required this.dataSource,
+    required this.templates,
     this.isScrollIndicatorVisible,
     this.scrollEndThreshold,
     this.iteratorName,
@@ -48,10 +48,10 @@ class BeagleDynamicList extends StatefulWidget {
   final BeagleDynamicListDirection? direction;
 
   /// dataSource it's an expression that points to a list of values used to populate the Widget.
-  final List<dynamic>? dataSource;
+  final List<dynamic> dataSource;
 
   /// dataSource it's an expression that points to a list of values used to populate the Widget.
-  final List<TemplateManagerItem>? templates;
+  final List<TemplateManagerItem> templates;
 
   /// this attribute enables or disables the scroll bar.
   final bool? isScrollIndicatorVisible;
@@ -82,8 +82,7 @@ class BeagleDynamicList extends StatefulWidget {
   _BeagleDynamicList createState() => _BeagleDynamicList();
 }
 
-class _BeagleDynamicList extends State<BeagleDynamicList>
-    with AfterLayoutMixin<BeagleDynamicList> {
+class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<BeagleDynamicList> {
   ScrollController? _scrollController;
   bool? _isExecutedActions;
 
@@ -91,7 +90,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   void didUpdateWidget(covariant BeagleDynamicList oldWidget) {
     super.didUpdateWidget(oldWidget);
     _doTemplateRender();
-
     _tryExecuteOnScrollEndActions();
   }
 
@@ -106,7 +104,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     super.initState();
     _scrollController = ScrollController();
     _isExecutedActions = false;
-
     _addListenerToScrollController();
   }
 
@@ -115,7 +112,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     if (isScrollIndicatorEnabled()) {
       return _getScrollBar();
     }
-
     return _getDynamicList();
   }
 
@@ -164,7 +160,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     final templateManager = _getTemplateManager();
     final contexts = _getListBeagleDataContext();
     final anchor = _getAnchor();
-
     final beagleWidgetState = widget.beagleWidgetStateProvider?.of(context);
 
     beagleWidgetState?.getView().getRenderer().doTemplateRender(
@@ -176,16 +171,13 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   }
 
   TemplateManagerItem? _getDefaultTemplate() {
-    return widget.templates?.firstWhereOrNull(
-        (element) => element.condition == null || element.condition!.isEmpty);
+    return widget.templates.firstWhereOrNull((element) => element.condition == null || element.condition!.isEmpty);
   }
 
-  List<TemplateManagerItem> _getTemplatesWithoutDefault(
-      TemplateManagerItem? templateDefault) {
+  List<TemplateManagerItem> _getTemplatesWithoutDefault(TemplateManagerItem? templateDefault) {
     var templates = widget.templates;
-    if (templates != null && templateDefault != null)
-      templates.remove(templateDefault);
-    return templates ?? [];
+    if (templateDefault != null) templates.remove(templateDefault);
+    return templates;
   }
 
   TemplateManager _getTemplateManager() {
@@ -199,52 +191,42 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
 
   List<List<BeagleDataContext>> _getListBeagleDataContext() {
     return widget.dataSource
-            ?.map((item) => [
-                  BeagleDataContext(
-                    id: widget.iteratorName ?? 'item',
-                    value: item,
-                  )
-                ])
-            .toList() ??
-        [];
+        .map((item) => [
+              BeagleDataContext(
+                id: widget.iteratorName ?? 'item',
+                value: item,
+              )
+            ])
+        .toList();
   }
 
   String _getAnchor() {
-    final ValueKey<String> key =
-        (widget.key != null && widget.key! is ValueKey<String>)
-            ? context.widget.key! as ValueKey<String>
-            : ValueKey<String>('');
+    final ValueKey<String> key = (widget.key != null && widget.key! is ValueKey<String>)
+        ? context.widget.key! as ValueKey<String>
+        : ValueKey<String>('');
     return key.value;
   }
 
   String _getIterationKey(int index) {
     String? valueInIteratorNameInDataSource;
     try {
-      final value = widget.dataSource?[index][widget.iteratorName];
+      final value = widget.dataSource[index][widget.iteratorName];
       valueInIteratorNameInDataSource = value ? value : null;
     } catch (_) {}
-    final hasKey = widget.iteratorName != null &&
-        (widget.iteratorName?.isNotEmpty ?? true);
+    final hasKey = widget.iteratorName != null && (widget.iteratorName?.isNotEmpty ?? true);
 
-    return hasKey && valueInIteratorNameInDataSource != null
-        ? valueInIteratorNameInDataSource
-        : index.toString();
+    return hasKey && valueInIteratorNameInDataSource != null ? valueInIteratorNameInDataSource : index.toString();
   }
 
   String _getBaseId(String componentId, int componentIndex, String suffix) {
-    return componentId.isNotEmpty
-        ? "$componentId$suffix"
-        : "${_getAnchor()}:$componentIndex";
+    return componentId.isNotEmpty ? "$componentId$suffix" : "${_getAnchor()}:$componentIndex";
   }
 
   BeagleUIElement _iterateComponent(BeagleUIElement element, int indexElement) {
     if (element.hasChildren()) {
-      for (var indexComponent = 0;
-          indexComponent < element.getChildren().length;
-          indexComponent++) {
+      for (var indexComponent = 0; indexComponent < element.getChildren().length; indexComponent++) {
         final component = element.getChildren()[indexComponent];
-        _changeIdAndAddSuffixIfNecessary(
-            component, indexElement, indexComponent);
+        _changeIdAndAddSuffixIfNecessary(component, indexElement, indexComponent);
 
         _iterateComponent(component, indexElement);
       }
@@ -253,8 +235,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
     return element;
   }
 
-  void _changeIdAndAddSuffixIfNecessary(
-      BeagleUIElement component, int indexElement, int indexComponent) {
+  void _changeIdAndAddSuffixIfNecessary(BeagleUIElement component, int indexElement, int indexComponent) {
     final iterationKey = _getIterationKey(indexElement);
     final suffix = widget.suffix ?? '';
     final baseId = _getBaseId(
@@ -262,8 +243,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
       indexComponent,
       suffix,
     );
-    final hasSuffix = ['beagle:listview', 'beagle:gridview']
-        .contains(component.getType().toLowerCase());
+    final hasSuffix = ['beagle:listview', 'beagle:gridview'].contains(component.getType().toLowerCase());
 
     component.setId("$baseId:$iterationKey");
 
@@ -277,12 +257,11 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   }
 
   bool _isDataSourceNullOrEmpty() {
-    return widget.dataSource == null || (widget.dataSource?.isEmpty ?? true);
+    return widget.dataSource.isEmpty;
   }
 
   void _checkIfNeedToCallScrollEndActions() {
-    if (!(_isExecutedActions ?? false) &&
-        _getPercentageScrolled() >= (widget.scrollEndThreshold ?? 0)) {
+    if (!(_isExecutedActions ?? false) && _getPercentageScrolled() >= (widget.scrollEndThreshold ?? 0)) {
       _scrollController?.dispose();
       _isExecutedActions = true;
       if (widget.onScrollEnd != null) widget.onScrollEnd!();
@@ -327,7 +306,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList>
   }
 
   bool isScrollIndicatorEnabled() {
-    return widget.isScrollIndicatorVisible != null &&
-        (widget.isScrollIndicatorVisible ?? true);
+    return widget.isScrollIndicatorVisible != null && (widget.isScrollIndicatorVisible ?? true);
   }
 }

@@ -42,9 +42,7 @@ void main() {
     final beagleView = BeagleViewJS(jsEngineMock);
 
     group('When destroy is called', () {
-      test(
-          'Then should remove all view listeners for this view id at BeagleJSEngine',
-          () {
+      test('Then should remove all view listeners for this view id at BeagleJSEngine', () {
         beagleView.destroy();
 
         verify(() => jsEngineMock.removeViewListeners(createdViewId));
@@ -59,8 +57,7 @@ void main() {
         };
 
         when(
-          () => jsEngineMock.evaluateJavascriptCode(
-              "global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult(json.encode(properties), null),
         );
@@ -70,14 +67,12 @@ void main() {
 
         expect(result?.properties, properties);
         expect(result?.getType(), expectedBeagleUIElement.getType());
-        expect(result?.getAttributeValue('text'),
-            expectedBeagleUIElement.getAttributeValue('text'));
+        expect(result?.getAttributeValue('text'), expectedBeagleUIElement.getAttributeValue('text'));
       });
 
       test('Then it should return null if no tree exists', () {
         when(
-          () => jsEngineMock.evaluateJavascriptCode(
-              "global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult("null", null),
         );
@@ -87,8 +82,7 @@ void main() {
 
       test('Then it should return null if tree is invalid', () {
         when(
-          () => jsEngineMock.evaluateJavascriptCode(
-              "global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult("{}", null),
         );
@@ -98,34 +92,24 @@ void main() {
     });
 
     group('When onChange is called', () {
-      test('Then should register the view update listener at BeagleJSEngine',
-          () {
+      test('Then should register the view update listener at BeagleJSEngine', () {
         void onUpdateListener(uiElement) {}
         when(() => beagleView.onChange(any())).thenReturn(() {});
         beagleView.onChange(onUpdateListener);
 
-        verify(
-            () => jsEngineMock.onViewUpdate(createdViewId, onUpdateListener));
+        verify(() => jsEngineMock.onViewUpdate(createdViewId, onUpdateListener));
       });
     });
 
     group('When onAction is called', () {
-      test('Then should register the view action listener at BeagleJSEngine',
-          () {
+      test('Then should register the view action listener at BeagleJSEngine', () {
         registerFallbackValue<
-                void Function(
-                    {BeagleAction? action,
-                    BeagleUIElement? element,
-                    BeagleView? view})>(
-            (
-                    {BeagleAction? action,
-                    BeagleUIElement? element,
-                    BeagleView? view}) =>
-                {});
-        void onActionListener(
-            {BeagleAction? action,
-            BeagleView? view,
-            BeagleUIElement? element}) {}
+            void Function({
+          BeagleAction? action,
+          BeagleUIElement? element,
+          BeagleView? view,
+        })>(({BeagleAction? action, BeagleUIElement? element, BeagleView? view}) => {});
+        void onActionListener({BeagleAction? action, BeagleView? view, BeagleUIElement? element}) {}
         when(() => beagleView.onAction(any())).thenReturn(() {});
         beagleView.onAction(onActionListener);
 

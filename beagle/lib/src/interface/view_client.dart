@@ -17,6 +17,7 @@
 import 'package:beagle/beagle.dart';
 
 abstract class ViewClient {
-  Future<BeagleUIElement?> fetch(RemoteView route);
+  Future<BeagleUIElement> fetch(RemoteView route);
+
   void preFetch(RemoteView route);
 }

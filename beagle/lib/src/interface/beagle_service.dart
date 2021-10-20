@@ -19,41 +19,48 @@ import 'package:flutter/widgets.dart';
 
 ///TODO: NEEDS ADD DOCUMENTATION
 typedef ComponentBuilder = Widget Function(
-    BeagleUIElement element, List<Widget> children, BeagleView view);
+  BeagleUIElement element,
+  List<Widget> children,
+  BeagleView view,
+);
 
 ///TODO: NEEDS ADD DOCUMENTATION
-typedef ActionHandler = void Function(BuildContext context,
-    {BeagleAction? action, BeagleView? view, BeagleUIElement? element});
+typedef ActionHandler = void Function({
+  required BeagleAction action,
+  required BeagleView view,
+  required BeagleUIElement element,
+  required BuildContext context,
+});
 
 typedef Operation = void Function(List<dynamic> args);
 
 abstract class BeagleService {
   /// URL to the backend providing the views (JSON) for Beagle.
-  String? baseUrl;
+  late String baseUrl;
 
   /// Custom client to make HTTP requests. You can use this to implement your own HTTP client,
   /// calculating your own headers, cookies, response transformation, etc. The client provided
   /// here must implement the HttpClient interface. By default, the DefaultHttpClient will be
   /// used.
-  HttpClient? httpClient;
+  late HttpClient httpClient;
 
-  ViewClient? viewClient;
+  late ViewClient viewClient;
 
   /// The map of components to be used when rendering a view. The key must be the
   /// `_beagleComponent_` identifier and the value must be a ComponentBuilder, which is a function
   /// that transforms a BeagleUIElement into a Widget. The key must always start with `beagle:` or
   /// `custom:`.
-  Map<String, ComponentBuilder>? components;
+  late Map<String, ComponentBuilder> components;
 
   /// The map of custom actions. The key must be the `_beagleAction_` identifier and the value
   /// must be the action handler. The key must always start with `beagle:` or `custom:`.
-  Map<String, ActionHandler>? actions;
+  late Map<String, ActionHandler> actions;
 
   /// Sets the default navigation controller.
-  NavigationController? defaultNavigationController;
+  late NavigationController defaultNavigationController;
 
   /// Controls the behavior of the navigator when handling events like loading, error and success.
-  Map<String, NavigationController>? navigationControllers;
+  late Map<String, NavigationController> navigationControllers;
 
   /*
    * The map of custom operations that can be used to extend the capability of the Beagle expressions and are called like functions, 
@@ -63,7 +70,7 @@ abstract class BeagleService {
    * it also must contain at least one letter or _.
    * Note: If you create custom operations using the same name of a default from Beagle, the default will be overwritten by the custom one
    */
-  Map<String, Operation>? operations;
+  late Map<String, Operation> operations;
 
   // todo:
   /*Analytics analytics;

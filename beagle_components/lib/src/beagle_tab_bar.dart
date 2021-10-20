@@ -25,14 +25,14 @@ class BeagleTabBar extends StatefulWidget {
 
   const BeagleTabBar({
     Key? key,
-    this.items,
+    required this.items,
     this.currentTab,
     this.onTabSelection,
   }) : super(key: key);
 
   /// List of tabs that will be displayed. Note that the number of tabs of a TabView is final and cannot be changed
   /// after the component has initialized.
-  final List<TabBarItem>? items;
+  final List<TabBarItem> items;
 
   /// Currently selected Tab.
   final int? currentTab;
@@ -44,21 +44,19 @@ class BeagleTabBar extends StatefulWidget {
   _BeagleTabBarState createState() => _BeagleTabBarState();
 }
 
-class _BeagleTabBarState extends State<BeagleTabBar>
-    with TickerProviderStateMixin {
+class _BeagleTabBarState extends State<BeagleTabBar> with TickerProviderStateMixin {
   late TabController _tabController;
-  static final imageStyle = BeagleStyle(
-      size: BeagleSize(
-          height:
-              UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL)));
+  static final imageStyle =
+      BeagleStyle(size: BeagleSize(height: UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL)));
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
-        initialIndex: widget.currentTab ?? 0,
-        length: widget.items == null ? 0 : (widget.items ?? []).length,
-        vsync: this);
+      initialIndex: widget.currentTab ?? 0,
+      length: widget.items.length,
+      vsync: this,
+    );
   }
 
   @override
@@ -83,23 +81,20 @@ class _BeagleTabBarState extends State<BeagleTabBar>
     return Container(
         // TODO: check if its viable to maintain this
         color: Theme.of(context).primaryColor,
-        child: TabBar(
-            controller: _tabController,
-            onTap: widget.onTabSelection,
-            tabs: buildTabs()));
+        child: TabBar(controller: _tabController, onTap: widget.onTabSelection, tabs: buildTabs()));
   }
 
   List<Widget> buildTabs() {
-    return (widget.items ?? [])
+    return widget.items
         .map((tabBarItem) => Tab(
-            text: tabBarItem.title,
-            icon: tabBarItem.icon == null
-                ? null
-                : BeagleFlexWidget(
-                    children: tabBarItem.icon != null
-                        ? [BeagleImage(path: tabBarItem.icon!)]
-                        : [],
-                    style: imageStyle)))
+              text: tabBarItem.title,
+              icon: tabBarItem.icon == null
+                  ? null
+                  : BeagleFlexWidget(
+                      children: tabBarItem.icon != null ? [BeagleImage(path: tabBarItem.icon!)] : [],
+                      style: imageStyle,
+                    ),
+            ))
         .toList();
   }
 }
@@ -108,8 +103,7 @@ class TabBarItem {
   TabBarItem(this.title, this.icon);
   TabBarItem.fromJson(Map<String, dynamic> json)
       : title = BeagleCaster.castToString(json['title']),
-        icon =
-            json['icon'] != null ? LocalImagePath.fromJson(json['icon']) : null;
+        icon = json['icon'] != null ? LocalImagePath.fromJson(json['icon']) : null;
 
   final String title;
   final LocalImagePath? icon;

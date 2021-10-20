@@ -24,12 +24,12 @@ import 'package:flutter/widgets.dart';
 class BeagleImage extends StatefulWidget {
   const BeagleImage({
     Key? key,
-    this.path,
+    required this.path,
     this.mode,
   }) : super(key: key);
 
   /// Defines the location of the image resource.
-  final ImagePath? path;
+  final ImagePath path;
 
   /// Defines how the declared image will fit the view.
   final ImageContentMode? mode;
@@ -143,8 +143,7 @@ abstract class ImagePath {
 
   factory ImagePath.local(String mobileId) = LocalImagePath;
 
-  factory ImagePath.remote(String url, LocalImagePath placeholder) =
-      RemoteImagePath;
+  factory ImagePath.remote(String url, LocalImagePath placeholder) = RemoteImagePath;
 
   factory ImagePath.fromJson(Map<String, dynamic> json) {
     if (json[_jsonBeagleImagePathKey] == 'local') {
@@ -173,9 +172,7 @@ class RemoteImagePath extends ImagePath {
 
   RemoteImagePath.fromJson(Map<String, dynamic> json)
       : url = json[_jsonUrlKey],
-        placeholder = json[_jsonPlaceholderKey] != null
-            ? LocalImagePath.fromJson(json[_jsonPlaceholderKey])
-            : null,
+        placeholder = json[_jsonPlaceholderKey] != null ? LocalImagePath.fromJson(json[_jsonPlaceholderKey]) : null,
         super._();
 
   final String url;

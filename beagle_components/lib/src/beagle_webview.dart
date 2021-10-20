@@ -23,11 +23,11 @@ class BeagleWebView extends StatefulWidget {
   /// Creates a new web view.
   const BeagleWebView({
     Key? key,
-    this.url,
+    required this.url,
   }) : super(key: key);
 
   /// The initial URL to load.
-  final String? url;
+  final String url;
 
   @override
   _BeagleWebView createState() => _BeagleWebView();
@@ -40,7 +40,7 @@ class _BeagleWebView extends State<BeagleWebView> {
   void didUpdateWidget(covariant BeagleWebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.url != oldWidget.url) {
-      _controller.loadUrl(widget.url ?? '');
+      _controller.loadUrl(widget.url);
     }
   }
 
@@ -52,8 +52,7 @@ class _BeagleWebView extends State<BeagleWebView> {
       onWebResourceError: _handleError,
       onPageStarted: _handleLoading,
       onPageFinished: _handleSuccess,
-      onWebViewCreated: (WebViewController webViewController) =>
-          _controller = webViewController,
+      onWebViewCreated: (WebViewController webViewController) => _controller = webViewController,
     );
   }
 

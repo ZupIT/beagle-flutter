@@ -19,62 +19,57 @@ import 'package:beagle/src/action/beagle_confirm.dart';
 
 BeagleRoute _getRoute(BeagleAction action) {
   final json = action.getAttributeValue("route");
-  return RemoteView.isRemoteView(json)
-      ? RemoteView.fromJson(json)
-      : LocalView.fromJson(json);
+  return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
 }
 
 final Map<String, ActionHandler> defaultActions = {
-  'beagle:confirm': (context, {action, view, element}) {
+  'beagle:confirm': ({required action, required element, required view, required context}) {
     BeagleConfirm.showAlertDialog(
       context,
-      title: action?.getAttributeValue('title'),
-      message: action?.getAttributeValue('message'),
-      labelOk: action?.getAttributeValue('labelOk'),
-      onPressOk: action?.getAttributeValue('onPressOk'),
-      labelCancel: action?.getAttributeValue('labelCancel'),
-      onPressCancel: action?.getAttributeValue('onPressCancel'),
+      title: action.getAttributeValue('title'),
+      message: action.getAttributeValue('message'),
+      labelOk: action.getAttributeValue('labelOk'),
+      onPressOk: action.getAttributeValue('onPressOk'),
+      labelCancel: action.getAttributeValue('labelCancel'),
+      onPressCancel: action.getAttributeValue('onPressCancel'),
     );
   },
-  'beagle:alert': (context, {action, view, element}) {
+  'beagle:alert': ({required action, required element, required view, required context}) {
     BeagleAlert.showAlertDialog(
       context,
-      message: action?.getAttributeValue('message'),
-      labelOk: action?.getAttributeValue('labelOk'),
-      onPressOk: action?.getAttributeValue('onPressOk'),
-      title: action?.getAttributeValue('title', 'Alert'),
+      message: action.getAttributeValue('message'),
+      labelOk: action.getAttributeValue('labelOk'),
+      onPressOk: action.getAttributeValue('onPressOk'),
+      title: action.getAttributeValue('title', 'Alert'),
     );
   },
   // Native navigation
-  'beagle:openNativeRoute': (context, {action, view, element}) {
-    BeagleOpenNativeRoute()
-        .navigate(context, action?.getAttributeValue('route'));
+  'beagle:openNativeRoute': ({required action, required element, required view, required context}) {
+    BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'));
   },
-  'beagle:openExternalURL': (context, {action, view, element}) {
-    BeagleOpenExternalUrl.launchURL(action?.getAttributeValue('url'));
+  'beagle:openExternalURL': ({required action, required element, required view, required context}) {
+    BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
   },
   // Beagle Navigation
-  'beagle:pushView': (context, {action, view, element}) {
-    view?.getNavigator()?.pushView(_getRoute(action!), context);
+  'beagle:pushView': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.pushView(_getRoute(action), context);
   },
-  'beagle:popView': (context, {action, view, element}) {
-    view?.getNavigator()?.popView(context);
+  'beagle:popView': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.popView(context);
   },
-  'beagle:popToView': (context, {action, view, element}) {
-    view
-        ?.getNavigator()
-        ?.popToView(action?.getAttributeValue("route"), context);
+  'beagle:popToView': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.popToView(action.getAttributeValue("route"), context);
   },
-  'beagle:pushStack': (context, {action, view, element}) {
-    view?.getNavigator()?.pushStack(_getRoute(action!), context);
+  'beagle:pushStack': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.pushStack(_getRoute(action), context);
   },
-  'beagle:popStack': (context, {action, view, element}) {
-    view?.getNavigator()?.popStack(context);
+  'beagle:popStack': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.popStack(context);
   },
-  'beagle:resetStack': (context, {action, view, element}) {
-    view?.getNavigator()?.resetStack(_getRoute(action!), context);
+  'beagle:resetStack': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.resetStack(_getRoute(action), context);
   },
-  'beagle:resetApplication': (context, {action, view, element}) {
-    view?.getNavigator()?.resetApplication(_getRoute(action!), context);
+  'beagle:resetApplication': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.resetApplication(_getRoute(action), context);
   },
 };

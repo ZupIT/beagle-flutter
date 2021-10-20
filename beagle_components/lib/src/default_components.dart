@@ -52,15 +52,11 @@ ComponentBuilder beagleTextBuilder() {
   return (element, _, __) => BeagleText(
       key: element.getKey(),
       text: BeagleCaster.castToString(element.getAttributeValue('text')),
-      textColor: BeagleCaster.castToString(
-          element.getAttributeValue('textColor'),
-          defaultValue: null),
-      styleId: BeagleCaster.castToString(element.getAttributeValue('styleId'),
-          defaultValue: null),
+      textColor: BeagleCaster.castToString(element.getAttributeValue('textColor'), defaultValue: null),
+      styleId: BeagleCaster.castToString(element.getAttributeValue('styleId'), defaultValue: null),
       alignment: EnumUtils.fromString(
             TextAlignment.values,
-            BeagleCaster.castToString(element.getAttributeValue('alignment'),
-                defaultValue: null),
+            BeagleCaster.castToString(element.getAttributeValue('alignment'), defaultValue: null),
           ) ??
           TextAlignment.LEFT);
 }
@@ -68,8 +64,7 @@ ComponentBuilder beagleTextBuilder() {
 ComponentBuilder beagleContainerBuilder() {
   return (element, children, _) => BeagleContainer(
       key: element.getKey(),
-      onInit: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onInit')),
+      onInit: BeagleCaster.castToNullableFunction(element.getAttributeValue('onInit')),
       style: BeagleCaster.cast<BeagleStyle?>(element.getStyle(), null),
       children: BeagleCaster.castToList<Widget>(children, defaultValue: []));
 }
@@ -81,116 +76,76 @@ ComponentBuilder beagleScrollViewBuilder() {
         ScrollAxis.values,
         BeagleCaster.castToString(element.getAttributeValue('scrollDirection')),
       ),
-      scrollBarEnabled: BeagleCaster.castToBool(
-          element.getAttributeValue('scrollBarEnabled'),
-          defaultValue: true),
+      scrollBarEnabled: BeagleCaster.castToBool(element.getAttributeValue('scrollBarEnabled'), defaultValue: true),
       children: BeagleCaster.castToList<Widget>(children, defaultValue: []));
 }
 
 ComponentBuilder beagleListViewBuilder() {
   return (element, children, _) => BeagleDynamicList(
       key: element.getKey(),
-      onInit: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onInit')),
+      onInit: BeagleCaster.castToNullableFunction(element.getAttributeValue('onInit')),
       direction: EnumUtils.fromString(
         BeagleDynamicListDirection.values,
         element.getAttributeValue('direction'),
       ),
-      dataSource: BeagleCaster.castToList<dynamic>(
-          element.getAttributeValue('dataSource')),
-      templates: TemplateManagerItem.fromJsonList(
-          element.getAttributeValue('templates')),
-      isScrollIndicatorVisible: BeagleCaster.castToBool(
-          element.getAttributeValue('isScrollIndicatorVisible'),
-          defaultValue: null),
-      scrollEndThreshold: BeagleCaster.castToInt(
-          element.getAttributeValue('scrollEndThreshold'),
-          defaultValue: null),
-      iteratorName: BeagleCaster.castToString(
-          element.getAttributeValue('iteratorName'),
-          defaultValue: null),
-      identifierItem: BeagleCaster.castToString(
-          element.getAttributeValue('key'),
-          defaultValue: null),
-      onScrollEnd: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onScrollEnd')),
+      dataSource: BeagleCaster.castToList<dynamic>(element.getAttributeValue('dataSource')),
+      templates: TemplateManagerItem.fromJsonList(element.getAttributeValue('templates')),
+      isScrollIndicatorVisible:
+          BeagleCaster.castToBool(element.getAttributeValue('isScrollIndicatorVisible'), defaultValue: null),
+      scrollEndThreshold: BeagleCaster.castToInt(element.getAttributeValue('scrollEndThreshold'), defaultValue: null),
+      iteratorName: BeagleCaster.castToString(element.getAttributeValue('iteratorName'), defaultValue: null),
+      identifierItem: BeagleCaster.castToString(element.getAttributeValue('key'), defaultValue: null),
+      onScrollEnd: BeagleCaster.castToNullableFunction(element.getAttributeValue('onScrollEnd')),
       children: BeagleCaster.castToList<Widget>(children),
-      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'),
-          defaultValue: null),
+      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'), defaultValue: null),
       beagleWidgetStateProvider: BeagleWidgetStateProvider());
 }
 
 ComponentBuilder beagleGridViewBuilder() {
   return (element, children, _) => BeagleDynamicList(
       key: element.getKey(),
-      onInit: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onInit')),
+      onInit: BeagleCaster.castToNullableFunction(element.getAttributeValue('onInit')),
       direction: EnumUtils.fromString(
         BeagleDynamicListDirection.values,
         element.getAttributeValue('direction'),
       ),
-      dataSource: BeagleCaster.castToList<dynamic>(
-          element.getAttributeValue('dataSource')),
-      templates: TemplateManagerItem.fromJsonList(
-          element.getAttributeValue('templates')),
-      isScrollIndicatorVisible: BeagleCaster.castToBool(
-          element.getAttributeValue('isScrollIndicatorVisible'),
-          defaultValue: null),
-      scrollEndThreshold: BeagleCaster.castToInt(
-          element.getAttributeValue('scrollEndThreshold'),
-          defaultValue: null),
-      iteratorName: BeagleCaster.castToString(
-          element.getAttributeValue('iteratorName'),
-          defaultValue: null),
-      identifierItem: BeagleCaster.castToString(element.getAttributeValue('key'),
-          defaultValue: null),
-      onScrollEnd: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onScrollEnd')),
+      dataSource: BeagleCaster.castToList<dynamic>(element.getAttributeValue('dataSource')),
+      templates: TemplateManagerItem.fromJsonList(element.getAttributeValue('templates')),
+      isScrollIndicatorVisible:
+          BeagleCaster.castToBool(element.getAttributeValue('isScrollIndicatorVisible'), defaultValue: null),
+      scrollEndThreshold: BeagleCaster.castToInt(element.getAttributeValue('scrollEndThreshold'), defaultValue: null),
+      iteratorName: BeagleCaster.castToString(element.getAttributeValue('iteratorName'), defaultValue: null),
+      identifierItem: BeagleCaster.castToString(element.getAttributeValue('key'), defaultValue: null),
+      onScrollEnd: BeagleCaster.castToNullableFunction(element.getAttributeValue('onScrollEnd')),
       children: BeagleCaster.castToList<Widget>(children),
-      spanCount: BeagleCaster.castToInt(element.getAttributeValue('spanCount'),
-          defaultValue: null),
-      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'),
-          defaultValue: null),
+      spanCount: BeagleCaster.castToInt(element.getAttributeValue('spanCount'), defaultValue: null),
+      suffix: BeagleCaster.castToString(element.getAttributeValue('__suffix__'), defaultValue: null),
       beagleWidgetStateProvider: BeagleWidgetStateProvider());
 }
 
 ComponentBuilder beagleTextInputBuilder() {
   return (element, _, __) => BeagleTextInput(
       key: element.getKey(),
-      onChange: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onChange')),
-      onFocus: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onFocus')),
-      onBlur: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onBlur')),
-      placeholder: BeagleCaster.castToString(element.getAttributeValue('placeholder'),
-          defaultValue: null),
-      value: BeagleCaster.castToString(element.getAttributeValue('value'),
-          defaultValue: null),
-      readOnly: BeagleCaster.castToBool(element.getAttributeValue('readOnly'),
-          defaultValue: false),
-      enabled: BeagleCaster.castToBool(element.getAttributeValue('enabled'),
-          defaultValue: true),
-      error: BeagleCaster.castToString(element.getAttributeValue('error'),
-          defaultValue: null),
-      showError: BeagleCaster.castToBool(element.getAttributeValue('showError'),
-          defaultValue: null),
-      type: EnumUtils.fromString(
-              BeagleTextInputType.values, element.getAttributeValue('type')) ??
+      onChange: BeagleCaster.castToNullableFunction(element.getAttributeValue('onChange')),
+      onFocus: BeagleCaster.castToNullableFunction(element.getAttributeValue('onFocus')),
+      onBlur: BeagleCaster.castToNullableFunction(element.getAttributeValue('onBlur')),
+      placeholder: BeagleCaster.castToString(element.getAttributeValue('placeholder'), defaultValue: null),
+      value: BeagleCaster.castToString(element.getAttributeValue('value'), defaultValue: null),
+      readOnly: BeagleCaster.castToBool(element.getAttributeValue('readOnly'), defaultValue: false),
+      enabled: BeagleCaster.castToBool(element.getAttributeValue('enabled'), defaultValue: true),
+      error: BeagleCaster.castToString(element.getAttributeValue('error'), defaultValue: null),
+      showError: BeagleCaster.castToBool(element.getAttributeValue('showError'), defaultValue: null),
+      type: EnumUtils.fromString(BeagleTextInputType.values, element.getAttributeValue('type')) ??
           BeagleTextInputType.TEXT);
 }
 
 ComponentBuilder beagleButtonBuilder() {
   return (element, _, __) => BeagleButton(
       key: element.getKey(),
-      onPress: BeagleCaster.castToNullableFunction(
-          element.getAttributeValue('onPress')),
-      text: BeagleCaster.castToString(element.getAttributeValue('text'),
-          defaultValue: null),
-      enabled: BeagleCaster.castToBool(element.getAttributeValue('enabled'),
-          defaultValue: true),
-      styleId: BeagleCaster.castToString(element.getAttributeValue('styleId'),
-          defaultValue: null));
+      onPress: BeagleCaster.castToNullableFunction(element.getAttributeValue('onPress')),
+      text: BeagleCaster.castToString(element.getAttributeValue('text'), defaultValue: null),
+      enabled: BeagleCaster.castToBool(element.getAttributeValue('enabled'), defaultValue: true),
+      styleId: BeagleCaster.castToString(element.getAttributeValue('styleId'), defaultValue: null));
 }
 
 ComponentBuilder beagleLazyComponentBuilder() {
@@ -198,10 +153,8 @@ ComponentBuilder beagleLazyComponentBuilder() {
     final initialState = element.getAttributeValue('initialState');
     return BeagleLazyComponent(
         key: element.getKey(),
-        path: BeagleCaster.castToString(element.getAttributeValue('path'),
-            defaultValue: null),
-        initialState:
-            initialState == null ? null : BeagleUIElement(initialState),
+        path: BeagleCaster.castToString(element.getAttributeValue('path'), defaultValue: null),
+        initialState: initialState == null ? null : BeagleUIElement(initialState),
         beagleId: element.getId(),
         view: view,
         child: children.isEmpty ? new Container() : children[0]);
@@ -214,22 +167,16 @@ ComponentBuilder beagleTabBarBuilder() {
     return BeagleTabBar(
         key: element.getKey(),
         items: jsonItems.map((item) => TabBarItem.fromJson(item)).toList(),
-        currentTab: BeagleCaster.castToInt(
-            element.getAttributeValue('currentTab'),
-            defaultValue: null),
-        onTabSelection: BeagleCaster.cast<void Function(int)?>(
-            element.getAttributeValue('onTabSelection'), null));
+        currentTab: BeagleCaster.castToInt(element.getAttributeValue('currentTab'), defaultValue: null),
+        onTabSelection: BeagleCaster.cast<void Function(int)?>(element.getAttributeValue('onTabSelection'), null));
   };
 }
 
 ComponentBuilder beaglePageViewBuilder() {
   return (element, children, __) => BeaglePageView(
         key: element.getKey(),
-        currentPage: BeagleCaster.castToInt(
-            element.getAttributeValue('currentPage'),
-            defaultValue: null),
-        onPageChange: BeagleCaster.cast<void Function(int)?>(
-            element.getAttributeValue('onPageChange'), null),
+        currentPage: BeagleCaster.castToInt(element.getAttributeValue('currentPage'), defaultValue: null),
+        onPageChange: BeagleCaster.cast<void Function(int)?>(element.getAttributeValue('onPageChange'), null),
         children: BeagleCaster.castToList<Widget>(children),
       );
 }
@@ -237,99 +184,77 @@ ComponentBuilder beaglePageViewBuilder() {
 ComponentBuilder beagleImageBuilder() {
   return (element, _, __) {
     return BeagleImage(
-        key: element.getKey(),
-        path: element.getAttributeValue('path') != null
-            ? ImagePath.fromJson(element.getAttributeValue('path'))
-            : null,
-        mode: EnumUtils.fromString(
-              ImageContentMode.values,
-              element.getAttributeValue('mode'),
-            ) ??
-            ImageContentMode.CENTER);
+      key: element.getKey(),
+      path: ImagePath.fromJson(element.getAttributeValue('path')),
+      mode: EnumUtils.fromString(
+            ImageContentMode.values,
+            element.getAttributeValue('mode'),
+          ) ??
+          ImageContentMode.CENTER,
+    );
   };
 }
 
 ComponentBuilder beaglePageIndicatorBuilder() {
   return (element, _, __) => BeaglePageIndicator(
       key: element.getKey(),
-      selectedColor: BeagleCaster.castToString(
-          element.getAttributeValue('selectedColor'),
-          defaultValue: null),
-      unselectedColor: BeagleCaster.castToString(
-          element.getAttributeValue('unselectedColor'),
-          defaultValue: null),
-      numberOfPages: BeagleCaster.castToInt(
-          element.getAttributeValue('numberOfPages'),
-          defaultValue: null),
-      currentPage: BeagleCaster.castToInt(
-          element.getAttributeValue('currentPage'),
-          defaultValue: null));
+      selectedColor: BeagleCaster.castToString(element.getAttributeValue('selectedColor'), defaultValue: null),
+      unselectedColor: BeagleCaster.castToString(element.getAttributeValue('unselectedColor'), defaultValue: null),
+      numberOfPages: BeagleCaster.castToInt(element.getAttributeValue('numberOfPages'), defaultValue: null),
+      currentPage: BeagleCaster.castToInt(element.getAttributeValue('currentPage'), defaultValue: null));
 }
 
 ComponentBuilder beagleTouchableBuilder() {
   return (element, children, __) => BeagleTouchable(
       key: element.getKey(),
-      onPress: BeagleCaster.cast<void Function()?>(
-          element.getAttributeValue('onPress'), null),
+      onPress: BeagleCaster.cast<void Function()?>(element.getAttributeValue('onPress'), null),
       child: children.isNotEmpty ? children[0] : null);
 }
 
 ComponentBuilder beagleWebViewBuilder() {
   return (element, children, __) => BeagleWebView(
         key: element.getKey(),
-        url: BeagleCaster.castToString(element.getAttributeValue('url'),
-            defaultValue: null),
+        url: BeagleCaster.castToString(element.getAttributeValue('url'), defaultValue: null),
       );
 }
 
 ComponentBuilder beagleScreenComponentBuilder() {
   return (element, children, _) {
     final Map<String, dynamic> safeArea =
-        BeagleCaster.castToMap<String, dynamic>(
-            element.getAttributeValue('safeArea'));
-    final Map<String, dynamic>? navigationBarMap =
-        BeagleCaster.castToMap<String, dynamic>(
-            element.getAttributeValue('navigationBar'),
-            defaultValue: null);
-    final BeagleNavigationBar? navigationBar = navigationBarMap == null
-        ? null
-        : BeagleNavigationBar.fromJson(navigationBarMap);
+        BeagleCaster.castToMap<String, dynamic>(element.getAttributeValue('safeArea'));
+    final Map<String, dynamic> navigationBarMap =
+        BeagleCaster.castToMap<String, dynamic>(element.getAttributeValue('navigationBar'), defaultValue: {});
+    final BeagleNavigationBar navigationBar = BeagleNavigationBar.fromJson(navigationBarMap);
 
     return BeagleScreen(
-        key: element.getKey(),
-        identifier: BeagleCaster.castToString(
-            element.getAttributeValue('identifier'),
-            defaultValue: null),
-        safeArea:
-            safeArea.isNotEmpty ? BeagleSafeArea.fromJson(safeArea) : null,
-        navigationBar: navigationBar,
-        child: children.isNotEmpty ? children[0] : null);
+      key: element.getKey(),
+      identifier: BeagleCaster.castToString(element.getAttributeValue('identifier'), defaultValue: null),
+      safeArea: BeagleSafeArea.fromJson(safeArea),
+      navigationBar: navigationBar,
+      child: children.isNotEmpty ? children[0] : Container(),
+    );
   };
 }
 
 ComponentBuilder beaglePullToRefreshBuilder() {
   return (element, children, view) {
     return PullToRefresh(
-        key: element.getKey(),
-        onPull: BeagleCaster.castToNullableFunction(
-            element.getAttributeValue('onPull')),
-        isRefreshing: BeagleCaster.castToBool(
-            element.getAttributeValue('isRefreshing'),
-            defaultValue: false),
-        color: BeagleCaster.castToString(element.getAttributeValue('color'),
-            defaultValue: null),
-        child: children.isEmpty ? null : children[0]);
+      key: element.getKey(),
+      onPull: BeagleCaster.castToNullableFunction(element.getAttributeValue('onPull')),
+      isRefreshing: BeagleCaster.castToBool(element.getAttributeValue('isRefreshing'), defaultValue: false),
+      color: BeagleCaster.castToString(element.getAttributeValue('color'), defaultValue: null),
+      child: children.isNotEmpty ? children[0] : Container(),
+    );
   };
 }
 
 ComponentBuilder beagleSimpleFormBuilder() {
   return (element, children, view) {
     return BeagleSimpleForm(
-        key: element.getKey(),
-        onSubmit: BeagleCaster.castToNullableFunction(
-            element.getAttributeValue('onSubmit')),
-        onValidationError: BeagleCaster.castToNullableFunction(
-            element.getAttributeValue('onValidationError')),
-        children: BeagleCaster.castToList<Widget>(children));
+      key: element.getKey(),
+      onSubmit: BeagleCaster.castToNullableFunction(element.getAttributeValue('onSubmit')),
+      onValidationError: BeagleCaster.castToNullableFunction(element.getAttributeValue('onValidationError')),
+      children: BeagleCaster.castToList<Widget>(children),
+    );
   };
 }

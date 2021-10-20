@@ -21,32 +21,32 @@ import 'beagle_js_engine.dart';
 class BeagleServiceJS implements BeagleService {
   BeagleServiceJS(
     this._beagleJSEngine, {
-    this.baseUrl,
-    this.httpClient,
-    this.viewClient,
-    this.components,
-    this.actions,
-    this.defaultNavigationController,
-    this.navigationControllers,
-    this.operations,
+    required this.baseUrl,
+    required this.httpClient,
+    required this.viewClient,
+    required this.components,
+    required this.actions,
+    required this.defaultNavigationController,
+    required this.navigationControllers,
+    required this.operations,
   });
 
   @override
-  String? baseUrl;
+  String baseUrl;
   @override
-  HttpClient? httpClient;
+  HttpClient httpClient;
   @override
-  ViewClient? viewClient;
+  ViewClient viewClient;
   @override
-  Map<String, ComponentBuilder>? components;
+  Map<String, ComponentBuilder> components;
   @override
-  Map<String, ActionHandler>? actions;
+  Map<String, ActionHandler> actions;
   @override
-  NavigationController? defaultNavigationController;
+  NavigationController defaultNavigationController;
   @override
-  Map<String, NavigationController>? navigationControllers;
+  Map<String, NavigationController> navigationControllers;
   @override
-  Map<String, Operation>? operations;
+  Map<String, Operation> operations;
 
   final BeagleJSEngine _beagleJSEngine;
 
@@ -61,23 +61,22 @@ class BeagleServiceJS implements BeagleService {
   void _registerBeagleService() {
     final params = {
       'baseUrl': baseUrl,
-      'actionKeys': actions?.keys.toList(),
-      'customOperations': operations?.keys.toList(),
+      'actionKeys': actions.keys.toList(),
+      'customOperations': operations.keys.toList(),
     };
-    _beagleJSEngine
-        .evaluateJavascriptCode('global.beagle.start(${json.encode(params)})');
+    _beagleJSEngine.evaluateJavascriptCode('global.beagle.start(${json.encode(params)})');
   }
 
   void _registerHttpListener() {
     _beagleJSEngine.onHttpRequest((String id, BeagleRequest request) async {
-      final response = await httpClient?.sendRequest(request);
+      final response = await httpClient.sendRequest(request);
       _beagleJSEngine.respondHttpRequest(id, response);
     });
   }
 
   void _registerOperationListener() {
     _beagleJSEngine.onOperation((operationName, params) {
-      final handler = (operations ?? {})[operationName];
+      final handler = operations[operationName];
       if (handler == null) {
         return;
       }

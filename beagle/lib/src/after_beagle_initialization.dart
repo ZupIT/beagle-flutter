@@ -18,7 +18,7 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
 mixin AfterBeagleInitialization<T extends StatefulWidget> on State<T> {
-  BeagleService? beagleService;
+  late BeagleService beagleService;
 
   Future<void> _startBeagleService() async {
     await beagleServiceLocator.allReady();
@@ -35,6 +35,7 @@ mixin AfterBeagleInitialization<T extends StatefulWidget> on State<T> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unnecessary_null_comparison
     return beagleService == null
         ? const SizedBox.shrink()
         : buildAfterBeagleInitialization(context);

@@ -20,19 +20,24 @@ import 'package:flutter/widgets.dart';
 typedef RetryFunction = Future<void> Function();
 
 abstract class NavigationController {
-  void onLoading(
-      {BeagleView view, BuildContext context, Function completeNavigation});
-  void onError({
-    BeagleView view,
-    BuildContext context,
-    dynamic error,
-    StackTrace stackTrace,
-    RetryFunction retry,
-    Function completeNavigation,
+  void onLoading({
+    required BeagleView view,
+    required BuildContext context,
+    required Function completeNavigation,
   });
+
+  void onError({
+    required BeagleView view,
+    required BuildContext context,
+    required dynamic error,
+    required StackTrace stackTrace,
+    required RetryFunction retry,
+    required Function completeNavigation,
+  });
+
   void onSuccess({
-    BeagleView view,
-    BuildContext context,
-    BeagleUIElement screen,
+    required BeagleView view,
+    required BuildContext context,
+    required BeagleUIElement screen,
   });
 }

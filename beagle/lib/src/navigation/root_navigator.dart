@@ -19,8 +19,7 @@ import 'package:beagle/src/after_beagle_initialization.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-typedef ScreenBuilder = Widget Function(
-    UnsafeBeagleWidget beagleWidget, BuildContext context);
+typedef ScreenBuilder = Widget Function(UnsafeBeagleWidget beagleWidget, BuildContext context);
 
 int _nextStackId = 0;
 
@@ -44,26 +43,22 @@ class RootNavigator extends StatefulWidget {
   _RootNavigator createState() => _RootNavigator();
 }
 
-class _RootNavigator extends State<RootNavigator>
-    with AfterBeagleInitialization
-    implements BeagleNavigator {
+class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization implements BeagleNavigator {
   final logger = beagleServiceLocator<BeagleLogger>();
   List<StackNavigator> _history = [];
 
-  StackNavigator _createStackNavigator(
-      BeagleRoute route, NavigationController controller) {
+  StackNavigator _createStackNavigator(BeagleRoute route, NavigationController controller) {
     return StackNavigator(
       initialRoute: route,
       screenBuilder: widget.screenBuilder,
       rootNavigator: this,
       logger: logger,
-      viewClient: beagleService!.viewClient!,
+      viewClient: beagleService.viewClient,
       controller: controller,
     );
   }
 
-  Route<dynamic> _createNewRoute(
-      BeagleRoute route, NavigationController controller) {
+  Route<dynamic> _createNewRoute(BeagleRoute route, NavigationController controller) {
     final newStack = _createStackNavigator(route, controller);
     _history.add(newStack);
     return MaterialPageRoute(
@@ -72,17 +67,14 @@ class _RootNavigator extends State<RootNavigator>
     );
   }
 
-  List<Route<dynamic>> _onGenerateInitialRoutes(
-      NavigatorState state, String routeName) {
-    final controller =
-        widget.initialController ?? beagleService!.defaultNavigationController;
-    return [_createNewRoute(widget.initialRoute, controller!)];
+  List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
+    final controller = widget.initialController ?? beagleService.defaultNavigationController;
+    return [_createNewRoute(widget.initialRoute, controller)];
   }
 
   NavigationController? _getControllerById(String id) {
-    final entry = beagleService?.navigationControllers?.entries
-        .firstWhereOrNull((element) => element.key == id);
-    return entry?.value ?? beagleService!.defaultNavigationController;
+    final entry = beagleService.navigationControllers.entries.firstWhereOrNull((element) => element.key == id);
+    return entry?.value ?? beagleService.defaultNavigationController;
   }
 
   @override
@@ -115,10 +107,8 @@ class _RootNavigator extends State<RootNavigator>
   }
 
   @override
-  Future<void> pushStack(BeagleRoute route, _,
-      [String controllerId = '']) async {
-    Navigator.push(
-        context, _createNewRoute(route, _getControllerById(controllerId)!));
+  Future<void> pushStack(BeagleRoute route, _, [String controllerId = '']) async {
+    Navigator.push(context, _createNewRoute(route, _getControllerById(controllerId)!));
   }
 
   @override
@@ -127,20 +117,14 @@ class _RootNavigator extends State<RootNavigator>
   }
 
   @override
-  Future<void> resetApplication(BeagleRoute route, _,
-      [String controllerId = '']) async {
+  Future<void> resetApplication(BeagleRoute route, _, [String controllerId = '']) async {
     _history = [];
-    Navigator.pushAndRemoveUntil(
-        context,
-        _createNewRoute(route, _getControllerById(controllerId)!),
-        (route) => false);
+    Navigator.pushAndRemoveUntil(context, _createNewRoute(route, _getControllerById(controllerId)!), (route) => false);
   }
 
   @override
-  Future<void> resetStack(BeagleRoute route, _,
-      [String controllerId = '']) async {
+  Future<void> resetStack(BeagleRoute route, _, [String controllerId = '']) async {
     _history.removeLast();
-    Navigator.pushReplacement(
-        context, _createNewRoute(route, _getControllerById(controllerId)!));
+    Navigator.pushReplacement(context, _createNewRoute(route, _getControllerById(controllerId)!));
   }
 }

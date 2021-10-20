@@ -23,14 +23,14 @@ import 'package:flutter/widgets.dart';
 class BeagleButton extends StatelessWidget {
   const BeagleButton({
     Key? key,
-    this.text,
+    required this.text,
     this.onPress,
     this.enabled,
     this.styleId,
   }) : super(key: key);
 
   /// Define the button text content.
-  final String? text;
+  final String text;
 
   /// References a [BeagleButtonStyle] declared natively and locally in [BeagleDesignSystem]
   /// to be applied to this widget.
@@ -42,8 +42,7 @@ class BeagleButton extends StatelessWidget {
   /// Whether button will be enabled.
   final bool? enabled;
 
-  BeagleButtonStyle? get _buttonStyle =>
-      beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
+  BeagleButtonStyle? get _buttonStyle => beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,7 @@ class BeagleButton extends StatelessWidget {
 
   Widget buildButtonChild() {
     return Text(
-      text ?? '',
+      text,
       style: _buttonStyle?.buttonTextStyle,
     );
   }
