@@ -20,6 +20,33 @@ import 'package:flutter/material.dart';
 
 typedef ScreenBuilder = Widget Function(UnsafeBeagleWidget beagleWidget, BuildContext context);
 
+typedef _StackNavigatorFactory = StackNavigator Function({
+  BeagleRoute initialRoute,
+  ScreenBuilder screenBuilder,
+  BeagleNavigator rootNavigator,
+  BeagleLogger logger,
+  ViewClient viewClient,
+  NavigationController controller,
+});
+
+StackNavigator _defaultStackNavigatorFactory({
+  BeagleRoute initialRoute,
+  ScreenBuilder screenBuilder,
+  BeagleNavigator rootNavigator,
+  BeagleLogger logger,
+  ViewClient viewClient,
+  NavigationController controller,
+}) {
+  return StackNavigator(
+    initialRoute: initialRoute,
+    screenBuilder: screenBuilder,
+    rootNavigator: rootNavigator,
+    viewClient: viewClient,
+    logger: logger,
+    controller: controller,
+  );
+}
+
 int _nextStackId = 0;
 
 String _createRouteName() {
@@ -32,22 +59,31 @@ class RootNavigator extends StatefulWidget {
     @required this.initialRoute,
     @required this.screenBuilder,
     this.initialController,
-  });
+    this.navigatorObservers = const [],
+    _StackNavigatorFactory stackNavigatorFactory,
+    this.initialPages = const [],
+  }) : stackNavigatorFactory = stackNavigatorFactory ?? _defaultStackNavigatorFactory;
 
   final BeagleRoute initialRoute;
   final ScreenBuilder screenBuilder;
   final NavigationController initialController;
+  final List<NavigatorObserver> navigatorObservers;
+
+  /// the following properties are for testing purposes
+  final _StackNavigatorFactory stackNavigatorFactory;
+  final List<StackNavigator> initialPages;
 
   @override
-  _RootNavigator createState() => _RootNavigator();
+  RootNavigatorState createState() => RootNavigatorState();
 }
 
-class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization implements BeagleNavigator {
+class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitialization implements BeagleNavigator {
   final logger = beagleServiceLocator<BeagleLogger>();
   List<StackNavigator> _history = [];
+  final GlobalKey<NavigatorState> _thisNavigatorKey = GlobalKey();
 
   StackNavigator _createStackNavigator(BeagleRoute route, NavigationController controller) {
-    return StackNavigator(
+    return widget.stackNavigatorFactory(
       initialRoute: route,
       screenBuilder: widget.screenBuilder,
       rootNavigator: this,
@@ -66,7 +102,20 @@ class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization
     );
   }
 
-  List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
+  List<Route<dynamic>> _onGenerateInitialRoutes(_, __) {
+    // for testing purposes
+    if (widget.initialPages.isNotEmpty) {
+      final List<Route<dynamic>> pages = [];
+      for (StackNavigator navigator in widget.initialPages) {
+        pages.add(MaterialPageRoute(
+          builder: (_) => navigator,
+          settings: RouteSettings(name: _createRouteName()),
+        ));
+        _history.add(navigator);
+      }
+      return pages;
+    }
+
     final controller = widget.initialController ?? beagleService.defaultNavigationController;
     return [_createNewRoute(widget.initialRoute, controller)];
   }
@@ -79,38 +128,49 @@ class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization
     return entry?.value ?? beagleService.defaultNavigationController;
   }
 
+  /// Gets a copy of the navigation history. Useful for testing.
+  List<StackNavigator> getHistory() {
+    return [..._history];
+  }
+
   @override
   Widget buildAfterBeagleInitialization(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => true,
       child: Scaffold(
         body: Navigator(
+          key: _thisNavigatorKey,
           initialRoute: "$_nextStackId",
           onGenerateInitialRoutes: _onGenerateInitialRoutes,
+          observers: widget.navigatorObservers,
         ),
       ),
     );
   }
 
   @override
-  void popStack(_) {
-    Navigator.pop(context);
+  void popStack() {
+    if (_history.length == 1) {
+      // pops the whole RootNavigator from its parent navigator
+      return Navigator.of(context).pop();
+    }
+    _thisNavigatorKey.currentState.pop();
     _history.removeLast();
   }
 
   @override
-  void popToView(String routeIdentifier, BuildContext context) {
-    _history.last.popToView(routeIdentifier, context);
+  void popToView(String routeIdentifier) {
+    _history.last.popToView(routeIdentifier);
   }
 
   @override
-  void popView(BuildContext context) {
-    _history.last.popView(context);
+  void popView() {
+    _history.last.popView();
   }
 
   @override
-  Future<void> pushStack(BeagleRoute route, _, [String controllerId]) async {
-    Navigator.push(context, _createNewRoute(route, _getControllerById(controllerId)));
+  Future<void> pushStack(BeagleRoute route, [String controllerId]) async {
+    _thisNavigatorKey.currentState.push(_createNewRoute(route, _getControllerById(controllerId)));
   }
 
   @override
@@ -119,14 +179,17 @@ class _RootNavigator extends State<RootNavigator> with AfterBeagleInitialization
   }
 
   @override
-  Future<void> resetApplication(BeagleRoute route, _, [String controllerId]) async {
+  Future<void> resetApplication(BeagleRoute route, [String controllerId]) async {
     _history = [];
-    Navigator.pushAndRemoveUntil(context, _createNewRoute(route, _getControllerById(controllerId)), (route) => false);
+    _thisNavigatorKey.currentState.pushAndRemoveUntil(
+      _createNewRoute(route, _getControllerById(controllerId)),
+      (route) => false,
+    );
   }
 
   @override
-  Future<void> resetStack(BeagleRoute route, _, [String controllerId]) async {
+  Future<void> resetStack(BeagleRoute route, [String controllerId]) async {
     _history.removeLast();
-    Navigator.pushReplacement(context, _createNewRoute(route, _getControllerById(controllerId)));
+    _thisNavigatorKey.currentState.pushReplacement(_createNewRoute(route, _getControllerById(controllerId)));
   }
 }

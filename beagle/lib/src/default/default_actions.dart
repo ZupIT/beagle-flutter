@@ -56,21 +56,21 @@ final Map<String, ActionHandler> defaultActions = {
     view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({action, view, element, context}) {
-    view.getNavigator().popView(context);
+    view.getNavigator().popView();
   },
   'beagle:popToView': ({action, view, element, context}) {
-    view.getNavigator().popToView(action.getAttributeValue("route"), context);
+    view.getNavigator().popToView(action.getAttributeValue("route"));
   },
   'beagle:pushStack': ({action, view, element, context}) {
-    view.getNavigator().pushStack(_getRoute(action), context);
+    view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:popStack': ({action, view, element, context}) {
-    view.getNavigator().popStack(context);
+    view.getNavigator().popStack();
   },
   'beagle:resetStack': ({action, view, element, context}) {
-    view.getNavigator().resetStack(_getRoute(action), context);
+    view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:resetApplication': ({action, view, element, context}) {
-    view.getNavigator().resetApplication(_getRoute(action), context);
+    view.getNavigator().resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
   },
 };
