@@ -78,6 +78,10 @@ void main() {
         expect(verified.captured[0], isA<BeagleUIElement>());
         expect((verified.captured[0] as BeagleUIElement).getType(), "custom:error");
       });
+
+      test('And it should log the error and stack trace', () {
+        verify(logger.error(any)).called(2);
+      });
     });
 
     group("When onSuccess is called", () {
