@@ -17,16 +17,14 @@
 import 'package:flutter/material.dart';
 
 class BeagleButtonStyle {
-  BeagleButtonStyle(
-      {this.androidButtonStyle, this.iosButtonStyle, this.buttonTextStyle});
+  BeagleButtonStyle({
+    this.androidButtonStyle,
+    this.buttonTextStyle,
+  });
 
   /// Customizes the appearance of this button for the Android platform.
   /// Null by default.
   final ButtonStyle androidButtonStyle;
-
-  /// Customizes the appearance of this button for the iOS platform.
-  /// Null by default.
-  final BeagleIosButtonStyle iosButtonStyle;
 
   /// If non-null, the style to use for this text.
   ///
@@ -37,12 +35,13 @@ class BeagleButtonStyle {
 }
 
 class BeagleIosButtonStyle {
-  BeagleIosButtonStyle(
-      {this.padding,
-      this.color,
-      this.disabledColor,
-      this.borderRadius,
-      this.pressedOpacity});
+  BeagleIosButtonStyle({
+    this.padding,
+    this.color,
+    this.disabledColor,
+    this.borderRadius,
+    this.pressedOpacity,
+  });
 
   /// The amount of space to surround the child inside the bounds of the button.
   ///
