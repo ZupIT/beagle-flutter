@@ -22,7 +22,7 @@ import 'package:flutter/material.dart';
 class ButtonOneStyle extends BeagleButtonStyle {
 
   @override
-  ButtonStyle get androidButtonStyle => ButtonStyle(
+  ButtonStyle get buttonStyle => ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
       );
 
