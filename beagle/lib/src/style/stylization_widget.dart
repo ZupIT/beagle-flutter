@@ -14,14 +14,32 @@
  * limitations under the License.
  */
 
-import 'package:beagle/src/model/beagle_metadata.dart';
+import 'package:beagle/beagle.dart';
+import 'package:beagle/src/model/beagle_style.dart';
 import 'package:flutter/widgets.dart';
 
-class BeagleMetadataWidget extends MetaData {
-  const BeagleMetadataWidget({
-    Widget child,
-    BeagleMetadata beagleMetadata,
-  }) : super(child: child, metaData: beagleMetadata);
+class StylizationWidget {
+  Widget apply(Widget origin, BeagleStyle style) {
+    if (style == null) {
+      return origin;
+    }
+    //TODO
+    final widget = applyStyle(origin, style);
 
-  BeagleMetadata get beagleMetadata => metaData;
+    return widget;
+  }
+
+  Widget applyStyle(Widget origin, BeagleStyle style) {
+    var widget = origin;
+    if (style.backgroundColor != null) {
+      widget = DecoratedBox(
+        decoration: BoxDecoration(
+          color: HexColor(style.backgroundColor),
+        ),
+        child: widget,
+      );
+    }
+
+    return origin;
+  }
 }
