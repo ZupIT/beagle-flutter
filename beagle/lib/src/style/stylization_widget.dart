@@ -30,16 +30,19 @@ class StylizationWidget {
   }
 
   Widget applyStyle(Widget origin, BeagleStyle style) {
-    var widget = origin;
-    if (style.backgroundColor != null) {
-      widget = DecoratedBox(
-        decoration: BoxDecoration(
-          color: HexColor(style.backgroundColor),
-        ),
-        child: widget,
-      );
-    }
+    var widget = applyBackgroundColor(origin, style.backgroundColor);
 
-    return origin;
+    return widget;
+  }
+
+  Widget applyBackgroundColor(Widget origin, String backgroundColor) {
+    if (backgroundColor == null) return origin;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: HexColor(backgroundColor),
+      ),
+      child: origin,
+    );
   }
 }

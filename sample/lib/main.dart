@@ -71,7 +71,7 @@ class BeagleSampleApp extends StatelessWidget {
       home: Scaffold(
         body: Center(
           child: ElevatedButton(
-            onPressed: () => BeagleSdk.openScreen(route: RemoteView('/components'), context: context),
+            onPressed: () => BeagleSdk.openScreen(route: RemoteView('https://mocki.io/v1/0ec5775c-ab97-4a83-ae56-d7ab58233c24'), context: context),
             child: Text('Start beagle flow'),
           ),
         ),
