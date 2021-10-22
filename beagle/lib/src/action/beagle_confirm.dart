@@ -19,21 +19,16 @@ import 'package:flutter/material.dart';
 class BeagleConfirm {
   static Future<void> showAlertDialog(
     BuildContext context, {
-    String title,
-    String message,
-    String labelOk,
-    Function onPressOk,
-    String labelCancel,
-    Function onPressCancel,
+    required String title,
+    required String message,
+    String? labelOk,
+    String? labelCancel,
+    Function? onPressOk,
+    Function? onPressCancel,
   }) async {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        title = title ?? '';
-        message = message ?? '';
-        labelOk = labelOk ?? 'OK';
-        labelCancel = labelCancel ?? 'Cancel';
-
         return AlertDialog(
           title: Text(title),
           content: Text(message),
@@ -45,7 +40,7 @@ class BeagleConfirm {
                   onPressOk();
                 }
               },
-              child: Text(labelOk),
+              child: Text(labelOk ?? 'OK'),
             ),
             TextButton(
               onPressed: () {
@@ -54,7 +49,7 @@ class BeagleConfirm {
                   onPressCancel();
                 }
               },
-              child: Text(labelCancel),
+              child: Text(labelCancel ?? 'Cancel'),
             )
           ],
         );

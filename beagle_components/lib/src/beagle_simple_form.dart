@@ -21,42 +21,43 @@ import 'package:flutter/widgets.dart';
 
 /// This component defines a submit handler for a form request.
 class BeagleSimpleForm extends StatefulWidget {
-  const BeagleSimpleForm({
-    Key key,
-    this.onSubmit,
-    this.children,
-    this.style,
-    this.onValidationError
-  }) : super(key: key);
+  const BeagleSimpleForm(
+      {Key? key,
+      this.onSubmit,
+      this.children,
+      this.style,
+      this.onValidationError})
+      : super(key: key);
 
   /// Defines the actions you want to execute when action submit form
-  final Function onSubmit;
+  final Function? onSubmit;
 
   /// Defines the items on the simple form.
-  final List<Widget> children;
+  final List<Widget>? children;
 
   /// Property responsible to customize all the flex attributes and general style configuration
-  final BeagleStyle style;
+  final BeagleStyle? style;
 
   /// Defines the actions to be executed when the form has some field with validation error.
-  final Function onValidationError;
+  final Function? onValidationError;
 
   @override
   BeagleSimpleFormState createState() => BeagleSimpleFormState();
 
-  static BeagleSimpleFormState of(BuildContext context, {bool root = false}) => root
-      ? context.findRootAncestorStateOfType<BeagleSimpleFormState>()
-      : context.findAncestorStateOfType<BeagleSimpleFormState>();
-
+  static BeagleSimpleFormState? of(BuildContext context, {bool root = false}) =>
+      root
+          ? context.findRootAncestorStateOfType<BeagleSimpleFormState>()
+          : context.findAncestorStateOfType<BeagleSimpleFormState>();
 }
 
 class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
+
   @override
   Widget build(BuildContext context) {
     return BeagleFlexWidget(
       style: widget.style,
-      children: widget.children,
+      children: widget.children ?? [],
     );
   }
 
@@ -65,13 +66,18 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> {
     if (hasError) {
       logger.warning('BeagleSimpleForm: has a validation error');
       if (widget.onValidationError != null) {
-        widget.onValidationError();
+        widget.onValidationError!();
       } else {
-        logger.warning('BeagleSimpleForm: you did not provided a validation function onValidationError');
+        logger.warning(
+            'BeagleSimpleForm: you did not provided a validation function onValidationError');
       }
     } else {
       logger.info('BeagleSimpleForm: submitting form');
-      widget.onSubmit();
+      if (widget.onSubmit != null) {
+        widget.onSubmit!();
+      } else {
+        logger.info('BeagleSimpleForm: onSubmit not defined!');
+      }
     }
   }
 

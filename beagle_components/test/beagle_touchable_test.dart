@@ -18,40 +18,48 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'service_locator/service_locator.dart';
+
 const touchableKey = Key('BeagleTouchable');
 
 Widget createWidget({
   Key touchableKey = touchableKey,
-  Function onPress,
-  Widget child,
+  void Function()? touchableOnPress,
+  required Widget touchableChild,
 }) {
   return MaterialApp(
     home: BeagleTouchable(
       key: touchableKey,
-      onPress: onPress,
-      child: child,
+      onPress: touchableOnPress,
+      child: touchableChild,
     ),
   );
 }
 
 void main() {
+  setUpAll(() async {
+    await testSetupServiceLocator();
+  });
+
   group('Given a BeagleTouchable', () {
     group('When I click on it', () {
       testWidgets('Then it should call onPress callback',
           (WidgetTester tester) async {
-        var tapCount = 0;
-        void onPress() {
-          tapCount++;
+        final log = <int>[];
+        void onPressed() {
+          log.add(1);
         }
 
-        await tester.pumpWidget(createWidget(onPress: onPress));
-
+        await tester.pumpWidget(createWidget(
+            touchableOnPress: onPressed,
+            touchableChild: Container(
+                padding: const EdgeInsets.all(12.0),
+                child: const Text('My Text'))));
         await tester.tap(find.byType(BeagleTouchable));
         await tester.tap(find.byType(BeagleTouchable));
         await tester.tap(find.byType(BeagleTouchable));
 
-        const expectedTapCount = 3;
-        expect(tapCount, expectedTapCount);
+        expect(log.length, 3);
       });
     });
   });

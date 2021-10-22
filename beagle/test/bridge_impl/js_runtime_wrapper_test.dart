@@ -17,7 +17,7 @@
 import 'package:beagle/src/bridge_impl/js_runtime_wrapper.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class JavascriptRuntimeMock extends Mock implements JavascriptRuntime {}
 
@@ -30,36 +30,36 @@ void main() {
       reset(jsRuntimeMock);
     });
     group('When evaluate is called', () {
-      test('Then should call JavascriptRuntime evaluate with correct parameter',
-          () {
+      test('Then should call JavascriptRuntime evaluate with correct parameter', () {
+        when(() => jsRuntimeWrapper.evaluate(any())).thenReturn(JsEvalResult("null", null));
         const jsCode = 'some js code';
         jsRuntimeWrapper.evaluate(jsCode);
 
-        verify(jsRuntimeMock.evaluate(jsCode)).called(1);
+        verify(() => jsRuntimeMock.evaluate(jsCode)).called(1);
       });
     });
 
     group('When evaluateAsync is called', () {
-      test(
-          'Then should call JavascriptRuntime evaluateAsync with correct parameter',
-          () async {
+      test('Then should call JavascriptRuntime evaluateAsync with correct parameter', () async {
+        when(() => jsRuntimeWrapper.evaluateAsync(any())).thenAnswer((_) async => Future.delayed(
+              const Duration(milliseconds: 1),
+              () => JsEvalResult("null", null),
+            ));
         const jsCode = 'some js code';
         await jsRuntimeWrapper.evaluateAsync(jsCode);
 
-        verify(jsRuntimeMock.evaluateAsync(jsCode)).called(1);
+        verify(() => jsRuntimeMock.evaluateAsync(jsCode)).called(1);
       });
     });
 
     group('When onMessage is called', () {
-      test(
-          'Then should call JavascriptRuntime onMessage with correct parameters',
-          () {
+      test('Then should call JavascriptRuntime onMessage with correct parameters', () {
         const channelName = 'channel';
         void function(dynamic args) {}
 
         jsRuntimeWrapper.onMessage(channelName, function);
 
-        verify(jsRuntimeMock.onMessage(channelName, function)).called(1);
+        verify(() => jsRuntimeMock.onMessage(channelName, function)).called(1);
       });
     });
   });

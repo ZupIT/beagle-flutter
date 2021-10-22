@@ -29,9 +29,9 @@ class BeagleViewJS implements BeagleView {
     _renderer = RendererJS(_beagleJSEngine, _id);
   }
 
-  String _id;
-  BeagleNavigator parentNavigator;
-  Renderer _renderer;
+  late String _id;
+  late Renderer _renderer;
+  BeagleNavigator? parentNavigator;
   static Map<String, BeagleViewJS> views = {};
   final BeagleJSEngine _beagleJSEngine;
 
@@ -42,7 +42,7 @@ class BeagleViewJS implements BeagleView {
   }
 
   @override
-  BeagleNavigator getNavigator() {
+  BeagleNavigator? getNavigator() {
     return parentNavigator;
   }
 
@@ -52,10 +52,12 @@ class BeagleViewJS implements BeagleView {
   }
 
   @override
-  BeagleUIElement getTree() {
-    final result = _beagleJSEngine
-      .evaluateJavascriptCode("global.beagle.getViewById('$_id').getTreeAsJson()")
-      .stringResult;
+  BeagleUIElement? getTree() {
+    final result =
+        _beagleJSEngine.evaluateJavascriptCode("global.beagle.getViewById('$_id').getTreeAsJson()")?.stringResult;
+
+    if (result == null) return null;
+
     final parsed = json.decode(result);
     return BeagleUIElement.isBeagleUIElement(parsed) ? BeagleUIElement(parsed) : null;
   }

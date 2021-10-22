@@ -15,22 +15,20 @@
  */
 
 import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
-
 import 'beagle_js_engine.dart';
 
 class BeagleServiceJS implements BeagleService {
   BeagleServiceJS(
     this._beagleJSEngine, {
-    this.baseUrl,
-    this.httpClient,
-    this.viewClient,
-    this.components,
-    this.actions,
-    this.defaultNavigationController,
-    this.navigationControllers,
-    this.operations,
+    required this.baseUrl,
+    required this.httpClient,
+    required this.viewClient,
+    required this.components,
+    required this.actions,
+    required this.defaultNavigationController,
+    required this.navigationControllers,
+    required this.operations,
   });
 
   @override

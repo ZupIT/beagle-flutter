@@ -28,10 +28,10 @@ abstract class BeagleView {
   Renderer getRenderer();
 
   /// Gets a copy of the currently rendered tree.
-  BeagleUIElement getTree();
+  BeagleUIElement? getTree();
 
   /// Gets the navigator that spawned this Beagle View, if any.
-  BeagleNavigator getNavigator();
+  BeagleNavigator? getNavigator();
 
   /// Destroys the current view. Should be used when the BeagleView won't be used anymore. Avoids
   /// memory leaks and calls to objects that don't exist any longer.

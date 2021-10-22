@@ -20,16 +20,15 @@ class AnalyticsConfig {
 
   /// This attribute enable the analytics to create a report when a screen is loaded.
   /// To not create analytics when a screen is loaded, set this attribute as false
-  bool enableScreenAnalytics;
+  bool? enableScreenAnalytics;
 
   /// This attribute is a map of actions allowed to create analytics actions record.
   /// In this map, each key is an action name following the _beagleAction_ value on the JSON provided to create our
   /// screen. The value for each key is a list of attributes that you would like to be reported.
-  Map<String, List<String>> actions;
+  Map<String, List<String>>? actions;
 
   AnalyticsConfig fromMap(Map<String, dynamic> map) {
-    return AnalyticsConfig(enableScreenAnalytics: map['map'],
-    actions: map['actions']);
+    return AnalyticsConfig(enableScreenAnalytics: map['map'], actions: map['actions']);
   }
 
   /// Creates a map with the attributes of this class

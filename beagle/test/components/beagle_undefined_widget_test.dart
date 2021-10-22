@@ -20,12 +20,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 const text = 'Undefined Component';
 
-Widget createWidget(
-    {String text = text,
-    BeagleEnvironment environment = BeagleEnvironment.debug}) {
+Widget createWidget({String text = text, BeagleEnvironment environment = BeagleEnvironment.debug}) {
   return MaterialApp(
     home: BeagleUndefinedWidget(
       environment: environment,
+      key: null,
     ),
   );
 }
@@ -33,8 +32,7 @@ Widget createWidget(
 void main() {
   group('Given a Undefined widget', () {
     group('When set debug environment', () {
-      testWidgets('Then it should have the correct text',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct text', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
 
         final textFinder = find.text(text);
@@ -44,10 +42,8 @@ void main() {
     });
 
     group('When set production environment', () {
-      testWidgets('Then it should not have text widget',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(
-            createWidget(environment: BeagleEnvironment.production));
+      testWidgets('Then it should not have text widget', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(environment: BeagleEnvironment.production));
 
         final textFinder = find.text(text);
 

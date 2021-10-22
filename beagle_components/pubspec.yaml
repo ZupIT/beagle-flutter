@@ -19,8 +19,8 @@ version: 0.9.4-alpha
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle_components
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.22.5"
+  sdk: '>=2.13.0 <3.0.0'
+  flutter: ">=2.0.0"
 
 dependencies:
   beagle:
@@ -33,7 +33,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lints: ^1.0.1
-  mockito: ^5.0.14
+  mocktail: ^0.1.4
 
 flutter:
   uses-material-design: true

@@ -23,8 +23,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'service_locator/service_locator.dart';
 
 Widget createWidget({
-  ScrollAxis scrollDirection,
-  bool scrollBarEnabled,
+  ScrollAxis scrollDirection = ScrollAxis.VERTICAL,
+  bool scrollBarEnabled = true,
 }) {
   return MaterialApp(
     home: BeagleScrollView(
@@ -49,17 +49,15 @@ void main() {
           await tester.pumpWidget(createWidget());
 
           final scrollbarFinder = find.byType(Scrollbar);
-          final listViewFinder = find.byType(ListView);
-          final textFinder = find.byType(Text);
 
           expect(scrollbarFinder, findsOneWidget);
-          expect(listViewFinder, findsOneWidget);
-          expect(textFinder, findsOneWidget);
+          expect(find.byType(ListView), findsOneWidget);
+          expect(find.byType(Text), findsOneWidget);
 
           final scrollbar = tester.widget<Scrollbar>(scrollbarFinder);
-          final ListView listView = scrollbar.child;
-          expect(listView.scrollDirection == Axis.vertical, isTrue);
-          expect(listView.semanticChildCount == 1, isTrue);
+          final ListView listView = scrollbar.child as ListView;
+          expect(listView.scrollDirection, Axis.vertical);
+          expect(listView.semanticChildCount, 1);
         },
       );
     });
@@ -69,8 +67,8 @@ void main() {
           (WidgetTester tester) async {
         await tester
             .pumpWidget(createWidget(scrollDirection: ScrollAxis.HORIZONTAL));
-        final listViewFinder = find.byType(ListView);
-        final ListView listView = tester.widget<ListView>(listViewFinder);
+        final ListView listView =
+            tester.widget<ListView>(find.byType(ListView));
         expect(listView.scrollDirection == Axis.horizontal, isTrue);
       });
     });
@@ -79,10 +77,8 @@ void main() {
       testWidgets('Then there should be a ListView, but no ScrollBar',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(scrollBarEnabled: false));
-        final listViewFinder = find.byType(ListView);
-        final scrollbarFinder = find.byType(Scrollbar);
-        expect(listViewFinder, findsOneWidget);
-        expect(scrollbarFinder, findsNothing);
+        expect(find.byType(ListView), findsOneWidget);
+        expect(find.byType(Scrollbar), findsNothing);
       });
     });
   });

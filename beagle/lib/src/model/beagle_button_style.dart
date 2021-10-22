@@ -24,12 +24,12 @@ class BeagleButtonStyle {
 
   /// Customizes the appearance of this button for the Android platform.
   /// Null by default.
-  final ButtonStyle buttonStyle;
+  final ButtonStyle? buttonStyle;
 
   /// If non-null, the style to use for this text.
   ///
   /// If the style's "inherit" property is true, the style will be merged with
   /// the closest enclosing [DefaultTextStyle]. Otherwise, the style will
   /// replace the closest enclosing [DefaultTextStyle].
-  final TextStyle buttonTextStyle;
+  final TextStyle? buttonTextStyle;
 }

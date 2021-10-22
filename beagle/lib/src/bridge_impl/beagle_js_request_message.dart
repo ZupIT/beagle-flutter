@@ -19,32 +19,28 @@ import 'package:beagle/src/utils/enum.dart';
 
 /// Encapsulates a Beagle javascript HTTP request message.
 class BeagleJSRequestMessage {
+  late String _requestId;
+  late String _url;
+  late BeagleHttpMethod _method;
+  late Map<String, String> _headers;
+  late String _body;
+
   BeagleJSRequestMessage.fromJson(Map<String, dynamic> json) {
-    _requestId = json['id'];
-    _url = json['url'];
-    _method = _getHttpMethod(json);
-    _headers = _getHeaders(json);
-    _body = json['body'];
+    _requestId = BeagleCaster.castToString(json['id']);
+    _url = BeagleCaster.castToString(json['url']);
+    _method = BeagleCaster.cast<BeagleHttpMethod>(_getHttpMethod(json), BeagleHttpMethod.get);
+    _headers = BeagleCaster.castToMap<String, String>(_getHeaders(json));
+    _body = BeagleCaster.castToString(json['body']);
   }
 
-  String _requestId;
-  String _url;
-  BeagleHttpMethod _method;
-  Map<String, String> _headers;
-  String _body;
-
   BeagleHttpMethod _getHttpMethod(Map<String, dynamic> json) {
-    final String httpMethodStr =
-        json.containsKey('method') ? json['method'].toLowerCase() : 'get';
-
-    return EnumUtils.fromString(BeagleHttpMethod.values, httpMethodStr);
+    final String httpMethodStr = json.containsKey('method') ? json['method'].toLowerCase() : 'get';
+    final beagleHttpMethod = EnumUtils.fromString<BeagleHttpMethod>(BeagleHttpMethod.values, httpMethodStr);
+    return beagleHttpMethod as BeagleHttpMethod;
   }
 
   Map<String, String> _getHeaders(Map<String, dynamic> json) {
-    return json.containsKey('headers')
-        // ignore: avoid_as
-        ? (json['headers'] as Map<String, dynamic>).cast<String, String>()
-        : null;
+    return json.containsKey('headers') ? (json['headers'] as Map<String, dynamic>).cast<String, String>() : {};
   }
 
   String get requestId => _requestId;

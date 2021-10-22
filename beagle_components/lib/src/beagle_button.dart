@@ -22,8 +22,8 @@ import 'package:flutter/widgets.dart';
 /// running platform.
 class BeagleButton extends StatelessWidget {
   const BeagleButton({
-    Key key,
-    this.text,
+    Key? key,
+    required this.text,
     this.onPress,
     this.enabled,
     this.styleId,
@@ -34,22 +34,21 @@ class BeagleButton extends StatelessWidget {
 
   /// References a [BeagleButtonStyle] declared natively and locally in [BeagleDesignSystem]
   /// to be applied to this widget.
-  final String styleId;
+  final String? styleId;
 
   /// Defines the actions that will be performed when this component is pressed.
-  final Function onPress;
+  final Function? onPress;
 
   /// Whether button will be enabled.
-  final bool enabled;
+  final bool? enabled;
 
-  BeagleButtonStyle get _buttonStyle =>
-      beagleServiceLocator<BeagleDesignSystem>()?.buttonStyle(styleId);
+  BeagleButtonStyle? get _buttonStyle => beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: _buttonStyle?.buttonStyle,
-      onPressed: getOnPressedFunction(),
+      onPressed: getOnPressedFunction() as void Function()?,
       child: buildButtonChild(),
     );
   }
@@ -61,7 +60,7 @@ class BeagleButton extends StatelessWidget {
     );
   }
 
-  Function getOnPressedFunction() {
+  Function? getOnPressedFunction() {
     return (enabled ?? true) ? onPress : null;
   }
 }

@@ -26,22 +26,21 @@ import 'bridge_impl/js_runtime_wrapper.dart';
 
 final GetIt beagleServiceLocator = GetIt.instance;
 
-void setupServiceLocator({
-  String baseUrl,
-  BeagleEnvironment environment,
-  HttpClient httpClient,
-  ViewClient viewClient,
-  Map<String, ComponentBuilder> components,
-  bool useBeagleHeaders,
-  Map<String, ActionHandler> actions,
-  NavigationController defaultNavigationController,
-  Map<String, NavigationController> navigationControllers,
-  BeagleDesignSystem designSystem,
-  BeagleImageDownloader imageDownloader,
-  BeagleLogger logger,
-  Map<String, Operation> operations,
-  AnalyticsProvider analyticsProvider
-}) {
+void setupServiceLocator(
+    {required String baseUrl,
+    required BeagleEnvironment environment,
+    required HttpClient httpClient,
+    required ViewClient viewClient,
+    required Map<String, ComponentBuilder> components,
+    required bool useBeagleHeaders,
+    required Map<String, ActionHandler> actions,
+    required NavigationController defaultNavigationController,
+    required Map<String, NavigationController> navigationControllers,
+    required BeagleDesignSystem designSystem,
+    required BeagleImageDownloader imageDownloader,
+    required BeagleLogger logger,
+    required Map<String, Operation> operations,
+    required AnalyticsProvider? analyticsProvider}) {
   beagleServiceLocator
     ..registerSingleton<BeagleYogaFactory>(BeagleYogaFactory())
     ..registerSingleton<JavascriptRuntimeWrapper>(
@@ -81,14 +80,12 @@ void setupServiceLocator({
     )
     ..registerFactory<UrlBuilder>(() => UrlBuilder(baseUrl));
 
-  if(analyticsProvider != null) {
+  if (analyticsProvider != null) {
     beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProvider);
   }
 }
 
 JavascriptRuntimeWrapper createJavascriptRuntimeWrapperInstance() =>
-    JavascriptRuntimeWrapper(
-        getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false));
+    JavascriptRuntimeWrapper(getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false));
 
-BeagleJSEngine createBeagleJSEngineInstance() =>
-    BeagleJSEngine(beagleServiceLocator<JavascriptRuntimeWrapper>());
+BeagleJSEngine createBeagleJSEngineInstance() => BeagleJSEngine(beagleServiceLocator<JavascriptRuntimeWrapper>());

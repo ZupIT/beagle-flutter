@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'beagle_image_test.dart';
 import 'service_locator/service_locator.dart';
 
+class MockBeagleLogger extends Mock implements BeagleLogger {}
+
+class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+
 Widget createWidget({
-  Function onValidationError,
-  Function onSubmit,
+  Function? onValidationError,
+  Function? onSubmit,
 }) {
   return MaterialApp(
     home: Scaffold(
@@ -36,7 +39,11 @@ Widget createWidget({
         key: Key('scrollKey'),
         onValidationError: onValidationError,
         onSubmit: onSubmit,
-        children: [BeagleTextInput(value: '', placeholder: 'Text input',)],
+        children: [
+          BeagleTextInput(
+            placeholder: 'Text input',
+          )
+        ],
       ),
     ),
   );
@@ -49,18 +56,18 @@ void main() {
 
   final navigationBarStyleId = 'navigationBarStyleId';
   final navigationBarStyle =
-  BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
+      BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
 
   setUpAll(() async {
-    when(beagleYogaFactoryMock.createYogaLayout(
-      style: anyNamed('style'),
-      children: anyNamed('children'),
-    )).thenAnswer((realInvocation) {
+    when(() => beagleYogaFactoryMock.createYogaLayout(
+          style: any(named: 'style'),
+          children: any(named: 'children'),
+        )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
     });
 
-    when(designSystemMock.navigationBarStyle(navigationBarStyleId))
+    when(() => designSystemMock.navigationBarStyle(navigationBarStyleId))
         .thenReturn(navigationBarStyle);
 
     await testSetupServiceLocator(
@@ -76,11 +83,8 @@ void main() {
         'Then there should be a TextField as its content',
         (WidgetTester tester) async {
           await tester.pumpWidget(createWidget());
-
-          final textFinder = find.byType(TextField);
-
-          expect(textFinder, findsOneWidget);
-          },
+          expect(find.byType(TextField), findsOneWidget);
+        },
       );
     });
   });

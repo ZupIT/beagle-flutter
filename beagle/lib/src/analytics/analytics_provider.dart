@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/src/analytics/analytics_config.dart';
-
 import 'analytics_record.dart';
 
 /// This interface is used to start the configuration of analytics, without this the analytics will not be reported.

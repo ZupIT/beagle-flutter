@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
 class BeagleYogaLayout extends YogaLayout {
-  BeagleYogaLayout({BeagleStyle style, List<Widget> children})
+  BeagleYogaLayout({BeagleStyle? style, List<Widget>? children})
       : super(
-            nodeProperties: beagleServiceLocator<BeagleYogaFactory>()
-                .createNodeProperties(style),
-            children: children.map(
-              (child) {
-                return beagleServiceLocator<BeagleYogaFactory>()
-                    .createYogaNode(child);
-              },
-            ).toList());
+          nodeProperties: beagleServiceLocator<BeagleYogaFactory>().createNodeProperties(style),
+          children: children?.map(
+                (child) {
+                  return beagleServiceLocator<BeagleYogaFactory>().createYogaNode(child);
+                },
+              ).toList() ??
+              [],
+        );
 }

@@ -22,34 +22,41 @@ const ERROR_COMPONENT_NAME = "custom:error";
 
 class DefaultNavigationController implements NavigationController {
   const DefaultNavigationController(this._logger);
-
   final BeagleLogger _logger;
 
   @override
   void onError({
-    BeagleView view,
-    BuildContext context,
-    dynamic error,
-    StackTrace stackTrace,
-    RetryFunction retry,
-    Function completeNavigation,
+    required BeagleView view,
+    required BuildContext context,
+    required dynamic error,
+    required StackTrace stackTrace,
+    required RetryFunction retry,
+    required Function completeNavigation,
   }) {
     _logger.error("The following error was encountered while trying to navigate: ${error.toString()}");
     _logger.error(stackTrace.toString());
-    BeagleUIElement component = BeagleUIElement({ "_beagleComponent_": ERROR_COMPONENT_NAME });
+
+    BeagleUIElement component = BeagleUIElement({"_beagleComponent_": ERROR_COMPONENT_NAME});
     view.getRenderer().doFullRender(component);
   }
 
   @override
-  void onLoading({BeagleView view, BuildContext context, Function completeNavigation}) {
+  void onLoading({
+    required BeagleView view,
+    required BuildContext context,
+    required Function completeNavigation,
+  }) {
     completeNavigation();
-    BeagleUIElement component = BeagleUIElement({ "_beagleComponent_": LOADING_COMPONENT_NAME });
+    BeagleUIElement component = BeagleUIElement({"_beagleComponent_": LOADING_COMPONENT_NAME});
     view.getRenderer().doFullRender(component);
   }
 
   @override
-  void onSuccess({BeagleView view, BuildContext context, BeagleUIElement screen}) {
+  void onSuccess({
+    required BeagleView view,
+    required BuildContext context,
+    required BeagleUIElement screen,
+  }) {
     view.getRenderer().doFullRender(screen);
   }
-  
 }

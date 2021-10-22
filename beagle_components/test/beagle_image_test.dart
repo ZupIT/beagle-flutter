@@ -21,7 +21,7 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'image/image_mock_data.dart';
 import 'service_locator/service_locator.dart';
@@ -34,11 +34,14 @@ class MockBeagleLogger extends Mock implements BeagleLogger {}
 
 class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
 
+class MockUrlBuilder extends Mock implements UrlBuilder {}
+
 void main() {
   final designSystemMock = MockDesignSystem();
   final imageDownloaderMock = MockBeagleImageDownloader();
   final beagleLoggerMock = MockBeagleLogger();
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
+  final urlBuilderMock = MockUrlBuilder();
 
   setUpAll(() async {
     await testSetupServiceLocator(
@@ -46,6 +49,7 @@ void main() {
       imageDownloader: imageDownloaderMock,
       logger: beagleLoggerMock,
       beagleYogaFactory: beagleYogaFactoryMock,
+      urlBuilder: urlBuilderMock,
     );
   });
 
@@ -56,23 +60,29 @@ void main() {
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
 
-  when(beagleYogaFactoryMock.createYogaLayout(
-    style: anyNamed('style'),
-    children: anyNamed('children'),
-  )).thenAnswer((realInvocation) {
+  when(() => beagleYogaFactoryMock.createYogaLayout(
+        style: any(named: 'style'),
+        children: any(named: 'children'),
+      )).thenAnswer((realInvocation) {
     final List<Widget> children = realInvocation.namedArguments.values.last;
     return children.first;
   });
 
-  when(designSystemMock.image(defaultPlaceholder))
+  when(() => designSystemMock.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');
 
-  when(designSystemMock.image(invalidPlaceholder)).thenReturn(null);
+  when(() => urlBuilderMock.build(imageUrl)).thenReturn(imageUrl);
 
-  when(imageDownloaderMock.downloadImage(imageUrl)).thenAnswer((invocation) {
+  when(() => urlBuilderMock.build(imageNotFoundUrl))
+      .thenReturn(imageNotFoundUrl);
+
+  when(() => designSystemMock.image(invalidPlaceholder)).thenReturn('');
+
+  when(() => imageDownloaderMock.downloadImage(imageUrl))
+      .thenAnswer((invocation) {
     return Future<Uint8List>.value(mockedBeagleImageData);
   });
-  when(imageDownloaderMock.downloadImage(imageNotFoundUrl))
+  when(() => imageDownloaderMock.downloadImage(imageNotFoundUrl))
       .thenAnswer((invocation) {
     throw BeagleImageDownloaderException(
         statusCode: errorStatusCode, url: imageNotFoundUrl);
@@ -80,9 +90,9 @@ void main() {
 
   Widget createWidget({
     Key key = imageKey,
-    BeagleImageDownloader imageDownloader,
-    ImagePath path,
-    ImageContentMode mode,
+    BeagleImageDownloader? imageDownloader,
+    required ImagePath path,
+    required ImageContentMode mode,
   }) {
     return MaterialApp(
       home: BeagleImage(
@@ -95,7 +105,7 @@ void main() {
 
   Widget createLocalWidget({
     String placeholder = defaultPlaceholder,
-    ImageContentMode mode,
+    ImageContentMode mode = ImageContentMode.FIT_CENTER,
   }) {
     return createWidget(
       path: ImagePath.local(placeholder),
@@ -106,13 +116,13 @@ void main() {
   Widget createRemoteWidget({
     String url = imageUrl,
     String placeholder = defaultPlaceholder,
-    ImageContentMode mode,
+    ImageContentMode mode = ImageContentMode.FIT_CENTER,
   }) {
     return createWidget(
       imageDownloader: imageDownloaderMock,
       path: ImagePath.remote(
         url,
-        ImagePath.local(placeholder),
+        ImagePath.local(placeholder) as LocalImagePath,
       ),
       mode: mode,
     );
@@ -122,7 +132,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final element = tester.element(find.byType(Image));
-    final Image widget = element.widget;
+    final Image widget = element.widget as Image;
     final image = widget.image;
     await precacheImage(image, element);
     await tester.pumpAndSettle();
@@ -137,23 +147,18 @@ void main() {
       testWidgets('Then it should have a Image widget child',
           (WidgetTester tester) async {
         await tester.pumpWidget(localImage);
-        final imageFinder = find.byType(Image);
-
-        expect(imageFinder, findsOneWidget);
+        expect(find.byType(Image), findsOneWidget);
       });
 
       testWidgets('Then it should present the correct local image',
           (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(localImage);
-
           await precacheImageForTest(tester);
         });
 
-        final imageFinder = find.byType(Image);
-
         await expectLater(
-          imageFinder,
+          find.byType(Image),
           matchesGoldenFile('goldens/beagle_image_local.png'),
         );
       });
@@ -164,10 +169,7 @@ void main() {
           (WidgetTester tester) async {
         await tester
             .pumpWidget(createLocalWidget(placeholder: invalidPlaceholder));
-
-        final containerFinder = find.byType(Container);
-
-        expect(containerFinder, findsOneWidget);
+        expect(find.byType(Container), findsOneWidget);
       });
     });
 
@@ -176,7 +178,6 @@ void main() {
           (WidgetTester tester) async {
         await tester
             .pumpWidget(createLocalWidget(mode: ImageContentMode.CENTER));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.none);
       });
     });
@@ -187,7 +188,6 @@ void main() {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.CENTER_CROP,
         ));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.cover);
       });
     });
@@ -198,7 +198,6 @@ void main() {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_CENTER,
         ));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });
@@ -209,7 +208,6 @@ void main() {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_XY,
         ));
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.fill);
       });
     });
@@ -218,7 +216,6 @@ void main() {
       testWidgets('Then the widget should have BoxFit.contain',
           (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget());
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });
@@ -229,24 +226,18 @@ void main() {
       testWidgets('Then it should have a Image widget child',
           (WidgetTester tester) async {
         await tester.pumpWidget(createRemoteWidget());
-
-        final imageFinder = find.byType(Image);
-
-        expect(imageFinder, findsOneWidget);
+        expect(find.byType(Image), findsOneWidget);
       });
 
       testWidgets('Then it should present the correct remote image',
           (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget());
-
           await precacheImageForTest(tester);
         });
 
-        final imageFinder = find.byType(Image);
-
         await expectLater(
-          imageFinder,
+          find.byType(Image),
           matchesGoldenFile('goldens/beagle_image_remote.png'),
         );
       });
@@ -257,27 +248,22 @@ void main() {
           (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(url: imageNotFoundUrl));
-
           await precacheImageForTest(tester);
         });
 
-        final imageFinder = find.byType(Image);
-
         await expectLater(
-          imageFinder,
+          find.byType(Image),
           matchesGoldenFile('goldens/beagle_image_remote_not_found.png'),
         );
       });
     });
+
     group('When remote image url is not found and placeholder is invalid', () {
       testWidgets('Then it should render an empty container',
           (WidgetTester tester) async {
         await tester.pumpWidget(createRemoteWidget(
             url: imageNotFoundUrl, placeholder: invalidPlaceholder));
-
-        final containerFinder = find.byType(Container);
-
-        expect(containerFinder, findsOneWidget);
+        expect(find.byType(Container), findsOneWidget);
       });
     });
 
@@ -288,7 +274,6 @@ void main() {
           await tester.pumpWidget(
             createRemoteWidget(mode: ImageContentMode.CENTER),
           );
-
           await precacheImageForTest(tester);
         });
 
@@ -305,7 +290,6 @@ void main() {
           ));
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.cover);
       });
     });
@@ -319,7 +303,6 @@ void main() {
           ));
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });
@@ -333,7 +316,6 @@ void main() {
           ));
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.fill);
       });
     });
@@ -345,7 +327,6 @@ void main() {
           await tester.pumpWidget(createRemoteWidget());
           await precacheImageForTest(tester);
         });
-
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
     });

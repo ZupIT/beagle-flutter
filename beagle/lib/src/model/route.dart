@@ -29,8 +29,8 @@ class HttpAdditionalData {
     return HttpAdditionalData(method: json["method"], headers: json["headers"], body: json["body"]);
   }
 
-  final BeagleHttpMethod method;
-  final Map<String, String> headers;
+  final BeagleHttpMethod? method;
+  final Map<String, String>? headers;
   final dynamic body;
 }
 
@@ -38,9 +38,9 @@ class RemoteView extends BeagleRoute {
   RemoteView(this.url, {this.fallback, this.shouldPrefetch, this.httpAdditionalData});
 
   final String url;
-  final BeagleUIElement fallback; // optional
-  final bool shouldPrefetch; // optional
-  final HttpAdditionalData httpAdditionalData; // optional
+  final BeagleUIElement? fallback;
+  final bool? shouldPrefetch;
+  final HttpAdditionalData? httpAdditionalData;
 
   static bool isRemoteView(Map<String, dynamic> json) {
     return json.containsKey("url");
@@ -50,9 +50,8 @@ class RemoteView extends BeagleRoute {
     return RemoteView(
       json["url"],
       fallback: json.containsKey("fallback") ? BeagleUIElement(json["fallback"]) : null,
-      httpAdditionalData: json.containsKey("httpAdditionalData")
-        ? HttpAdditionalData.fromJson(json["httpAdditionalData"])
-        : null,
+      httpAdditionalData:
+          json.containsKey("httpAdditionalData") ? HttpAdditionalData.fromJson(json["httpAdditionalData"]) : null,
     );
   }
 }

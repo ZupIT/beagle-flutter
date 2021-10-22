@@ -37,10 +37,7 @@ const _contextValue = 0;
 Map<String, dynamic> _properties = {
   '_beagleComponent_': _type,
   'path': '/beagle_global',
-  'initialState': {
-    '_beagleComponent_': 'beagle:text',
-    'text': 'Loading the screen via Lazy Component, please wait.'
-  },
+  'initialState': {'_beagleComponent_': 'beagle:text', 'text': 'Loading the screen via Lazy Component, please wait.'},
   'id': _id,
   'children': [
     _child,
@@ -80,7 +77,7 @@ void main() {
 
     group('When getContext is called', () {
       test('Then it should return the correct value', () {
-        final retrievedContext = beagleUIElement.getContext();
+        final retrievedContext = beagleUIElement.getContext()!;
 
         expect(retrievedContext.id, _contextId);
         expect(retrievedContext.value, _contextValue);
@@ -102,9 +99,7 @@ void main() {
       });
     });
 
-    group(
-        'When getAttributeValue is called by passing an existent attribute name',
-        () {
+    group('When getAttributeValue is called by passing an existent attribute name', () {
       test('Then it should return the correct attribute value', () {
         const expectedValue = '/beagle_global';
         final retrievedValue = beagleUIElement.getAttributeValue('path');
@@ -113,13 +108,10 @@ void main() {
       });
     });
 
-    group(
-        'When getAttributeValue is called by passing an nonexistent attribute name',
-        () {
+    group('When getAttributeValue is called by passing an nonexistent attribute name', () {
       test('Then it should return the default value', () {
         const expectedValue = 'default value';
-        final retrievedValue =
-            beagleUIElement.getAttributeValue('nonexistent', 'default value');
+        final retrievedValue = beagleUIElement.getAttributeValue('nonexistent', 'default value');
 
         expect(retrievedValue, expectedValue);
       });
@@ -127,15 +119,14 @@ void main() {
 
     group('When getStyle is called', () {
       test('Then it should return a BeagleStyle object', () {
-        final retrievedValue = beagleUIElement.getStyle();
+        final retrievedValue = beagleUIElement.getStyle()!;
 
-        expect(retrievedValue.flex.alignItems, AlignItems.CENTER);
+        expect(retrievedValue.flex!.alignItems, AlignItems.CENTER);
         expect(retrievedValue.backgroundColor, 'red');
       });
     });
   });
-  group('Given a BeagleUIElement with a properties map without children key',
-      () {
+  group('Given a BeagleUIElement with a properties map without children key', () {
     final properties = <String, dynamic>{
       '_beagleComponent_': _type,
       'path': '/beagle_global',
@@ -163,9 +154,7 @@ void main() {
     });
   });
 
-  group(
-      'Given a BeagleUIElement with a properties map with an empty children list',
-      () {
+  group('Given a BeagleUIElement with a properties map with an empty children list', () {
     final properties = <String, dynamic>{
       '_beagleComponent_': _type,
       'path': '/beagle_global',
@@ -200,8 +189,7 @@ void main() {
     });
   });
 
-  group('Given a BeagleUIElement with a properties map without context key',
-      () {
+  group('Given a BeagleUIElement with a properties map without context key', () {
     final properties = <String, dynamic>{
       '_beagleComponent_': _type,
     };

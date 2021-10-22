@@ -17,7 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'mock.dart';
 
@@ -25,94 +25,96 @@ typedef RetryFn = Future<void> Function();
 
 class StackNavigatorExpectations {
   StackNavigatorExpectations({
-    @required this.mocks,
-    @required this.screen,
-    @required this.route,
-    @required this.navigator,
+    required this.mocks,
+    required this.screen,
+    required this.navigator,
+    required this.route,
     this.expectedError,
   });
 
   final NavigationMocks mocks;
-  final BeagleRoute route;
+  final dynamic route;
   final BeagleUIElement screen;
-  final Error expectedError;
+  final Error? expectedError;
   final StackNavigator navigator;
 
   void shouldFetchRoute([int times = 1]) {
-    verify(mocks.viewClient.fetch(route)).called(times);
+    verify(() => mocks.viewClient.fetch(route)).called(times);
   }
 
   void shouldNotFetchRoute([int times = 1]) {
-    verifyNever(mocks.viewClient.fetch(any));
+    verifyNever(() => mocks.viewClient.fetch(any()));
   }
 
   void shouldCreateBeagleWidget() {
-    verify(mocks.beagleWidgetFactory(mocks.rootNavigator)).called(1);
+    verify(() => mocks.beagleWidgetFactory(mocks.rootNavigator)).called(1);
+    // ignore: unnecessary_null_comparison
     expect(mocks.lastWidget == null, false);
   }
 
   void shouldHandleOnLoading([int times = 1]) {
-    final result = verify(mocks.controller.onLoading(
-      view: mocks.lastWidget.view,
-      completeNavigation: captureAnyNamed('completeNavigation'),
-      context: captureAnyNamed('context'),
-    ));
+    final result = verify(() => mocks.controller.onLoading(
+          view: mocks.lastWidget.view,
+          context: captureAny(named: 'context'),
+          completeNavigation: captureAny(named: 'completeNavigation'),
+        ));
     result.called(times);
-    expect(result.captured[0], isA<Function>());
-    expect(result.captured[1], isA<BuildContext>());
+    expect(result.captured[0], isA<BuildContext>());
+    expect(result.captured[1], isA<Function>());
   }
 
   void shouldNotHandleOnLoading() {
-    verifyNever(mocks.controller.onLoading(
-      view: anyNamed('view'),
-      completeNavigation: anyNamed('completeNavigation'),
-      context: anyNamed('context'),
-    ));
+    verifyNever(() => mocks.controller.onLoading(
+          view: any(named: 'view'),
+          completeNavigation: any(named: 'completeNavigation'),
+          context: any(named: 'context'),
+        ));
   }
 
   void shouldHandleOnError() {
-    final result = verify(mocks.controller.onError(
-      view: mocks.lastWidget.view,
-      completeNavigation: captureAnyNamed('completeNavigation'),
-      context: captureAnyNamed('context'),
-      error: expectedError,
-      retry: captureAnyNamed('retry'),
-      stackTrace: captureAnyNamed('stackTrace'),
-    ));
+    final result = verify(() => mocks.controller.onError(
+          view: mocks.lastWidget.view,
+          error: expectedError,
+          context: captureAny(named: 'context'),
+          stackTrace: captureAny(named: 'stackTrace'),
+          retry: captureAny(named: 'retry'),
+          completeNavigation: captureAny(named: 'completeNavigation'),
+        ));
     result.called(1);
-    expect(result.captured[0], isA<Function>());
-    expect(result.captured[1], isA<BuildContext>());
+
+    expect(result.captured[0], isA<BuildContext>());
+    expect(result.captured[1], isA<StackTrace>());
     expect(result.captured[2], isA<RetryFn>());
-    expect(result.captured[3], isA<StackTrace>());
+    expect(result.captured[3], isA<Function>());
   }
 
   void shouldNotHandleOnError() {
-    verifyNever(mocks.controller.onError(
-      context: anyNamed('context'),
-      completeNavigation: anyNamed('completeNavigation'),
-      stackTrace: anyNamed('stackTrace'),
-      view: anyNamed('view'),
-      retry: anyNamed('retry'),
-      error: anyNamed('error'),
-    ));
+    verifyNever(() => mocks.controller.onError(
+          context: any(named: 'context'),
+          completeNavigation: any(named: 'completeNavigation'),
+          stackTrace: any(named: 'stackTrace'),
+          view: any(named: 'view'),
+          retry: any(named: 'retry'),
+          error: any(named: 'error'),
+        ));
   }
 
   void shouldHandleOnSuccess() {
-    final result = verify(mocks.controller.onSuccess(
-      view: mocks.lastWidget.view,
-      screen: screen,
-      context: captureAnyNamed('context'),
-    ));
+    final result = verify(() => mocks.controller.onSuccess(
+          view: mocks.lastWidget.view,
+          screen: screen,
+          context: captureAny(named: 'context'),
+        ));
     result.called(1);
     expect(result.captured[0], isA<BuildContext>());
   }
 
   void shouldNotHandleOnSuccess() {
-    verifyNever(mocks.controller.onSuccess(
-      view: anyNamed('view'),
-      screen: anyNamed('screen'),
-      context: anyNamed('context'),
-    ));
+    verifyNever(() => mocks.controller.onSuccess(
+          view: any(named: 'view'),
+          screen: any(named: 'screen'),
+          context: any(named: 'context'),
+        ));
   }
 
   void shouldNotUpdateHistory() {
@@ -141,7 +143,7 @@ class StackNavigatorExpectations {
   }
 
   void shouldRenderScreen() {
-    final result = verify(mocks.screenBuilder(any, captureAny));
+    final result = verify(() => mocks.screenBuilder(any(), captureAny()));
     result.called(1);
     expect(result.captured[0], isA<BuildContext>());
     expect(find.byKey(mocks.screenKey), findsOneWidget);
@@ -152,36 +154,36 @@ class StackNavigatorExpectations {
   }
 
   void shouldNotRenderScreen() {
-    verifyNever(mocks.screenBuilder(any, any));
+    verifyNever(() => mocks.screenBuilder(any(), any()));
     expect(find.byKey(mocks.screenKey), findsNothing);
   }
 
   void shouldPopStack() {
-    verify(mocks.rootNavigator.popStack()).called(1);
+    verify(() => mocks.rootNavigator.popStack()).called(1);
   }
 
   void shouldPushNewRoute() {
-    verify(mocks.navigatorObserver.didPush(any, any)).called(mocks.initialPages.length + 1);
+    verify(() => mocks.navigatorObserver.didPush(any(), any())).called(mocks.initialPages.length + 1);
   }
 
   void shouldNotPushNewRoute() {
     if (mocks.initialPages.isEmpty) {
-      verifyNever(mocks.navigatorObserver.didPush(any, any));
+      verifyNever(() => mocks.navigatorObserver.didPush(any(), any()));
     } else {
-      verify(mocks.navigatorObserver.didPush(any, any)).called(mocks.initialPages.length);
+      verify(() => mocks.navigatorObserver.didPush(any(), any())).called(mocks.initialPages.length);
     }
   }
 
   void shouldPopRoute([int times = 1]) {
-    verify(mocks.navigatorObserver.didPop(any, any)).called(times);
+    verify(() => mocks.navigatorObserver.didPop(any(), any())).called(times);
   }
 
   void shouldNotPopRoute() {
-    verifyNever(mocks.navigatorObserver.didPop(any, any));
+    verifyNever(() => mocks.navigatorObserver.didPop(any(), any()));
   }
 
   void shouldLogError() {
-    verify(mocks.logger.error(any)).called(1);
+    verify(() => mocks.logger.error(any())).called(1);
   }
 
   void shouldNotChangeRenderedPage() {

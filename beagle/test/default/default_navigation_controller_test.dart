@@ -17,7 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _RendererMock extends Mock implements Renderer {}
 
@@ -35,10 +35,14 @@ class _BuildContextMock extends Mock implements BuildContext {}
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue<BeagleUIElement>(BeagleUIElement({}));
+  });
+
   group("Given the DefaultNavigationController", () {
     final logger = _BeagleLoggerMock();
     final controller = DefaultNavigationController(logger);
-    BeagleView view;
+    late BeagleView view;
 
     group("When onLoading is called", () {
       bool completed = false;
@@ -49,7 +53,7 @@ void main() {
       });
 
       test('Then it should render the loading component', () {
-        final verified = verify(view.getRenderer().doFullRender(captureAny));
+        final verified = verify(() => view.getRenderer().doFullRender(captureAny()));
         verified.called(1);
         expect(verified.captured[0], isA<BeagleUIElement>());
         expect((verified.captured[0] as BeagleUIElement).getType(), "custom:loading");
@@ -69,23 +73,24 @@ void main() {
           completeNavigation: () {},
           error: Error(),
           stackTrace: StackTrace.empty,
+          retry: () async {},
         );
       });
 
       test('Then it should render the error component', () {
-        final verified = verify(view.getRenderer().doFullRender(captureAny));
+        final verified = verify(() => view.getRenderer().doFullRender(captureAny()));
         verified.called(1);
         expect(verified.captured[0], isA<BeagleUIElement>());
         expect((verified.captured[0] as BeagleUIElement).getType(), "custom:error");
       });
 
       test('And it should log the error and stack trace', () {
-        verify(logger.error(any)).called(2);
+        verify(() => logger.error(any())).called(2);
       });
     });
 
     group("When onSuccess is called", () {
-      final screen = BeagleUIElement({ "_beagleComponent_": "beagle:container" });
+      final screen = BeagleUIElement({"_beagleComponent_": "beagle:container"});
 
       setUpAll(() {
         view = _BeagleViewMock();
@@ -97,7 +102,7 @@ void main() {
       });
 
       test('Then it should render the screen', () {
-        final verified = verify(view.getRenderer().doFullRender(captureAny));
+        final verified = verify(() => view.getRenderer().doFullRender(captureAny()));
         verified.called(1);
         expect(verified.captured[0], screen);
       });

@@ -21,7 +21,7 @@ import 'text_input_type.dart';
 /// Defines a text field that lets the user enter text.
 class BeagleTextInput extends StatefulWidget implements InputValidation {
   const BeagleTextInput({
-    Key key,
+    Key? key,
     this.value,
     this.placeholder,
     this.enabled,
@@ -35,73 +35,75 @@ class BeagleTextInput extends StatefulWidget implements InputValidation {
   }) : super(key: key);
 
   /// Initial text displayed.
-  final String value;
+  final String? value;
 
   /// A label text that is shown when the text is empty.
-  final String placeholder;
+  final String? placeholder;
 
   /// tells whether this field is enabled. Default is true.
-  final bool enabled;
+  final bool? enabled;
 
   /// tells whether this field is readOnly. Default is false.
-  final bool readOnly;
+  final bool? readOnly;
 
   /// Type of data represented by the text input. This sets both the keyboard type and whether or not the content will
   /// be obscured. The content is obscured when the type is "PASSWORD". Note that Flutter can't change the keyboard
   /// type after the component is rendered, which means that, when this property is changed, only the effect to obscure
   /// the text content is updated.
-  final BeagleTextInputType type;
+  final BeagleTextInputType? type;
 
   /// An error string for validation.
-  final String error;
+  final String? error;
 
   /// Whether or not to show the error string. Default is false.
-  final bool showError;
+  final bool? showError;
 
   /// Action that will be performed when text change.
-  final Function onChange;
+  final Function? onChange;
 
   /// Action that will be performed when the widget looses its focus.
-  final Function onBlur;
+  final Function? onBlur;
 
   /// Action that will be performed when the widget acquire focus.
-  final Function onFocus;
+  final Function? onFocus;
 
   @override
   _BeagleTextInput createState() => _BeagleTextInput();
 
   @override
   bool hasError() {
-    return error != null && error.isNotEmpty;
+    return error != null && error!.isNotEmpty;
   }
 }
 
 class _BeagleTextInput extends State<BeagleTextInput> {
-  TextEditingController _controller;
-  FocusNode _focus;
+  TextEditingController? _controller;
+  FocusNode? _focus;
 
   @override
   void initState() {
     super.initState();
+    addFieldListeners();
+  }
 
+  void addFieldListeners() {
     if (widget.onBlur != null || widget.onFocus != null) {
       _focus = FocusNode();
-      _focus.addListener(() {
-        if (_focus.hasFocus && widget.onFocus != null) {
-          widget.onFocus({'value': _controller.text});
+      _focus!.addListener(() {
+        if (_focus!.hasFocus && widget.onFocus != null) {
+          widget.onFocus!({'value': _controller?.text});
         }
-
-        if (!_focus.hasFocus && widget.onBlur != null) {
-          widget.onBlur({'value': _controller.text});
+        if (!_focus!.hasFocus && widget.onBlur != null) {
+          widget.onBlur!({'value': _controller?.text});
         }
       });
     }
 
     _controller = TextEditingController();
     if (widget.onChange != null) {
-      _controller.addListener(() {
-        if ((widget.value ?? '') != _controller.text) {
-          widget.onChange({'value': _controller.text});
+      _controller?.addListener(() {
+        if ((widget.value ?? '') != _controller?.text) {
+          widget.onChange!({'value': _controller?.text});
         }
       });
     }
@@ -109,8 +111,8 @@ class _BeagleTextInput extends State<BeagleTextInput> {
 
   @override
   void dispose() {
-    _controller.dispose();
-    if (_focus != null) _focus.dispose();
+    if (_controller != null) _controller!.dispose();
+    if (_focus != null) _focus!.dispose();
     super.dispose();
   }
 
@@ -118,20 +120,21 @@ class _BeagleTextInput extends State<BeagleTextInput> {
   Widget build(BuildContext context) {
     if (_controller != null &&
         widget.value != null &&
-        widget.value != _controller.text) {
-      _controller.text = widget.value;
+        widget.value != _controller?.text) {
+      _controller?.text = widget.value ?? '';
     }
     return TextField(
       controller: _controller,
       focusNode: _focus,
       enabled: widget.enabled != false,
-      keyboardType: getMaterialInputType(widget.type),
+      keyboardType:
+          getMaterialInputType(widget.type ?? BeagleTextInputType.TEXT),
       obscureText: widget.type == BeagleTextInputType.PASSWORD,
       readOnly: widget.readOnly == true,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         errorText: widget.showError == true ? widget.error : null,
-        labelText: widget.placeholder,
+        labelText: widget.placeholder ?? '',
       ),
     );
   }

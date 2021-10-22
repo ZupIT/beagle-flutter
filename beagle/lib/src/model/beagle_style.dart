@@ -22,23 +22,9 @@ enum FlexDirection { COLUMN, ROW, COLUMN_REVERSE, ROW_REVERSE }
 
 enum FlexWrap { NO_WRAP, WRAP, WRAP_REVERSE }
 
-enum JustifyContent {
-  FLEX_START,
-  CENTER,
-  FLEX_END,
-  SPACE_BETWEEN,
-  SPACE_AROUND,
-  SPACE_EVENLY
-}
+enum JustifyContent { FLEX_START, CENTER, FLEX_END, SPACE_BETWEEN, SPACE_AROUND, SPACE_EVENLY }
 
-enum AlignContent {
-  FLEX_START,
-  CENTER,
-  FLEX_END,
-  SPACE_BETWEEN,
-  SPACE_AROUND,
-  STRETCH
-}
+enum AlignContent { FLEX_START, CENTER, FLEX_END, SPACE_BETWEEN, SPACE_AROUND, STRETCH }
 
 enum AlignItems { FLEX_START, CENTER, FLEX_END, BASELINE, STRETCH }
 
@@ -64,15 +50,13 @@ class BeagleFlex {
 
   BeagleFlex.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('flexDirection')) {
-      flexDirection =
-          EnumUtils.fromString(FlexDirection.values, map['flexDirection']);
+      flexDirection = EnumUtils.fromString(FlexDirection.values, map['flexDirection']);
     }
     if (map.containsKey('flexWrap')) {
       flexWrap = EnumUtils.fromString(FlexWrap.values, map['flexWrap']);
     }
     if (map.containsKey('justifyContent')) {
-      justifyContent =
-          EnumUtils.fromString(JustifyContent.values, map['justifyContent']);
+      justifyContent = EnumUtils.fromString(JustifyContent.values, map['justifyContent']);
     }
     if (map.containsKey('alignItems')) {
       alignItems = EnumUtils.fromString(AlignItems.values, map['alignItems']);
@@ -81,8 +65,7 @@ class BeagleFlex {
       alignSelf = EnumUtils.fromString(AlignSelf.values, map['alignSelf']);
     }
     if (map.containsKey('alignContent')) {
-      alignContent =
-          EnumUtils.fromString(AlignContent.values, map['alignContent']);
+      alignContent = EnumUtils.fromString(AlignContent.values, map['alignContent']);
     }
     if (map.containsKey('basis')) {
       basis = UnitValue.fromMap(map['basis']);
@@ -98,16 +81,16 @@ class BeagleFlex {
     }
   }
 
-  FlexDirection flexDirection = FlexDirection.COLUMN;
-  FlexWrap flexWrap = FlexWrap.NO_WRAP;
-  JustifyContent justifyContent = JustifyContent.FLEX_START;
-  AlignItems alignItems = AlignItems.STRETCH;
-  AlignSelf alignSelf = AlignSelf.AUTO;
-  AlignContent alignContent = AlignContent.FLEX_START;
-  UnitValue basis = UnitValue(value: 0, type: UnitType.REAL);
-  num flex = 0;
-  num grow = 0;
-  num shrink = 1;
+  FlexDirection? flexDirection = FlexDirection.COLUMN;
+  FlexWrap? flexWrap = FlexWrap.NO_WRAP;
+  JustifyContent? justifyContent = JustifyContent.FLEX_START;
+  AlignItems? alignItems = AlignItems.STRETCH;
+  AlignSelf? alignSelf = AlignSelf.AUTO;
+  AlignContent? alignContent = AlignContent.FLEX_START;
+  UnitValue? basis = UnitValue(value: 0, type: UnitType.REAL);
+  num? flex = 0;
+  num? grow = 0;
+  num? shrink = 1;
 }
 
 class UnitValue {
@@ -118,8 +101,8 @@ class UnitValue {
     type = EnumUtils.fromString(UnitType.values, map['type']);
   }
 
-  num value;
-  UnitType type;
+  num? value;
+  UnitType? type;
 }
 
 class BeagleSize {
@@ -157,13 +140,13 @@ class BeagleSize {
     }
   }
 
-  UnitValue width;
-  UnitValue height;
-  UnitValue maxWidth;
-  UnitValue maxHeight;
-  UnitValue minWidth;
-  UnitValue minHeight;
-  num aspectRatio;
+  UnitValue? width;
+  UnitValue? height;
+  UnitValue? maxWidth;
+  UnitValue? maxHeight;
+  UnitValue? minWidth;
+  UnitValue? minHeight;
+  num? aspectRatio;
 }
 
 class EdgeValue {
@@ -178,6 +161,20 @@ class EdgeValue {
     this.top,
     this.vertical,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'all': all,
+      'bottom': bottom,
+      'end': end,
+      'horizontal': horizontal,
+      'left': left,
+      'right': right,
+      'start': start,
+      'top': top,
+      'vertical': vertical,
+    };
+  }
 
   EdgeValue.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('left')) {
@@ -209,15 +206,15 @@ class EdgeValue {
     }
   }
 
-  UnitValue left;
-  UnitValue top;
-  UnitValue right;
-  UnitValue bottom;
-  UnitValue start;
-  UnitValue end;
-  UnitValue horizontal;
-  UnitValue vertical;
-  UnitValue all;
+  UnitValue? left;
+  UnitValue? top;
+  UnitValue? right;
+  UnitValue? bottom;
+  UnitValue? start;
+  UnitValue? end;
+  UnitValue? horizontal;
+  UnitValue? vertical;
+  UnitValue? all;
 }
 
 class CornerRadius {
@@ -229,7 +226,7 @@ class CornerRadius {
     }
   }
 
-  num radius;
+  late num? radius;
 }
 
 class BeagleStyle {
@@ -258,8 +255,7 @@ class BeagleStyle {
       flex = BeagleFlex.fromMap(map['flex']);
     }
     if (map.containsKey('positionType')) {
-      positionType =
-          EnumUtils.fromString(FlexPosition.values, map['positionType']);
+      positionType = EnumUtils.fromString(FlexPosition.values, map['positionType']);
     }
     if (map.containsKey('display')) {
       display = EnumUtils.fromString(FlexDisplay.values, map['display']);
@@ -284,15 +280,15 @@ class BeagleStyle {
     }
   }
 
-  String backgroundColor;
-  CornerRadius cornerRadius;
-  BeagleFlex flex;
-  FlexPosition positionType = FlexPosition.RELATIVE;
-  FlexDisplay display = FlexDisplay.FLEX;
-  BeagleSize size;
-  EdgeValue margin;
-  EdgeValue padding;
-  EdgeValue position;
-  num borderWidth;
-  String borderColor;
+  String? backgroundColor;
+  CornerRadius? cornerRadius;
+  BeagleFlex? flex;
+  FlexPosition? positionType = FlexPosition.RELATIVE;
+  FlexDisplay? display = FlexDisplay.FLEX;
+  BeagleSize? size;
+  EdgeValue? margin;
+  EdgeValue? padding;
+  EdgeValue? position;
+  num? borderWidth;
+  String? borderColor;
 }

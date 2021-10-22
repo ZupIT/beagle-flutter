@@ -15,27 +15,39 @@
  */
 
 import 'package:beagle/beagle.dart';
-
 import '../objects_fake/fake_design_system.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+
+class MockBeagleImageDownloader extends Mock implements BeagleImageDownloader {}
+
+class MockBeagleLogger extends Mock implements BeagleLogger {}
+
+class MockUrlBuilder extends Mock implements UrlBuilder {}
 
 Future<void> testSetupServiceLocator({
-  String baseUrl,
-  BeagleEnvironment environment,
-  HttpClient httpClient,
-  Map<String, ComponentBuilder> components,
-  bool useBeagleHeaders,
-  Map<String, ActionHandler> actions,
-  Map<String, NavigationController> navigationControllers,
-  BeagleDesignSystem designSystem,
-  BeagleImageDownloader imageDownloader,
-  BeagleLogger logger,
-  BeagleYogaFactory beagleYogaFactory,
+  String? baseUrl,
+  BeagleEnvironment? environment,
+  HttpClient? httpClient,
+  Map<String, ComponentBuilder>? components,
+  bool? useBeagleHeaders,
+  Map<String, ActionHandler>? actions,
+  Map<String, NavigationController>? navigationControllers,
+  BeagleDesignSystem? designSystem,
+  BeagleImageDownloader? imageDownloader,
+  BeagleLogger? logger,
+  BeagleYogaFactory? beagleYogaFactory,
+  UrlBuilder? urlBuilder,
 }) async {
   await beagleServiceLocator.reset();
 
   beagleServiceLocator
-    ..registerSingleton<BeagleYogaFactory>(beagleYogaFactory)
+    ..registerSingleton<BeagleYogaFactory>(
+        beagleYogaFactory ?? MockBeagleYogaFactory())
     ..registerSingleton<BeagleDesignSystem>(designSystem ?? FakeDesignSystem())
-    ..registerSingleton<BeagleImageDownloader>(imageDownloader)
-    ..registerSingleton<BeagleLogger>(logger);
+    ..registerSingleton<BeagleImageDownloader>(
+        imageDownloader ?? MockBeagleImageDownloader())
+    ..registerSingleton<BeagleLogger>(logger ?? MockBeagleLogger())
+    ..registerSingleton<UrlBuilder>(urlBuilder ?? MockUrlBuilder());
 }

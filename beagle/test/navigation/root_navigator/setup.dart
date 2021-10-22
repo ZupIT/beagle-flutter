@@ -28,12 +28,12 @@ class _SetupResult {
 }
 
 Future<_SetupResult> setupRootNavigatorTests({
-  @required WidgetTester tester,
-  String initialController,
+  required WidgetTester tester,
+  String? initialController,
   int numberOfInitialStacks = 0,
-  BeagleRoute initialRoute,
-  BeagleRoute expectedRoute,
-  RootNavigatorMocks mocks,
+  BeagleRoute? initialRoute,
+  BeagleRoute? expectedRoute,
+  RootNavigatorMocks? mocks,
 }) async {
   mocks = mocks ?? RootNavigatorMocks(numberOfInitialStacks);
   final rootNavigator = RootNavigator(

@@ -22,8 +22,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 class BeagleWebView extends StatefulWidget {
   /// Creates a new web view.
   const BeagleWebView({
-    Key key,
-    this.url,
+    Key? key,
+    required this.url,
   }) : super(key: key);
 
   /// The initial URL to load.
@@ -34,7 +34,7 @@ class BeagleWebView extends StatefulWidget {
 }
 
 class _BeagleWebView extends State<BeagleWebView> {
-  WebViewController _controller;
+  late WebViewController _controller;
 
   @override
   void didUpdateWidget(covariant BeagleWebView oldWidget) {
@@ -52,8 +52,7 @@ class _BeagleWebView extends State<BeagleWebView> {
       onWebResourceError: _handleError,
       onPageStarted: _handleLoading,
       onPageFinished: _handleSuccess,
-      onWebViewCreated: (WebViewController webViewController) =>
-          _controller = webViewController,
+      onWebViewCreated: (WebViewController webViewController) => _controller = webViewController,
     );
   }
 

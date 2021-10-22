@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import 'package:beagle/beagle.dart';
 import 'package:flutter/foundation.dart';
 
@@ -29,16 +28,17 @@ class AppAnalyticsProvider implements AnalyticsProvider {
     debugPrint("screen: ${record.screen}");
     debugPrint("timestamp: ${record.timestamp}");
 
-    if(record.component != null) {
-      debugPrint("component: ${record.component.values.join(", ")}");
+    if (record.component != null) {
+      debugPrint("component: ${record.component?.values.join(", ")}");
     }
 
-    if(record.attributes != null) {
-      debugPrint("attributes: ${record.attributes.values.join(", ")}");
+    if (record.attributes != null) {
+      debugPrint("attributes: ${record.attributes?.values.join(", ")}");
     }
 
-    if(record.additionalEntries != null) {
-      debugPrint("additionalEntries: ${record.additionalEntries.values.join(", ")}");
+    if (record.additionalEntries != null) {
+      debugPrint(
+          "additionalEntries: ${record.additionalEntries?.values.join(", ")}");
     }
   }
 

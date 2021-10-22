@@ -16,13 +16,12 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:beagle/beagle.dart';
-import 'package:flutter/foundation.dart';
 
 class DefaultBeagleImageDownloader implements BeagleImageDownloader {
   DefaultBeagleImageDownloader({
-    @required this.httpClient,
+    required this.httpClient,
+    // ignore: unnecessary_null_comparison
   }) : assert(httpClient != null);
 
   final HttpClient httpClient;
@@ -33,8 +32,7 @@ class DefaultBeagleImageDownloader implements BeagleImageDownloader {
     final response = await httpClient.sendRequest(request);
 
     if (response.status != HttpStatus.ok) {
-      throw BeagleImageDownloaderException(
-          statusCode: response.status, url: request.url);
+      throw BeagleImageDownloaderException(statusCode: response.status, url: request.url);
     }
 
     final bytes = response.bodyBytes;
@@ -47,17 +45,16 @@ class DefaultBeagleImageDownloader implements BeagleImageDownloader {
 }
 
 class BeagleImageDownloaderException implements Exception {
-  BeagleImageDownloaderException(
-      {@required this.statusCode, @required this.url})
+  BeagleImageDownloaderException({required this.statusCode, required this.url})
       : assert(url != null),
         assert(statusCode != null),
         _message = 'HTTP request failed, statusCode: $statusCode, $url';
 
-  final int statusCode;
+  final int? statusCode;
 
   final String _message;
 
-  final String url;
+  final String? url;
 
   @override
   String toString() => _message;

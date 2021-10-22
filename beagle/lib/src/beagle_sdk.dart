@@ -27,29 +27,30 @@ class BeagleSdk {
   /// documentation for more details.
   static void init({
     /// Attribute responsible for informing Beagle about the current build status of the application.
-    BeagleEnvironment environment,
+    BeagleEnvironment? environment,
 
     /// Informs the base URL used in Beagle in the application.
-    String baseUrl,
+    String? baseUrl,
 
     /// Interface that provides client to beagle make the requests.
-    HttpClient httpClient,
-    ViewClient viewClient,
-    Map<String, ComponentBuilder> components,
-    Map<String, ActionHandler> actions,
-    NavigationController defaultNavigationController,
+    HttpClient? httpClient,
+    ViewClient? viewClient,
+    Map<String, ComponentBuilder>? components,
+    Map<String, ActionHandler>? actions,
+    NavigationController? defaultNavigationController,
     Map<String, NavigationController> navigationControllers = const {},
 
     /// [BeagleDesignSystem] interface that provides design system to beagle components.
-    BeagleDesignSystem designSystem,
+    BeagleDesignSystem? designSystem,
 
     /// [BeagleImageDownloader] interface that provides image resource from network.
-    BeagleImageDownloader imageDownloader,
+    BeagleImageDownloader? imageDownloader,
 
     /// [BeagleLogger] interface that provides logger to beagle use in application.
-    BeagleLogger logger,
-    Map<String, Operation> operations,
-    AnalyticsProvider analyticsProvider
+    BeagleLogger? logger,
+    Map<String, Operation>? operations,
+    AnalyticsProvider? analyticsProvider,
+    bool? useBeagleHeaders,
   }) {
     Yoga.init();
 
@@ -61,17 +62,15 @@ class BeagleSdk {
     environment = environment ?? BeagleEnvironment.debug;
     designSystem = designSystem ?? DefaultEmptyDesignSystem();
     defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
-    imageDownloader =
-        imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
+    imageDownloader = imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
     operations = operations ?? {};
 
     actions = actions == null ? defaultActions : {...defaultActions, ...actions};
 
     Map<String, ComponentBuilder> lowercaseComponents =
-        components.map((key, value) => MapEntry(key.toLowerCase(), value));
+        (components ?? {}).map((key, value) => MapEntry(key.toLowerCase(), value));
 
-    Map<String, ActionHandler> lowercaseActions =
-        actions.map((key, value) => MapEntry(key.toLowerCase(), value));
+    Map<String, ActionHandler> lowercaseActions = actions.map((key, value) => MapEntry(key.toLowerCase(), value));
 
     setupServiceLocator(
       baseUrl: baseUrl,
@@ -86,15 +85,16 @@ class BeagleSdk {
       imageDownloader: imageDownloader,
       logger: logger,
       operations: operations,
-      analyticsProvider: analyticsProvider
+      analyticsProvider: analyticsProvider,
+      useBeagleHeaders: useBeagleHeaders ?? false,
     );
   }
 
   static void openScreen({
-    @required BeagleRoute route,
-    @required BuildContext context,
-    ScreenBuilder screenBuilder,
-    NavigationController initialController,
+    required BeagleRoute route,
+    required BuildContext context,
+    ScreenBuilder? screenBuilder,
+    NavigationController? initialController,
   }) async {
     await beagleServiceLocator.allReady();
     final navigator = RootNavigator(

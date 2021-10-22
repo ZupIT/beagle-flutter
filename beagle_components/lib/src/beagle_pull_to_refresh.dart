@@ -26,35 +26,33 @@ import 'internal/beagle_refresh_indicator.dart';
 /// You can define a child content for this widget and
 /// whenever the user scrolls down, calls the function "onPull" to update the child content
 class PullToRefresh extends StatefulWidget {
-  const PullToRefresh({
-    Key key,
-    @required this.onPull,
+  PullToRefresh({
+    Key? key,
+    required this.child,
+    this.onPull,
     this.isRefreshing,
     this.color,
-    @required this.child,
   }) : super(key: key);
 
   /// Function called when the user scrolls down the content
   /// This is required
-  final Function onPull;
+  final Function? onPull;
 
   /// Defines if the the refresh indicator should be running
-  final bool isRefreshing;
+  final bool? isRefreshing;
 
   /// The progress indicator's foreground color. The current theme's
   /// [ColorScheme.primary] by default.
-  final String color;
+  final String? color;
 
   /// The content to be rendered
   final Widget child;
 
   @override
   _BeaglePullToRefresh createState() => _BeaglePullToRefresh();
-
 }
 
 class _BeaglePullToRefresh extends State<PullToRefresh> {
-
   @override
   Widget build(BuildContext context) {
     /*
@@ -64,23 +62,23 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
       FIXME change the component below once the mentioned issue is closed
      */
     return BeagleRefreshIndicator(
-      color: HexColor(widget.color),
+      color:
+          widget.color != null && widget.color!.isNotEmpty ? HexColor(widget.color!) : Theme.of(context).primaryColor,
       child: _buildScrollableContent(),
       onRefresh: _onRefreshHandler,
-      isRefreshing: widget.isRefreshing,
+      isRefreshing: widget.isRefreshing ?? false,
     );
   }
 
   Widget _buildScrollableContent() {
-    return _isScrollable(widget.child) ? widget.child : ListView(
-        children: [widget.child],
-        scrollDirection: Axis.vertical
-    );
+    return _isScrollable(widget.child)
+        ? widget.child
+        : ListView(children: [widget.child], scrollDirection: Axis.vertical);
   }
 
   bool _isScrollable(Widget widget) => widget is ScrollView || widget is SingleChildScrollView;
 
   Future<void> _onRefreshHandler() async {
-      widget.onPull();
+    if (widget.onPull != null) widget.onPull!();
   }
 }

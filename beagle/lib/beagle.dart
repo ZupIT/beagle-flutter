@@ -64,6 +64,7 @@ export 'package:beagle/src/setup/beagle_design_system.dart';
 
 export 'package:beagle/src/style/beagle_yoga_factory.dart';
 
+export 'package:beagle/src/utils/caster.dart';
 export 'package:beagle/src/utils/color.dart';
 export 'package:beagle/src/utils/enum.dart';
 

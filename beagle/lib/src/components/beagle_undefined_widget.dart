@@ -20,8 +20,8 @@ import 'package:flutter/widgets.dart';
 /// A Undefined widget that displays a string of text.
 class BeagleUndefinedWidget extends StatelessWidget {
   const BeagleUndefinedWidget({
-    Key key,
-    BeagleEnvironment environment,
+    Key? key,
+    required BeagleEnvironment environment,
   })  : _environment = environment,
         super(key: key);
 
@@ -30,8 +30,6 @@ class BeagleUndefinedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _environment == BeagleEnvironment.debug
-        ? const Text('Undefined Component')
-        : const SizedBox.shrink();
+    return _environment == BeagleEnvironment.debug ? const Text('Undefined Component') : const SizedBox.shrink();
   }
 }

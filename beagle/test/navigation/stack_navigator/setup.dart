@@ -29,15 +29,15 @@ class _SetupResult {
 }
 
 Future<_SetupResult> setupStackNavigatorTests({
-  @required WidgetTester tester,
-  @required NavigationMocks mocks,
-  BeagleRoute initialRoute,
-  BeagleRoute expectedRoute,
-  BeagleUIElement expectedScreen,
+  required WidgetTester tester,
+  required NavigationMocks mocks,
+  required dynamic expectedRoute,
+  BeagleRoute? initialRoute,
+  BeagleUIElement? expectedScreen,
   dynamic expectedError,
 }) async {
   final navigator = StackNavigator(
-    initialRoute: initialRoute ?? LocalView(BeagleUIElement({ '_beagleComponent_': 'beagle:text' })),
+    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:text'})),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
     viewClient: mocks.viewClient,
@@ -49,7 +49,7 @@ Future<_SetupResult> setupStackNavigatorTests({
   );
 
   final expectations = StackNavigatorExpectations(
-    screen: expectedScreen,
+    screen: expectedScreen ?? BeagleUIElement({}),
     route: expectedRoute,
     mocks: mocks,
     expectedError: expectedError,

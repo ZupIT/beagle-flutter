@@ -17,7 +17,6 @@
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
-import 'package:flutter/foundation.dart';
 
 class RendererJS implements Renderer {
   final String _viewId;
@@ -31,48 +30,42 @@ class RendererJS implements Renderer {
     return mode.toString().split('.')[1];
   }
 
-  void _doRender(bool isFull, BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]) {
+  void _doRender(bool isFull, BeagleUIElement tree, [String? anchor, TreeUpdateMode? mode]) {
     final method = isFull ? 'doFullRender' : 'doPartialRender';
     final arguments = [jsonEncode(tree.properties)];
     if (anchor != null) arguments.add("'$anchor'");
     if (mode != null) arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
-    _beagleJSEngine.evaluateJavascriptCode(
-        "global.beagle.getViewById('$_viewId').getRenderer().$method(${arguments.join(", ")})");
+    _beagleJSEngine
+        .evaluateJavascriptCode("global.beagle.getViewById('$_viewId').getRenderer().$method(${arguments.join(", ")})");
   }
 
   @override
-  void doFullRender(BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]) {
+  void doFullRender(BeagleUIElement tree, [String? anchor, TreeUpdateMode? mode]) {
     _doRender(true, tree, anchor, mode);
   }
 
   @override
-  void doPartialRender(BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]) {
+  void doPartialRender(BeagleUIElement tree, [String? anchor, TreeUpdateMode? mode]) {
     _doRender(false, tree, anchor, mode);
   }
 
   @override
   void doTemplateRender({
-    @required TemplateManager templateManager,
-    @required String anchor,
-    @required List<List<BeagleDataContext>> contexts,
-    BeagleUIElement Function(BeagleUIElement, int) componentManager,
-    TreeUpdateMode mode,
+    required TemplateManager templateManager,
+    required String anchor,
+    required List<List<BeagleDataContext>> contexts,
+    BeagleUIElement Function(BeagleUIElement, int)? componentManager,
+    TreeUpdateMode? mode,
   }) {
     final arguments = [
       jsonEncode(templateManager.toJson()),
       "'$anchor'",
-      jsonEncode(
-          contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList())
+      jsonEncode(contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList())
     ];
     if (componentManager != null) {
-      final componentManagerCallbackId =
-          'global.beagle.doTemplateRender.$anchor.componentManagerCallback';
+      final componentManagerCallbackId = 'global.beagle.doTemplateRender.$anchor.componentManagerCallback';
       _beagleJSEngine.addJsCallback(componentManagerCallbackId, (args) {
-        return componentManager(
-            BeagleUIElement(args['component']), args['index'] as int);
+        return componentManager(BeagleUIElement(args['component']), args['index'] as int);
       });
       arguments.add(
           """function _componentManagerJs(c, i) { return sendMessage("$componentManagerCallbackId", JSON.stringify({ "component": c, "index": i })); }""");

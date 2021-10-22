@@ -21,7 +21,7 @@ import 'package:flutter/widgets.dart';
 /// A Text widget that displays a string of text with single style.
 class BeagleText extends StatelessWidget {
   const BeagleText({
-    Key key,
+    Key? key,
     this.text,
     this.textColor,
     this.alignment,
@@ -32,20 +32,20 @@ class BeagleText extends StatelessWidget {
   final dynamic text;
 
   /// This is a string value and it must be filled as HEX (Hexadecimal).
-  final String textColor;
+  final String? textColor;
 
   /// Defines the content alignment inside the widget.
-  final TextAlignment alignment;
+  final TextAlignment? alignment;
 
   /// Reference a native style in your local styles file to be applied on this
   /// Text.
-  final String styleId;
+  final String? styleId;
 
   @override
   Widget build(BuildContext context) {
     final beagleText = Text(
-      text.toString() ?? '',
-      textAlign: getTextAlign(alignment),
+      text.toString(),
+      textAlign: getTextAlign(alignment ?? TextAlignment.LEFT),
       style: getTextStyle(),
     );
     return alignment == TextAlignment.CENTER
@@ -53,29 +53,30 @@ class BeagleText extends StatelessWidget {
         : beagleText;
   }
 
-  TextAlign getTextAlign(TextAlignment alignment) {
+  TextAlign? getTextAlign(TextAlignment alignment) {
     if (alignment == TextAlignment.CENTER) {
       return TextAlign.center;
     } else if (alignment == TextAlignment.RIGHT) {
       return TextAlign.right;
     } else if (alignment == TextAlignment.LEFT) {
       return TextAlign.left;
-    } else {
-      return null;
     }
+    return null;
   }
 
-  Color getTextColor(String color) {
+  Color? getTextColor(String? color) {
     return color != null ? HexColor(color) : null;
   }
 
   TextStyle getTextStyle() {
     final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-    var textStyle = designSystem?.textStyle(styleId) ?? const TextStyle();
-    if (textColor != null && textColor.isNotEmpty) {
-      textStyle = textStyle.copyWith(color: getTextColor(textColor));
+    var textStyle = styleId != null && styleId!.isNotEmpty
+        ? designSystem.textStyle(styleId!)
+        : TextStyle();
+    if (textColor != null && textColor!.isNotEmpty) {
+      textStyle = textStyle!.copyWith(color: getTextColor(textColor));
     }
-    return textStyle;
+    return textStyle!;
   }
 }
 

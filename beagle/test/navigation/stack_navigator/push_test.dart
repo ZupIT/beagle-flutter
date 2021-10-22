@@ -17,23 +17,52 @@
 import 'dart:async';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
+import 'package:mocktail/mocktail.dart';
 import 'expectations.dart';
 import 'mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'setup.dart';
 
+class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
+
+class _BeagleViewJSMock extends Mock implements BeagleViewJS {}
+
+class _BuildContextMock extends Mock implements BuildContext {}
+
+class _BeagleViewMock extends Mock implements BeagleView {}
+
+class _StackTraceMock extends Mock implements StackTrace {}
+
+class _RouteMock extends Mock implements Route<dynamic> {}
+
 void main() {
+  setUpAll(() async {
+    await beagleServiceLocator.reset();
+
+    beagleServiceLocator.registerSingleton<BeagleViewJS>(_BeagleViewJSMock());
+
+    registerFallbackValue<BeagleView>(_BeagleViewMock());
+    registerFallbackValue<UnsafeBeagleWidget>(UnsafeBeagleWidget(null));
+    registerFallbackValue<BuildContext>(_BuildContextMock());
+    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
+    registerFallbackValue<StackTrace>(_StackTraceMock());
+    registerFallbackValue<Route<dynamic>>(_RouteMock());
+    registerFallbackValue<BeagleUIElement>(BeagleUIElement({}));
+    registerFallbackValue<RemoteView>(RemoteView(''));
+  });
+
   group('Given a StackNavigator class', () {
     final remoteView = RemoteView('/test');
-    final screen = BeagleUIElement({ 'id': 'test', '_beagleComponent_': 'beagle:container' });
+    final screen = BeagleUIElement({'id': 'test', '_beagleComponent_': 'beagle:container'});
     final error = Error();
-    StackNavigator navigator;
+    late StackNavigator navigator;
 
     Future<StackNavigatorExpectations> _setup({
-      @required WidgetTester tester,
-      @required NavigationMocks mocks,
-      BeagleRoute route,
+      required WidgetTester tester,
+      required NavigationMocks mocks,
+      dynamic route,
       dynamic expectedError,
     }) async {
       final result = await setupStackNavigatorTests(
@@ -161,7 +190,7 @@ void main() {
     /* This is an uncommon scenario where a custom Beagle component would create another navigator. This test ensures
     the correct navigator will be used no matter what. */
     group("When a view is pushed from a context where another navigator is the closest ancestor", () {
-      BuildContext buildContext;
+      late BuildContext buildContext;
 
       final initialPageOfAnotherNavigator = MaterialPageRoute<dynamic>(
         builder: (BuildContext context) {
@@ -188,6 +217,5 @@ void main() {
         expectations.shouldPushNewRoute();
       });
     });
-
   });
 }

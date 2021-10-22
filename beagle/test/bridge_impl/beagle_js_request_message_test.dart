@@ -36,7 +36,6 @@ void main() {
         };
 
         final jsRequestMessage = BeagleJSRequestMessage.fromJson(json);
-
         final result = jsRequestMessage.toRequest();
 
         expect(jsRequestMessage.requestId, expectedId);

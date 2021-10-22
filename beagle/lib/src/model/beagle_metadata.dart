@@ -16,7 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 
-class BeagleMetadata  {
+class BeagleMetadata {
   const BeagleMetadata({this.beagleStyle});
-  final BeagleStyle beagleStyle;
+  final BeagleStyle? beagleStyle;
 }

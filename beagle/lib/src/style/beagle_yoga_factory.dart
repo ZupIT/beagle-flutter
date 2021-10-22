@@ -22,10 +22,10 @@ import 'package:yoga_engine/yoga_engine.dart';
 
 class BeagleYogaFactory {
   YogaNode createYogaNode(Widget child) {
-    if(child is BeagleMetadataWidget) {
+    if (child is BeagleMetadataWidget) {
       return YogaNode(
         nodeProperties: createNodeProperties(child.beagleMetadata.beagleStyle),
-        child: child.child,
+        child: child.child!,
       );
     } else {
       return YogaNode(
@@ -35,13 +35,13 @@ class BeagleYogaFactory {
     }
   }
 
-  NodeProperties createNodeProperties(BeagleStyle style) {
+  NodeProperties createNodeProperties(BeagleStyle? style) {
     return mapToNodeProperties(style);
   }
 
   Widget createYogaLayout({
-    BeagleStyle style,
-    List<Widget> children,
+    BeagleStyle? style,
+    required List<Widget> children,
   }) {
     return BeagleYogaLayout(style: style, children: children);
   }

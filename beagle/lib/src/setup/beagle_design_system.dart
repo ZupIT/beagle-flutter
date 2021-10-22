@@ -19,11 +19,11 @@ import 'package:flutter/rendering.dart';
 
 ///TODO: NEEDS ADD DOCUMENTATION
 abstract class BeagleDesignSystem {
-  String image(String id);
+  String? image(String id);
 
-  BeagleButtonStyle buttonStyle(String id);
+  BeagleButtonStyle? buttonStyle(String id);
 
-  TextStyle textStyle(String id);
+  TextStyle? textStyle(String id);
 
-  BeagleNavigationBarStyle navigationBarStyle(String id);
+  BeagleNavigationBarStyle? navigationBarStyle(String id);
 }

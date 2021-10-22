@@ -20,9 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Given a style map', () {
     group('When I call BeagleStyle.fromMap passing the style map', () {
-      test(
-          'Then it should create a BeagleStyle object mapping the values correctly',
-          () {
+      test('Then it should create a BeagleStyle object mapping the values correctly', () {
         final styleMap = {
           'backgroundColor': '#FFFFF',
           'cornerRadius': {'radius': 5},
@@ -72,61 +70,61 @@ void main() {
         final style = BeagleStyle.fromMap(styleMap);
 
         expect(style.backgroundColor, '#FFFFF');
-        expect(style.cornerRadius.radius, 5);
+        expect(style.cornerRadius!.radius, 5);
 
-        expect(style.flex.flex, 1);
-        expect(style.flex.flexDirection, FlexDirection.ROW);
-        expect(style.flex.flexWrap, FlexWrap.WRAP);
-        expect(style.flex.justifyContent, JustifyContent.CENTER);
-        expect(style.flex.alignItems, AlignItems.BASELINE);
-        expect(style.flex.alignSelf, AlignSelf.FLEX_END);
-        expect(style.flex.alignContent, AlignContent.SPACE_AROUND);
-        expect(style.flex.basis.value, 1.0);
-        expect(style.flex.basis.type, UnitType.REAL);
-        expect(style.flex.grow, 1.1);
-        expect(style.flex.shrink, 1.2);
+        expect(style.flex!.flex, 1);
+        expect(style.flex!.flexDirection, FlexDirection.ROW);
+        expect(style.flex!.flexWrap, FlexWrap.WRAP);
+        expect(style.flex!.justifyContent, JustifyContent.CENTER);
+        expect(style.flex!.alignItems, AlignItems.BASELINE);
+        expect(style.flex!.alignSelf, AlignSelf.FLEX_END);
+        expect(style.flex!.alignContent, AlignContent.SPACE_AROUND);
+        expect(style.flex!.basis!.value, 1.0);
+        expect(style.flex!.basis!.type, UnitType.REAL);
+        expect(style.flex!.grow, 1.1);
+        expect(style.flex!.shrink, 1.2);
 
         expect(style.positionType, FlexPosition.ABSOLUTE);
         expect(style.display, FlexDisplay.NONE);
 
-        expect(style.size.width.value, 50);
-        expect(style.size.width.type, UnitType.REAL);
-        expect(style.size.height.value, 50.5);
-        expect(style.size.height.type, UnitType.REAL);
-        expect(style.size.maxWidth.value, 100.8);
-        expect(style.size.maxWidth.type, UnitType.PERCENT);
-        expect(style.size.maxHeight.value, 100);
-        expect(style.size.maxHeight.type, UnitType.REAL);
-        expect(style.size.minWidth.value, 35.8);
-        expect(style.size.minWidth.type, UnitType.PERCENT);
-        expect(style.size.minHeight.value, 35.5);
-        expect(style.size.minHeight.type, UnitType.REAL);
-        expect(style.size.aspectRatio, 5.34);
+        expect(style.size!.width!.value, 50);
+        expect(style.size!.width!.type, UnitType.REAL);
+        expect(style.size!.height!.value, 50.5);
+        expect(style.size!.height!.type, UnitType.REAL);
+        expect(style.size!.maxWidth!.value, 100.8);
+        expect(style.size!.maxWidth!.type, UnitType.PERCENT);
+        expect(style.size!.maxHeight!.value, 100);
+        expect(style.size!.maxHeight!.type, UnitType.REAL);
+        expect(style.size!.minWidth!.value, 35.8);
+        expect(style.size!.minWidth!.type, UnitType.PERCENT);
+        expect(style.size!.minHeight!.value, 35.5);
+        expect(style.size!.minHeight!.type, UnitType.REAL);
+        expect(style.size!.aspectRatio, 5.34);
 
-        expect(style.margin.left.value, 1);
-        expect(style.margin.left.type, UnitType.REAL);
-        expect(style.margin.right.value, 2);
-        expect(style.margin.right.type, UnitType.REAL);
-        expect(style.margin.top.value, 3);
-        expect(style.margin.top.type, UnitType.REAL);
-        expect(style.margin.bottom.value, 4);
-        expect(style.margin.bottom.type, UnitType.REAL);
-        expect(style.margin.start.value, 5);
-        expect(style.margin.start.type, UnitType.PERCENT);
-        expect(style.margin.end.value, 6);
-        expect(style.margin.end.type, UnitType.PERCENT);
-        expect(style.margin.horizontal.value, 7);
-        expect(style.margin.horizontal.type, UnitType.PERCENT);
-        expect(style.margin.vertical.value, 8);
-        expect(style.margin.vertical.type, UnitType.PERCENT);
-        expect(style.margin.all.value, 9);
-        expect(style.margin.all.type, UnitType.PERCENT);
+        expect(style.margin!.left!.value, 1);
+        expect(style.margin!.left!.type, UnitType.REAL);
+        expect(style.margin!.right!.value, 2);
+        expect(style.margin!.right!.type, UnitType.REAL);
+        expect(style.margin!.top!.value, 3);
+        expect(style.margin!.top!.type, UnitType.REAL);
+        expect(style.margin!.bottom!.value, 4);
+        expect(style.margin!.bottom!.type, UnitType.REAL);
+        expect(style.margin!.start!.value, 5);
+        expect(style.margin!.start!.type, UnitType.PERCENT);
+        expect(style.margin!.end!.value, 6);
+        expect(style.margin!.end!.type, UnitType.PERCENT);
+        expect(style.margin!.horizontal!.value, 7);
+        expect(style.margin!.horizontal!.type, UnitType.PERCENT);
+        expect(style.margin!.vertical!.value, 8);
+        expect(style.margin!.vertical!.type, UnitType.PERCENT);
+        expect(style.margin!.all!.value, 9);
+        expect(style.margin!.all!.type, UnitType.PERCENT);
 
-        expect(style.padding.all.value, 10);
-        expect(style.padding.all.type, UnitType.REAL);
+        expect(style.padding!.all!.value, 10);
+        expect(style.padding!.all!.type, UnitType.REAL);
 
-        expect(style.position.all.value, 11);
-        expect(style.position.all.type, UnitType.REAL);
+        expect(style.position!.all!.value, 11);
+        expect(style.position!.all!.type, UnitType.REAL);
 
         expect(style.borderWidth, 3);
         expect(style.borderColor, '#00000');

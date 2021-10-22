@@ -18,13 +18,13 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 const String CUSTOM_CONTROLLER_NAME = 'myCustomController';
 
 abstract class _RootNavigatorMocks {
   StackNavigator stackNavigatorFactory({
-    BeagleRoute initialRoute,
+    BeagleRoute? initialRoute,
     ScreenBuilder screenBuilder,
     BeagleNavigator rootNavigator,
     BeagleLogger logger,
@@ -55,6 +55,10 @@ class _BeagleServiceMock extends Mock implements BeagleService {
 }
 
 class _StackNavigatorStructureMock extends Mock implements StackNavigator {
+  _StackNavigatorStructureMock() {
+    when(() => pushView(any(), any())).thenAnswer((_) async {});
+  }
+
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return super.toString();
@@ -105,20 +109,22 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   @override
   ViewClient get viewClient => navigator.viewClient;
 
-  BuildContext buildContext;
+  late BuildContext buildContext;
 
   @override
   Widget build(_) {
     // It's important to render a dummy navigator so we can simulate the dynamic of having multiple navigators
     return Navigator(
       onGenerateInitialRoutes: (NavigatorState state, String routeName) {
-        return [MaterialPageRoute(
-          builder: (BuildContext context){
-            buildContext = context;
-            return Container();
-          },
-          settings: RouteSettings(name: 'test'),
-        )];
+        return [
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              buildContext = context;
+              return Container();
+            },
+            settings: RouteSettings(name: 'test'),
+          )
+        ];
       },
     );
   }
@@ -138,22 +144,22 @@ class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {
   final rootNavigatorObserver = _NavigatorObserverMock();
   final topNavigatorObserver = _NavigatorObserverMock();
   final List<StackNavigatorMock> initialPages = [];
-  StackNavigatorMock lastStackNavigator;
+  late StackNavigatorMock lastStackNavigator;
 
-  StackNavigator _newStackNavigator() {
+  StackNavigatorMock _newStackNavigator() {
     lastStackNavigator = StackNavigatorMock();
     return lastStackNavigator;
   }
 
   RootNavigatorMocks([int numberOfInitialPages = 0]) {
-    when(stackNavigatorFactory(
-      controller: anyNamed('controller'),
-      initialRoute: anyNamed('initialRoute'),
-      logger: anyNamed('logger'),
-      rootNavigator: anyNamed('rootNavigator'),
-      screenBuilder: anyNamed('screenBuilder'),
-      viewClient: anyNamed('viewClient'),
-    )).thenAnswer((_) => _newStackNavigator());
+    when(() => stackNavigatorFactory(
+          controller: any(named: 'controller'),
+          initialRoute: any(named: 'initialRoute'),
+          logger: any(named: 'logger'),
+          rootNavigator: any(named: 'rootNavigator'),
+          screenBuilder: any(named: 'screenBuilder'),
+          viewClient: any(named: 'viewClient'),
+        )).thenAnswer((_) => _newStackNavigator());
 
     for (int i = 0; i < numberOfInitialPages; i++) {
       initialPages.add(_newStackNavigator());

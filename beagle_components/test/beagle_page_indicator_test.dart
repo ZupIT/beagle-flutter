@@ -29,8 +29,8 @@ void main() {
     Key key = pageIndicatorKey,
     String selectedColor = selectedColor,
     String unselectedColor = unselectedColor,
-    int numberOfPages,
-    int currentPage,
+    int numberOfPages = 0,
+    int currentPage = 0,
   }) {
     return MaterialApp(
       home: BeaglePageIndicator(
@@ -49,11 +49,10 @@ void main() {
       testWidgets('Then it should have two material widgets',
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
-
-        final dotFinder = find.byType(Material);
-        expect(dotFinder, findsNWidgets(2));
+        expect(find.byType(Material), findsNWidgets(2));
       });
     });
+
     group('When currentPage is 0', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 0);
       testWidgets(
@@ -61,15 +60,12 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
 
-        final expectedFirstDotColor = HexColor(selectedColor);
-        final expectedSecondDotColor = HexColor(unselectedColor);
-
         final widgets = tester.widgetList<Material>(find.byType(Material));
-
-        expect(expectedFirstDotColor, widgets.elementAt(0).color);
-        expect(expectedSecondDotColor, widgets.elementAt(1).color);
+        expect(HexColor(selectedColor), widgets.elementAt(0).color);
+        expect(HexColor(unselectedColor), widgets.elementAt(1).color);
       });
     });
+
     group('When currentPage is 1', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 1);
       testWidgets(
@@ -77,13 +73,9 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
 
-        final expectedFirstDotColor = HexColor(unselectedColor);
-        final expectedSecondDotColor = HexColor(selectedColor);
-
         final widgets = tester.widgetList<Material>(find.byType(Material));
-
-        expect(expectedFirstDotColor, widgets.elementAt(0).color);
-        expect(expectedSecondDotColor, widgets.elementAt(1).color);
+        expect(HexColor(unselectedColor), widgets.elementAt(0).color);
+        expect(HexColor(selectedColor), widgets.elementAt(1).color);
       });
     });
   });

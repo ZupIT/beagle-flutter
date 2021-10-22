@@ -16,17 +16,29 @@
 
 import 'dart:convert';
 
+import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 import 'package:beagle/src/bridge_impl/beagle_service_js.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockBeagleJSEngine extends Mock implements BeagleJSEngine {}
 
+class MockHttpClient extends Mock implements HttpClient {}
+
+class MockViewClient extends Mock implements ViewClient {}
+
+class MockNavigationController extends Mock implements NavigationController {}
+
 void main() {
   final beagleJSEngineMock = MockBeagleJSEngine();
+
+  final httpClientMock = MockHttpClient();
+  final viewClientMock = MockViewClient();
+  final navigationControllerMock = MockNavigationController();
+
   const baseUrl = 'https://usebeagle.io';
-  final actions = {'beagle:alert': ({action, view, element, context}) {}};
+  final actions = {'beagle:alert': ({required action, required view, required element, required context}) {}};
   final operations = {'operation': ([paramA, paramB]) {}};
 
   setUp(() {
@@ -36,6 +48,11 @@ void main() {
   group('Given a BeagleServiceJS', () {
     final beagleService = BeagleServiceJS(
       beagleJSEngineMock,
+      httpClient: httpClientMock,
+      viewClient: viewClientMock,
+      defaultNavigationController: navigationControllerMock,
+      components: {},
+      navigationControllers: {},
       baseUrl: baseUrl,
       actions: actions,
       operations: operations,
@@ -43,12 +60,14 @@ void main() {
 
     group('When start is called', () {
       test('Then should start BeagleJSEngine', () async {
+        when(() => beagleJSEngineMock.start()).thenAnswer((_) async => {});
         await beagleService.start();
 
-        verify(beagleJSEngineMock.start()).called(1);
+        verify(beagleJSEngineMock.start).called(1);
       });
 
       test('Then should start beagle javascript core', () async {
+        when(() => beagleJSEngineMock.start()).thenAnswer((_) async => {});
         await beagleService.start();
 
         final expectedParams = {
@@ -57,15 +76,15 @@ void main() {
           'customOperations': operations.keys.toList(),
         };
 
-        verify(beagleJSEngineMock.evaluateJavascriptCode(
-                'global.beagle.start(${json.encode(expectedParams)})'))
+        verify(() => beagleJSEngineMock.evaluateJavascriptCode('global.beagle.start(${json.encode(expectedParams)})'))
             .called(1);
       });
 
       test('Then should register http request listener', () async {
+        when(() => beagleJSEngineMock.start()).thenAnswer((_) async => {});
         await beagleService.start();
 
-        verify(beagleJSEngineMock.onHttpRequest(any)).called(1);
+        verify(() => beagleJSEngineMock.onHttpRequest(any())).called(1);
       });
     });
   });

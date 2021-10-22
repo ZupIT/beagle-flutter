@@ -22,33 +22,30 @@ import 'package:flutter/widgets.dart';
 import 'dart:convert';
 
 class DefaultViewClient implements ViewClient {
-  DefaultViewClient({this.httpClient, this.logger, this.urlBuilder});
+  DefaultViewClient({required this.httpClient, required this.logger, required this.urlBuilder});
 
   final HttpClient httpClient;
   final BeagleLogger logger;
   final UrlBuilder urlBuilder;
   final Map<String, BeagleUIElement> _preFetched = {};
 
-  String _convertBodyToString(dynamic body) {
+  String? _convertBodyToString(dynamic body) {
     if (body is String) return body;
     if (body is Map) return json.encoder.convert(body);
     return null;
   }
 
   Future<BeagleUIElement> fetchView(RemoteView route) async {
-    final response = await httpClient.sendRequest(
-      BeagleRequest(
-        urlBuilder.build(route.url),
-        method: route.httpAdditionalData?.method,
-        headers: route.httpAdditionalData?.headers,
-        body: _convertBodyToString(route.httpAdditionalData?.body),
-      )
-    );
+    final response = await httpClient.sendRequest(BeagleRequest(
+      urlBuilder.build(route.url),
+      method: route.httpAdditionalData?.method,
+      headers: route.httpAdditionalData?.headers,
+      body: _convertBodyToString(route.httpAdditionalData?.body),
+    ));
 
     if (response.status >= 400) {
       throw ErrorDescription(
-          "${route.httpAdditionalData?.method ?? "GET"} ${urlBuilder.build(route.url)}. Response status: ${response
-              .status}");
+          "${route.httpAdditionalData?.method ?? "GET"} ${urlBuilder.build(route.url)}. Response status: ${response.status}");
     }
 
     return BeagleUIElement(json.decode(response.body));
@@ -57,7 +54,7 @@ class DefaultViewClient implements ViewClient {
   @override
   Future<BeagleUIElement> fetch(RemoteView route) async {
     if (_preFetched[route.url] != null) {
-      final result = _preFetched[route.url];
+      final result = _preFetched[route.url] as BeagleUIElement;
       _preFetched.remove(route.url);
       return result;
     }

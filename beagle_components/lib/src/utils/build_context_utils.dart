@@ -23,7 +23,7 @@ extension BuildContextUtils on BuildContext {
       return this;
     }
 
-    BuildContext widgetContext;
+    late BuildContext widgetContext;
 
     void visitor(Element element) {
       if (_compareWidgetKey(element, widgetKey)) {
@@ -44,7 +44,7 @@ extension BuildContextUtils on BuildContext {
     void visitor(Element element) {
       if (element.widget is InputValidation &&
           (element.widget as InputValidation).hasError()) {
-          hasError = true;
+        hasError = true;
       } else {
         element.visitChildElements(visitor);
       }
@@ -56,7 +56,10 @@ extension BuildContextUtils on BuildContext {
   }
 
   bool _compareWidgetKey(BuildContext context, String widgetKey) {
-    final ValueKey<String> key = (context.widget.key is ValueKey<String>) ? context.widget.key : null;
+    final ValueKey<String>? key =
+        (context.widget.key != null && context.widget.key is ValueKey<String>)
+            ? context.widget.key as ValueKey<String>?
+            : null;
     return key != null && key.value == widgetKey;
   }
 }

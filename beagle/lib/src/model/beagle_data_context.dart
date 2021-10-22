@@ -21,7 +21,7 @@ class BeagleDataContext {
   dynamic value;
 
   BeagleDataContext({
-    this.id,
+    required this.id,
     this.value,
   });
 

@@ -33,17 +33,17 @@ class BeagleNavigationBarStyle {
     this.titleTextStyle,
   });
 
-  final Widget leading;
-  final double elevation;
-  final Color shadowColor;
-  final Color backgroundColor;
-  final IconThemeData iconTheme;
-  final IconThemeData actionsIconTheme;
-  final TextTheme textTheme;
-  final bool centerTitle;
-  final double titleSpacing;
-  final double toolbarHeight;
-  final double leadingWidth;
-  final TextStyle toolbarTextStyle;
-  final TextStyle titleTextStyle;
+  final Widget? leading;
+  final double? elevation;
+  final Color? shadowColor;
+  final Color? backgroundColor;
+  final IconThemeData? iconTheme;
+  final IconThemeData? actionsIconTheme;
+  final TextTheme? textTheme;
+  final bool? centerTitle;
+  final double? titleSpacing;
+  final double? toolbarHeight;
+  final double? leadingWidth;
+  final TextStyle? toolbarTextStyle;
+  final TextStyle? titleTextStyle;
 }

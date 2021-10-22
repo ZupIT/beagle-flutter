@@ -15,7 +15,6 @@
  */
 
 import 'dart:ui';
-
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 

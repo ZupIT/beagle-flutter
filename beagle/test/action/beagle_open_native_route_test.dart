@@ -17,7 +17,8 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:flutter/src/widgets/navigator.dart' as flutter;
 
 class ContextMock extends Mock implements BuildContext {}
 
@@ -25,11 +26,16 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 class MockOpenNativeRoute extends Mock implements BeagleOpenNativeRoute {}
 
+class MockRoute extends flutter.Route<dynamic> {
+  MockRoute();
+}
+
 void main() {
   group('Given Beagle Open Native Route Action ', () {
-    ContextMock _mockContext;
+    ContextMock _mockContext = ContextMock();
     const mockRoute = '/route';
-    NavigatorObserver mockObserver;
+    registerFallbackValue<flutter.Route<dynamic>>(MockRoute());
+    NavigatorObserver mockObserver = NavigatorObserver();
     final BeagleOpenNativeRoute mockOpenNativeRoute = MockOpenNativeRoute();
 
     setUp(() {
@@ -40,8 +46,7 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         routes: {mockRoute: (context) => const Text('Test')},
         home: ElevatedButton(
-          onPressed: () =>
-              {mockOpenNativeRoute.navigate(_mockContext, mockRoute)},
+          onPressed: () => {mockOpenNativeRoute.navigate(_mockContext, mockRoute)},
           child: const SizedBox.shrink(),
         ),
         navigatorObservers: [mockObserver],
@@ -57,7 +62,7 @@ void main() {
       testWidgets('Then it should push a route', (WidgetTester tester) async {
         await _buildPage(tester);
         await _navigate(tester);
-        verify(mockObserver.didPush(any, any));
+        verify(() => mockObserver.didPush(any(), any()));
       });
     });
   });

@@ -24,8 +24,8 @@ class BeagleTabBar extends StatefulWidget {
   static const ICON_SIZE = 32;
 
   const BeagleTabBar({
-    Key key,
-    this.items,
+    Key? key,
+    required this.items,
     this.currentTab,
     this.onTabSelection,
   }) : super(key: key);
@@ -35,30 +35,26 @@ class BeagleTabBar extends StatefulWidget {
   final List<TabBarItem> items;
 
   /// Currently selected Tab.
-  final int currentTab;
+  final int? currentTab;
 
   /// Action that will be performed when a tab is pressed.
-  final void Function(int) onTabSelection;
+  final void Function(int)? onTabSelection;
 
   @override
   _BeagleTabBarState createState() => _BeagleTabBarState();
 }
 
-class _BeagleTabBarState extends State<BeagleTabBar>
-    with TickerProviderStateMixin {
-  TabController _tabController;
-  static final imageStyle = BeagleStyle(
-    size: BeagleSize(
-      height: UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL),
-    ),
-  );
+class _BeagleTabBarState extends State<BeagleTabBar> with TickerProviderStateMixin {
+  late TabController _tabController;
+  static final imageStyle =
+      BeagleStyle(size: BeagleSize(height: UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL)));
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
       initialIndex: widget.currentTab ?? 0,
-      length: widget.items == null ? 0 : widget.items.length,
+      length: widget.items.length,
       vsync: this,
     );
   }
@@ -66,11 +62,11 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   @override
   void didUpdateWidget(covariant BeagleTabBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final currentSelectedTab = widget.currentTab ?? 0;
-    final previousSelectedTab = oldWidget.currentTab ?? 0;
+    final currentSelectedTab = widget.currentTab;
+    final previousSelectedTab = oldWidget.currentTab;
 
     if (previousSelectedTab != currentSelectedTab) {
-      _tabController.animateTo(widget.currentTab);
+      _tabController.animateTo(widget.currentTab ?? 0);
     }
   }
 
@@ -83,38 +79,32 @@ class _BeagleTabBarState extends State<BeagleTabBar>
   @override
   Widget build(BuildContext context) {
     return Container(
-      // TODO: check if its viable to maintain this
-      color: Theme.of(context).primaryColor,
-      child: TabBar(
-        controller: _tabController,
-        onTap: widget.onTabSelection,
-        tabs: buildTabs(),
-      ),
-    );
+        // TODO: check if its viable to maintain this
+        color: Theme.of(context).primaryColor,
+        child: TabBar(controller: _tabController, onTap: widget.onTabSelection, tabs: buildTabs()));
   }
 
   List<Widget> buildTabs() {
     return widget.items
-        .map(
-          (tabBarItem) => Tab(
-            text: tabBarItem.title,
-            icon: tabBarItem.icon == null
-                ? null
-                : BeagleFlexWidget(children: [BeagleImage(path: tabBarItem.icon)], style: imageStyle),
-          ),
-        )
+        .map((tabBarItem) => Tab(
+              text: tabBarItem.title,
+              icon: tabBarItem.icon == null
+                  ? null
+                  : BeagleFlexWidget(
+                      children: tabBarItem.icon != null ? [BeagleImage(path: tabBarItem.icon!)] : [],
+                      style: imageStyle,
+                    ),
+            ))
         .toList();
   }
 }
 
 class TabBarItem {
   TabBarItem(this.title, this.icon);
-
   TabBarItem.fromJson(Map<String, dynamic> json)
-      : title = json['title'] ?? '',
-        icon =
-            json['icon'] == null ? null : LocalImagePath.fromJson(json['icon']);
+      : title = BeagleCaster.castToString(json['title']),
+        icon = json['icon'] != null ? LocalImagePath.fromJson(json['icon']) : null;
 
   final String title;
-  final LocalImagePath icon;
+  final LocalImagePath? icon;
 }

@@ -18,7 +18,7 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 const SERVER_DELAY_MS = 50;
 
@@ -56,7 +56,7 @@ abstract class _NavigationMocks {
 int _nextId = 0;
 
 class _Ref<T> {
-  T current;
+  late T current;
 }
 
 class NavigationMocks extends Mock implements _NavigationMocks {
@@ -68,8 +68,8 @@ class NavigationMocks extends Mock implements _NavigationMocks {
   final screenKey = Key('beagle_widget_${_nextId++}');
   final List<PageRoute<dynamic>> initialPages = [];
   final WidgetTester tester;
-  BuildContext lastBuildContext;
-  UnsafeBeagleWidget lastWidget;
+  late BuildContext lastBuildContext;
+  late UnsafeBeagleWidget lastWidget;
 
   NavigationMocks(this.tester, [int numberOfInitialPages = 0]) {
     for (int i = 0; i < numberOfInitialPages; i++) {
@@ -85,69 +85,73 @@ class NavigationMocks extends Mock implements _NavigationMocks {
   }
 
   void _mockFunctions() {
-    when(screenBuilder(any, any)).thenAnswer((_) => Builder(builder: (BuildContext context) {
-      lastBuildContext = context;
-      return Container(key: screenKey);
-    }));
+    when(() => screenBuilder(any(), any())).thenAnswer((_) => Builder(builder: (BuildContext context) {
+          lastBuildContext = context;
+          return Container(key: screenKey);
+        }));
 
-    when(beagleWidgetFactory(any)).thenAnswer((_) {
+    when(() => beagleWidgetFactory(any())).thenAnswer((_) {
       lastWidget = _BeagleWidgetMock();
       return lastWidget;
     });
   }
 
   void mockSuccessfulRequest(RemoteView route, BeagleUIElement result) {
-    when(viewClient.fetch(route)).thenAnswer((_) async {
+    when(() => viewClient.fetch(route)).thenAnswer((_) async {
       await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
       return result;
     });
   }
 
   void mockUnsuccessfulRequest(RemoteView route, dynamic error) {
-    when(viewClient.fetch(route)).thenAnswer((_) async {
+    when(() => viewClient.fetch(route)).thenAnswer((_) async {
       await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
       throw error;
     });
   }
 
   void mockCompletionOnLoading() {
-    when(controller.onLoading(
-      context: anyNamed('context'),
-      view: anyNamed('view'),
-      completeNavigation: anyNamed('completeNavigation'),
-    )).thenAnswer((realInvocation) => realInvocation.namedArguments[Symbol('completeNavigation')]());
+    when(() => controller.onLoading(
+          context: any(named: 'context'),
+          view: any(named: 'view'),
+          completeNavigation: any(named: 'completeNavigation'),
+        )).thenAnswer((realInvocation) => realInvocation.namedArguments[Symbol('completeNavigation')]());
   }
 
   void mockCompletionOnError() {
-    when(controller.onError(
-      context: anyNamed('context'),
-      view: anyNamed('view'),
-      completeNavigation: anyNamed('completeNavigation'),
-      stackTrace: anyNamed('stackTrace'),
-      retry: anyNamed('retry'),
-      error: anyNamed('error'),
-    )).thenAnswer((realInvocation) {
+    when(() => controller.onError(
+          context: any(named: 'context'),
+          view: any(named: 'view'),
+          completeNavigation: any(named: 'completeNavigation'),
+          stackTrace: any(named: 'stackTrace'),
+          retry: any(named: 'retry'),
+          error: any(named: 'error'),
+        )).thenAnswer((realInvocation) {
       realInvocation.namedArguments[Symbol('completeNavigation')]();
     });
   }
 
   _Ref<Future<void> Function()> mockRetryOnError() {
     final retry = _Ref<Future<void> Function()>();
-    when(controller.onError(
-      context: anyNamed('context'),
-      view: anyNamed('view'),
-      completeNavigation: anyNamed('completeNavigation'),
-      stackTrace: anyNamed('stackTrace'),
-      retry: anyNamed('retry'),
-      error: anyNamed('error'),
-    )).thenAnswer((realInvocation) {
+    when(() => controller.onError(
+          context: any(named: 'context'),
+          view: any(named: 'view'),
+          completeNavigation: any(named: 'completeNavigation'),
+          stackTrace: any(named: 'stackTrace'),
+          retry: any(named: 'retry'),
+          error: any(named: 'error'),
+        )).thenAnswer((realInvocation) {
       retry.current = realInvocation.namedArguments[Symbol('retry')];
     });
     return retry;
   }
 }
 
-StackNavigator createStackNavigator({NavigationMocks mocks, BeagleRoute initialRoute, int initialNumberOfPages = 0}) {
+StackNavigator createStackNavigator({
+  required NavigationMocks mocks,
+  BeagleRoute? initialRoute,
+  int initialNumberOfPages = 0,
+}) {
   final List<Route<dynamic>> pages = [];
   for (int i = 0; i < initialNumberOfPages; i++) {
     pages.add(MaterialPageRoute<dynamic>(
@@ -160,13 +164,13 @@ StackNavigator createStackNavigator({NavigationMocks mocks, BeagleRoute initialR
   }
 
   return StackNavigator(
-    initialRoute: initialRoute ?? LocalView(BeagleUIElement({ '_beagleComponent_': 'beagle:container' })),
+    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:container'})),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
     viewClient: mocks.viewClient,
     rootNavigator: mocks.rootNavigator,
     logger: mocks.logger,
     beagleWidgetFactory: mocks.beagleWidgetFactory,
-    initialPages: initialNumberOfPages == 0 ? null : pages,
+    initialPages: initialNumberOfPages == 0 ? [] : pages,
   );
 }

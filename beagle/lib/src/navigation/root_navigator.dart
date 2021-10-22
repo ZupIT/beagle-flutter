@@ -16,26 +16,27 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/after_beagle_initialization.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 typedef ScreenBuilder = Widget Function(UnsafeBeagleWidget beagleWidget, BuildContext context);
 
 typedef _StackNavigatorFactory = StackNavigator Function({
-  BeagleRoute initialRoute,
-  ScreenBuilder screenBuilder,
-  BeagleNavigator rootNavigator,
-  BeagleLogger logger,
-  ViewClient viewClient,
-  NavigationController controller,
+  required BeagleRoute initialRoute,
+  required ScreenBuilder screenBuilder,
+  required BeagleNavigator rootNavigator,
+  required BeagleLogger logger,
+  required ViewClient viewClient,
+  required NavigationController controller,
 });
 
 StackNavigator _defaultStackNavigatorFactory({
-  BeagleRoute initialRoute,
-  ScreenBuilder screenBuilder,
-  BeagleNavigator rootNavigator,
-  BeagleLogger logger,
-  ViewClient viewClient,
-  NavigationController controller,
+  required BeagleRoute initialRoute,
+  required ScreenBuilder screenBuilder,
+  required BeagleNavigator rootNavigator,
+  required BeagleLogger logger,
+  required ViewClient viewClient,
+  required NavigationController controller,
 }) {
   return StackNavigator(
     initialRoute: initialRoute,
@@ -56,17 +57,17 @@ String _createRouteName() {
 /// Main Beagle Navigator
 class RootNavigator extends StatefulWidget {
   RootNavigator({
-    @required this.initialRoute,
-    @required this.screenBuilder,
+    required this.initialRoute,
+    required this.screenBuilder,
     this.initialController,
     this.navigatorObservers = const [],
-    _StackNavigatorFactory stackNavigatorFactory,
+    _StackNavigatorFactory? stackNavigatorFactory,
     this.initialPages = const [],
   }) : stackNavigatorFactory = stackNavigatorFactory ?? _defaultStackNavigatorFactory;
 
   final BeagleRoute initialRoute;
   final ScreenBuilder screenBuilder;
-  final NavigationController initialController;
+  final NavigationController? initialController;
   final List<NavigatorObserver> navigatorObservers;
 
   /// the following properties are for testing purposes
@@ -88,7 +89,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
       screenBuilder: widget.screenBuilder,
       rootNavigator: this,
       logger: logger,
-      viewClient: beagleService.viewClient,
+      viewClient: beagleService!.viewClient,
       controller: controller,
     );
   }
@@ -116,16 +117,13 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
       return pages;
     }
 
-    final controller = widget.initialController ?? beagleService.defaultNavigationController;
+    final controller = widget.initialController ?? beagleService!.defaultNavigationController;
     return [_createNewRoute(widget.initialRoute, controller)];
   }
 
-  NavigationController _getControllerById(String id) {
-    final entry = beagleService.navigationControllers.entries.firstWhere(
-      (element) => element.key == id,
-      orElse: () => null,
-    );
-    return entry?.value ?? beagleService.defaultNavigationController;
+  NavigationController _getControllerById(String? id) {
+    final entry = beagleService!.navigationControllers.entries.firstWhereOrNull((element) => element.key == id);
+    return entry?.value ?? beagleService!.defaultNavigationController;
   }
 
   /// Gets a copy of the navigation history. Useful for testing.
@@ -154,7 +152,7 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
       // pops the whole RootNavigator from its parent navigator
       return Navigator.of(context).pop();
     }
-    _thisNavigatorKey.currentState.pop();
+    _thisNavigatorKey.currentState?.pop();
     _history.removeLast();
   }
 
@@ -169,8 +167,8 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   }
 
   @override
-  Future<void> pushStack(BeagleRoute route, [String controllerId]) async {
-    _thisNavigatorKey.currentState.push(_createNewRoute(route, _getControllerById(controllerId)));
+  Future<void> pushStack(BeagleRoute route, [String? controllerId]) async {
+    _thisNavigatorKey.currentState?.push(_createNewRoute(route, _getControllerById(controllerId)));
   }
 
   @override
@@ -179,17 +177,17 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   }
 
   @override
-  Future<void> resetApplication(BeagleRoute route, [String controllerId]) async {
+  Future<void> resetApplication(BeagleRoute route, [String? controllerId]) async {
     _history = [];
-    _thisNavigatorKey.currentState.pushAndRemoveUntil(
+    _thisNavigatorKey.currentState?.pushAndRemoveUntil(
       _createNewRoute(route, _getControllerById(controllerId)),
       (route) => false,
     );
   }
 
   @override
-  Future<void> resetStack(BeagleRoute route, [String controllerId]) async {
+  Future<void> resetStack(BeagleRoute route, [String? controllerId]) async {
     _history.removeLast();
-    _thisNavigatorKey.currentState.pushReplacement(_createNewRoute(route, _getControllerById(controllerId)));
+    _thisNavigatorKey.currentState?.pushReplacement(_createNewRoute(route, _getControllerById(controllerId)));
   }
 }

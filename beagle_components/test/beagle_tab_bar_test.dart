@@ -18,7 +18,7 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'service_locator/service_locator.dart';
 
@@ -32,7 +32,8 @@ void main() {
   final designSystemMock = MockDesignSystem();
   final beagleLoggerMock = MockBeagleLogger();
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  when(designSystemMock.image(any)).thenReturn('images/beagle.png');
+
+  when(() => designSystemMock.image(any())).thenReturn('images/beagle.png');
 
   const tabBarKey = Key('BeagleTabBar');
   final tabBarItems = <TabBarItem>[
@@ -43,10 +44,10 @@ void main() {
 
   Future<Widget> createWidget({
     Key key = tabBarKey,
-    BeagleDesignSystem designSystem,
+    BeagleDesignSystem? designSystem,
     List<TabBarItem> items = const [],
     int currentTab = 0,
-    void Function(int) onTabSelection,
+    void Function(int)? onTabSelection,
   }) async {
     await testSetupServiceLocator(
       designSystem: designSystem,
@@ -54,10 +55,10 @@ void main() {
       beagleYogaFactory: beagleYogaFactoryMock,
     );
 
-    when(beagleYogaFactoryMock.createYogaLayout(
-      style: anyNamed('style'),
-      children: anyNamed('children'),
-    )).thenAnswer((realInvocation) {
+    when(() => beagleYogaFactoryMock.createYogaLayout(
+          style: any(named: 'style'),
+          children: any(named: 'children'),
+        )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
     });
@@ -68,7 +69,7 @@ void main() {
           key: tabBarKey,
           items: items,
           currentTab: currentTab,
-          onTabSelection: onTabSelection,
+          onTabSelection: onTabSelection ?? (_) {},
         ),
       ),
     );
@@ -81,27 +82,18 @@ void main() {
       testWidgets('Then it should have a TabBar child',
           (WidgetTester tester) async {
         await tester.pumpWidget(await createWidget());
-
-        final tabBarFinder = find.byType(TabBar);
-
-        expect(tabBarFinder, findsOneWidget);
+        expect(find.byType(TabBar), findsOneWidget);
       });
 
       testWidgets('Then it should have the correct number of Tabs',
           (WidgetTester tester) async {
         await tester.pumpWidget(await createWidget(items: tabBarItems));
-
-        final tabFinder = find.byType(Tab);
-
-        expect(tabFinder, findsNWidgets(tabBarItems.length));
+        expect(find.byType(Tab), findsNWidgets(tabBarItems.length));
       });
 
       testWidgets('Then it should have icons', (WidgetTester tester) async {
         await tester.pumpWidget(await createWidget(items: tabBarItems));
-
-        final imageFinder = find.byType(BeagleImage);
-
-        expect(imageFinder, findsNWidgets(tabBarItems.length));
+        expect(find.byType(BeagleImage), findsNWidgets(tabBarItems.length));
       });
     });
 
@@ -111,9 +103,7 @@ void main() {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         await tester.pumpWidget(await createWidget(items: tabBarItems));
 
-        final tabBarFinder = find.byType(TabBar);
-
-        expect(tabBarFinder, findsOneWidget);
+        expect(find.byType(TabBar), findsOneWidget);
         debugDefaultTargetPlatformOverride = null;
       });
 
@@ -122,9 +112,7 @@ void main() {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         await tester.pumpWidget(await createWidget(items: tabBarItems));
 
-        final tabFinder = find.byType(Tab);
-
-        expect(tabFinder, findsNWidgets(tabBarItems.length));
+        expect(find.byType(Tab), findsNWidgets(tabBarItems.length));
 
         debugDefaultTargetPlatformOverride = null;
       });
@@ -135,12 +123,9 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(await createWidget(items: tabBarItems));
 
-        final textFinderTab1 = find.text('Tab 1');
-        expect(textFinderTab1, findsOneWidget);
-        final textFinderTab2 = find.text('Tab 2');
-        expect(textFinderTab2, findsOneWidget);
-        final textFinderTab3 = find.text('Tab 3');
-        expect(textFinderTab3, findsOneWidget);
+        expect(find.text('Tab 1'), findsOneWidget);
+        expect(find.text('Tab 2'), findsOneWidget);
+        expect(find.text('Tab 3'), findsOneWidget);
       });
     });
 
@@ -157,22 +142,19 @@ void main() {
           onTabSelection: onTabSelection,
         ));
 
-        final textFinderTab1 = find.text('Tab 1');
-        await tester.tap(textFinderTab1);
+        await tester.tap(find.text('Tab 1'));
         await tester.pump();
         expect(log.length, 1);
 
-        final textFinderTab2 = find.text('Tab 2');
-        await tester.tap(textFinderTab2);
+        await tester.tap(find.text('Tab 2'));
         await tester.pump();
         expect(log.length, 2);
 
-        final textFinderTab3 = find.text('Tab 3');
-        await tester.tap(textFinderTab3);
+        await tester.tap(find.text('Tab 3'));
         await tester.pump();
         expect(log.length, 3);
 
-        await tester.tap(textFinderTab1);
+        await tester.tap(find.text('Tab 1'));
         await tester.pump();
         expect(log.length, 4);
       });
@@ -191,22 +173,19 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        final textFinderTab1 = find.text('Tab 1');
-        await tester.tap(textFinderTab1);
+        await tester.tap(find.text('Tab 1'));
         await tester.pump();
         expect(currentTab, 0);
 
-        final textFinderTab2 = find.text('Tab 2');
-        await tester.tap(textFinderTab2);
+        await tester.tap(find.text('Tab 2'));
         await tester.pumpAndSettle();
         expect(currentTab, 1);
 
-        final textFinderTab3 = find.text('Tab 3');
-        await tester.tap(textFinderTab3);
+        await tester.tap(find.text('Tab 3'));
         await tester.pump();
         expect(currentTab, 2);
 
-        await tester.tap(textFinderTab1);
+        await tester.tap(find.text('Tab 1'));
         await tester.pump();
         expect(currentTab, 0);
       });

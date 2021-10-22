@@ -19,22 +19,22 @@ import 'package:flutter/rendering.dart';
 
 class DefaultEmptyDesignSystem extends BeagleDesignSystem {
   @override
-  BeagleButtonStyle buttonStyle(String id) {
+  BeagleButtonStyle? buttonStyle(String id) {
     return null;
   }
 
   @override
-  String image(String id) {
+  String? image(String id) {
     return null;
   }
 
   @override
-  TextStyle textStyle(String id) {
+  TextStyle? textStyle(String id) {
     return null;
   }
 
   @override
-  BeagleNavigationBarStyle navigationBarStyle(String id) {
+  BeagleNavigationBarStyle? navigationBarStyle(String id) {
     return null;
   }
 }

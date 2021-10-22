@@ -11,10 +11,6 @@ would be the same.
 
 In the version number, `x` refers to a version of the Beagle Web, because Beagle Flutter uses this lib under the hood.
 
-## Null safety compatibility
-For now, we'll not support null safety for the alpha versions, however this is a high priority implementation and 
-should be available in future versions.
-
 ## Installation
 1. Open the file `pubspec.yaml` in the root of your project.
 2. Under `dependencies`, add `beagle: ^0.9.0-alpha`, or whatever the most recent version is.

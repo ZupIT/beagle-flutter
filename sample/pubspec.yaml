@@ -19,8 +19,8 @@ version: 1.0.0
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.22.5"
+  sdk: '>=2.13.0 <3.0.0'
+  flutter: ">=2.0.0"
 
 dependencies:
   beagle:

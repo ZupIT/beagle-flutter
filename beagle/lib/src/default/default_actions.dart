@@ -23,7 +23,7 @@ BeagleRoute _getRoute(BeagleAction action) {
 }
 
 final Map<String, ActionHandler> defaultActions = {
-  'beagle:confirm': ({action, view, element, context}) {
+  'beagle:confirm': ({required action, required element, required view, required context}) {
     BeagleConfirm.showAlertDialog(
       context,
       title: action.getAttributeValue('title'),
@@ -34,7 +34,7 @@ final Map<String, ActionHandler> defaultActions = {
       onPressCancel: action.getAttributeValue('onPressCancel'),
     );
   },
-  'beagle:alert': ({action, view, element, context}) {
+  'beagle:alert': ({required action, required element, required view, required context}) {
     BeagleAlert.showAlertDialog(
       context,
       message: action.getAttributeValue('message'),
@@ -44,33 +44,32 @@ final Map<String, ActionHandler> defaultActions = {
     );
   },
   // Native navigation
-  'beagle:openNativeRoute': ({action, view, element, context}) {
-    BeagleOpenNativeRoute()
-        .navigate(context, action.getAttributeValue('route'));
+  'beagle:openNativeRoute': ({required action, required element, required view, required context}) {
+    BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'));
   },
-  'beagle:openExternalURL': ({action, view, element, context}) {
+  'beagle:openExternalURL': ({required action, required element, required view, required context}) {
     BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
   },
   // Beagle Navigation
-  'beagle:pushView': ({action, view, element, context}) {
-    view.getNavigator().pushView(_getRoute(action), context);
+  'beagle:pushView': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.pushView(_getRoute(action), context);
   },
-  'beagle:popView': ({action, view, element, context}) {
-    view.getNavigator().popView();
+  'beagle:popView': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.popView();
   },
-  'beagle:popToView': ({action, view, element, context}) {
-    view.getNavigator().popToView(action.getAttributeValue("route"));
+  'beagle:popToView': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.popToView(action.getAttributeValue("route"));
   },
-  'beagle:pushStack': ({action, view, element, context}) {
-    view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
+  'beagle:pushStack': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
-  'beagle:popStack': ({action, view, element, context}) {
-    view.getNavigator().popStack();
+  'beagle:popStack': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.popStack();
   },
-  'beagle:resetStack': ({action, view, element, context}) {
-    view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
+  'beagle:resetStack': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
-  'beagle:resetApplication': ({action, view, element, context}) {
-    view.getNavigator().resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
+  'beagle:resetApplication': ({required action, required element, required view, required context}) {
+    view.getNavigator()?.resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
   },
 };

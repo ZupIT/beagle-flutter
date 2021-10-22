@@ -17,13 +17,13 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
 class BeagleFlexWidget extends StatelessWidget {
-  const BeagleFlexWidget({
-    Key key,
+  BeagleFlexWidget({
+    Key? key,
     this.style,
-    this.children,
+    required this.children,
   }) : super(key: key);
 
-  final BeagleStyle style;
+  final BeagleStyle? style;
   final List<Widget> children;
 
   @override

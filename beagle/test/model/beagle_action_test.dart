@@ -31,17 +31,15 @@ void main() {
         expect(result, actionType);
       });
     });
-    group('When getAttributeValue is called by passing an existent attribute',
-        () {
+
+    group('When getAttributeValue is called by passing an existent attribute', () {
       test('Then should return the correct value of the attribute', () {
         final result = beagleAction.getAttributeValue('message');
         expect(result, actionMessage);
       });
     });
 
-    group(
-        'When getAttributeValue is called by passing an nonexistent attribute',
-        () {
+    group('When getAttributeValue is called by passing an nonexistent attribute', () {
       test('Then should return null', () {
         final result = beagleAction.getAttributeValue('nonexistent attribute');
 
@@ -49,13 +47,10 @@ void main() {
       });
     });
 
-    group(
-        'When getAttributeValue is called by passing an nonexistent attribute and a default value',
-        () {
+    group('When getAttributeValue is called by passing an nonexistent attribute and a default value', () {
       test('Then should return the default value', () {
         const defaultValue = 'default value';
-        final result = beagleAction.getAttributeValue(
-            'nonexistent attribute', defaultValue);
+        final result = beagleAction.getAttributeValue('nonexistent attribute', defaultValue);
 
         expect(result, defaultValue);
       });

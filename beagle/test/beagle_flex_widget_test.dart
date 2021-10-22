@@ -17,13 +17,13 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 const text = 'Undefined Component';
+
 class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
-Widget createWidget(
-    {String text = text,
-    BeagleEnvironment environment = BeagleEnvironment.debug}) {
+
+Widget createWidget({String text = text, BeagleEnvironment environment = BeagleEnvironment.debug}) {
   return MaterialApp(
       home: BeagleFlexWidget(children: [
     BeagleUndefinedWidget(
@@ -36,10 +36,10 @@ void main() {
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
 
   setUpAll(() async {
-    when(beagleYogaFactoryMock.createYogaLayout(
-      style: anyNamed('style'),
-      children: anyNamed('children'),
-    )).thenAnswer((realInvocation) {
+    when(() => beagleYogaFactoryMock.createYogaLayout(
+          style: any(named: 'style'),
+          children: any(named: 'children'),
+        )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
     });
@@ -50,8 +50,7 @@ void main() {
   });
   group('Given a widget wrapped by a BeagleFlexWidget', () {
     group('When set debug environment', () {
-      testWidgets('Then it should have the correct text',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct text', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
 
         final textFinder = find.text(text);
@@ -61,10 +60,8 @@ void main() {
     });
 
     group('When set production environment', () {
-      testWidgets('Then it should not have text widget',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(
-            createWidget(environment: BeagleEnvironment.production));
+      testWidgets('Then it should not have text widget', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(environment: BeagleEnvironment.production));
 
         final textFinder = find.text(text);
 

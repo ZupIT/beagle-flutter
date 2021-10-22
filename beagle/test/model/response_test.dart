@@ -22,9 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Given a Response', () {
     group('When toJson is called', () {
-      test(
-          'Then should return a String representing the Response in json format',
-          () {
+      test('Then should return a String representing the Response in json format', () {
         final response = Response(
           200,
           '',
@@ -32,8 +30,7 @@ void main() {
           Uint8List(0),
         );
 
-        const expected =
-            '{"status":200,"body":"","headers":{"content-type":"text/javascript; charset=UTF-8"}}';
+        const expected = '{"status":200,"body":"","headers":{"content-type":"text/javascript; charset=UTF-8"}}';
 
         final result = response.toJson();
 

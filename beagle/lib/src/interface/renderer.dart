@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
 
 abstract class Renderer {
   /// Does a partial render to the BeagleView. Compared to the full render, it will skip every step
@@ -35,8 +34,7 @@ abstract class Renderer {
   /// element to the start of the list of children. Append ads the children at the end. Replace
   /// remove all current children and adds [tree] as the only child. ReplaceComponent will replace
   /// the element identified by [anchor] entirely by [tree]. Default is replaceComponent.
-  void doPartialRender(BeagleUIElement tree,
-      [String anchor, TreeUpdateMode mode]);
+  void doPartialRender(BeagleUIElement tree, [String anchor, TreeUpdateMode mode]);
 
   /// Does a full render to the BeagleView. A full render means that every renderization step will
   /// be executed for the [tree] passed as parameter. If the components in [tree] have been rendered
@@ -95,10 +93,10 @@ abstract class Renderer {
   /// @param mode optional. when `viewTree` is just a new branch to be added to the tree, the mode must be
   /// specified. It can be `append`, `prepend` or `replace`. The default value is `replace`
   void doTemplateRender({
-    @required TemplateManager templateManager,
-    @required String anchor,
-    @required List<List<BeagleDataContext>> contexts,
-    BeagleUIElement Function(BeagleUIElement, int) componentManager,
-    TreeUpdateMode mode,
+    required TemplateManager templateManager,
+    required String anchor,
+    required List<List<BeagleDataContext>> contexts,
+    BeagleUIElement Function(BeagleUIElement, int)? componentManager,
+    TreeUpdateMode? mode,
   });
 }

@@ -19,16 +19,16 @@ import 'package:beagle/beagle.dart';
 class TemplateManagerItem {
   TemplateManagerItem({
     this.condition,
-    this.view,
+    required this.view,
   });
 
-  String condition;
+  String? condition;
   BeagleUIElement view;
 
   Map<String, dynamic> toJson() => {
-    _jsonBeagleCase: condition,
-    _jsonBeagleView: view.properties,
-  };
+        _jsonBeagleCase: condition,
+        _jsonBeagleView: view.properties,
+      };
 
   factory TemplateManagerItem.fromJson(Map<String, dynamic> json) {
     return TemplateManagerItem(
@@ -51,11 +51,11 @@ class TemplateManager {
     this.templates,
   });
 
-  BeagleUIElement defaultTemplate;
-  List<TemplateManagerItem> templates;
+  BeagleUIElement? defaultTemplate;
+  List<TemplateManagerItem>? templates;
 
   Map<String, dynamic> toJson() => {
-    'default': defaultTemplate.properties,
-    'templates': templates.map((t) => t.toJson()).toList(),
-  };
+        'default': defaultTemplate?.properties,
+        'templates': templates?.map((t) => t.toJson()).toList() ?? [],
+      };
 }

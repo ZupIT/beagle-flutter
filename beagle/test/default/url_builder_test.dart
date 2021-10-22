@@ -52,12 +52,9 @@ void main() {
       const baseURL = 'http://base.ending.with.slash/';
       final urlBuilder = UrlBuilder(baseURL);
       group('When build method is called', () {
-        test(
-            'Then it should not duplicate / when both baseUrl and path have it',
-            () {
+        test('Then it should not duplicate / when both baseUrl and path have it', () {
           const path = '/relativePath';
-          expect(urlBuilder.build(path),
-              'http://base.ending.with.slash/relativePath');
+          expect(urlBuilder.build(path), 'http://base.ending.with.slash/relativePath');
         });
       });
     });

@@ -17,7 +17,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 final List<MethodCall> log = <MethodCall>[];
 MethodChannel channel = const MethodChannel('plugins.flutter.io/url_launcher');
@@ -29,11 +29,9 @@ void main() {
 
   group('Given Beagle Open External URL Action ', () {
     group('When I call launchURL successfully', () {
-      test(
-          'Then it should call launch library method with given URL as argument',
-          () async {
-        String url;
-        String method;
+      test('Then it should call launch library method with given URL as argument', () async {
+        String url = '';
+        String method = '';
         const expectedUrl = 'http://example.com';
 
         channel.setMockMethodCallHandler((MethodCall methodCall) async {

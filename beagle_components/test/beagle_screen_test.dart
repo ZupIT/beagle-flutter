@@ -18,7 +18,7 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'service_locator/service_locator.dart';
 
@@ -29,9 +29,9 @@ class MockDesignSystem extends Mock implements BeagleDesignSystem {}
 class MockBeagleLogger extends Mock implements BeagleLogger {}
 
 Widget createWidget({
-  String identifier,
-  BeagleSafeArea safeArea,
-  BeagleNavigationBar navigationBar,
+  required String identifier,
+  required BeagleSafeArea safeArea,
+  required BeagleNavigationBar navigationBar,
 }) {
   return MaterialApp(
     home: BeagleScreen(
@@ -48,22 +48,31 @@ void main() {
   final beagleYogaFactoryMock = MockBeagleYogaFactory();
   final designSystemMock = MockDesignSystem();
   final beagleLoggerMock = MockBeagleLogger();
-
   final navigationBarStyleId = 'navigationBarStyleId';
-  final navigationBarStyle =
-      BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
+  final navigationBarStyle = BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
+  final identifierDefault = 'widgetIdentifier';
+  final safeAreaDefault = BeagleSafeArea(
+    top: true,
+    leading: true,
+    bottom: true,
+    trailing: true,
+  );
+  final navigationBarDefault = BeagleNavigationBar(
+    title: 'Title',
+    showBackButton: true,
+    navigationBarItems: [],
+  );
 
   setUpAll(() async {
-    when(beagleYogaFactoryMock.createYogaLayout(
-      style: anyNamed('style'),
-      children: anyNamed('children'),
-    )).thenAnswer((realInvocation) {
+    when(() => beagleYogaFactoryMock.createYogaLayout(
+          style: any(named: 'style'),
+          children: any(named: 'children'),
+        )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
     });
 
-    when(designSystemMock.navigationBarStyle(navigationBarStyleId))
-        .thenReturn(navigationBarStyle);
+    when(() => designSystemMock.navigationBarStyle(navigationBarStyleId)).thenReturn(navigationBarStyle);
 
     await testSetupServiceLocator(
       beagleYogaFactory: beagleYogaFactoryMock,
@@ -74,61 +83,50 @@ void main() {
 
   group('Given a BeagleScreen', () {
     group('When it is created', () {
-      testWidgets('Then it should render a scaffold',
-          (WidgetTester tester) async {
-        // Given
-        await tester.pumpWidget(createWidget());
-
-        // When
-        final scaffoldFinder = find.byType(Scaffold);
-
-        // Then
-        expect(scaffoldFinder, findsOneWidget);
+      testWidgets('Then it should render a scaffold', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          identifier: identifierDefault,
+          safeArea: safeAreaDefault,
+          navigationBar: navigationBarDefault,
+        ));
+        expect(find.byType(Scaffold), findsOneWidget);
       });
     });
 
     group('When it is created with a navigationBar', () {
-      testWidgets('Then it should render an appBar',
-          (WidgetTester tester) async {
-        // Given
+      testWidgets('Then it should render an appBar', (WidgetTester tester) async {
         final navigationBar = BeagleNavigationBar(
           title: '',
           showBackButton: true,
           navigationBarItems: [],
         );
-
-        // When
-        await tester.pumpWidget(createWidget(navigationBar: navigationBar));
-        final scaffoldFinder = find.byType(Scaffold);
-
-        // Then
-        expect(tester.widget<Scaffold>(scaffoldFinder).appBar != null, isTrue);
+        await tester.pumpWidget(createWidget(
+          identifier: identifierDefault,
+          safeArea: safeAreaDefault,
+          navigationBar: navigationBar,
+        ));
+        expect(tester.widget<Scaffold>(find.byType(Scaffold)).appBar != null, isTrue);
       });
     });
 
     group('When it is created with a title in navigationBar', () {
-      testWidgets('Then it should render an appBar with the given title',
-          (WidgetTester tester) async {
-        // Given
+      testWidgets('Then it should render an appBar with the given title', (WidgetTester tester) async {
         final navigationBar = BeagleNavigationBar(
           title: 'Title',
           showBackButton: true,
           navigationBarItems: [],
         );
-
-        // When
-        await tester.pumpWidget(createWidget(navigationBar: navigationBar));
-        final titleFinder = find.text(navigationBar.title);
-
-        // Then
-        expect(titleFinder, findsOneWidget);
+        await tester.pumpWidget(createWidget(
+          identifier: identifierDefault,
+          safeArea: safeAreaDefault,
+          navigationBar: navigationBar,
+        ));
+        expect(find.text(navigationBar.title), findsOneWidget);
       });
     });
 
     group('When it is created with a style in navigationBar', () {
-      testWidgets('Then it should render an appBar with the given style',
-          (WidgetTester tester) async {
-        // Given
+      testWidgets('Then it should render an appBar with the given style', (WidgetTester tester) async {
         final navigationBar = BeagleNavigationBar(
           title: 'Title',
           showBackButton: true,
@@ -136,25 +134,21 @@ void main() {
           navigationBarItems: [],
         );
 
-        // When
-        await tester.pumpWidget(createWidget(navigationBar: navigationBar));
-        final scaffoldFinder = find.byType(Scaffold);
-        final AppBar appBar = tester.widget<Scaffold>(scaffoldFinder).appBar;
+        await tester.pumpWidget(createWidget(
+          identifier: identifierDefault,
+          safeArea: safeAreaDefault,
+          navigationBar: navigationBar,
+        ));
 
-        // Then
+        final AppBar appBar = tester.widget<Scaffold>(find.byType(Scaffold)).appBar as AppBar;
         expect(appBar.backgroundColor, navigationBarStyle.backgroundColor);
         expect(appBar.centerTitle, navigationBarStyle.centerTitle);
       });
     });
 
     group('When it is created with a item in navigationBar', () {
-      testWidgets(
-          'Then it should render an ItemComponent with the given properties',
-          (WidgetTester tester) async {
-        // Given
-        final item = NavigationBarItem(
-          text: 'Item',
-        );
+      testWidgets('Then it should render an ItemComponent with the given properties', (WidgetTester tester) async {
+        final item = NavigationBarItem(text: 'Item', image: 'images/beagle_dog.png', action: () {});
         final navigationBar = BeagleNavigationBar(
           title: 'Title',
           showBackButton: true,
@@ -162,38 +156,32 @@ void main() {
           navigationBarItems: [item],
         );
 
-        // When
-        await tester.pumpWidget(createWidget(navigationBar: navigationBar));
-        final scaffoldFinder = find.byType(Scaffold);
-        final AppBar appBar = tester.widget<Scaffold>(scaffoldFinder).appBar;
-        final ItemComponent itemComponent = appBar.actions.first;
-        // Then
-        expect(itemComponent.item, item);
+        await tester.pumpWidget(createWidget(
+          identifier: identifierDefault,
+          safeArea: safeAreaDefault,
+          navigationBar: navigationBar,
+        ));
+        final AppBar appBar = tester.widget<Scaffold>(find.byType(Scaffold)).appBar as AppBar;
+        expect((appBar.actions!.first as ItemComponent).item, item);
       });
     });
 
     group('When it is created with a safeArea', () {
-      testWidgets('Then it should render a safeArea widget',
-          (WidgetTester tester) async {
-        // Given
-        final safeArea = BeagleSafeArea(
-          top: true,
-          leading: true,
-          bottom: true,
-          trailing: true,
-        );
+      testWidgets('Then it should render a safeArea widget', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(
+          identifier: identifierDefault,
+          safeArea: safeAreaDefault,
+          navigationBar: navigationBarDefault,
+        ));
 
-        // When
-        await tester.pumpWidget(createWidget(safeArea: safeArea));
-        final safeAreaFinder = find.byType(SafeArea);
+        final safeAreaFinder = find.byType(SafeArea).first;
         final safeAreaWidget = tester.widget<SafeArea>(safeAreaFinder);
 
-        // Then
         expect(safeAreaFinder, findsOneWidget);
-        expect(safeAreaWidget.top, safeArea.top);
-        expect(safeAreaWidget.left, safeArea.leading);
-        expect(safeAreaWidget.bottom, safeArea.bottom);
-        expect(safeAreaWidget.right, safeArea.trailing);
+        expect(safeAreaWidget.top, safeAreaDefault.top);
+        expect(safeAreaWidget.left, safeAreaDefault.leading);
+        expect(safeAreaWidget.bottom, safeAreaDefault.bottom);
+        expect(safeAreaWidget.right, safeAreaDefault.trailing);
       });
     });
   });

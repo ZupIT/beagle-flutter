@@ -25,16 +25,12 @@ class DefaultHttpClient implements HttpClient {
     final uri = Uri.parse(req.url);
     final handlers = {
       BeagleHttpMethod.get: () => http.get(uri, headers: req.headers),
-      BeagleHttpMethod.post: () =>
-          http.post(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.put: () =>
-          http.put(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.patch: () =>
-          http.patch(uri, headers: req.headers, body: req.body),
+      BeagleHttpMethod.post: () => http.post(uri, headers: req.headers, body: req.body),
+      BeagleHttpMethod.put: () => http.put(uri, headers: req.headers, body: req.body),
+      BeagleHttpMethod.patch: () => http.patch(uri, headers: req.headers, body: req.body),
       BeagleHttpMethod.delete: () => http.delete(uri, headers: req.headers),
     };
-    final response = await handlers[req.method]();
-    return Response(response.statusCode, response.body, response.headers,
-        response.bodyBytes);
+    final response = await handlers[req.method]!();
+    return Response(response.statusCode, response.body, response.headers, response.bodyBytes);
   }
 }

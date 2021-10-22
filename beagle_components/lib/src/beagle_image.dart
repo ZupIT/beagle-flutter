@@ -15,7 +15,6 @@
  */
 
 import 'dart:typed_data';
-
 import 'package:beagle/beagle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -24,8 +23,8 @@ import 'package:flutter/widgets.dart';
 /// the value passed to [path].
 class BeagleImage extends StatefulWidget {
   const BeagleImage({
-    Key key,
-    this.path,
+    Key? key,
+    required this.path,
     this.mode,
   }) : super(key: key);
 
@@ -33,14 +32,14 @@ class BeagleImage extends StatefulWidget {
   final ImagePath path;
 
   /// Defines how the declared image will fit the view.
-  final ImageContentMode mode;
+  final ImageContentMode? mode;
 
   @override
   _BeagleImageState createState() => _BeagleImageState();
 }
 
 class _BeagleImageState extends State<BeagleImage> {
-  Future<Uint8List> imageBytes;
+  Future<Uint8List>? imageBytes;
   BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
 
   @override
@@ -55,34 +54,34 @@ class _BeagleImageState extends State<BeagleImage> {
   @override
   Widget build(BuildContext context) {
     final image = isLocalImage()
-        ? createImageFromAsset(widget.path)
-        : createImageFromNetwork(widget.path);
+        ? createImageFromAsset(widget.path as LocalImagePath)
+        : createImageFromNetwork(widget.path as RemoteImagePath);
     return image;
   }
 
   Future<void> downloadImage() async {
-    final RemoteImagePath path = widget.path;
     try {
+      final RemoteImagePath path = widget.path as RemoteImagePath;
       final imageDownloader = beagleServiceLocator<BeagleImageDownloader>();
-      imageBytes = imageDownloader.downloadImage(path.url);
+      final urlBuilder = beagleServiceLocator<UrlBuilder>();
+      imageBytes = imageDownloader.downloadImage(urlBuilder.build(path.url));
     } catch (e) {
-      logger.errorWithException(e.toString(), e);
+      logger.errorWithException(e.toString(), e as Exception);
     }
   }
 
   bool isLocalImage() => widget.path.runtimeType == LocalImagePath;
 
-  Widget createImageFromAsset(LocalImagePath path) {
+  Widget createImageFromAsset(LocalImagePath? path) {
     if (isPlaceHolderValid(path)) {
       return Image.asset(
-        getAssetName(path),
-        fit: getBoxFit(widget.mode),
+        getAssetName(path!) ?? '',
+        fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
       );
-    } else {
-      logger.error(
-          'Invalid local image: ${path.mobileId}. Have you declared this id in your DesignSystem class?');
-      return Container();
     }
+    logger.error(
+        'Invalid local image: "${path?.mobileId ?? 'null'}". Have you declared this id in your DesignSystem class?');
+    return Container();
   }
 
   Widget createImageFromNetwork(RemoteImagePath path) {
@@ -91,9 +90,8 @@ class _BeagleImageState extends State<BeagleImage> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return createPlaceHolderWidget(path);
-        } else {
-          return createImageFromMemory(snapshot.data);
         }
+        return createImageFromMemory(snapshot.data as Uint8List);
       },
     );
   }
@@ -101,28 +99,30 @@ class _BeagleImageState extends State<BeagleImage> {
   Widget createPlaceHolderWidget(RemoteImagePath path) {
     if (isPlaceHolderValid(path.placeholder)) {
       return createImageFromAsset(path.placeholder);
-    } else {
-      return Container();
     }
+    return Container();
   }
 
   Image createImageFromMemory(Uint8List bytes) {
     return Image.memory(
       bytes,
-      fit: getBoxFit(widget.mode),
+      fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
     );
   }
 
   bool isImageDownloaded() => imageBytes != null;
 
-  String getAssetName(LocalImagePath imagePath) {
+  String? getAssetName(LocalImagePath imagePath) {
     final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-
     return designSystem.image(imagePath.mobileId);
   }
 
-  bool isPlaceHolderValid(LocalImagePath path) =>
-      path != null && getAssetName(path) != null;
+  bool isPlaceHolderValid(LocalImagePath? path) {
+    if (path == null) return false;
+
+    final assetName = getAssetName(path);
+    return assetName != null && assetName.isNotEmpty;
+  }
 
   BoxFit getBoxFit(ImageContentMode mode) {
     if (mode == ImageContentMode.CENTER) {
@@ -133,9 +133,8 @@ class _BeagleImageState extends State<BeagleImage> {
       return BoxFit.contain;
     } else if (mode == ImageContentMode.FIT_XY) {
       return BoxFit.fill;
-    } else {
-      return BoxFit.contain;
     }
+    return BoxFit.contain;
   }
 }
 
@@ -144,15 +143,13 @@ abstract class ImagePath {
 
   factory ImagePath.local(String mobileId) = LocalImagePath;
 
-  factory ImagePath.remote(String url, LocalImagePath placeholder) =
-      RemoteImagePath;
+  factory ImagePath.remote(String url, LocalImagePath placeholder) = RemoteImagePath;
 
   factory ImagePath.fromJson(Map<String, dynamic> json) {
     if (json[_jsonBeagleImagePathKey] == 'local') {
       return LocalImagePath.fromJson(json);
-    } else {
-      return RemoteImagePath.fromJson(json);
     }
+    return RemoteImagePath.fromJson(json);
   }
 
   static const _jsonBeagleImagePathKey = '_beagleImagePath_';
@@ -175,13 +172,11 @@ class RemoteImagePath extends ImagePath {
 
   RemoteImagePath.fromJson(Map<String, dynamic> json)
       : url = json[_jsonUrlKey],
-        placeholder = json[_jsonPlaceholderKey] != null
-            ? LocalImagePath.fromJson(json[_jsonPlaceholderKey])
-            : null,
+        placeholder = json[_jsonPlaceholderKey] != null ? LocalImagePath.fromJson(json[_jsonPlaceholderKey]) : null,
         super._();
 
   final String url;
-  final LocalImagePath placeholder;
+  final LocalImagePath? placeholder;
 
   static const _jsonUrlKey = 'url';
   static const _jsonPlaceholderKey = 'placeholder';

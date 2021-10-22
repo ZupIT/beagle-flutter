@@ -23,7 +23,7 @@ class BeagleUIElement {
   Map<String, dynamic> properties;
 
   String getId() {
-    return properties['id'];
+    return properties['id'] ?? '';
   }
 
   void setId(String id) {
@@ -38,7 +38,7 @@ class BeagleUIElement {
     return properties['_beagleComponent_'].toString();
   }
 
-  BeagleDataContext getContext() {
+  BeagleDataContext? getContext() {
     if (!properties.containsKey('context')) {
       return null;
     }
@@ -60,24 +60,19 @@ class BeagleUIElement {
       return [];
     }
 
-    final list =
-        (properties['children'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final list = (properties['children'] as List<dynamic>).cast<Map<String, dynamic>>();
     return list.map((child) => BeagleUIElement(child)).toList();
   }
 
   dynamic getAttributeValue(String attributeName, [dynamic defaultValue]) {
-    return properties.containsKey(attributeName)
-        ? properties[attributeName]
-        : defaultValue;
+    return properties.containsKey(attributeName) ? properties[attributeName] : defaultValue;
   }
 
-  BeagleStyle getStyle() {
-    return properties.containsKey('style')
-        ? BeagleStyle.fromMap(properties['style'])
-        : null;
+  BeagleStyle? getStyle() {
+    return properties.containsKey('style') ? BeagleStyle.fromMap(properties['style']) : null;
   }
 
-  static bool isBeagleUIElement(Map<String, dynamic> json) {
+  static bool isBeagleUIElement(Map<String, dynamic>? json) {
     return json != null && json.containsKey("_beagleComponent_");
   }
 }
