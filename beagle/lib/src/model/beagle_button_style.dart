@@ -17,16 +17,14 @@
 import 'package:flutter/material.dart';
 
 class BeagleButtonStyle {
-  BeagleButtonStyle(
-      {this.androidButtonStyle, this.iosButtonStyle, this.buttonTextStyle});
+  BeagleButtonStyle({
+    this.buttonStyle,
+    this.buttonTextStyle,
+  });
 
   /// Customizes the appearance of this button for the Android platform.
   /// Null by default.
-  final ButtonStyle androidButtonStyle;
-
-  /// Customizes the appearance of this button for the iOS platform.
-  /// Null by default.
-  final BeagleIosButtonStyle iosButtonStyle;
+  final ButtonStyle buttonStyle;
 
   /// If non-null, the style to use for this text.
   ///
@@ -34,38 +32,4 @@ class BeagleButtonStyle {
   /// the closest enclosing [DefaultTextStyle]. Otherwise, the style will
   /// replace the closest enclosing [DefaultTextStyle].
   final TextStyle buttonTextStyle;
-}
-
-class BeagleIosButtonStyle {
-  BeagleIosButtonStyle(
-      {this.padding,
-      this.color,
-      this.disabledColor,
-      this.borderRadius,
-      this.pressedOpacity});
-
-  /// The amount of space to surround the child inside the bounds of the button.
-  ///
-  /// Defaults to 16.0 pixels.
-  final EdgeInsetsGeometry padding;
-
-  /// The color of the button's background.
-  ///
-  /// Defaults to null which produces a button with no background or border.
-  final Color color;
-
-  /// The color of the button's background when the button is disabled.
-  final Color disabledColor;
-
-  /// The radius of the button's corners when it has a background color.
-  ///
-  /// Defaults to round corners of 8 logical pixels.
-  final BorderRadius borderRadius;
-
-  /// The opacity that the button will fade to when it is pressed.
-  /// The button will have an opacity of 1.0 when it is not pressed.
-  ///
-  /// This defaults to 0.4. If null, opacity will not change on pressed if using
-  /// your own custom effects is desired.
-  final double pressedOpacity;
 }
