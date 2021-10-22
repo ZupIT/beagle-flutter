@@ -69,12 +69,9 @@ void main() {
   group('Given a mixed String with spaces, underscores and hyphens', () {
     group('When toKebabCase is called', () {
       test('Then it should convert to kebab case correctly', () {
-        final returnedString =
-            'some-MIXEDString With spaces_underscores-and-hyphens'
-                .toKebabCase();
+        final returnedString = 'some-MIXEDString With spaces_underscores-and-hyphens'.toKebabCase();
 
-        const expectedString =
-            'some-mixed-string-with-spaces-underscores-and-hyphens';
+        const expectedString = 'some-mixed-string-with-spaces-underscores-and-hyphens';
 
         expect(returnedString, expectedString);
       });

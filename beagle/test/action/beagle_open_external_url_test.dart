@@ -29,9 +29,7 @@ void main() {
 
   group('Given Beagle Open External URL Action ', () {
     group('When I call launchURL successfully', () {
-      test(
-          'Then it should call launch library method with given URL as argument',
-          () async {
+      test('Then it should call launch library method with given URL as argument', () async {
         String url = '';
         String method = '';
         const expectedUrl = 'http://example.com';

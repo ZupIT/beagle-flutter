@@ -25,15 +25,13 @@ class BeagleOpenNativeRoute {
 
   BeagleOpenNativeRoute._constructor();
 
-  static final BeagleOpenNativeRoute _instance =
-      BeagleOpenNativeRoute._constructor();
+  static final BeagleOpenNativeRoute _instance = BeagleOpenNativeRoute._constructor();
 
   void navigate(BuildContext buildContext, String routeName) {
     try {
       Navigator.pushNamed(buildContext, routeName);
     } catch (err) {
-      beagleServiceLocator<BeagleLogger>()
-          .error('Error: $err while trying to navigate to $routeName');
+      beagleServiceLocator<BeagleLogger>().error('Error: $err while trying to navigate to $routeName');
     }
   }
 }

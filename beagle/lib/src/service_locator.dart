@@ -81,14 +81,11 @@ void setupServiceLocator(
     ..registerFactory<UrlBuilder>(() => UrlBuilder(baseUrl));
 
   if (analyticsProvider != null) {
-    beagleServiceLocator
-        .registerSingleton<AnalyticsProvider>(analyticsProvider);
+    beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProvider);
   }
 }
 
 JavascriptRuntimeWrapper createJavascriptRuntimeWrapperInstance() =>
-    JavascriptRuntimeWrapper(
-        getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false));
+    JavascriptRuntimeWrapper(getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false));
 
-BeagleJSEngine createBeagleJSEngineInstance() =>
-    BeagleJSEngine(beagleServiceLocator<JavascriptRuntimeWrapper>());
+BeagleJSEngine createBeagleJSEngineInstance() => BeagleJSEngine(beagleServiceLocator<JavascriptRuntimeWrapper>());

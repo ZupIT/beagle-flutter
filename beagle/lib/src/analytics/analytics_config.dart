@@ -28,8 +28,7 @@ class AnalyticsConfig {
   Map<String, List<String>>? actions;
 
   AnalyticsConfig fromMap(Map<String, dynamic> map) {
-    return AnalyticsConfig(
-        enableScreenAnalytics: map['map'], actions: map['actions']);
+    return AnalyticsConfig(enableScreenAnalytics: map['map'], actions: map['actions']);
   }
 
   /// Creates a map with the attributes of this class

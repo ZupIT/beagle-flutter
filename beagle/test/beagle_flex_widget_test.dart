@@ -23,9 +23,7 @@ const text = 'Undefined Component';
 
 class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
 
-Widget createWidget(
-    {String text = text,
-    BeagleEnvironment environment = BeagleEnvironment.debug}) {
+Widget createWidget({String text = text, BeagleEnvironment environment = BeagleEnvironment.debug}) {
   return MaterialApp(
       home: BeagleFlexWidget(children: [
     BeagleUndefinedWidget(
@@ -48,13 +46,11 @@ void main() {
 
     await beagleServiceLocator.reset();
 
-    beagleServiceLocator
-        .registerSingleton<BeagleYogaFactory>(beagleYogaFactoryMock);
+    beagleServiceLocator.registerSingleton<BeagleYogaFactory>(beagleYogaFactoryMock);
   });
   group('Given a widget wrapped by a BeagleFlexWidget', () {
     group('When set debug environment', () {
-      testWidgets('Then it should have the correct text',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct text', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
 
         final textFinder = find.text(text);
@@ -64,10 +60,8 @@ void main() {
     });
 
     group('When set production environment', () {
-      testWidgets('Then it should not have text widget',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(
-            createWidget(environment: BeagleEnvironment.production));
+      testWidgets('Then it should not have text widget', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(environment: BeagleEnvironment.production));
 
         final textFinder = find.text(text);
 

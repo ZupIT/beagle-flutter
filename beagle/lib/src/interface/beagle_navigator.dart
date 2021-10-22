@@ -27,14 +27,13 @@ abstract class BeagleNavigator {
   /// for this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> pushStack(BeagleRoute route, BuildContext context,
-      [String controllerId]);
+  Future<void> pushStack(BeagleRoute route, [String controllerId]);
 
   /// Removes the entire current navigation stack and navigates back to the last route of the
   /// previous stack. Throws an error if there's only one navigation stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  void popStack(BuildContext context);
+  void popStack();
 
   /// Navigates to [route] by pushing it to the navigation history of the current navigation stack.
   ///
@@ -45,7 +44,7 @@ abstract class BeagleNavigator {
   /// also pops the current stack. If only one stack and one view exist, it will throw an error.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  void popView(BuildContext context);
+  void popView();
 
   /// Removes every navigation entry in the current stack until the route identified by
   /// [routeIdentifier] is found. A route is identified by a string if its url equals to the string
@@ -55,7 +54,7 @@ abstract class BeagleNavigator {
   /// the route isn't found in the current stack, an error is thrown.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  void popToView(String routeIdentifier, BuildContext context);
+  void popToView(String routeIdentifier);
 
   /// Removes the current navigation stack and navigates to the a new stack where the first [route]
   /// is the one passed as parameter.
@@ -64,8 +63,7 @@ abstract class BeagleNavigator {
   /// this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> resetStack(BeagleRoute route, BuildContext context,
-      [String controllerId]);
+  Future<void> resetStack(BeagleRoute route, [String controllerId]);
 
   /// Removes the entire navigation history and starts it over by navigating to a new initial
   /// [route] (passed as parameter).
@@ -74,6 +72,5 @@ abstract class BeagleNavigator {
   /// this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> resetApplication(BeagleRoute route, BuildContext context,
-      [String controllerId]);
+  Future<void> resetApplication(BeagleRoute route, [String controllerId]);
 }

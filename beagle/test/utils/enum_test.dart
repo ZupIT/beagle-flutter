@@ -19,16 +19,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Given an Enum', () {
-    group(
-        'When fromString is called by passing a list of enum values and a string that represents an enum value',
-        () {
-      test('Then it should return the corresponding enum value for the string',
-          () {
+    group('When fromString is called by passing a list of enum values and a string that represents an enum value', () {
+      test('Then it should return the corresponding enum value for the string', () {
         const stringValue = 'TWO';
         const expectedValue = FakeEnum.TWO;
 
-        final evaluatedValue =
-            EnumUtils.fromString(FakeEnum.values, stringValue);
+        final evaluatedValue = EnumUtils.fromString(FakeEnum.values, stringValue);
 
         expect(evaluatedValue, expectedValue);
       });
@@ -45,8 +41,7 @@ void main() {
 
     group('When getEnumValueName is called', () {
       test('Then it should return a string containing only the value name', () {
-        final evaluatedValueName =
-            EnumUtils.getEnumValueName(FakeEnum.thisIsTheFour);
+        final evaluatedValueName = EnumUtils.getEnumValueName(FakeEnum.thisIsTheFour);
 
         const expectedValueName = 'thisIsTheFour';
 
@@ -55,11 +50,8 @@ void main() {
     });
 
     group('When getEnumValueNameInKebabCase is called', () {
-      test(
-          'Then it should return a string containing only the value name in kebab case',
-          () {
-        final evaluatedValueName =
-            EnumUtils.getEnumValueNameInKebabCase(FakeEnum.thisIsTheFour);
+      test('Then it should return a string containing only the value name in kebab case', () {
+        final evaluatedValueName = EnumUtils.getEnumValueNameInKebabCase(FakeEnum.thisIsTheFour);
 
         const expectedValueName = 'this-is-the-four';
 

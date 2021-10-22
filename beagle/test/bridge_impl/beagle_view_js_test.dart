@@ -31,7 +31,7 @@ class BuildContextMock extends Mock implements BuildContext {}
 void main() {
   const createdViewId = 'viewId';
   final jsEngineMock = BeagleJSEngineMock();
-  registerFallbackValue<BeagleNetworkOptions>(BeagleNetworkOptions());
+
   when(() => jsEngineMock.createBeagleView()).thenReturn(createdViewId);
 
   setUp(() {

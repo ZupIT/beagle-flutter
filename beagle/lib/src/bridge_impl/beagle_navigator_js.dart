@@ -29,14 +29,16 @@ class BeagleNavigatorJS implements BeagleNavigator {
     var map = <String, dynamic>{};
 
     if (route is LocalView) {
-      map = {'screen': route.screen.properties};
+      map = {
+        'screen': route.screen.properties,
+      };
     }
 
     if (route is RemoteView) {
       map = {
         'url': route.url,
         'fallback': route.fallback?.properties,
-        'shouldPrefetch': route.shouldPrefetch
+        'shouldPrefetch': route.shouldPrefetch,
       };
     }
 
@@ -45,14 +47,9 @@ class BeagleNavigatorJS implements BeagleNavigator {
 
   static dynamic mapToRoute(Map<String, dynamic> routeMap) {
     if (routeMap.containsKey('url')) {
-      final fallback = routeMap.containsKey('fallback')
-          ? BeagleUIElement(routeMap['fallback'])
-          : null;
-      final shouldPrefetch = routeMap.containsKey('shouldPrefetch')
-          ? routeMap['shouldPrefetch']
-          : false;
-      return RemoteView(routeMap['url'],
-          fallback: fallback, shouldPrefetch: shouldPrefetch);
+      final fallback = routeMap.containsKey('fallback') ? BeagleUIElement(routeMap['fallback']) : null;
+      final shouldPrefetch = routeMap.containsKey('shouldPrefetch') ? routeMap['shouldPrefetch'] : false;
+      return RemoteView(routeMap['url'], fallback: fallback, shouldPrefetch: shouldPrefetch);
     }
 
     if (routeMap.containsKey('screen')) {
@@ -64,8 +61,7 @@ class BeagleNavigatorJS implements BeagleNavigator {
 
   T? getCurrentRoute<T extends dynamic>() {
     final result = _beagleJSEngine
-        .evaluateJavascriptCode(
-            "global.beagle.getViewById('$_viewId').getNavigator().getCurrentRoute()")
+        .evaluateJavascriptCode("global.beagle.getViewById('$_viewId').getNavigator().getCurrentRoute()")
         ?.rawResult;
 
     if (result == null) {
@@ -77,18 +73,15 @@ class BeagleNavigatorJS implements BeagleNavigator {
 
   bool isEmpty() {
     return _beagleJSEngine
-        .evaluateJavascriptCode(
-            "global.beagle.getViewById('$_viewId').getNavigator().isEmpty()")
+        .evaluateJavascriptCode("global.beagle.getViewById('$_viewId').getNavigator().isEmpty()")
         ?.rawResult;
   }
 
-  Future<void> navigate(String jsFunction, NavigateFunctionParam type,
-      dynamic route, String routeIdentifier,
+  Future<void> navigate(String jsFunction, NavigateFunctionParam type, dynamic route, String routeIdentifier,
       [String? controllerId]) {
     final routeJson = route != null ? routeToJson(route) : '';
-    final args = type == NavigateFunctionParam.args
-        ? (controllerId == null ? routeJson : "$routeJson, '$controllerId'")
-        : '';
+    final args =
+        type == NavigateFunctionParam.args ? (controllerId == null ? routeJson : "$routeJson, '$controllerId'") : '';
 
     String functionParam = '';
     switch (type) {
@@ -106,32 +99,29 @@ class BeagleNavigatorJS implements BeagleNavigator {
         break;
     }
 
-    final result = _beagleJSEngine.evaluateJavascriptCode(
-        "global.beagle.getViewById('$_viewId').getNavigator().$jsFunction($functionParam)");
+    final result = _beagleJSEngine
+        .evaluateJavascriptCode("global.beagle.getViewById('$_viewId').getNavigator().$jsFunction($functionParam)");
     return _beagleJSEngine.promiseToFuture(result);
   }
 
   @override
-  Future<void> popStack(BuildContext context) {
+  Future<void> popStack() {
     return navigate("popStack", NavigateFunctionParam.empty, null, '');
   }
 
   @override
-  Future<void> popToView(String routeIdentifier, BuildContext context) {
-    return navigate("popToView", NavigateFunctionParam.routeIdentifier, null,
-        routeIdentifier);
+  Future<void> popToView(String routeIdentifier) {
+    return navigate("popToView", NavigateFunctionParam.routeIdentifier, null, routeIdentifier);
   }
 
   @override
-  Future<void> popView(BuildContext context) {
+  Future<void> popView() {
     return navigate("popView", NavigateFunctionParam.empty, null, '');
   }
 
   @override
-  Future<void> pushStack(dynamic route, BuildContext context,
-      [String? controllerId]) {
-    return navigate(
-        "pushStack", NavigateFunctionParam.args, route, '', controllerId);
+  Future<void> pushStack(dynamic route, [String? controllerId]) {
+    return navigate("pushStack", NavigateFunctionParam.args, route, '', controllerId);
   }
 
   @override
@@ -140,17 +130,13 @@ class BeagleNavigatorJS implements BeagleNavigator {
   }
 
   @override
-  Future<void> resetApplication(dynamic route, BuildContext context,
-      [String? controllerId]) {
-    return navigate("resetApplication", NavigateFunctionParam.args, route, '',
-        controllerId);
+  Future<void> resetApplication(dynamic route, [String? controllerId]) {
+    return navigate("resetApplication", NavigateFunctionParam.args, route, '', controllerId);
   }
 
   @override
-  Future<void> resetStack(dynamic route, BuildContext context,
-      [String? controllerId]) {
-    return navigate(
-        "resetStack", NavigateFunctionParam.args, route, '', controllerId);
+  Future<void> resetStack(dynamic route, [String? controllerId]) {
+    return navigate("resetStack", NavigateFunctionParam.args, route, '', controllerId);
   }
 
   RemoveListener subscribe(NavigationListener listener) {

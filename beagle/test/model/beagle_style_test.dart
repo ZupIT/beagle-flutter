@@ -20,9 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Given a style map', () {
     group('When I call BeagleStyle.fromMap passing the style map', () {
-      test(
-          'Then it should create a BeagleStyle object mapping the values correctly',
-          () {
+      test('Then it should create a BeagleStyle object mapping the values correctly', () {
         final styleMap = {
           'backgroundColor': '#FFFFF',
           'cornerRadius': {'radius': 5},

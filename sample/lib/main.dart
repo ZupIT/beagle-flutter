@@ -28,7 +28,7 @@ Map<String, ComponentBuilder> myCustomComponents = {
   }
 };
 Map<String, ActionHandler> myCustomActions = {
-  'custom:log': (context, {action, view, element}) {
+  'custom:log': ({action, view, element, context}) {
     debugPrint(action?.getAttributeValue('message'));
   }
 };
@@ -38,8 +38,7 @@ void main() {
 
   BeagleSdk.init(
     baseUrl: 'http://$localhost:8080',
-    environment:
-        kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
+    environment: kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
     components: {...defaultComponents, ...myCustomComponents},
     actions: {...myCustomActions, ...defaultActions},
     analyticsProvider: AppAnalyticsProvider(),
@@ -51,7 +50,7 @@ void main() {
 }
 
 class BeagleSampleApp extends StatelessWidget {
-  const BeagleSampleApp({Key? key}) : super(key: key);
+  const BeagleSampleApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +66,7 @@ class BeagleSampleApp extends StatelessWidget {
       home: Scaffold(
         body: Center(
           child: ElevatedButton(
-            onPressed: () => BeagleSdk.openScreen(
-                route: RemoteView('/components'), context: context),
+            onPressed: () => BeagleSdk.openScreen(route: RemoteView('/components'), context: context),
             child: Text('Start beagle flow'),
           ),
         ),

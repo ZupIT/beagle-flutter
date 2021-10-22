@@ -20,8 +20,7 @@ extension StringUtils on String {
   }
 
   String toKebabCase() {
-    final words = RegExp(
-            r'[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+')
+    final words = RegExp(r'[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+')
         .allMatches(this)
         .map((m) => m.group(0))
         .toList();

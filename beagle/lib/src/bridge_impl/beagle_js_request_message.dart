@@ -28,24 +28,19 @@ class BeagleJSRequestMessage {
   BeagleJSRequestMessage.fromJson(Map<String, dynamic> json) {
     _requestId = BeagleCaster.castToString(json['id']);
     _url = BeagleCaster.castToString(json['url']);
-    _method = BeagleCaster.cast<BeagleHttpMethod>(
-        _getHttpMethod(json), BeagleHttpMethod.get);
+    _method = BeagleCaster.cast<BeagleHttpMethod>(_getHttpMethod(json), BeagleHttpMethod.get);
     _headers = BeagleCaster.castToMap<String, String>(_getHeaders(json));
     _body = BeagleCaster.castToString(json['body']);
   }
 
   BeagleHttpMethod _getHttpMethod(Map<String, dynamic> json) {
-    final String httpMethodStr =
-        json.containsKey('method') ? json['method'].toLowerCase() : 'get';
-    final beagleHttpMethod = EnumUtils.fromString<BeagleHttpMethod>(
-        BeagleHttpMethod.values, httpMethodStr);
+    final String httpMethodStr = json.containsKey('method') ? json['method'].toLowerCase() : 'get';
+    final beagleHttpMethod = EnumUtils.fromString<BeagleHttpMethod>(BeagleHttpMethod.values, httpMethodStr);
     return beagleHttpMethod as BeagleHttpMethod;
   }
 
   Map<String, String> _getHeaders(Map<String, dynamic> json) {
-    return json.containsKey('headers')
-        ? (json['headers'] as Map<String, dynamic>).cast<String, String>()
-        : {};
+    return json.containsKey('headers') ? (json['headers'] as Map<String, dynamic>).cast<String, String>() : {};
   }
 
   String get requestId => _requestId;

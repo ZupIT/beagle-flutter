@@ -58,7 +58,6 @@ export 'package:beagle/src/model/route.dart';
 export 'package:beagle/src/model/tree_update_mode.dart';
 
 export 'package:beagle/src/networking/beagle_http_method.dart';
-export 'package:beagle/src/networking/beagle_network_options.dart';
 export 'package:beagle/src/networking/beagle_request.dart';
 
 export 'package:beagle/src/setup/beagle_design_system.dart';

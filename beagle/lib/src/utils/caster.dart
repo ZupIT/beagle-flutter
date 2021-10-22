@@ -57,8 +57,7 @@ class BeagleCaster {
     return cast<Function>(value, defaultValue ?? () {});
   }
 
-  static Function? castToNullableFunction(dynamic value,
-      {Function? defaultValue}) {
+  static Function? castToNullableFunction(dynamic value, {Function? defaultValue}) {
     return cast<Function?>(value, defaultValue);
   }
 

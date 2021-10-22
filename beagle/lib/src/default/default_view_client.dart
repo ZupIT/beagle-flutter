@@ -29,12 +29,18 @@ class DefaultViewClient implements ViewClient {
   final UrlBuilder urlBuilder;
   final Map<String, BeagleUIElement> _preFetched = {};
 
+  String? _convertBodyToString(dynamic body) {
+    if (body is String) return body;
+    if (body is Map) return json.encoder.convert(body);
+    return null;
+  }
+
   Future<BeagleUIElement> fetchView(RemoteView route) async {
     final response = await httpClient.sendRequest(BeagleRequest(
       urlBuilder.build(route.url),
       method: route.httpAdditionalData?.method,
       headers: route.httpAdditionalData?.headers,
-      body: route.httpAdditionalData?.body,
+      body: _convertBodyToString(route.httpAdditionalData?.body),
     ));
 
     if (response.status >= 400) {
@@ -56,7 +62,7 @@ class DefaultViewClient implements ViewClient {
   }
 
   @override
-  void preFetch(RemoteView route) async {
+  Future<void> prefetch(RemoteView route) async {
     try {
       _preFetched[route.url] = await fetchView(route);
     } catch (error) {

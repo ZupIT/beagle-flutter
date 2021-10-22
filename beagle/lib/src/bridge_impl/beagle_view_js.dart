@@ -53,17 +53,13 @@ class BeagleViewJS implements BeagleView {
 
   @override
   BeagleUIElement? getTree() {
-    final result = _beagleJSEngine
-        .evaluateJavascriptCode(
-            "global.beagle.getViewById('$_id').getTreeAsJson()")
-        ?.stringResult;
+    final result =
+        _beagleJSEngine.evaluateJavascriptCode("global.beagle.getViewById('$_id').getTreeAsJson()")?.stringResult;
 
     if (result == null) return null;
 
     final parsed = json.decode(result);
-    return BeagleUIElement.isBeagleUIElement(parsed)
-        ? BeagleUIElement(parsed)
-        : null;
+    return BeagleUIElement.isBeagleUIElement(parsed) ? BeagleUIElement(parsed) : null;
   }
 
   @override

@@ -18,8 +18,7 @@ import 'package:beagle/beagle.dart';
 
 /// BeagleRequest is used to do requests.
 class BeagleRequest {
-  BeagleRequest(this.url,
-      {BeagleHttpMethod? method, Map<String, String>? headers, String? body}) {
+  BeagleRequest(this.url, {BeagleHttpMethod? method, Map<String, String>? headers, String? body}) {
     this.method = method ?? BeagleHttpMethod.get;
     this.headers = headers ?? {};
     this.body = body ?? '';

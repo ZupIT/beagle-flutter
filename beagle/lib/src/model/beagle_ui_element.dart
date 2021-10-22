@@ -60,21 +60,16 @@ class BeagleUIElement {
       return [];
     }
 
-    final list =
-        (properties['children'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final list = (properties['children'] as List<dynamic>).cast<Map<String, dynamic>>();
     return list.map((child) => BeagleUIElement(child)).toList();
   }
 
   dynamic getAttributeValue(String attributeName, [dynamic defaultValue]) {
-    return properties.containsKey(attributeName)
-        ? properties[attributeName]
-        : defaultValue;
+    return properties.containsKey(attributeName) ? properties[attributeName] : defaultValue;
   }
 
   BeagleStyle? getStyle() {
-    return properties.containsKey('style')
-        ? BeagleStyle.fromMap(properties['style'])
-        : null;
+    return properties.containsKey('style') ? BeagleStyle.fromMap(properties['style']) : null;
   }
 
   static bool isBeagleUIElement(Map<String, dynamic>? json) {

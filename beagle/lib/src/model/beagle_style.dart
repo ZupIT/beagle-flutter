@@ -22,23 +22,9 @@ enum FlexDirection { COLUMN, ROW, COLUMN_REVERSE, ROW_REVERSE }
 
 enum FlexWrap { NO_WRAP, WRAP, WRAP_REVERSE }
 
-enum JustifyContent {
-  FLEX_START,
-  CENTER,
-  FLEX_END,
-  SPACE_BETWEEN,
-  SPACE_AROUND,
-  SPACE_EVENLY
-}
+enum JustifyContent { FLEX_START, CENTER, FLEX_END, SPACE_BETWEEN, SPACE_AROUND, SPACE_EVENLY }
 
-enum AlignContent {
-  FLEX_START,
-  CENTER,
-  FLEX_END,
-  SPACE_BETWEEN,
-  SPACE_AROUND,
-  STRETCH
-}
+enum AlignContent { FLEX_START, CENTER, FLEX_END, SPACE_BETWEEN, SPACE_AROUND, STRETCH }
 
 enum AlignItems { FLEX_START, CENTER, FLEX_END, BASELINE, STRETCH }
 
@@ -64,15 +50,13 @@ class BeagleFlex {
 
   BeagleFlex.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('flexDirection')) {
-      flexDirection =
-          EnumUtils.fromString(FlexDirection.values, map['flexDirection']);
+      flexDirection = EnumUtils.fromString(FlexDirection.values, map['flexDirection']);
     }
     if (map.containsKey('flexWrap')) {
       flexWrap = EnumUtils.fromString(FlexWrap.values, map['flexWrap']);
     }
     if (map.containsKey('justifyContent')) {
-      justifyContent =
-          EnumUtils.fromString(JustifyContent.values, map['justifyContent']);
+      justifyContent = EnumUtils.fromString(JustifyContent.values, map['justifyContent']);
     }
     if (map.containsKey('alignItems')) {
       alignItems = EnumUtils.fromString(AlignItems.values, map['alignItems']);
@@ -81,8 +65,7 @@ class BeagleFlex {
       alignSelf = EnumUtils.fromString(AlignSelf.values, map['alignSelf']);
     }
     if (map.containsKey('alignContent')) {
-      alignContent =
-          EnumUtils.fromString(AlignContent.values, map['alignContent']);
+      alignContent = EnumUtils.fromString(AlignContent.values, map['alignContent']);
     }
     if (map.containsKey('basis')) {
       basis = UnitValue.fromMap(map['basis']);
@@ -272,8 +255,7 @@ class BeagleStyle {
       flex = BeagleFlex.fromMap(map['flex']);
     }
     if (map.containsKey('positionType')) {
-      positionType =
-          EnumUtils.fromString(FlexPosition.values, map['positionType']);
+      positionType = EnumUtils.fromString(FlexPosition.values, map['positionType']);
     }
     if (map.containsKey('display')) {
       display = EnumUtils.fromString(FlexDisplay.values, map['display']);

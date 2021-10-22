@@ -52,8 +52,7 @@ YGDisplay _mapDisplay(FlexDisplay flexDisplay) {
   return _flexDisplayMap[flexDisplay] ?? YGDisplay.YGDisplayFlex;
 }
 
-double defaultNumToDoubleCastFunction(dynamic value) =>
-    value is double ? value : (value as num).toDouble();
+double defaultNumToDoubleCastFunction(dynamic value) => value is double ? value : (value as num).toDouble();
 
 void _mapFlex(NodeProperties nodeProps, BeagleFlex? flex) {
   if (flex == null) return;
@@ -81,9 +80,7 @@ void _mapFlex(NodeProperties nodeProps, BeagleFlex? flex) {
   if (flex.basis?.value == null || flex.basis?.value == 0) {
     nodeProps.setBasisAuto();
   } else {
-    if (flex.basis?.type != null &&
-        flex.basis?.type == UnitType.PERCENT &&
-        flex.basis?.value != null) {
+    if (flex.basis?.type != null && flex.basis?.type == UnitType.PERCENT && flex.basis?.value != null) {
       nodeProps.setBasisPercent(flex.basis!.value!.toDouble());
     } else if (flex.basis?.value != null) {
       nodeProps.setBasis(flex.basis!.value!.toDouble());
@@ -137,8 +134,7 @@ const Map<FlexDirection, YGFlexDirection> _flexDirectionMap = {
 };
 
 YGFlexDirection _mapFlexDirection(FlexDirection flexDirection) {
-  return _flexDirectionMap[flexDirection] ??
-      YGFlexDirection.YGFlexDirectionColumn;
+  return _flexDirectionMap[flexDirection] ?? YGFlexDirection.YGFlexDirectionColumn;
 }
 
 const Map<FlexWrap, YGWrap> _flexWrapMap = {

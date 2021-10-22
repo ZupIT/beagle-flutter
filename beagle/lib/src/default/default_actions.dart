@@ -55,21 +55,21 @@ final Map<String, ActionHandler> defaultActions = {
     view.getNavigator()?.pushView(_getRoute(action), context);
   },
   'beagle:popView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popView(context);
+    view.getNavigator()?.popView();
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popToView(action.getAttributeValue("route"), context);
+    view.getNavigator()?.popToView(action.getAttributeValue("route"));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.pushStack(_getRoute(action), context);
+    view.getNavigator()?.pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:popStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popStack(context);
+    view.getNavigator()?.popStack();
   },
   'beagle:resetStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.resetStack(_getRoute(action), context);
+    view.getNavigator()?.resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:resetApplication': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.resetApplication(_getRoute(action), context);
+    view.getNavigator()?.resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
   },
 };

@@ -20,8 +20,7 @@ import 'package:beagle/src/utils/string_utils.dart';
 class EnumUtils {
   static T? fromString<T>(List<T?> values, String? str) {
     if (str == null) return null;
-    return values.firstWhereOrNull(
-        (item) => getEnumValueName(item).toUpperCase() == str.toUpperCase());
+    return values.firstWhereOrNull((item) => getEnumValueName(item).toUpperCase() == str.toUpperCase());
   }
 
   static String getEnumValueName<T>(T enumValue) {

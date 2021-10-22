@@ -27,42 +27,33 @@ class FakeBeagleRequest extends Fake implements BeagleRequest {}
 
 void main() {
   group('Given a DefaultBeagleImageDownloader', () {
-    group(
-        'When downloadImage is called and http response is different than 200',
-        () {
+    group('When downloadImage is called and http response is different than 200', () {
       registerFallbackValue(FakeBeagleRequest());
 
       test('Then it should throw BeagleImageDownloaderException', () {
         final fakeResponse = Response(404, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();
-        when(() => httpClientMock.sendRequest(any<BeagleRequest>()))
-            .thenAnswer((invocation) {
+        when(() => httpClientMock.sendRequest(any<BeagleRequest>())).thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
         const url = 'an url';
-        final imageDownloader =
-            DefaultBeagleImageDownloader(httpClient: httpClientMock);
+        final imageDownloader = DefaultBeagleImageDownloader(httpClient: httpClientMock);
 
-        expect(() => imageDownloader.downloadImage(url),
-            throwsA(isInstanceOf<BeagleImageDownloaderException>()));
+        expect(() => imageDownloader.downloadImage(url), throwsA(isInstanceOf<BeagleImageDownloaderException>()));
       });
     });
 
-    group('When downloadImage is called and downloaded image file is empty',
-        () {
+    group('When downloadImage is called and downloaded image file is empty', () {
       test('Then it should throw an Exception', () {
         final fakeResponse = Response(200, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();
-        when(() => httpClientMock.sendRequest(any<BeagleRequest>()))
-            .thenAnswer((invocation) {
+        when(() => httpClientMock.sendRequest(any<BeagleRequest>())).thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
         const url = 'an url';
-        final imageDownloader =
-            DefaultBeagleImageDownloader(httpClient: httpClientMock);
+        final imageDownloader = DefaultBeagleImageDownloader(httpClient: httpClientMock);
 
-        expect(() => imageDownloader.downloadImage(url),
-            throwsA(isInstanceOf<Exception>()));
+        expect(() => imageDownloader.downloadImage(url), throwsA(isInstanceOf<Exception>()));
       });
     });
 
@@ -72,13 +63,11 @@ void main() {
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
         final fakeResponse = Response(200, '', {}, fakeImage);
         final httpClientMock = MockHttpClient();
-        when(() => httpClientMock.sendRequest(any<BeagleRequest>()))
-            .thenAnswer((invocation) {
+        when(() => httpClientMock.sendRequest(any<BeagleRequest>())).thenAnswer((invocation) {
           return Future<Response>.value(fakeResponse);
         });
         const url = 'an url';
-        final imageDownloader =
-            DefaultBeagleImageDownloader(httpClient: httpClientMock);
+        final imageDownloader = DefaultBeagleImageDownloader(httpClient: httpClientMock);
 
         final downloadedImage = await imageDownloader.downloadImage(url);
 
