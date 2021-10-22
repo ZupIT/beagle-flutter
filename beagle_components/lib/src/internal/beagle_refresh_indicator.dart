@@ -163,20 +163,17 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
   bool? _isIndicatorAtTop;
   double? _dragOffset;
 
-  static final Animatable<double> _threeQuarterTween =
-      Tween<double>(begin: 0.0, end: 0.75);
-  static final Animatable<double> _kDragSizeFactorLimitTween =
-      Tween<double>(begin: 0.0, end: _kDragSizeFactorLimit);
-  static final Animatable<double> _oneToZeroTween =
-      Tween<double>(begin: 1.0, end: 0.0);
+  static final Animatable<double> _threeQuarterTween = Tween<double>(begin: 0.0, end: 0.75);
+  static final Animatable<double> _kDragSizeFactorLimitTween = Tween<double>(begin: 0.0, end: _kDragSizeFactorLimit);
+  static final Animatable<double> _oneToZeroTween = Tween<double>(begin: 1.0, end: 0.0);
 
   @override
   void initState() {
     super.initState();
     _positionController = AnimationController(vsync: this);
     _positionFactor = _positionController.drive(_kDragSizeFactorLimitTween);
-    _value = _positionController.drive(
-        _threeQuarterTween); // The "value" of the circular progress indicator during a drag.
+    _value =
+        _positionController.drive(_threeQuarterTween); // The "value" of the circular progress indicator during a drag.
 
     _scaleController = AnimationController(vsync: this);
     _scaleFactor = _scaleController.drive(_oneToZeroTween);
@@ -223,10 +220,8 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     // If the notification.dragDetails is null, this scroll is not triggered by
     // user dragging. It may be a result of ScrollController.jumpTo or ballistic scroll.
     // In this case, we don't want to trigger the refresh indicator.
-    return ((notification is ScrollStartNotification &&
-                notification.dragDetails != null) ||
-            (notification is ScrollUpdateNotification &&
-                notification.dragDetails != null)) &&
+    return ((notification is ScrollStartNotification && notification.dragDetails != null) ||
+            (notification is ScrollUpdateNotification && notification.dragDetails != null)) &&
         notification.metrics.extentBefore == 0.0 &&
         _mode == null &&
         _start(notification.metrics.axisDirection);
@@ -254,31 +249,26 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
         break;
     }
     if (indicatorAtTopNow != _isIndicatorAtTop) {
-      if (_mode == _RefreshIndicatorMode.drag ||
-          _mode == _RefreshIndicatorMode.armed) {
+      if (_mode == _RefreshIndicatorMode.drag || _mode == _RefreshIndicatorMode.armed) {
         _dismiss(_RefreshIndicatorMode.canceled);
       }
     } else if (notification is ScrollUpdateNotification) {
-      if (_mode == _RefreshIndicatorMode.drag ||
-          _mode == _RefreshIndicatorMode.armed) {
+      if (_mode == _RefreshIndicatorMode.drag || _mode == _RefreshIndicatorMode.armed) {
         if (notification.metrics.extentBefore > 0.0) {
           _dismiss(_RefreshIndicatorMode.canceled);
         } else {
-          _dragOffset =
-              ((_dragOffset ?? 0.0) - (notification.scrollDelta ?? 0.0));
+          _dragOffset = ((_dragOffset ?? 0.0) - (notification.scrollDelta ?? 0.0));
           _checkDragOffset(notification.metrics.viewportDimension);
         }
       }
-      if (_mode == _RefreshIndicatorMode.armed &&
-          notification.dragDetails == null) {
+      if (_mode == _RefreshIndicatorMode.armed && notification.dragDetails == null) {
         // On iOS start the refresh when the Scrollable bounces back from the
         // overscroll (ScrollNotification indicating this don't have dragDetails
         // because the scroll activity is not directly triggered by a drag).
         _show();
       }
     } else if (notification is OverscrollNotification) {
-      if (_mode == _RefreshIndicatorMode.drag ||
-          _mode == _RefreshIndicatorMode.armed) {
+      if (_mode == _RefreshIndicatorMode.drag || _mode == _RefreshIndicatorMode.armed) {
         _dragOffset = ((_dragOffset ?? 0.0) - notification.overscroll);
         _checkDragOffset(notification.metrics.viewportDimension);
       }
@@ -301,7 +291,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
   bool _handleGlowNotification(OverscrollIndicatorNotification notification) {
     if (notification.depth != 0 || !notification.leading) return false;
     if (_mode == _RefreshIndicatorMode.drag) {
-      notification.disallowIndicator();
+      notification.disallowGlow();
       return true;
     }
     return false;
@@ -331,17 +321,13 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
   }
 
   void _checkDragOffset(double containerExtent) {
-    assert(_mode == _RefreshIndicatorMode.drag ||
-        _mode == _RefreshIndicatorMode.armed);
-    double newValue = ((_dragOffset ?? 0.0) /
-        (containerExtent * _kDragContainerExtentPercentage));
+    assert(_mode == _RefreshIndicatorMode.drag || _mode == _RefreshIndicatorMode.armed);
+    double newValue = ((_dragOffset ?? 0.0) / (containerExtent * _kDragContainerExtentPercentage));
     if (_mode == _RefreshIndicatorMode.armed) {
       newValue = math.max(newValue, 1.0 / _kDragSizeFactorLimit);
     }
-    _positionController.value =
-        newValue.clamp(0.0, 1.0); // this triggers various rebuilds
-    if (_mode == _RefreshIndicatorMode.drag &&
-        _valueColor.value?.alpha == 0xFF) {
+    _positionController.value = newValue.clamp(0.0, 1.0); // this triggers various rebuilds
+    if (_mode == _RefreshIndicatorMode.drag && _valueColor.value?.alpha == 0xFF) {
       _mode = _RefreshIndicatorMode.armed;
     }
   }
@@ -352,19 +338,16 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     // This can only be called from _show() when refreshing and
     // _handleScrollNotification in response to a ScrollEndNotification or
     // direction change.
-    assert(newMode == _RefreshIndicatorMode.canceled ||
-        newMode == _RefreshIndicatorMode.done);
+    assert(newMode == _RefreshIndicatorMode.canceled || newMode == _RefreshIndicatorMode.done);
     setState(() {
       _mode = newMode;
     });
     switch (_mode) {
       case _RefreshIndicatorMode.done:
-        await _scaleController.animateTo(1.0,
-            duration: _kIndicatorScaleDuration);
+        await _scaleController.animateTo(1.0, duration: _kIndicatorScaleDuration);
         break;
       case _RefreshIndicatorMode.canceled:
-        await _positionController.animateTo(0.0,
-            duration: _kIndicatorScaleDuration);
+        await _positionController.animateTo(0.0, duration: _kIndicatorScaleDuration);
         break;
       default:
         assert(false);
@@ -383,8 +366,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
     assert(_mode != _RefreshIndicatorMode.snap);
     _mode = _RefreshIndicatorMode.snap;
     _positionController
-        .animateTo(1.0 / _kDragSizeFactorLimit,
-            duration: _kIndicatorSnapDuration)
+        .animateTo(1.0 / _kDragSizeFactorLimit, duration: _kIndicatorSnapDuration)
         .then<void>((void value) {
       if (mounted && _mode == _RefreshIndicatorMode.snap) {
         assert(widget.onRefresh != null);
@@ -438,43 +420,35 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
       return true;
     }());
 
-    final bool showIndeterminateIndicator =
-        _checkIsRefreshing(widget.isRefreshing) ||
-            _mode == _RefreshIndicatorMode.refresh ||
-            _mode == _RefreshIndicatorMode.done;
+    final bool showIndeterminateIndicator = _checkIsRefreshing(widget.isRefreshing) ||
+        _mode == _RefreshIndicatorMode.refresh ||
+        _mode == _RefreshIndicatorMode.done;
 
     return Stack(
       children: <Widget>[
         child,
         if (_mode != null)
           Positioned(
-            top: _isIndicatorAtTop != null && _isIndicatorAtTop!
-                ? widget.edgeOffset
-                : null,
-            bottom: !(_isIndicatorAtTop != null && _isIndicatorAtTop!)
-                ? widget.edgeOffset
-                : null,
+            top: _isIndicatorAtTop != null && _isIndicatorAtTop! ? widget.edgeOffset : null,
+            bottom: !(_isIndicatorAtTop != null && _isIndicatorAtTop!) ? widget.edgeOffset : null,
             left: 0.0,
             right: 0.0,
             child: SizeTransition(
-              axisAlignment:
-                  _isIndicatorAtTop != null && _isIndicatorAtTop! ? 1.0 : -1.0,
+              axisAlignment: _isIndicatorAtTop != null && _isIndicatorAtTop! ? 1.0 : -1.0,
               sizeFactor: _positionFactor, // this is what brings it down
               child: Container(
                 padding: _isIndicatorAtTop != null && _isIndicatorAtTop!
                     ? EdgeInsets.only(top: widget.displacement)
                     : EdgeInsets.only(bottom: widget.displacement),
-                alignment: _isIndicatorAtTop != null && _isIndicatorAtTop!
-                    ? Alignment.topCenter
-                    : Alignment.bottomCenter,
+                alignment:
+                    _isIndicatorAtTop != null && _isIndicatorAtTop! ? Alignment.topCenter : Alignment.bottomCenter,
                 child: ScaleTransition(
                   scale: _scaleFactor,
                   child: AnimatedBuilder(
                     animation: _positionController,
                     builder: (BuildContext context, Widget? child) {
                       return RefreshProgressIndicator(
-                        semanticsLabel: MaterialLocalizations.of(context)
-                            .refreshIndicatorSemanticLabel,
+                        semanticsLabel: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
                         value: showIndeterminateIndicator ? null : _value.value,
                         valueColor: _valueColor,
                         backgroundColor: ThemeData.light().canvasColor,
@@ -515,8 +489,7 @@ class BeagleRefreshIndicatorState extends State<BeagleRefreshIndicator>
       _isIndicatorAtTop = true;
       _dragOffset = 0.0;
       _scaleController.value = 0.0;
-      _positionController.animateTo(1.0 / _kDragSizeFactorLimit,
-          duration: _kIndicatorSnapDuration);
+      _positionController.animateTo(1.0 / _kDragSizeFactorLimit, duration: _kIndicatorSnapDuration);
       _mode = _RefreshIndicatorMode.refresh;
     }
   }
