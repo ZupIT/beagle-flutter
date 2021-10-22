@@ -16,6 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/model/beagle_style.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class StylizationWidget {

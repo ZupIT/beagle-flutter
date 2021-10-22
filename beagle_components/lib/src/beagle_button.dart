@@ -27,6 +27,7 @@ class BeagleButton extends StatelessWidget {
     this.onPress,
     this.enabled,
     this.styleId,
+    this.style,
   }) : super(key: key);
 
   /// Define the button text content.
@@ -42,26 +43,60 @@ class BeagleButton extends StatelessWidget {
   /// Whether button will be enabled.
   final bool enabled;
 
+  /// Property responsible to customize all the flex attributes and general style configuration
+  final BeagleStyle style;
+
   BeagleButtonStyle get _buttonStyle =>
       beagleServiceLocator<BeagleDesignSystem>()?.buttonStyle(styleId);
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyle = _buttonStyle?.androidButtonStyle ?? ButtonStyle();
+
     return ElevatedButton(
-      style: _buttonStyle?.androidButtonStyle,
-      onPressed: getOnPressedFunction(),
-      child: buildButtonChild(),
+      style: buttonStyle.copyWith(
+        shape: _getShape(),
+        backgroundColor: _getBackgroundColor(),
+        side: _getBorderSide(),
+      ),
+      onPressed: _getOnPressedFunction(),
+      child: _buildButtonChild(),
     );
   }
 
-  Widget buildButtonChild() {
+  Widget _buildButtonChild() {
     return Text(
       text,
       style: _buttonStyle?.buttonTextStyle,
     );
   }
 
-  Function getOnPressedFunction() {
+  Function _getOnPressedFunction() {
     return (enabled ?? true) ? onPress : null;
+  }
+
+  MaterialStateProperty<Color> _getBackgroundColor() {
+    final color =
+        style.backgroundColor != null ? HexColor(style.backgroundColor) : null;
+    return color != null ? MaterialStateProperty.all(color) : null;
+  }
+
+  MaterialStateProperty<BorderSide> _getBorderSide() {
+    return style.borderWidth != null
+        ? MaterialStateProperty.all(BorderSide(
+            color: HexColor(style.borderColor),
+            width: style.borderWidth,
+          ))
+        : null;
+  }
+
+  MaterialStateProperty<OutlinedBorder> _getShape() {
+    return style.cornerRadius != null
+        ? MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: style.cornerRadius.getBorderRadius(),
+            ),
+          )
+        : null;
   }
 }
