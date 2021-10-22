@@ -20,17 +20,9 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
 class ButtonOneStyle extends BeagleButtonStyle {
-  @override
-  BeagleIosButtonStyle get iosButtonStyle => BeagleIosButtonStyle(
-        padding: const EdgeInsets.all(16),
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
-        pressedOpacity: 1,
-        color: Colors.indigo,
-        disabledColor: Colors.lightGreenAccent,
-      );
 
   @override
-  ButtonStyle get androidButtonStyle => ButtonStyle(
+  ButtonStyle get buttonStyle => ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
       );
 
