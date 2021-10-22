@@ -31,9 +31,7 @@ class AppDesignSystem extends BeagleDesignSystem {
 
   final Map<String, BeagleButtonStyle> buttonStyles = {
     'DesignSystem.Stylish.Button': BeagleButtonStyle(
-        androidButtonStyle: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
+        buttonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
         buttonTextStyle: TextStyle(color: HexColor("#6F6F6F"))),
   };
 

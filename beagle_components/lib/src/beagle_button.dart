@@ -47,7 +47,7 @@ class BeagleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: _buttonStyle?.androidButtonStyle,
+      style: _buttonStyle?.buttonStyle,
       onPressed: getOnPressedFunction() as void Function()?,
       child: buildButtonChild(),
     );

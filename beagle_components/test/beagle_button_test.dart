@@ -52,43 +52,27 @@ void main() {
   });
 
   group('Given a BeagleButton', () {
-    group('When the widget is created and platform is android', () {
-      testWidgets('Then it should have a ElevatedButton child',
-          (WidgetTester tester) async {
+    group('When the widget is created', () {
+      testWidgets('Then it should have a ElevatedButton child', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
         expect(find.byType(ElevatedButton), findsOneWidget);
-      });
-    });
-
-    group('When the widget is created and platform is iOS', () {
-      testWidgets('Then it should have a ElevatedButton child',
-          (WidgetTester tester) async {
-        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        await tester.pumpWidget(createWidget());
-        expect(find.byType(ElevatedButton), findsOneWidget);
-        debugDefaultTargetPlatformOverride = null;
       });
     });
 
     group('When it has a text', () {
-      testWidgets('Then it should have a Text widget with specified text',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a Text widget with specified text', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
         expect(find.text(buttonText), findsOneWidget);
       });
     });
 
     group('When it is enabled', () {
-      testWidgets('Then the button widget should be enabled',
-          (WidgetTester tester) async {
+      testWidgets('Then the button widget should be enabled', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-        expect(
-            tester.widget<ElevatedButton>(find.byType(ElevatedButton)).enabled,
-            isTrue);
+        expect(tester.widget<ElevatedButton>(find.byType(ElevatedButton)).enabled, isTrue);
       });
 
-      testWidgets('Then should fire onPress callback',
-          (WidgetTester tester) async {
+      testWidgets('Then should fire onPress callback', (WidgetTester tester) async {
         final log = <int>[];
         void onPressed() {
           log.add(0);
@@ -102,16 +86,12 @@ void main() {
     });
 
     group('When it is disabled', () {
-      testWidgets('Then the button widget should be disabled',
-          (WidgetTester tester) async {
+      testWidgets('Then the button widget should be disabled', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(buttonEnabled: false));
-        expect(
-            tester.widget<ElevatedButton>(find.byType(ElevatedButton)).enabled,
-            isFalse);
+        expect(tester.widget<ElevatedButton>(find.byType(ElevatedButton)).enabled, isFalse);
       });
 
-      testWidgets("Then shouldn't fire onPress callback",
-          (WidgetTester tester) async {
+      testWidgets("Then shouldn't fire onPress callback", (WidgetTester tester) async {
         final log = <int>[];
         void onPressed() {
           log.add(0);
@@ -129,12 +109,8 @@ void main() {
       });
     });
 
-    group('When set style and platform is iOS', () {
-      testWidgets('Then it should have a correct style',
-          (WidgetTester tester) async {
-        // GIVEN
-        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-
+    group('When set style', () {
+      testWidgets('Then it should have a correct style', (WidgetTester tester) async {
         // WHEN
         await tester.pumpWidget(createWidget(styleId: 'button-one'));
 
@@ -145,73 +121,16 @@ void main() {
         final buttonOne = ButtonOneStyle();
 
         expect(buttonFinder, findsOneWidget);
-        expect(
-            buttonCreated.style!.backgroundColor!
-                .resolve({MaterialState.pressed}),
-            buttonOne.androidButtonStyle.backgroundColor!
-                .resolve({MaterialState.pressed}));
+        expect(buttonCreated.style!.backgroundColor!.resolve({MaterialState.pressed}),
+            buttonOne.buttonStyle.backgroundColor!.resolve({MaterialState.pressed}));
         expect(textCreated.style, buttonOne.buttonTextStyle);
 
         debugDefaultTargetPlatformOverride = null;
       });
     });
 
-    group('When set style and platform is Android', () {
-      testWidgets('Then it should have a correct style',
-          (WidgetTester tester) async {
-        // GIVEN
-        debugDefaultTargetPlatformOverride = TargetPlatform.android;
-
-        // WHEN
-        await tester.pumpWidget(createWidget(styleId: 'button-one'));
-
-        // THEN
-        final buttonFinder = find.byType(ElevatedButton);
-        final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(find.text(buttonText));
-        final buttonOne = ButtonOneStyle();
-
-        expect(buttonFinder, findsOneWidget);
-        expect(
-            buttonCreated.style!.backgroundColor!
-                .resolve({MaterialState.pressed}),
-            buttonOne.androidButtonStyle.backgroundColor!
-                .resolve({MaterialState.pressed}));
-        expect(textCreated.style, buttonOne.buttonTextStyle);
-
-        debugDefaultTargetPlatformOverride = null;
-      });
-    });
-
-    group('When not set style and platform is Android', () {
-      testWidgets('Then it should have a correct style',
-          (WidgetTester tester) async {
-        // GIVEN
-        debugDefaultTargetPlatformOverride = TargetPlatform.android;
-
-        // WHEN
-        await tester.pumpWidget(createWidget());
-
-        // THEN
-        final buttonFinder = find.byType(ElevatedButton);
-        final textFinder = find.text(buttonText);
-        final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(textFinder);
-
-        expect(buttonFinder, findsOneWidget);
-        expect(buttonCreated.style, null);
-        expect(textCreated.style, null);
-
-        debugDefaultTargetPlatformOverride = null;
-      });
-    });
-
-    group('When not set style and platform is iOS', () {
-      testWidgets('Then it should have a correct style',
-          (WidgetTester tester) async {
-        // GIVEN
-        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-
+    group('When not set style', () {
+      testWidgets('Then it should have a correct style', (WidgetTester tester) async {
         // WHEN
         await tester.pumpWidget(createWidget());
 
