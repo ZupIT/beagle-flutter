@@ -23,10 +23,8 @@ class StylizationWidget {
     if (style == null) {
       return origin;
     }
-    //TODO
-    final widget = _applyStyle(origin, style);
 
-    return widget;
+    return _applyStyle(origin, style);
   }
 
   Widget _applyStyle(Widget origin, BeagleStyle style) {
