@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/src/utils/enum.dart';
+import 'package:flutter/widgets.dart';
 
 enum UnitType { REAL, PERCENT }
 
@@ -221,15 +222,45 @@ class EdgeValue {
 }
 
 class CornerRadius {
-  CornerRadius({this.radius});
+  CornerRadius({
+    this.radius,
+    this.bottomLeft,
+    this.bottomRight,
+    this.topLeft,
+    this.topRight,
+  });
+
+  double radius;
+  double topLeft;
+  double topRight;
+  double bottomLeft;
+  double bottomRight;
 
   CornerRadius.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('radius')) {
-      radius = map['radius'];
+      radius = (map['radius'] as num)?.toDouble();
+      bottomLeft = (map['bottomLeft'] as num)?.toDouble();
+      bottomRight = (map['bottomRight'] as num)?.toDouble();
+      topLeft = (map['topLeft'] as num)?.toDouble();
+      topRight = (map['topRight'] as num)?.toDouble();
     }
   }
 
-  num radius;
+  BorderRadius getBorderRadius() {
+    return BorderRadius.only(
+        topLeft: _getBorderRadiusOrDefault(topLeft, radius),
+        topRight: _getBorderRadiusOrDefault(topRight, radius),
+        bottomLeft: _getBorderRadiusOrDefault(bottomLeft, radius),
+        bottomRight: _getBorderRadiusOrDefault(bottomRight, radius));
+  }
+
+  Radius _getBorderRadiusOrDefault(double origin, double defaultValue) {
+    if (origin == null) {
+      return defaultValue != null ? Radius.circular(defaultValue) : Radius.zero;
+    }
+
+    return Radius.circular(origin);
+  }
 }
 
 class BeagleStyle {
@@ -246,6 +277,18 @@ class BeagleStyle {
     this.positionType,
     this.size,
   });
+
+  String backgroundColor;
+  CornerRadius cornerRadius;
+  BeagleFlex flex;
+  FlexPosition positionType = FlexPosition.RELATIVE;
+  FlexDisplay display = FlexDisplay.FLEX;
+  BeagleSize size;
+  EdgeValue margin;
+  EdgeValue padding;
+  EdgeValue position;
+  double borderWidth;
+  String borderColor;
 
   BeagleStyle.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('backgroundColor')) {
@@ -277,22 +320,10 @@ class BeagleStyle {
       position = EdgeValue.fromMap(map['position']);
     }
     if (map.containsKey('borderWidth')) {
-      borderWidth = map['borderWidth'];
+      borderWidth = (map['borderWidth'] as num).toDouble();
     }
     if (map.containsKey('borderColor')) {
       borderColor = map['borderColor'];
     }
   }
-
-  String backgroundColor;
-  CornerRadius cornerRadius;
-  BeagleFlex flex;
-  FlexPosition positionType = FlexPosition.RELATIVE;
-  FlexDisplay display = FlexDisplay.FLEX;
-  BeagleSize size;
-  EdgeValue margin;
-  EdgeValue padding;
-  EdgeValue position;
-  num borderWidth;
-  String borderColor;
 }

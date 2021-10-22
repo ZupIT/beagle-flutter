@@ -24,25 +24,32 @@ class StylizationWidget {
       return origin;
     }
     //TODO
-    final widget = applyStyle(origin, style);
+    final widget = _applyStyle(origin, style);
 
     return widget;
   }
 
-  Widget applyStyle(Widget origin, BeagleStyle style) {
-    var widget = applyBackgroundColor(origin, style.backgroundColor);
-
-    return widget;
-  }
-
-  Widget applyBackgroundColor(Widget origin, String backgroundColor) {
-    if (backgroundColor == null) return origin;
-
+  Widget _applyStyle(Widget origin, BeagleStyle style) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: HexColor(backgroundColor),
+        color: _getBackgroundColor(style.backgroundColor),
+        border: _getBorder(style.borderColor, style.borderWidth),
+        borderRadius: style.cornerRadius?.getBorderRadius(),
       ),
       child: origin,
     );
+  }
+
+  Color _getBackgroundColor(String backgroundColor) {
+    return backgroundColor != null ? HexColor(backgroundColor) : null;
+  }
+
+  Border _getBorder(String borderColor, double borderWidth) {
+    return borderWidth != null
+        ? Border.all(
+            color: HexColor(borderColor),
+            width: borderWidth,
+          )
+        : null;
   }
 }
