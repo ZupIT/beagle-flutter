@@ -23,7 +23,7 @@ import 'button_one_style.dart';
 class FakeDesignSystem extends BeagleDesignSystem {
   @override
   BeagleButtonStyle? buttonStyle(String id) {
-    BeagleButtonStyle? style = null;
+    BeagleButtonStyle? style;
     switch (id) {
       case 'button-one':
         style = ButtonOneStyle();
