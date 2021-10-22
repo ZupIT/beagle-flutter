@@ -146,7 +146,7 @@ void main() {
         expect(
             buttonCreated.style.backgroundColor
                 .resolve({MaterialState.pressed}),
-            buttonOne.androidButtonStyle.backgroundColor
+            buttonOne.buttonStyle.backgroundColor
                 .resolve({MaterialState.pressed}));
 
         expect(textCreated.style, buttonOne.buttonTextStyle);
