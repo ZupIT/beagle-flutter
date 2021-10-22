@@ -40,7 +40,7 @@ class FakeDesignSystem extends BeagleDesignSystem {
 
   @override
   TextStyle? textStyle(String id) {
-    TextStyle? style = null;
+    TextStyle? style;
     switch (id) {
       case 'text-one':
         style = const TextStyle(

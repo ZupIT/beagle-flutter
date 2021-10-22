@@ -157,7 +157,7 @@ ComponentBuilder beagleLazyComponentBuilder() {
         initialState: initialState == null ? null : BeagleUIElement(initialState),
         beagleId: element.getId(),
         view: view,
-        child: children.isEmpty ? new Container() : children[0]);
+        child: children.isEmpty ? Container() : children[0]);
   };
 }
 
