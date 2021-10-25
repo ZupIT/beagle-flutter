@@ -28,8 +28,8 @@ Map<String, ComponentBuilder> myCustomComponents = {
   }
 };
 Map<String, ActionHandler> myCustomActions = {
-  'custom:log': ({action, view, element, context}) {
-    debugPrint(action?.getAttributeValue('message'));
+  'custom:log': ({required action, required view, required element, required context}) {
+    debugPrint(action.getAttributeValue('message'));
   }
 };
 
@@ -50,7 +50,7 @@ void main() {
 }
 
 class BeagleSampleApp extends StatelessWidget {
-  const BeagleSampleApp({Key key}) : super(key: key);
+  const BeagleSampleApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
