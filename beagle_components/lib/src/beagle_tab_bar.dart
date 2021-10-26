@@ -91,7 +91,9 @@ class _BeagleTabBarState extends State<BeagleTabBar> with TickerProviderStateMix
               icon: tabBarItem.icon == null
                   ? null
                   : BeagleFlexWidget(
-                      children: tabBarItem.icon != null ? [BeagleImage(path: tabBarItem.icon!)] : [],
+                      children: tabBarItem.icon != null
+                        ? [BeagleImage(path: tabBarItem.icon!, mode: ImageContentMode.FIT_CENTER)]
+                        : [],
                       style: imageStyle,
                     ),
             ))

@@ -115,7 +115,7 @@ class NavigationBarItem {
   factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
     return NavigationBarItem(
       text: BeagleCaster.castToString(json['text']),
-      image: BeagleCaster.castToString(json['image']?['mobileId']),
+      image: BeagleCaster.castToString(json['image']),
       action: BeagleCaster.castToFunction(json['action']),
     );
   }
@@ -162,7 +162,9 @@ class ItemComponent extends StatelessWidget {
     return IconButton(
       onPressed: BeagleCaster.cast<void Function()?>(item.action, () {}),
       icon: BeagleFlexWidget(
-        children: item.image.isNotEmpty ? [BeagleImage(path: ImagePath.local(item.image))] : [],
+        children: item.image.isNotEmpty
+          ? [BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER)]
+          : [],
         style: style,
       ),
       tooltip: item.text,
