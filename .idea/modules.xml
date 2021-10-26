@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/beagle/beagle.iml" filepath="$PROJECT_DIR$/beagle/beagle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/beagle_components/beagle_components.iml" filepath="$PROJECT_DIR$/beagle_components/beagle_components.iml" />
+      <module fileurl="file://$PROJECT_DIR$/javascript-bridge/javascript-bridge.iml" filepath="$PROJECT_DIR$/javascript-bridge/javascript-bridge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+    </modules>
+  </component>
+</project>
