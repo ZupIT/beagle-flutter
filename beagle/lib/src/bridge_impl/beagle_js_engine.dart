@@ -23,7 +23,6 @@ import 'package:meta/meta.dart';
 
 import '../service_locator.dart';
 import 'beagle_js_request_message.dart';
-import 'beagle_navigator_js.dart';
 import 'beagle_view_js.dart';
 import 'js_runtime_wrapper.dart';
 
@@ -56,7 +55,6 @@ class BeagleJSEngine {
   HttpListener? _httpListener;
   final Map<String, List<ActionListener>> _viewActionListenerMap = {};
   OperationListener? _operationListener;
-  final Map<String, List<NavigationListener>> _navigationListenerMap = {};
   final Map<String, List<ViewChangeListener>> _viewChangeListenerMap = {};
 
   /// Runs javascript [code].
@@ -250,21 +248,6 @@ class BeagleJSEngine {
     }
   }
 
-  @visibleForTesting
-  void notifyNavigationListeners(dynamic navigationMessage) {
-    final viewId = navigationMessage['viewId'];
-
-    if (!_hasNavigationListenerForView(viewId)) {
-      return;
-    }
-
-    final route = BeagleNavigatorJS.mapToRoute(navigationMessage['route']);
-
-    for (final listener in (_navigationListenerMap[viewId] ?? [])) {
-      listener(route);
-    }
-  }
-
   bool _handleListenerForView(String viewId, dynamic map) {
     return map.containsKey(viewId) && (map[viewId]?.isNotEmpty ?? true);
   }
@@ -275,10 +258,6 @@ class BeagleJSEngine {
 
   bool _hasUpdateListenerForView(String viewId) {
     return _handleListenerForView(viewId, _viewChangeListenerMap);
-  }
-
-  bool _hasNavigationListenerForView(String viewId) {
-    return _handleListenerForView(viewId, _navigationListenerMap);
   }
 
   void evaluateOnJSRuntime(String promiseId, String? result) => _jsRuntime
@@ -331,10 +310,6 @@ class BeagleJSEngine {
 
   RemoveListener onAction(String viewId, ActionListener listener) {
     return handleListenerRemoval<ActionListener>(viewId, _viewActionListenerMap, listener);
-  }
-
-  RemoveListener onNavigate(String viewId, NavigationListener listener) {
-    return handleListenerRemoval<NavigationListener>(viewId, _navigationListenerMap, listener);
   }
 
   RemoveListener onViewUpdate(String viewId, ViewChangeListener listener) {
