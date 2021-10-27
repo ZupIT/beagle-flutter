@@ -26,6 +26,7 @@ class BeagleImage extends StatefulWidget {
     Key? key,
     required this.path,
     this.mode,
+    this.style,
   }) : super(key: key);
 
   /// Defines the location of the image resource.
@@ -33,6 +34,9 @@ class BeagleImage extends StatefulWidget {
 
   /// Defines how the declared image will fit the view.
   final ImageContentMode? mode;
+
+  /// Property responsible to customize all the flex attributes and general style configuration
+  final BeagleStyle? style;
 
   @override
   _BeagleImageState createState() => _BeagleImageState();
@@ -56,7 +60,10 @@ class _BeagleImageState extends State<BeagleImage> {
     final image = isLocalImage()
         ? createImageFromAsset(widget.path as LocalImagePath)
         : createImageFromNetwork(widget.path as RemoteImagePath);
-    return image;
+    return ClipRRect(
+      borderRadius: widget.style?.cornerRadius?.getBorderRadius() ?? BorderRadius.zero,
+      child: image,
+    );
   }
 
   Future<void> downloadImage() async {
@@ -143,7 +150,8 @@ abstract class ImagePath {
 
   factory ImagePath.local(String mobileId) = LocalImagePath;
 
-  factory ImagePath.remote(String url, LocalImagePath placeholder) = RemoteImagePath;
+  factory ImagePath.remote(String url, LocalImagePath placeholder) =
+      RemoteImagePath;
 
   factory ImagePath.fromJson(Map<String, dynamic> json) {
     if (json[_jsonBeagleImagePathKey] == 'local') {
@@ -172,7 +180,9 @@ class RemoteImagePath extends ImagePath {
 
   RemoteImagePath.fromJson(Map<String, dynamic> json)
       : url = json[_jsonUrlKey],
-        placeholder = json[_jsonPlaceholderKey] != null ? LocalImagePath.fromJson(json[_jsonPlaceholderKey]) : null,
+        placeholder = json[_jsonPlaceholderKey] != null
+            ? LocalImagePath.fromJson(json[_jsonPlaceholderKey])
+            : null,
         super._();
 
   final String url;

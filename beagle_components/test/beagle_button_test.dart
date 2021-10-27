@@ -140,7 +140,7 @@ void main() {
         final textCreated = tester.widget<Text>(find.text(buttonText));
 
         expect(buttonFinder, findsOneWidget);
-        expect(buttonCreated.style, null);
+        expect(buttonCreated.style, ButtonStyle());
         expect(textCreated.style, null);
 
         debugDefaultTargetPlatformOverride = null;

@@ -27,6 +27,7 @@ class BeagleButton extends StatelessWidget {
     this.onPress,
     this.enabled,
     this.styleId,
+    this.style,
   }) : super(key: key);
 
   /// Define the button text content.
@@ -42,25 +43,64 @@ class BeagleButton extends StatelessWidget {
   /// Whether button will be enabled.
   final bool? enabled;
 
-  BeagleButtonStyle? get _buttonStyle => beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
+  /// Property responsible to customize all the flex attributes and general style configuration
+  final BeagleStyle? style;
+
+  BeagleButtonStyle? get _buttonStyle =>
+      beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyle = _buttonStyle?.buttonStyle ?? ButtonStyle();
+
     return ElevatedButton(
-      style: _buttonStyle?.buttonStyle,
-      onPressed: getOnPressedFunction() as void Function()?,
-      child: buildButtonChild(),
-    );
+        onPressed: _getOnPressedFunction() as void Function()?,
+        child: _buildButtonChild(),
+        style: buttonStyle.copyWith(
+          shape: _getShape(),
+          backgroundColor: _getBackgroundColor(),
+          side: _getBorderSide(),
+        ));
   }
 
-  Widget buildButtonChild() {
+  Widget _buildButtonChild() {
     return Text(
       text,
       style: _buttonStyle?.buttonTextStyle,
     );
   }
 
-  Function? getOnPressedFunction() {
+  Function? _getOnPressedFunction() {
     return (enabled ?? true) ? onPress : null;
+  }
+
+  MaterialStateProperty<Color>? _getBackgroundColor() {
+    final color = style?.backgroundColor != null
+        ? HexColor(style!.backgroundColor!)
+        : null;
+    return color != null ? MaterialStateProperty.all(color) : null;
+  }
+
+  MaterialStateProperty<BorderSide>? _getBorderSide() {
+    return style?.borderWidth != null && style?.borderColor != null
+        ? MaterialStateProperty.all(
+            BorderSide(
+              color: HexColor(style!.borderColor!),
+              width: style!.borderWidth!,
+            ),
+          )
+        : null;
+  }
+
+  MaterialStateProperty<OutlinedBorder>? _getShape() {
+    final borderRadius = style?.cornerRadius?.getBorderRadius();
+
+    return borderRadius != null
+        ? MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: borderRadius,
+            ),
+          )
+        : null;
   }
 }

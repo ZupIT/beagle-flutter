@@ -83,3 +83,5 @@ export 'package:beagle/src/model/beagle_data_context.dart';
 
 export 'package:beagle/src/beagle_metadata_widget.dart';
 export 'package:beagle/src/model/beagle_metadata.dart';
+export 'package:beagle/src/style/stylization_widget.dart';
+export 'package:beagle/src/utils/color.dart';
