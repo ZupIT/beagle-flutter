@@ -15,6 +15,7 @@
  */
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yoga_engine/yoga_engine.dart';
 
 class BeagleFlexWidget extends StatelessWidget {
   const BeagleFlexWidget({
@@ -28,9 +29,9 @@ class BeagleFlexWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
+    return MeasureSize(child: beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
       style: style,
       children: children,
-    );
+    ));
   }
 }
