@@ -91,5 +91,18 @@ void main() {
         expectations.shouldPopToViewOfCurrentStack('/test');
       });
     });
+
+    group("When we run the system's back action", () {
+      testWidgets('Then it should call the popView method of the current stack', (WidgetTester tester) async {
+        final expectations = await _setup(tester, 1);
+        final willPopFinder = find.byType(WillPopScope);
+        expect(willPopFinder, findsOneWidget);
+        final onWillPop = tester.widget<WillPopScope>(willPopFinder).onWillPop;
+        expect(onWillPop == null, false);
+        final result = await onWillPop!();
+        expect(result, false);
+        expectations.shouldPopViewFromCurrentStack();
+      });
+    });
   });
 }

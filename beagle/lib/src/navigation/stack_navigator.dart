@@ -19,6 +19,8 @@ import 'dart:async';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
+import 'history_observer.dart';
+
 typedef _BeagleWidgetFactory = UnsafeBeagleWidget Function(BeagleNavigator rootNavigator);
 
 UnsafeBeagleWidget _defaultBeagleWidgetFactory(BeagleNavigator navigator) {
@@ -46,6 +48,7 @@ class StackNavigator extends StatelessWidget {
   final BeagleNavigator rootNavigator;
   final BeagleLogger logger;
   final List<String> _history = [];
+  late final _historyObserver = HistoryObserver(_history, rootNavigator.popStack);
 
   // The following attributes are only used for testing purposes
   final _firstLoadCompleter = Completer();
@@ -143,11 +146,10 @@ class StackNavigator extends StatelessWidget {
   }
 
   void popView() {
-    if (_history.length == 1) {
-      return rootNavigator.popStack();
-    }
+    /* We only call the default pop from the navigator because the popView operation can also be triggered by the back
+    button of the navigation bar and the systems's back function. The full popView behavior can be found in the
+    _historyObserver. */
     _thisNavigatorKey.currentState!.pop();
-    _history.removeLast();
   }
 
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
@@ -183,15 +185,12 @@ class StackNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => true,
-      child: Scaffold(
-        body: Navigator(
-          initialRoute: _getRouteId(initialRoute),
-          onGenerateInitialRoutes: _onGenerateInitialRoutes,
-          observers: navigatorObservers,
-          key: _thisNavigatorKey,
-        ),
+    return Scaffold(
+      body: Navigator(
+        initialRoute: _getRouteId(initialRoute),
+        onGenerateInitialRoutes: _onGenerateInitialRoutes,
+        observers: [_historyObserver, ...navigatorObservers],
+        key: _thisNavigatorKey,
       ),
     );
   }

@@ -134,7 +134,10 @@ class RootNavigatorState extends State<RootNavigator> with AfterBeagleInitializa
   @override
   Widget buildAfterBeagleInitialization(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => true,
+      onWillPop: () async {
+        popView();
+        return false;
+      },
       child: Scaffold(
         body: Navigator(
           key: _thisNavigatorKey,

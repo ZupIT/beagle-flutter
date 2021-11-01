@@ -48,7 +48,7 @@ void main() {
   });
 
   group('Given a StackNavigator class', () {
-    NavigationMocks mocks;
+    late NavigationMocks mocks;
     late StackNavigator navigator;
 
     Future<StackNavigatorExpectations> _setup(
@@ -80,6 +80,16 @@ void main() {
         await tester.pump();
 
         expectations.shouldPopStack();
+      });
+    });
+
+    group("When a view is popped from a StackNavigator through the system's navigation interface", () {
+      testWidgets('Then it should update the history', (WidgetTester tester) async {
+        final expectations = await _setup(tester, 3);
+        Navigator.of(mocks.lastBuildContext).pop();
+        await tester.pump();
+
+        expectations.shouldUpdateHistoryByRemovingRoute();
       });
     });
 
