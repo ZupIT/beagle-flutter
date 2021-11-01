@@ -136,7 +136,7 @@ class StackNavigator extends StatelessWidget {
     if (!_history.contains(routeIdentifier)) {
       return logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
-    _thisNavigatorKey.currentState?.popUntil((route) => route.settings.name == routeIdentifier);
+    _thisNavigatorKey.currentState!.popUntil((route) => route.settings.name == routeIdentifier);
     while (_history.last != routeIdentifier) {
       _history.removeLast();
     }
@@ -146,7 +146,7 @@ class StackNavigator extends StatelessWidget {
     if (_history.length == 1) {
       return rootNavigator.popStack();
     }
-    _thisNavigatorKey.currentState?.pop();
+    _thisNavigatorKey.currentState!.pop();
     _history.removeLast();
   }
 
@@ -158,7 +158,7 @@ class StackNavigator extends StatelessWidget {
     void complete() {
       if (completed) return;
       final Route<dynamic> materialRoute = _buildRoute(beagleWidget, routeId);
-      _thisNavigatorKey.currentState?.push(materialRoute);
+      _thisNavigatorKey.currentState!.push(materialRoute);
       _history.add(routeId);
       completed = true;
     }

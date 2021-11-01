@@ -27,7 +27,7 @@ abstract class BeagleNavigator {
   /// for this specific stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  Future<void> pushStack(BeagleRoute route, [String controllerId]);
+  Future<void> pushStack(BeagleRoute route, [String? controllerId]);
 
   /// Removes the entire current navigation stack and navigates back to the last route of the
   /// previous stack. Throws an error if there's only one navigation stack.
