@@ -26,11 +26,11 @@ class BeagleJSRequestMessage {
   late String _body;
 
   BeagleJSRequestMessage.fromJson(Map<String, dynamic> json) {
-    _requestId = BeagleCaster.castToString(json['id']);
-    _url = BeagleCaster.castToString(json['url']);
-    _method = BeagleCaster.cast<BeagleHttpMethod>(_getHttpMethod(json), BeagleHttpMethod.get);
-    _headers = BeagleCaster.castToMap<String, String>(_getHeaders(json));
-    _body = BeagleCaster.castToString(json['body']);
+    _requestId = json['id'];
+    _url = json['url'];
+    _method = _getHttpMethod(json);
+    _headers = _getHeaders(json);
+    _body = json['body'];
   }
 
   BeagleHttpMethod _getHttpMethod(Map<String, dynamic> json) {
@@ -39,13 +39,10 @@ class BeagleJSRequestMessage {
     return beagleHttpMethod as BeagleHttpMethod;
   }
 
-  Map<String, String> _getHeaders(Map<String, dynamic> json) {
-    return json.containsKey('headers') ? (json['headers'] as Map<String, dynamic>).cast<String, String>() : {};
-  }
+  Map<String, String> _getHeaders(Map<String, dynamic> json) =>
+      json.containsKey('headers') ? (json['headers'] as Map<String, dynamic>).cast<String, String>() : {};
 
   String get requestId => _requestId;
 
-  BeagleRequest toRequest() {
-    return BeagleRequest(_url, method: _method, headers: _headers, body: _body);
-  }
+  BeagleRequest toRequest() => BeagleRequest(_url, method: _method, headers: _headers, body: _body);
 }

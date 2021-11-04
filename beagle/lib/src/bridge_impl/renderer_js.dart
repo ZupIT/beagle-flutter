@@ -60,7 +60,7 @@ class RendererJS implements Renderer {
     final arguments = [
       jsonEncode(templateManager.toJson()),
       "'$anchor'",
-      jsonEncode(contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList())
+      jsonEncode(contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList()),
     ];
     if (componentManager != null) {
       final componentManagerCallbackId = 'global.beagle.doTemplateRender.$anchor.componentManagerCallback';

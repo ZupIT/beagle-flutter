@@ -55,7 +55,5 @@ class GlobalContextJS implements GlobalContext {
     _beagleJSEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.set($args)');
   }
 
-  bool _isEncodable(dynamic value) {
-    return value is num || value is String || value is List || value is Map;
-  }
+  bool _isEncodable(dynamic value) => value is num || value is String || value is List || value is Map;
 }

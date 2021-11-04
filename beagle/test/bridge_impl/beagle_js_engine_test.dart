@@ -95,7 +95,7 @@ void main() {
 
         await beagleJSEngine.start();
 
-        verify(() => jsRuntimeMock.onMessage('httpClient.request', beagleJSEngine.notifyHttpListener));
+        verify(() => jsRuntimeMock.onMessage('httpClient.request', any()));
       });
 
       test('Then should register for javascript action messages', () async {
@@ -104,7 +104,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'action';
-        verify(() => jsRuntimeMock.onMessage(expectedChannelName, beagleJSEngine.notifyActionListener));
+        verify(() => jsRuntimeMock.onMessage(expectedChannelName, any()));
       });
 
       test('Then should register for javascript operation messages', () async {
@@ -113,7 +113,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'operation';
-        verify(() => jsRuntimeMock.onMessage(expectedChannelName, beagleJSEngine.notifyOperationListener));
+        verify(() => jsRuntimeMock.onMessage(expectedChannelName, any()));
       });
 
       test('Then should register for javascript beagleView.update messages', () async {
@@ -122,7 +122,7 @@ void main() {
         await beagleJSEngine.start();
 
         const expectedChannelName = 'beagleView.update';
-        verify(() => jsRuntimeMock.onMessage(expectedChannelName, beagleJSEngine.notifyViewUpdateListeners));
+        verify(() => jsRuntimeMock.onMessage(expectedChannelName, any()));
       });
 
       test('Then should register for javascript analytics.createRecord messages', () async {

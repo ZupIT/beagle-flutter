@@ -23,15 +23,15 @@ class BeagleScreen extends StatelessWidget {
   const BeagleScreen({
     Key? key,
     required this.identifier,
-    required this.safeArea,
     required this.navigationBar,
     required this.child,
+    this.safeArea,
   }) : super(key: key);
 
   final String identifier;
-  final BeagleSafeArea safeArea;
   final BeagleNavigationBar navigationBar;
   final Widget child;
+  final BeagleSafeArea? safeArea;
 
   BeagleNavigationBarStyle? get _navigationBarStyle =>
       beagleServiceLocator<BeagleDesignSystem>().navigationBarStyle(navigationBar.styleId ?? '');
@@ -55,7 +55,8 @@ class BeagleScreen extends StatelessWidget {
             toolbarHeight: _navigationBarStyle?.toolbarHeight,
             leadingWidth: _navigationBarStyle?.leadingWidth,
             toolbarTextStyle: _navigationBarStyle?.toolbarTextStyle,
-            titleTextStyle: _navigationBarStyle?.titleTextStyle)
+            titleTextStyle: _navigationBarStyle?.titleTextStyle,
+          )
         : null;
 
     final yogaChild = BeagleFlexWidget(
@@ -66,18 +67,15 @@ class BeagleScreen extends StatelessWidget {
     // ignore: unnecessary_null_comparison
     final body = safeArea != null
         ? SafeArea(
-            top: safeArea.top ?? true,
-            left: safeArea.leading ?? true,
-            bottom: safeArea.bottom ?? true,
-            right: safeArea.trailing ?? true,
+            top: safeArea!.top ?? true,
+            left: safeArea!.leading ?? true,
+            bottom: safeArea!.bottom ?? true,
+            right: safeArea!.trailing ?? true,
             child: yogaChild,
           )
         : yogaChild;
 
-    return Scaffold(
-      appBar: appBar,
-      body: body,
-    );
+    return Scaffold(appBar: appBar, body: body);
   }
 }
 
@@ -95,10 +93,10 @@ class BeagleSafeArea {
   final bool? trailing;
 
   BeagleSafeArea.fromJson(Map<String, dynamic> json)
-      : top = BeagleCaster.castToBool(json['top']),
-        leading = BeagleCaster.castToBool(json['leading']),
-        bottom = BeagleCaster.castToBool(json['bottom']),
-        trailing = BeagleCaster.castToBool(json['trailing']);
+      : top = json['top'],
+        leading = json['leading'],
+        bottom = json['bottom'],
+        trailing = json['trailing'];
 }
 
 class NavigationBarItem {
@@ -114,9 +112,9 @@ class NavigationBarItem {
 
   factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
     return NavigationBarItem(
-      text: BeagleCaster.castToString(json['text']),
-      image: BeagleCaster.castToString(json['image']),
-      action: BeagleCaster.castToFunction(json['action']),
+      text: json['text'] ?? '',
+      image: json['image'] ?? '',
+      action: json['action'],
     );
   }
 }
@@ -135,13 +133,14 @@ class BeagleNavigationBar {
   final List<NavigationBarItem>? navigationBarItems;
 
   factory BeagleNavigationBar.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> itemsJsonArray = BeagleCaster.castToList(json['navigationBarItems']);
+    final List<dynamic> itemsJsonArray = json['navigationBarItems'] ?? [];
     final List<NavigationBarItem> items = itemsJsonArray.map((e) => NavigationBarItem.fromJson(e)).toList();
     return BeagleNavigationBar(
-        title: BeagleCaster.castToString(json['title']),
-        showBackButton: BeagleCaster.castToBool(json['showBackButton']),
-        styleId: BeagleCaster.castToString(json['styleId']),
-        navigationBarItems: items);
+      title: json['title'] ?? '',
+      showBackButton: json['showBackButton'] ?? true,
+      styleId: json['styleId'],
+      navigationBarItems: items,
+    );
   }
 }
 
@@ -160,11 +159,11 @@ class ItemComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: BeagleCaster.cast<void Function()?>(item.action, () {}),
+      onPressed: item.action as void Function()? ?? () {},
       icon: BeagleFlexWidget(
         children: item.image.isNotEmpty
-          ? [BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER)]
-          : [],
+            ? [BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER)]
+            : [],
         style: style,
       ),
       tooltip: item.text,

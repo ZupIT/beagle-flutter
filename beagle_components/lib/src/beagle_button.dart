@@ -46,8 +46,7 @@ class BeagleButton extends StatelessWidget {
   /// Property responsible to customize all the flex attributes and general style configuration
   final BeagleStyle? style;
 
-  BeagleButtonStyle? get _buttonStyle =>
-      beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
+  BeagleButtonStyle? get _buttonStyle => beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
 
   @override
   Widget build(BuildContext context) {
@@ -63,21 +62,12 @@ class BeagleButton extends StatelessWidget {
         ));
   }
 
-  Widget _buildButtonChild() {
-    return Text(
-      text,
-      style: _buttonStyle?.buttonTextStyle,
-    );
-  }
+  Widget _buildButtonChild() => Text(text, style: _buttonStyle?.buttonTextStyle);
 
-  Function? _getOnPressedFunction() {
-    return (enabled ?? true) ? onPress : null;
-  }
+  Function? _getOnPressedFunction() => (enabled ?? true) ? onPress : null;
 
   MaterialStateProperty<Color>? _getBackgroundColor() {
-    final color = style?.backgroundColor != null
-        ? HexColor(style!.backgroundColor!)
-        : null;
+    final color = style?.backgroundColor != null ? HexColor(style!.backgroundColor!) : null;
     return color != null ? MaterialStateProperty.all(color) : null;
   }
 

@@ -54,8 +54,7 @@ class _BeagleWidget extends State<BeagleWidget> with AfterBeagleInitialization {
 /// like navigators, that are sure the Beagle Service has started and need direct access to the Beagle View. Prefer
 /// using BeagleWidget for other cases.
 class UnsafeBeagleWidget extends StatefulWidget {
-  UnsafeBeagleWidget(this.navigator)
-      : view = beagleServiceLocator<BeagleViewJS>(param1: navigator);
+  UnsafeBeagleWidget(this.navigator) : view = beagleServiceLocator<BeagleViewJS>(param1: navigator);
 
   final BeagleNavigator? navigator;
   final BeagleView view;
@@ -68,6 +67,7 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
   final _logger = beagleServiceLocator<BeagleLogger>();
   final _environment = beagleServiceLocator<BeagleEnvironment>();
   final _beagleService = beagleServiceLocator<BeagleService>();
+
   Widget? _widgetState;
 
   Widget _buildViewFromTree(BeagleUIElement tree) {
@@ -78,30 +78,18 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
       return BeagleUndefinedWidget(environment: _environment);
     }
     try {
-      return _createWidget(
-          tree,
-          builder(
-            tree,
-            widgetChildren,
-            widget.view,
-          ));
+      return _createWidget(tree, builder(tree, widgetChildren, widget.view));
     } catch (error) {
-      _logger.error(
-          "Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
+      _logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       _logger.error(error.toString());
       return BeagleUndefinedWidget(environment: _environment);
     }
   }
 
-  Widget _createWidget(BeagleUIElement tree, Widget widget) {
-    final newWidget = StylizationWidget().apply(widget, tree.getStyle());
-    return BeagleMetadataWidget(
-      child: newWidget,
-      beagleMetadata: BeagleMetadata(
-        beagleStyle: tree.getStyle(),
-      ),
-    );
-  }
+  Widget _createWidget(BeagleUIElement tree, Widget widget) => BeagleMetadataWidget(
+        child: StylizationWidget().apply(widget, tree.getStyle()),
+        beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()),
+      );
 
   void _updateCurrentUI(BeagleUIElement? tree) {
     if (tree != null) {
@@ -123,8 +111,7 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
     widget.view.onAction(({required action, required element, required view}) {
       final handler = _beagleService.actions[action.getType().toLowerCase()];
       if (handler == null) {
-        return _logger.error(
-            "Couldn't find action with name ${action.getType()}. It will be ignored.");
+        return _logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
       }
       handler(action: action, view: view, element: element, context: context);
     });
@@ -133,7 +120,10 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
     widget.view.onChange(_updateCurrentUI);
 
     // first render:
-    _updateCurrentUI(widget.view.getTree());
+    final tree = widget.view.getTree();
+    if (tree != null) {
+      widget.view.getRenderer().doFullRender(tree);
+    }
   }
 
   BeagleView getView() {
@@ -141,8 +131,5 @@ class BeagleWidgetState extends State<UnsafeBeagleWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BeagleFlexWidget(
-        children: [_widgetState ?? const SizedBox.shrink()]);
-  }
+  Widget build(BuildContext context) => BeagleFlexWidget(children: [_widgetState ?? const SizedBox.shrink()]);
 }

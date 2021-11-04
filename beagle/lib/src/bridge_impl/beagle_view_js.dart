@@ -17,6 +17,7 @@
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/bridge_impl/handlers/action.dart';
 
 import 'beagle_js_engine.dart';
 import 'renderer_js.dart';
@@ -42,14 +43,10 @@ class BeagleViewJS implements BeagleView {
   }
 
   @override
-  BeagleNavigator? getNavigator() {
-    return parentNavigator;
-  }
+  BeagleNavigator? getNavigator() => parentNavigator;
 
   @override
-  Renderer getRenderer() {
-    return _renderer;
-  }
+  Renderer getRenderer() => _renderer;
 
   @override
   BeagleUIElement? getTree() {
@@ -63,12 +60,8 @@ class BeagleViewJS implements BeagleView {
   }
 
   @override
-  void Function() onChange(ViewChangeListener listener) {
-    return _beagleJSEngine.onViewUpdate(_id, listener);
-  }
+  void Function() onChange(ViewChangeListener listener) => _beagleJSEngine.onViewUpdate(_id, listener);
 
   @override
-  void Function() onAction(ActionListener listener) {
-    return _beagleJSEngine.onAction(_id, listener);
-  }
+  void Function() onAction(ActionListener listener) => _beagleJSEngine.onAction(_id, listener);
 }

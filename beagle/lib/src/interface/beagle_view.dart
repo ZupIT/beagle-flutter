@@ -15,7 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/bridge_impl/handlers/action.dart';
 
 typedef ViewChangeListener = void Function(BeagleUIElement tree);
 

@@ -104,7 +104,7 @@ class _BeagleTabBarState extends State<BeagleTabBar> with TickerProviderStateMix
 class TabBarItem {
   TabBarItem(this.title, this.icon);
   TabBarItem.fromJson(Map<String, dynamic> json)
-      : title = BeagleCaster.castToString(json['title']),
+      : title = json['title'],
         icon = json['icon'] != null ? LocalImagePath.fromJson(json['icon']) : null;
 
   final String title;

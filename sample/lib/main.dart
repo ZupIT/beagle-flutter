@@ -23,10 +23,9 @@ import 'package:sample/app_analytics_provider.dart';
 import 'package:sample/app_design_system.dart';
 
 Map<String, ComponentBuilder> myCustomComponents = {
-  'custom:loading': (element, _, __) {
-    return Center(key: element.getKey(), child: Text('My custom loading.'));
-  }
+  'custom:loading': (element, _, __) => Center(key: element.getKey(), child: Text('My custom loading.'))
 };
+
 Map<String, ActionHandler> myCustomActions = {
   'custom:log': ({required action, required view, required element, required context}) {
     debugPrint(action.getAttributeValue('message'));
@@ -46,7 +45,7 @@ void main() {
     designSystem: AppDesignSystem(),
   );
 
-  runApp(const MaterialApp(home: BeagleSampleApp()));
+  runApp(MaterialApp(home: BeagleSampleApp()));
 }
 
 class BeagleSampleApp extends StatelessWidget {
@@ -59,7 +58,7 @@ class BeagleSampleApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
         indicatorColor: Colors.white,
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           elevation: 0,
         ),
       ),

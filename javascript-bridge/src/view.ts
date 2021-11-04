@@ -32,7 +32,7 @@ function serializeFunctions(value: any, path = '__beagleFn:'): any {
     return path
   }
 
-  if (value instanceof Array) {
+  if (Array.isArray(value)) {
     return value.map((item, index) => serializeFunctions(item, `${path}[${index}]`))
   }
 
