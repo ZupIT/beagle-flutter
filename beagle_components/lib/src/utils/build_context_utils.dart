@@ -18,12 +18,12 @@ import 'package:beagle_components/src/protocol/input_validation.dart';
 import 'package:flutter/widgets.dart';
 
 extension BuildContextUtils on BuildContext {
-  BuildContext findBuildContextForWidgetKey(String widgetKey) {
+  BuildContext? findBuildContextForWidgetKey(String widgetKey) {
     if (_compareWidgetKey(this, widgetKey)) {
       return this;
     }
 
-    late BuildContext widgetContext;
+    BuildContext? widgetContext;
 
     void visitor(Element element) {
       if (_compareWidgetKey(element, widgetKey)) {

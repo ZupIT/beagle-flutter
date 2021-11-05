@@ -15,38 +15,15 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
+import '../../test-utils/mocktail.dart';
 import 'expectations.dart';
 import 'mock.dart';
 import 'setup.dart';
 
-class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
-
-class _RouteMock extends Mock implements Route<dynamic> {}
-
-class _NavigationControllerMock extends Mock implements NavigationController {}
-
-class _BeagleLoggerMock extends Mock implements BeagleLogger {}
-
-class _ViewClientMock extends Mock implements ViewClient {}
-
-class _BeagleRouteMock extends Mock implements BeagleRoute {}
-
-class _BuildContextMock extends Mock implements BuildContext {}
-
 void main() {
-  setUpAll(() async {
-    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
-    registerFallbackValue<Route<dynamic>>(_RouteMock());
-    registerFallbackValue<NavigationController>(_NavigationControllerMock());
-    registerFallbackValue<BeagleLogger>(_BeagleLoggerMock());
-    registerFallbackValue<ViewClient>(_ViewClientMock());
-    registerFallbackValue<BeagleRoute>(_BeagleRouteMock());
-    registerFallbackValue<BuildContext>(_BuildContextMock());
-  });
+  registerMocktailFallbacks();
 
   group('Given a RootNavigator', () {
     final route = RemoteView('/test');

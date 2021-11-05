@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'beagle_image.dart';
 
 /// Defines a widget that displays a horizontal row of tabs, that will be
 /// rendered according to the style of the running platform.
 class BeagleTabBar extends StatefulWidget {
-  static const ICON_SIZE = 32;
+  static const ICON_SIZE = 32.0;
 
   const BeagleTabBar({
     Key? key,
@@ -46,8 +45,6 @@ class BeagleTabBar extends StatefulWidget {
 
 class _BeagleTabBarState extends State<BeagleTabBar> with TickerProviderStateMixin {
   late TabController _tabController;
-  static final imageStyle =
-      BeagleStyle(size: BeagleSize(height: UnitValue(value: BeagleTabBar.ICON_SIZE, type: UnitType.REAL)));
 
   @override
   void initState() {
@@ -90,11 +87,10 @@ class _BeagleTabBarState extends State<BeagleTabBar> with TickerProviderStateMix
               text: tabBarItem.title,
               icon: tabBarItem.icon == null
                   ? null
-                  : BeagleFlexWidget(
-                      children: tabBarItem.icon != null
-                        ? [BeagleImage(path: tabBarItem.icon!, mode: ImageContentMode.FIT_CENTER)]
-                        : [],
-                      style: imageStyle,
+                  : Container(
+                      width: BeagleTabBar.ICON_SIZE,
+                      height: BeagleTabBar.ICON_SIZE,
+                      child: BeagleImage(path: tabBarItem.icon!, mode: ImageContentMode.FIT_CENTER),
                     ),
             ))
         .toList();

@@ -18,14 +18,7 @@ import 'dart:async';
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-
 import 'history_observer.dart';
-
-typedef _BeagleWidgetFactory = UnsafeBeagleWidget Function(BeagleNavigator rootNavigator);
-
-UnsafeBeagleWidget _defaultBeagleWidgetFactory(BeagleNavigator navigator) {
-  return UnsafeBeagleWidget(navigator);
-}
 
 /// This Navigator is internally used by the RootNavigator. It should never be used outside a RootNavigator.
 class StackNavigator extends StatelessWidget {
@@ -33,31 +26,27 @@ class StackNavigator extends StatelessWidget {
     required this.initialRoute,
     required this.screenBuilder,
     required this.controller,
-    required this.viewClient,
+    required this.beagle,
     required this.rootNavigator,
-    required this.logger,
-    _BeagleWidgetFactory? beagleWidgetFactory,
     this.initialPages = const [],
     this.navigatorObservers = const [],
-  }) : _beagleWidgetFactory = beagleWidgetFactory ?? _defaultBeagleWidgetFactory;
+  });
 
   final BeagleRoute initialRoute;
   final ScreenBuilder screenBuilder;
   final NavigationController controller;
-  final ViewClient viewClient;
   final BeagleNavigator rootNavigator;
-  final BeagleLogger logger;
+  final BeagleService beagle;
   final List<String> _history = [];
   late final _historyObserver = HistoryObserver(_history, rootNavigator.popStack);
 
   // The following attributes are only used for testing purposes
   final _firstLoadCompleter = Completer();
-  final _BeagleWidgetFactory _beagleWidgetFactory;
   final List<Route<dynamic>> initialPages;
   final List<NavigatorObserver> navigatorObservers;
   final GlobalKey<NavigatorState> _thisNavigatorKey = GlobalKey();
 
-  Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
+  Route<dynamic> _buildRoute(BeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
       builder: (context) => screenBuilder(beagleWidget, context),
       settings: RouteSettings(name: routeName),
@@ -74,15 +63,18 @@ class StackNavigator extends StatelessWidget {
       return initialPages;
     }
 
-    final beagleWidget = _beagleWidgetFactory(rootNavigator);
+    final beagleViewWidget = beagle.createView(rootNavigator);
 
     if (initialRoute is LocalView) {
-      controller.onSuccess(view: beagleWidget.view, context: state.context, screen: (initialRoute as LocalView).screen);
+      controller.onSuccess(
+        view: beagleViewWidget.view,
+        context: state.context, screen: (initialRoute as LocalView).screen,
+      );
       _firstLoadCompleter.complete();
     } else {
       () async {
         await _fetchContentAndUpdateView(
-          view: beagleWidget.view,
+          view: beagleViewWidget.view,
           context: state.context,
           completeNavigation: () => null,
           route: initialRoute,
@@ -92,7 +84,7 @@ class StackNavigator extends StatelessWidget {
     }
 
     _history.add(routeName);
-    return [_buildRoute(beagleWidget, routeName)];
+    return [_buildRoute(beagleViewWidget.widget, routeName)];
   }
 
   String _getRouteId(BeagleRoute route) {
@@ -107,7 +99,7 @@ class StackNavigator extends StatelessWidget {
   }) async {
     try {
       controller.onLoading(view: view, context: context, completeNavigation: completeNavigation);
-      final screen = await viewClient.fetch(route);
+      final screen = await beagle.viewClient.fetch(route);
       controller.onSuccess(view: view, context: context, screen: screen);
       completeNavigation();
     } catch (error, stackTrace) {
@@ -137,7 +129,7 @@ class StackNavigator extends StatelessWidget {
 
   void popToView(String routeIdentifier) {
     if (!_history.contains(routeIdentifier)) {
-      return logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
+      return beagle.logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
     _thisNavigatorKey.currentState!.popUntil((route) => route.settings.name == routeIdentifier);
     while (_history.last != routeIdentifier) {
@@ -154,25 +146,25 @@ class StackNavigator extends StatelessWidget {
 
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
     final routeId = _getRouteId(route);
-    final beagleWidget = _beagleWidgetFactory(rootNavigator);
+    final beagleViewWidget = beagle.createView(rootNavigator);
     bool completed = false;
 
     void complete() {
       if (completed) return;
-      final Route<dynamic> materialRoute = _buildRoute(beagleWidget, routeId);
+      final Route<dynamic> materialRoute = _buildRoute(beagleViewWidget.widget, routeId);
       _thisNavigatorKey.currentState!.push(materialRoute);
       _history.add(routeId);
       completed = true;
     }
 
     if (route is LocalView) {
-      controller.onSuccess(view: beagleWidget.view, context: context, screen: route.screen);
+      controller.onSuccess(view: beagleViewWidget.view, context: context, screen: route.screen);
       complete();
     } else {
       await _fetchContentAndUpdateView(
         route: route,
         context: context,
-        view: beagleWidget.view,
+        view: beagleViewWidget.view,
         completeNavigation: complete,
       );
     }

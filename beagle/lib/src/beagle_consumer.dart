@@ -15,29 +15,24 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 
-mixin AfterBeagleInitialization<T extends StatefulWidget> on State<T> {
-  BeagleService? beagleService;
-
-  Future<void> _startBeagleService() async {
-    await beagleServiceLocator.allReady();
-    setState(() {
-      beagleService = beagleServiceLocator<BeagleService>();
-    });
-  }
+mixin BeagleConsumer<T extends StatefulWidget> on State<T> {
+  late final BeagleService beagle;
+  bool _hasInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _startBeagleService();
-  }
-
-  @override
+  @mustCallSuper
   Widget build(BuildContext context) {
-    // ignore: unnecessary_null_comparison
-    return beagleService == null ? const SizedBox.shrink() : buildAfterBeagleInitialization(context);
+    if (!_hasInitialized) {
+      beagle = findBeagleService(context);
+      initBeagleState();
+      _hasInitialized = true;
+    }
+    return buildBeagleWidget(context);
   }
 
-  Widget buildAfterBeagleInitialization(BuildContext context);
+  void initBeagleState() {}
+
+  Widget buildBeagleWidget(BuildContext context);
 }

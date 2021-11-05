@@ -48,28 +48,28 @@ final Map<String, ActionHandler> defaultActions = {
     BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'));
   },
   'beagle:openExternalURL': ({required action, required element, required view, required context}) {
-    BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
+    BeagleOpenExternalUrl.launchURL(context, action.getAttributeValue('url'));
   },
   // Beagle Navigation
   'beagle:pushView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.pushView(_getRoute(action), context);
+    view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popView();
+    view.getNavigator().popView();
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popToView(action.getAttributeValue("route"));
+    view.getNavigator().popToView(action.getAttributeValue("route"));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:popStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popStack();
+    view.getNavigator().popStack();
   },
   'beagle:resetStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:resetApplication': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
   },
 };

@@ -39,17 +39,21 @@ class StackNavigatorExpectations {
   final StackNavigator navigator;
 
   void shouldFetchRoute([int times = 1]) {
-    verify(() => mocks.viewClient.fetch(route)).called(times);
+    verify(() => mocks.beagle.viewClient.fetch(route)).called(times);
   }
 
   void shouldNotFetchRoute([int times = 1]) {
-    verifyNever(() => mocks.viewClient.fetch(any()));
+    verifyNever(() => mocks.beagle.viewClient.fetch(any()));
   }
 
   void shouldCreateBeagleWidget() {
-    verify(() => mocks.beagleWidgetFactory(mocks.rootNavigator)).called(1);
-    // ignore: unnecessary_null_comparison
-    expect(mocks.lastWidget == null, false);
+    verify(() => mocks.beagle.createView(mocks.rootNavigator)).called(1);
+    // the following try-catch makes sure lastWidget has been initialized (it's been marked as late)
+    try {
+      mocks.lastWidget.view;
+    } catch (e) {
+      expect(true, false);
+    }
   }
 
   void shouldHandleOnLoading([int times = 1]) {
@@ -95,7 +99,7 @@ class StackNavigatorExpectations {
           stackTrace: any(named: 'stackTrace'),
           view: any(named: 'view'),
           retry: any(named: 'retry'),
-          error: any(named: 'error'),
+          error: any<dynamic>(named: 'error'),
         ));
   }
 
@@ -183,7 +187,7 @@ class StackNavigatorExpectations {
   }
 
   void shouldLogError() {
-    verify(() => mocks.logger.error(any())).called(1);
+    verify(() => mocks.beagle.logger.error(any())).called(1);
   }
 
   void shouldNotChangeRenderedPage() {

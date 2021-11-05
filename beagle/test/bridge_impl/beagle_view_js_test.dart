@@ -24,11 +24,16 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class BeagleJSEngineMock extends Mock implements BeagleJSEngine {}
 
 class BuildContextMock extends Mock implements BuildContext {}
 
+class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
+
 void main() {
+  registerMocktailFallbacks();
   const createdViewId = 'viewId';
   final jsEngineMock = BeagleJSEngineMock();
 
@@ -39,7 +44,7 @@ void main() {
   });
 
   group('Given a BeagleViewJS', () {
-    final beagleView = BeagleViewJS(jsEngineMock);
+    final beagleView = BeagleViewJS(jsEngineMock, _BeagleNavigatorMock());
 
     group('When destroy is called', () {
       test('Then should remove all view listeners for this view id at BeagleJSEngine', () {
@@ -103,12 +108,6 @@ void main() {
 
     group('When onAction is called', () {
       test('Then should register the view action listener at BeagleJSEngine', () {
-        registerFallbackValue<
-            void Function({
-          BeagleAction? action,
-          BeagleUIElement? element,
-          BeagleView? view,
-        })>(({BeagleAction? action, BeagleUIElement? element, BeagleView? view}) => {});
         void onActionListener({BeagleAction? action, BeagleView? view, BeagleUIElement? element}) {}
         when(() => beagleView.onAction(any())).thenReturn(() {});
         beagleView.onAction(onActionListener);

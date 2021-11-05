@@ -30,12 +30,12 @@ final Map<String, ComponentBuilder> myComponents = {
 
 void main() {
   final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
-
-  BeagleSdk.init(
+  final beagleService = BeagleService(
     baseUrl: 'http://$localhost:8080',
     components: myComponents,
   );
-  runApp(BeagleExample());
+
+  runApp(BeagleProvider(beagle: beagleService, child: BeagleExample()));
 }
 
 class BeagleExample extends StatelessWidget {
@@ -49,7 +49,7 @@ class BeagleExample extends StatelessWidget {
           title: const Text('Beagle example'),
         ),
         body: ElevatedButton(
-          onPressed: () => BeagleSdk.openScreen(route: RemoteView('components'), context: context),
+          onPressed: () => openBeagleScreen(route: RemoteView('/components'), context: context),
           child: Text("Start Beagle flow"),
         ),
       ),

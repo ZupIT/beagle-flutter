@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import 'package:beagle/src/logger/beagle_logger.dart';
-import 'package:beagle/src/service_locator.dart';
+import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
 class BeagleOpenNativeRoute {
@@ -31,7 +30,8 @@ class BeagleOpenNativeRoute {
     try {
       Navigator.pushNamed(buildContext, routeName);
     } catch (err) {
-      beagleServiceLocator<BeagleLogger>().error('Error: $err while trying to navigate to $routeName');
+      final logger = findBeagleService(buildContext).logger;
+      logger.error('Error: $err while trying to navigate to $routeName');
     }
   }
 }

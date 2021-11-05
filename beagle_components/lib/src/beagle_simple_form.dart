@@ -50,11 +50,9 @@ class BeagleSimpleForm extends StatefulWidget {
           : context.findAncestorStateOfType<BeagleSimpleFormState>();
 }
 
-class BeagleSimpleFormState extends State<BeagleSimpleForm> {
-  BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
-
+class BeagleSimpleFormState extends State<BeagleSimpleForm> with BeagleConsumer {
   @override
-  Widget build(BuildContext context) {
+  Widget buildBeagleWidget(BuildContext context) {
     return BeagleFlexWidget(
       style: widget.style,
       children: widget.children ?? [],
@@ -64,19 +62,19 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> {
   void submit() {
     final hasError = hasInputErrors();
     if (hasError) {
-      logger.warning('BeagleSimpleForm: has a validation error');
+      beagle.logger.warning('BeagleSimpleForm: has a validation error');
       if (widget.onValidationError != null) {
         widget.onValidationError!();
       } else {
-        logger.warning(
+        beagle.logger.warning(
             'BeagleSimpleForm: you did not provided a validation function onValidationError');
       }
     } else {
-      logger.info('BeagleSimpleForm: submitting form');
+      beagle.logger.info('BeagleSimpleForm: submitting form');
       if (widget.onSubmit != null) {
         widget.onSubmit!();
       } else {
-        logger.info('BeagleSimpleForm: onSubmit not defined!');
+        beagle.logger.info('BeagleSimpleForm: onSubmit not defined!');
       }
     }
   }

@@ -42,21 +42,18 @@ class BeagleImage extends StatefulWidget {
   _BeagleImageState createState() => _BeagleImageState();
 }
 
-class _BeagleImageState extends State<BeagleImage> {
+class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
   Future<Uint8List>? imageBytes;
-  BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
 
   @override
-  void initState() {
+  void initBeagleState() {
     if (!isLocalImage()) {
       downloadImage();
     }
-
-    super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildBeagleWidget(BuildContext context) {
     final image = isLocalImage()
         ? createImageFromAsset(widget.path as LocalImagePath)
         : createImageFromNetwork(widget.path as RemoteImagePath);
@@ -69,11 +66,9 @@ class _BeagleImageState extends State<BeagleImage> {
   Future<void> downloadImage() async {
     try {
       final RemoteImagePath path = widget.path as RemoteImagePath;
-      final imageDownloader = beagleServiceLocator<BeagleImageDownloader>();
-      final urlBuilder = beagleServiceLocator<UrlBuilder>();
-      imageBytes = imageDownloader.downloadImage(urlBuilder.build(path.url));
+      imageBytes = beagle.imageDownloader.downloadImage(beagle.urlBuilder.build(path.url));
     } catch (e) {
-      logger.errorWithException(e.toString(), e as Exception);
+      beagle.logger.errorWithException(e.toString(), e as Exception);
     }
   }
 
@@ -86,7 +81,7 @@ class _BeagleImageState extends State<BeagleImage> {
         fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
       );
     }
-    logger.error(
+    beagle.logger.error(
         'Invalid local image: "${path?.mobileId ?? 'null'}". Have you declared this id in your DesignSystem class?');
     return Container();
   }
@@ -120,8 +115,7 @@ class _BeagleImageState extends State<BeagleImage> {
   bool isImageDownloaded() => imageBytes != null;
 
   String? getAssetName(LocalImagePath imagePath) {
-    final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-    return designSystem.image(imagePath.mobileId);
+    return beagle.designSystem.image(imagePath.mobileId);
   }
 
   bool isPlaceHolderValid(LocalImagePath? path) {

@@ -24,34 +24,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'image/image_mock_data.dart';
-import 'service_locator/service_locator.dart';
+import 'test-utils/provider_mock.dart';
 
-class MockDesignSystem extends Mock implements BeagleDesignSystem {}
+class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
 
-class MockBeagleImageDownloader extends Mock implements BeagleImageDownloader {}
+class _BeagleImageDownloaderMock extends Mock implements BeagleImageDownloader {}
 
-class MockBeagleLogger extends Mock implements BeagleLogger {}
+class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+class _BeagleYogaFactoryMock extends Mock implements BeagleYogaFactory {}
 
-class MockUrlBuilder extends Mock implements UrlBuilder {}
+class _UrlBuilderMock extends Mock implements UrlBuilder {}
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final designSystem = _DesignSystemMock();
+  @override
+  final imageDownloader = _BeagleImageDownloaderMock();
+  @override
+  final logger = _BeagleLoggerMock();
+  @override
+  final yoga = _BeagleYogaFactoryMock();
+  @override
+  final urlBuilder = _UrlBuilderMock();
+}
 
 void main() {
-  final designSystemMock = MockDesignSystem();
-  final imageDownloaderMock = MockBeagleImageDownloader();
-  final beagleLoggerMock = MockBeagleLogger();
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  final urlBuilderMock = MockUrlBuilder();
-
-  setUpAll(() async {
-    await testSetupServiceLocator(
-      designSystem: designSystemMock,
-      imageDownloader: imageDownloaderMock,
-      logger: beagleLoggerMock,
-      beagleYogaFactory: beagleYogaFactoryMock,
-      urlBuilder: urlBuilderMock,
-    );
-  });
+  final beagle = _BeagleServiceMock();
 
   const imageUrl = 'https://test.com/beagle.png';
   const imageNotFoundUrl = 'https://notfound.com/beagle.png';
@@ -60,7 +59,7 @@ void main() {
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
 
-  when(() => beagleYogaFactoryMock.createYogaLayout(
+  when(() => beagle.yoga.createYogaLayout(
         style: any(named: 'style'),
         children: any(named: 'children'),
       )).thenAnswer((realInvocation) {
@@ -68,21 +67,21 @@ void main() {
     return children.first;
   });
 
-  when(() => designSystemMock.image(defaultPlaceholder))
+  when(() => beagle.designSystem.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');
 
-  when(() => urlBuilderMock.build(imageUrl)).thenReturn(imageUrl);
+  when(() => beagle.urlBuilder.build(imageUrl)).thenReturn(imageUrl);
 
-  when(() => urlBuilderMock.build(imageNotFoundUrl))
+  when(() => beagle.urlBuilder.build(imageNotFoundUrl))
       .thenReturn(imageNotFoundUrl);
 
-  when(() => designSystemMock.image(invalidPlaceholder)).thenReturn('');
+  when(() => beagle.designSystem.image(invalidPlaceholder)).thenReturn('');
 
-  when(() => imageDownloaderMock.downloadImage(imageUrl))
+  when(() => beagle.imageDownloader.downloadImage(imageUrl))
       .thenAnswer((invocation) {
     return Future<Uint8List>.value(mockedBeagleImageData);
   });
-  when(() => imageDownloaderMock.downloadImage(imageNotFoundUrl))
+  when(() => beagle.imageDownloader.downloadImage(imageNotFoundUrl))
       .thenAnswer((invocation) {
     throw BeagleImageDownloaderException(
         statusCode: errorStatusCode, url: imageNotFoundUrl);
@@ -94,11 +93,14 @@ void main() {
     required ImagePath path,
     required ImageContentMode mode,
   }) {
-    return MaterialApp(
-      home: BeagleImage(
-        key: key,
-        path: path,
-        mode: mode,
+    return BeagleProviderMock(
+      beagle: beagle,
+      child: MaterialApp(
+        home: BeagleImage(
+          key: key,
+          path: path,
+          mode: mode,
+        ),
       ),
     );
   }
@@ -119,7 +121,7 @@ void main() {
     ImageContentMode mode = ImageContentMode.FIT_CENTER,
   }) {
     return createWidget(
-      imageDownloader: imageDownloaderMock,
+      imageDownloader: beagle.imageDownloader,
       path: ImagePath.remote(
         url,
         ImagePath.local(placeholder) as LocalImagePath,

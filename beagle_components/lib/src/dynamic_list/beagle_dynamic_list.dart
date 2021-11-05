@@ -38,7 +38,7 @@ class BeagleDynamicList extends StatefulWidget {
     this.children,
     this.spanCount,
     this.suffix,
-    this.beagleWidgetStateProvider,
+    required this.view,
   }) : super(key: key);
 
   /// Optional function to run once the container is created
@@ -74,9 +74,9 @@ class BeagleDynamicList extends StatefulWidget {
   /// Define a list of components to be displayed on this view.
   final List<Widget>? children;
 
-  final String? suffix;
+  final BeagleView view;
 
-  final BeagleWidgetStateProvider? beagleWidgetStateProvider;
+  final String? suffix;
 
   @override
   _BeagleDynamicList createState() => _BeagleDynamicList();
@@ -160,9 +160,8 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
     final templateManager = _getTemplateManager();
     final contexts = _getListBeagleDataContext();
     final anchor = _getAnchor();
-    final beagleWidgetState = widget.beagleWidgetStateProvider?.of(context);
 
-    beagleWidgetState?.getView().getRenderer().doTemplateRender(
+    widget.view.getRenderer().doTemplateRender(
         templateManager: templateManager,
         anchor: anchor,
         contexts: contexts,

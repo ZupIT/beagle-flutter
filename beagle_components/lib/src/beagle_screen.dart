@@ -19,58 +19,59 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class BeagleScreen extends StatelessWidget {
+class BeagleScreen extends StatefulWidget {
   const BeagleScreen({
     Key? key,
-    required this.identifier,
-    required this.navigationBar,
-    required this.child,
+    this.identifier,
     this.safeArea,
+    this.navigationBar,
+    required this.child,
   }) : super(key: key);
 
-  final String identifier;
-  final BeagleNavigationBar navigationBar;
-  final Widget child;
+  final String? identifier;
   final BeagleSafeArea? safeArea;
-
-  BeagleNavigationBarStyle? get _navigationBarStyle =>
-      beagleServiceLocator<BeagleDesignSystem>().navigationBarStyle(navigationBar.styleId ?? '');
+  final BeagleNavigationBar? navigationBar;
+  final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    // ignore: unnecessary_null_comparison
-    final appBar = navigationBar != null
+  _BeagleScreen createState() => _BeagleScreen();
+}
+
+class _BeagleScreen extends State<BeagleScreen> with BeagleConsumer {
+  @override
+  Widget buildBeagleWidget(BuildContext context) {
+    final navigationBarStyle = widget.navigationBar?.styleId == null
+        ? null
+        : beagle.designSystem.navigationBarStyle(widget.navigationBar!.styleId!);
+    final appBar = widget.navigationBar != null
         ? AppBar(
-            leading: _navigationBarStyle?.leading,
-            automaticallyImplyLeading: navigationBar.showBackButton,
-            title: Text(navigationBar.title),
-            actions: navigationBar.navigationBarItems?.map((e) => ItemComponent(item: e)).toList(growable: false) ?? [],
-            elevation: _navigationBarStyle?.elevation,
-            shadowColor: _navigationBarStyle?.shadowColor,
-            backgroundColor: _navigationBarStyle?.backgroundColor,
-            iconTheme: _navigationBarStyle?.iconTheme,
-            actionsIconTheme: _navigationBarStyle?.actionsIconTheme,
-            centerTitle: _navigationBarStyle?.centerTitle,
-            titleSpacing: _navigationBarStyle?.titleSpacing,
-            toolbarHeight: _navigationBarStyle?.toolbarHeight,
-            leadingWidth: _navigationBarStyle?.leadingWidth,
-            toolbarTextStyle: _navigationBarStyle?.toolbarTextStyle,
-            titleTextStyle: _navigationBarStyle?.titleTextStyle,
-          )
+            leading: navigationBarStyle?.leading,
+            automaticallyImplyLeading: widget.navigationBar?.showBackButton == true,
+            title: Text(widget.navigationBar?.title ?? ''),
+            actions: widget.navigationBar?.navigationBarItems?.map((e) => ItemComponent(item: e)).toList(growable: false) ?? [],
+            elevation: navigationBarStyle?.elevation,
+            shadowColor: navigationBarStyle?.shadowColor,
+            backgroundColor: navigationBarStyle?.backgroundColor,
+            iconTheme: navigationBarStyle?.iconTheme,
+            actionsIconTheme: navigationBarStyle?.actionsIconTheme,
+            centerTitle: navigationBarStyle?.centerTitle,
+            titleSpacing: navigationBarStyle?.titleSpacing,
+            toolbarHeight: navigationBarStyle?.toolbarHeight,
+            leadingWidth: navigationBarStyle?.leadingWidth,
+            toolbarTextStyle: navigationBarStyle?.toolbarTextStyle,
+            titleTextStyle: navigationBarStyle?.titleTextStyle)
         : null;
 
     final yogaChild = BeagleFlexWidget(
       style: BeagleStyle(flex: BeagleFlex(grow: 1.0)),
-      // ignore: unnecessary_null_comparison
-      children: child != null ? [child] : [],
+      children: [widget.child],
     );
-    // ignore: unnecessary_null_comparison
-    final body = safeArea != null
+    final body = widget.safeArea != null
         ? SafeArea(
-            top: safeArea!.top ?? true,
-            left: safeArea!.leading ?? true,
-            bottom: safeArea!.bottom ?? true,
-            right: safeArea!.trailing ?? true,
+            top: widget.safeArea!.top ?? true,
+            left: widget.safeArea!.leading ?? true,
+            bottom: widget.safeArea!.bottom ?? true,
+            right: widget.safeArea!.trailing ?? true,
             child: yogaChild,
           )
         : yogaChild;

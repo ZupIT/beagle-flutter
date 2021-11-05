@@ -27,14 +27,9 @@ typedef ActionListener = void Function({
 });
 
 class BeagleJSEngineActionHandler implements BeagleJSEngineBaseHandlerWithListenersMap {
-  final BeagleViewJS _fallbackBeagleViewJs;
   final BeagleJsEngineJsHelpers _jsHelpers;
 
-  BeagleJSEngineActionHandler(
-    JavascriptRuntimeWrapper jsRuntime,
-    BeagleViewJS fallbackBeagleViewJs,
-  )   : _fallbackBeagleViewJs = fallbackBeagleViewJs,
-        _jsHelpers = BeagleJsEngineJsHelpers(jsRuntime);
+  BeagleJSEngineActionHandler(JavascriptRuntimeWrapper jsRuntime) : _jsHelpers = BeagleJsEngineJsHelpers(jsRuntime);
 
   @override
   final Map<String, List<ActionListener>> listenersMap = {};
@@ -47,12 +42,14 @@ class BeagleJSEngineActionHandler implements BeagleJSEngineBaseHandlerWithListen
 
   @override
   void notify(dynamic message) {
+    /* actionMessage must be a map with of the type:
+    { action: BeagleAction (map), viewId: string, element: BeagleUIElement (map) } */
     final viewId = message['viewId'];
     final action = BeagleAction(_jsHelpers.deserializeJsFunctions(message['action']));
-    final view = BeagleViewJS.views[viewId] ?? _fallbackBeagleViewJs;
+    final view = BeagleViewJS.views[viewId]!;
     final element = BeagleUIElement(message['element'] ?? {});
 
-    for (final listener in (listenersMap[viewId] ?? [])) {
+    for (ActionListener listener in (listenersMap[viewId] ?? [])) {
       listener(action: action, view: view, element: element);
     }
   }

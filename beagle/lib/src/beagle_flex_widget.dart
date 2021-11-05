@@ -16,7 +16,7 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
-class BeagleFlexWidget extends StatelessWidget {
+class BeagleFlexWidget extends StatefulWidget {
   BeagleFlexWidget({
     Key? key,
     this.style,
@@ -27,10 +27,15 @@ class BeagleFlexWidget extends StatelessWidget {
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) {
-    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
-      style: style,
-      children: children,
+  _BeagleFlexWidget createState() => _BeagleFlexWidget();
+}
+
+class _BeagleFlexWidget extends State<BeagleFlexWidget> with BeagleConsumer {
+  @override
+  Widget buildBeagleWidget(BuildContext context) {
+    return beagle.yoga.createYogaLayout(
+      style: widget.style,
+      children: widget.children,
     );
   }
 }

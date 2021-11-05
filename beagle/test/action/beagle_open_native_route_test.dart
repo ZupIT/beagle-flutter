@@ -20,21 +20,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter/src/widgets/navigator.dart' as flutter;
 
+import '../test-utils/mocktail.dart';
+
 class ContextMock extends Mock implements BuildContext {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 class MockOpenNativeRoute extends Mock implements BeagleOpenNativeRoute {}
 
-class MockRoute extends flutter.Route<dynamic> {
-  MockRoute();
-}
-
 void main() {
+  registerMocktailFallbacks();
+
   group('Given Beagle Open Native Route Action ', () {
     ContextMock _mockContext = ContextMock();
     const mockRoute = '/route';
-    registerFallbackValue<flutter.Route<dynamic>>(MockRoute());
     NavigatorObserver mockObserver = NavigatorObserver();
     final BeagleOpenNativeRoute mockOpenNativeRoute = MockOpenNativeRoute();
 

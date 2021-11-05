@@ -20,6 +20,8 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class _HttpClientMock extends Mock implements HttpClient {}
 
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
@@ -31,9 +33,7 @@ class _UrlBuilderMock extends Mock implements UrlBuilder {
 }
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue<BeagleRequest>(BeagleRequest(''));
-  });
+  registerMocktailFallbacks();
 
   group("Given the DefaultViewClient", () {
     late HttpClient httpClient;

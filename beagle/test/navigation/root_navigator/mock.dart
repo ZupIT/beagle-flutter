@@ -17,22 +17,12 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
 const String CUSTOM_CONTROLLER_NAME = 'myCustomController';
 
 abstract class _RootNavigatorMocks {
-  StackNavigator stackNavigatorFactory({
-    BeagleRoute? initialRoute,
-    ScreenBuilder screenBuilder,
-    BeagleNavigator rootNavigator,
-    BeagleLogger logger,
-    ViewClient viewClient,
-    NavigationController controller,
-  });
-
-  Widget screenBuilder(UnsafeBeagleWidget beagleWidget, BuildContext context);
+  Widget screenBuilder(BeagleWidget beagleWidget, BuildContext context);
 }
 
 class _LoggerMock extends Mock implements BeagleLogger {}
@@ -52,6 +42,8 @@ class _BeagleServiceMock extends Mock implements BeagleService {
   final Map<String, NavigationController> navigationControllers = {
     CUSTOM_CONTROLLER_NAME: _NavigationControllerMock(),
   };
+  @override
+  final logger = _LoggerMock();
 }
 
 class _StackNavigatorStructureMock extends Mock implements StackNavigator {
@@ -65,6 +57,7 @@ class _StackNavigatorStructureMock extends Mock implements StackNavigator {
   }
 }
 
+// ignore: must_be_immutable
 class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   final navigator = _StackNavigatorStructureMock();
 
@@ -81,9 +74,6 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
 
   @override
   BeagleRoute get initialRoute => navigator.initialRoute;
-
-  @override
-  BeagleLogger get logger => navigator.logger;
 
   @override
   void popToView(String routeIdentifier) {
@@ -105,9 +95,6 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
 
   @override
   ScreenBuilder get screenBuilder => navigator.screenBuilder;
-
-  @override
-  ViewClient get viewClient => navigator.viewClient;
 
   late BuildContext buildContext;
 
@@ -136,11 +123,13 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   Future<void> untilFirstLoadCompletes() {
     return navigator.untilFirstLoadCompletes();
   }
+
+  @override
+  BeagleService get beagle => navigator.beagle;
 }
 
 class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {
-  final logger = _LoggerMock();
-  final beagleService = _BeagleServiceMock();
+  final beagle = _BeagleServiceMock();
   final rootNavigatorObserver = _NavigatorObserverMock();
   final topNavigatorObserver = _NavigatorObserverMock();
   final List<StackNavigatorMock> initialPages = [];
@@ -152,21 +141,15 @@ class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {
   }
 
   RootNavigatorMocks([int numberOfInitialPages = 0]) {
-    when(() => stackNavigatorFactory(
-          controller: any(named: 'controller'),
-          initialRoute: any(named: 'initialRoute'),
-          logger: any(named: 'logger'),
-          rootNavigator: any(named: 'rootNavigator'),
-          screenBuilder: any(named: 'screenBuilder'),
-          viewClient: any(named: 'viewClient'),
-        )).thenAnswer((_) => _newStackNavigator());
+    when(() => beagle.createStackNavigator(
+      controller: any(named: 'controller'),
+      initialRoute: any(named: 'initialRoute'),
+      rootNavigator: any(named: 'rootNavigator'),
+      screenBuilder: any(named: 'screenBuilder'),
+    )).thenAnswer((_) => _newStackNavigator());
 
     for (int i = 0; i < numberOfInitialPages; i++) {
       initialPages.add(_newStackNavigator());
     }
-
-    GetIt.instance.allowReassignment = true;
-    GetIt.instance.registerSingleton<BeagleService>(beagleService);
-    GetIt.instance.registerSingleton<BeagleLogger>(logger);
   }
 }

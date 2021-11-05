@@ -19,12 +19,12 @@ import 'package:flutter/widgets.dart';
 import 'package:yoga_engine/yoga_engine.dart';
 
 class BeagleYogaLayout extends YogaLayout {
-  BeagleYogaLayout({BeagleStyle? style, List<Widget>? children})
+  BeagleYogaLayout({BeagleStyle? style, List<Widget>? children, required BeagleYogaFactory yoga})
       : super(
-          nodeProperties: beagleServiceLocator<BeagleYogaFactory>().createNodeProperties(style),
+          nodeProperties: yoga.createNodeProperties(style),
           children: children?.map(
                 (child) {
-                  return beagleServiceLocator<BeagleYogaFactory>().createYogaNode(child);
+                  return yoga.createYogaNode(child);
                 },
               ).toList() ??
               [],

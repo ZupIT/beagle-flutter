@@ -18,8 +18,6 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'service_locator/service_locator.dart';
-
 const touchableKey = Key('BeagleTouchable');
 
 Widget createWidget({
@@ -37,10 +35,6 @@ Widget createWidget({
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleTouchable', () {
     group('When I click on it', () {
       testWidgets('Then it should call onPress callback',

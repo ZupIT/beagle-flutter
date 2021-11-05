@@ -16,6 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -23,6 +24,8 @@ final List<MethodCall> log = <MethodCall>[];
 MethodChannel channel = const MethodChannel('plugins.flutter.io/url_launcher');
 
 class BeagleLoggerMock extends Mock implements BeagleLogger {}
+
+class _BuldContextMock extends Mock implements BuildContext {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +36,7 @@ void main() {
         String url = '';
         String method = '';
         const expectedUrl = 'http://example.com';
+        BuildContext context;
 
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
           url = methodCall.arguments['url'];
@@ -42,7 +46,7 @@ void main() {
           }
         }); // Register the mock handler.
 
-        await BeagleOpenExternalUrl.launchURL(expectedUrl);
+        await BeagleOpenExternalUrl.launchURL(_BuldContextMock(), expectedUrl);
 
         expect(method, equals('launch'));
         expect(url, equals(expectedUrl));

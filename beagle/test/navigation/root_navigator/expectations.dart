@@ -35,15 +35,13 @@ class RootNavigatorExpectations {
   final RootNavigatorState navigatorState;
 
   void _shouldCreateStackNavigator([String? customController]) {
-    verify(() => mocks.stackNavigatorFactory(
-          initialRoute: route,
+    verify(() => mocks.beagle.createStackNavigator(
+          initialRoute: route!,
           screenBuilder: mocks.screenBuilder,
           rootNavigator: navigatorState,
-          logger: mocks.logger,
-          viewClient: mocks.beagleService.viewClient,
           controller: customController == null
-              ? mocks.beagleService.defaultNavigationController
-              : mocks.beagleService.navigationControllers[customController] as NavigationController,
+              ? mocks.beagle.defaultNavigationController
+              : mocks.beagle.navigationControllers[customController] as NavigationController,
         )).called(1);
   }
 

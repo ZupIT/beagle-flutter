@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/beagle_metadata_widget.dart';
 import 'package:beagle/src/beagle_yoga_layout.dart';
@@ -43,6 +44,6 @@ class BeagleYogaFactory {
     BeagleStyle? style,
     required List<Widget> children,
   }) {
-    return BeagleYogaLayout(style: style, children: children);
+    return BeagleYogaLayout(style: style, children: children, yoga: this);
   }
 }

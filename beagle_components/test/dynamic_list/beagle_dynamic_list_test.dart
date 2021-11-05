@@ -21,9 +21,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import '../service_locator/service_locator.dart';
+import '../test-utils/mocktail.dart';
 
-class MockBuildContext extends Mock implements BuildContext {}
+class _BeagleViewMock extends Mock implements BeagleView {}
 
 Widget createWidget({
   final List<dynamic>? dataSource,
@@ -37,7 +37,7 @@ Widget createWidget({
   final Function? onScrollEnd,
   final int? spanCount,
   final List<Widget>? children,
-  final BeagleWidgetStateProvider? provider,
+  final BeagleView? view,
 }) {
   return MaterialApp(
     key: Key('materialApp'),
@@ -54,17 +54,13 @@ Widget createWidget({
       onScrollEnd: onScrollEnd,
       spanCount: spanCount,
       children: children,
-      beagleWidgetStateProvider: provider,
+      view: view ?? _BeagleViewMock(),
     ),
   );
 }
 
 void main() {
-  setUpAll(() async {
-    registerFallbackValue<BuildContext>(MockBuildContext());
-    registerFallbackValue<TemplateManager>(TemplateManager());
-    await testSetupServiceLocator();
-  });
+  registerMocktailFallbacks();
 
   group('Given a BeagleDynamicList', () {
     group('When passing parameter spanCount with number one', () {
@@ -258,20 +254,16 @@ void main() {
       testWidgets('Then it should call doTemplateRender with correct parameter', (WidgetTester tester) async {
         final templates = _getTemplates();
         final dataSource = _getDataSource();
-        final providerMock = BeagleWidgetStateProviderMock();
-        final beagleWidgetStateMock = BeagleWidgetStateMock();
-        final beagleViewMock = BeagleViewMock();
         final renderMock = RendererMock();
+        final view = _BeagleViewMock();
 
-        when(() => providerMock.of(any())).thenReturn(beagleWidgetStateMock);
-        when(() => beagleWidgetStateMock.getView()).thenReturn(beagleViewMock);
-        when(() => beagleViewMock.getRenderer()).thenReturn(renderMock);
+        when(() => view.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
           iteratorName: 'name',
           templates: templates,
           dataSource: dataSource,
-          provider: providerMock,
+          view: view,
         ));
 
         final capturedValues = verify(() => renderMock.doTemplateRender(
@@ -311,20 +303,16 @@ void main() {
       testWidgets('Then it should generate id correct', (WidgetTester tester) async {
         final templates = _getTemplates();
         final dataSource = _getDataSource();
-        final providerMock = BeagleWidgetStateProviderMock();
-        final beagleWidgetStateMock = BeagleWidgetStateMock();
-        final beagleViewMock = BeagleViewMock();
         final renderMock = RendererMock();
+        final view = _BeagleViewMock();
 
-        when(() => providerMock.of(any())).thenReturn(beagleWidgetStateMock);
-        when(() => beagleWidgetStateMock.getView()).thenReturn(beagleViewMock);
-        when(() => beagleViewMock.getRenderer()).thenReturn(renderMock);
+        when(() => view.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
           iteratorName: 'name',
           templates: templates,
           dataSource: dataSource,
-          provider: providerMock,
+          view: view,
         ));
 
         final capturedValues = verify(() => renderMock.doTemplateRender(
@@ -469,5 +457,3 @@ class BeagleWidgetStateMock extends Mock implements BeagleWidgetState {
     return '';
   }
 }
-
-class BeagleWidgetStateProviderMock extends Mock implements BeagleWidgetStateProvider {}

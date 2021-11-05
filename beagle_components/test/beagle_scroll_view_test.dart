@@ -20,8 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'service_locator/service_locator.dart';
-
 Widget createWidget({
   ScrollAxis scrollDirection = ScrollAxis.VERTICAL,
   bool scrollBarEnabled = true,
@@ -37,10 +35,6 @@ Widget createWidget({
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleScrollView', () {
     group('When the widget is created', () {
       testWidgets(

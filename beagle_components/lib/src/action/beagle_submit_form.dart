@@ -20,18 +20,24 @@ import 'package:beagle_components/src/utils/build_context_utils.dart';
 import 'package:flutter/widgets.dart';
 
 class BeagleSubmitForm {
-  static void submit(BuildContext buildContext, BeagleUIElement element) {
-    final BuildContext? buildContextOrigin = buildContext.findBuildContextForWidgetKey(element.getId());
+  static void submit(
+    BuildContext buildContext,
+    BeagleUIElement element,
+    /// used for testing purposes only
+    [BuildContext? Function(String)? findContextByWidgetKey]
+  ) {
+    findContextByWidgetKey = findContextByWidgetKey ?? buildContext.findBuildContextForWidgetKey;
+    final beagle = findBeagleService(buildContext);
+    final BuildContext? buildContextOrigin = findContextByWidgetKey(element.getId());
     if (buildContextOrigin != null) {
-      final BeagleSimpleForm? beagleSimpleForm = buildContextOrigin.findAncestorWidgetOfExactType();
-      final beagleSimpleFormState = BeagleSimpleForm.of(buildContextOrigin);
-      if (beagleSimpleForm != null && beagleSimpleFormState != null) {
-        beagleSimpleFormState.submit();
+      final simpleFormState = buildContextOrigin.findAncestorStateOfType<BeagleSimpleFormState>();
+      if (simpleFormState != null) {
+        simpleFormState.submit();
       } else {
-        beagleServiceLocator<BeagleLogger>().error('Not found simple form in the parents');
+        beagle.logger.error('Could not find a parent SimpleForm to submit.');
       }
     } else {
-      beagleServiceLocator<BeagleLogger>().error('Not found buildContext for element with id ${element.getId()}');
+      beagle.logger.error('Could find a component with the id ${element.getId()} in the current tree.');
     }
   }
 }

@@ -39,7 +39,7 @@ class BeagleJSEngineViewUpdateHandler implements BeagleJSEngineBaseHandlerWithLi
     final deserialized = _jsHelpers.deserializeJsFunctions(message['tree'], viewId);
     final uiElement = BeagleUIElement(deserialized);
 
-    for (final listener in (listenersMap[viewId] ?? [])) {
+    for (ViewChangeListener listener in (listenersMap[viewId] ?? [])) {
       listener(uiElement);
     }
   }

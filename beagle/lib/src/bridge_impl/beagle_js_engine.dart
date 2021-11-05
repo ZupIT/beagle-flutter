@@ -17,7 +17,6 @@
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
 import 'package:beagle/src/bridge_impl/handlers/handlers.dart';
 import 'package:beagle/src/bridge_impl/utils.dart';
 import 'package:flutter/services.dart';
@@ -28,8 +27,17 @@ import 'js_runtime_wrapper.dart';
 /// Provides an interface to run javascript code and listen to Beagle's core
 /// events.
 class BeagleJSEngine {
-  late BeagleJSEngineActionHandler _actionHandler;
+  BeagleJSEngine(BeagleService beagle, JavascriptRuntimeWrapper jsRuntime)
+      : _jsRuntime = jsRuntime,
+        _actionHandler = BeagleJSEngineActionHandler(jsRuntime),
+        _jsHelpers = BeagleJsEngineJsHelpers(jsRuntime),
+        _analyticsHandler = BeagleJSEngineAnalyticsHandler(jsRuntime, beagle),
+        _httpHandler = BeagleJSEngineHttpHandler(),
+        _loggerHandler = BeagleJSEngineLoggerHandler(beagle),
+        _operationHandler = BeagleJSEngineOperationHandler(),
+        _viewUpdateHandler = BeagleJSEngineViewUpdateHandler(jsRuntime);
 
+  final BeagleJSEngineActionHandler _actionHandler;
   final JavascriptRuntimeWrapper _jsRuntime;
   final BeagleJsEngineJsHelpers _jsHelpers;
   final BeagleJSEngineAnalyticsHandler _analyticsHandler;
@@ -40,15 +48,6 @@ class BeagleJSEngine {
   final Map<String, AwaitableNotification> _awaitingListenerMap = {};
 
   BeagleJSEngineState _engineState = BeagleJSEngineState.CREATED;
-
-  BeagleJSEngine(JavascriptRuntimeWrapper jsRuntime)
-      : _jsRuntime = jsRuntime,
-        _jsHelpers = BeagleJsEngineJsHelpers(jsRuntime),
-        _analyticsHandler = BeagleJSEngineAnalyticsHandler(jsRuntime),
-        _httpHandler = BeagleJSEngineHttpHandler(),
-        _loggerHandler = BeagleJSEngineLoggerHandler(),
-        _operationHandler = BeagleJSEngineOperationHandler(),
-        _viewUpdateHandler = BeagleJSEngineViewUpdateHandler(jsRuntime);
 
   BeagleJSEngineState get state => _engineState;
 
@@ -105,7 +104,6 @@ class BeagleJSEngine {
     if (!_isEngineStarted()) {
       _engineState = BeagleJSEngineState.STARTED;
       _jsRuntime.enableHandlePromises();
-      _actionHandler = BeagleJSEngineActionHandler(_jsRuntime, BeagleViewJS(this));
 
       _setupMessages();
 

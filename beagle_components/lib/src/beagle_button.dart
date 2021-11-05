@@ -18,9 +18,7 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-/// Defines a button widget that will be rendered according to the style of the
-/// running platform.
-class BeagleButton extends StatelessWidget {
+class BeagleButton extends StatefulWidget {
   const BeagleButton({
     Key? key,
     required this.text,
@@ -38,7 +36,7 @@ class BeagleButton extends StatelessWidget {
   final String? styleId;
 
   /// Defines the actions that will be performed when this component is pressed.
-  final Function? onPress;
+  final void Function()? onPress;
 
   /// Whether button will be enabled.
   final bool? enabled;
@@ -46,44 +44,51 @@ class BeagleButton extends StatelessWidget {
   /// Property responsible to customize all the flex attributes and general style configuration
   final BeagleStyle? style;
 
-  BeagleButtonStyle? get _buttonStyle => beagleServiceLocator<BeagleDesignSystem>().buttonStyle(styleId ?? '');
+  @override
+  _BeagleButton createState() => _BeagleButton();
+}
+
+/// Defines a button widget that will be rendered according to the style of the
+/// running platform.
+class _BeagleButton extends State<BeagleButton> with BeagleConsumer {
+  BeagleButtonStyle? _buttonStyle;
 
   @override
-  Widget build(BuildContext context) {
-    final buttonStyle = _buttonStyle?.buttonStyle ?? ButtonStyle();
+  Widget buildBeagleWidget(BuildContext context) {
+    _buttonStyle = widget.styleId == null ? null : beagle.designSystem.buttonStyle(widget.styleId!);
 
     return ElevatedButton(
-        onPressed: _getOnPressedFunction() as void Function()?,
+        onPressed: widget.enabled == false ? null : widget.onPress,
         child: _buildButtonChild(),
-        style: buttonStyle.copyWith(
+        style: _buttonStyle?.buttonStyle?.copyWith(
           shape: _getShape(),
           backgroundColor: _getBackgroundColor(),
           side: _getBorderSide(),
         ));
   }
 
-  Widget _buildButtonChild() => Text(text, style: _buttonStyle?.buttonTextStyle);
-
-  Function? _getOnPressedFunction() => (enabled ?? true) ? onPress : null;
+  Widget _buildButtonChild() => Text(widget.text, style: _buttonStyle?.buttonTextStyle);
 
   MaterialStateProperty<Color>? _getBackgroundColor() {
-    final color = style?.backgroundColor != null ? HexColor(style!.backgroundColor!) : null;
+    final color = widget.style?.backgroundColor != null
+        ? HexColor(widget.style!.backgroundColor!)
+        : null;
     return color != null ? MaterialStateProperty.all(color) : null;
   }
 
   MaterialStateProperty<BorderSide>? _getBorderSide() {
-    return style?.borderWidth != null && style?.borderColor != null
+    return widget.style?.borderWidth != null && widget.style?.borderColor != null
         ? MaterialStateProperty.all(
             BorderSide(
-              color: HexColor(style!.borderColor!),
-              width: style!.borderWidth!,
+              color: HexColor(widget.style!.borderColor!),
+              width: widget.style!.borderWidth!,
             ),
           )
         : null;
   }
 
   MaterialStateProperty<OutlinedBorder>? _getShape() {
-    final borderRadius = style?.cornerRadius?.getBorderRadius();
+    final borderRadius = widget.style?.cornerRadius?.getBorderRadius();
 
     return borderRadius != null
         ? MaterialStateProperty.all(

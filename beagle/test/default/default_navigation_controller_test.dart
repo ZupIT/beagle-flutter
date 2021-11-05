@@ -19,6 +19,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class _RendererMock extends Mock implements Renderer {}
 
 class _BeagleViewMock extends Mock implements BeagleView {
@@ -35,9 +37,7 @@ class _BuildContextMock extends Mock implements BuildContext {}
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue<BeagleUIElement>(BeagleUIElement({}));
-  });
+  registerMocktailFallbacks();
 
   group("Given the DefaultNavigationController", () {
     final logger = _BeagleLoggerMock();

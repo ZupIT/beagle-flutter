@@ -21,30 +21,40 @@ import 'dart:typed_data';
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
 import 'package:beagle/src/bridge_impl/js_runtime_wrapper.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class MockJavascriptRuntimeWrapper extends Mock implements JavascriptRuntimeWrapper {}
 
 class AnalyticsProviderMock extends Mock implements AnalyticsProvider {}
 
+class _BeagleViewJSMock extends Mock implements BeagleViewJS {}
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final analyticsProvider = AnalyticsProviderMock();
+}
+
 void main() {
+  registerMocktailFallbacks();
   TestWidgetsFlutterBinding.ensureInitialized();
   final jsRuntimeMock = MockJavascriptRuntimeWrapper();
-  final analyticsProviderMock = AnalyticsProviderMock();
+  late BeagleService beagle;
 
   setUp(() {
-    beagleServiceLocator.reset();
-    registerFallbackValue<JsEvalResult>(JsEvalResult('null', null));
+    beagle = _BeagleServiceMock();
     reset(jsRuntimeMock);
   });
 
   group('Given a not started BeagleJSEngine', () {
     group('When evaluateJavascriptCode is called', () {
       test('Then should throw BeagleJSEngineException', () {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         expect(() => beagleJSEngine.evaluateJavascriptCode('code'), throwsA(isInstanceOf<BeagleJSEngineException>()));
 
@@ -54,7 +64,7 @@ void main() {
 
     group('When promiseToFuture is called', () {
       test('Then should throw BeagleJSEngineException', () {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         expect(() => beagleJSEngine.promiseToFuture(JsEvalResult('stringResult', 'rawResult')),
             throwsA(isInstanceOf<BeagleJSEngineException>()));
 
@@ -64,14 +74,14 @@ void main() {
 
     group('When start was NOT called yet', () {
       test('Then engine state should be BeagleJSEngineState.CREATED', () {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         expect(beagleJSEngine.state, BeagleJSEngineState.CREATED);
       });
     });
 
     group('When start is called', () {
       test('Then should change engine state to BeagleJSEngineState.STARTED', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -79,7 +89,7 @@ void main() {
       });
 
       test('Then should initialize the JavascriptRuntime', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -91,7 +101,7 @@ void main() {
       });
 
       test('Then should register for javascript httpClient.request messages', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -99,7 +109,7 @@ void main() {
       });
 
       test('Then should register for javascript action messages', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -108,7 +118,7 @@ void main() {
       });
 
       test('Then should register for javascript operation messages', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -117,7 +127,7 @@ void main() {
       });
 
       test('Then should register for javascript beagleView.update messages', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -126,7 +136,7 @@ void main() {
       });
 
       test('Then should register for javascript analytics.createRecord messages', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -135,7 +145,7 @@ void main() {
       });
 
       test('Then should register for javascript analytics.getConfig messages', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
 
@@ -148,7 +158,7 @@ void main() {
   group('Given a started BeagleJSEngine', () {
     group('When evaluateJavascriptCode is called', () {
       test('Then should NOT throw BeagleJSEngineException', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         beagleJSEngine.evaluateJavascriptCode('code');
@@ -156,7 +166,7 @@ void main() {
 
       test('Then should execute code in javascriptRuntime', () async {
         const jsCode = 'code';
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         beagleJSEngine.evaluateJavascriptCode(jsCode);
@@ -167,7 +177,7 @@ void main() {
 
     group('When promiseToFuture is called', () {
       test('Then should call handlePromise in javascriptRuntime', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         final result = JsEvalResult('stringResult', 'rawResult');
 
         when(() => jsRuntimeMock.handlePromise(any())).thenAnswer((invocation) async => JsEvalResult('null', null));
@@ -181,7 +191,7 @@ void main() {
 
     group('When start is called more than one time', () {
       test('Then should initialize the JavascriptRuntime only one time', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         await beagleJSEngine.start();
         reset(jsRuntimeMock);
@@ -193,7 +203,7 @@ void main() {
 
     group('When an httpClient.request message is received', () {
       test('Then should call registered http listener', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         final httpMessage = {
@@ -222,20 +232,21 @@ void main() {
 
     group('When an action message is received', () {
       test('Then should call all registered action listeners', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         const viewId = '1';
-        final actionMessage = {
+        final action = {
           '_beagleAction_': 'beagle:setContext',
           'contextId': 'address',
           'path': 'complement',
-          'value': '@{onChange.value}'
+          'value': '@{onChange.value}',
         };
+        final element = {'_beagleComponent_': 'beagle:container'};
+        BeagleViewJS.views[viewId] = _BeagleViewJSMock();
 
         var firstActionListenerCalled = false;
         var secondActionListenerCalled = false;
-        var nonRegisteredActionListenerCalled = false;
 
         beagleJSEngine
           ..onAction(viewId, ({required action, required element, required view}) {
@@ -247,24 +258,20 @@ void main() {
           })
           ..onAction(viewId, ({required action, required element, required view}) {
             secondActionListenerCalled = true;
-          })
-          ..onAction('2', ({required action, required element, required view}) {
-            nonRegisteredActionListenerCalled = true;
           });
 
         verify(() => jsRuntimeMock.onMessage('action', captureAny<void Function(dynamic)>(that: isNotNull)))
             .captured
-            .single({'viewId': viewId, 'action': actionMessage});
+            .single({'viewId': viewId, 'action': action, 'element': element});
 
         expect(firstActionListenerCalled, true);
         expect(secondActionListenerCalled, true);
-        expect(nonRegisteredActionListenerCalled, false);
       });
     });
 
     group('When an operation message is received', () {
       test('Then should call registered operation listener', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         final operationMessage = {
@@ -290,7 +297,7 @@ void main() {
 
     group('When a beagleView.update message is received', () {
       test('Then should call all registered view update listeners', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         final viewUpdateMessage = {
@@ -329,7 +336,7 @@ void main() {
     group('When a analytics.getConfig message is received', () {
       test('Then should call callJsFunction on beagle_js_engine', () async {
         const functionId = 'functionId';
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
         //Expected values
@@ -342,9 +349,7 @@ void main() {
         final analyticsConfig =
             AnalyticsConfig(enableScreenAnalytics: expectedEnableScreenAnalytics, actions: expectedActions);
 
-        when(() => analyticsProviderMock.getConfig()).thenReturn(analyticsConfig);
-
-        beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProviderMock);
+        when(() => beagle.analyticsProvider!.getConfig()).thenReturn(analyticsConfig);
 
         final message = {
           'functionId': functionId,
@@ -359,10 +364,8 @@ void main() {
 
     group('When a analytics.createRecord message is received', () {
       test('Then should call createRecord on analyticsProvider', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
-
-        beagleServiceLocator.registerSingleton<AnalyticsProvider>(analyticsProviderMock);
 
         final message = {
           "type": "action",
@@ -377,7 +380,7 @@ void main() {
 
         await verify(() => jsRuntimeMock.onMessage('analytics.createRecord', captureAny())).captured.single(message);
 
-        verify(() => analyticsProviderMock.createRecord(AnalyticsRecord.fromMap(message)));
+        verify(() => beagle.analyticsProvider!.createRecord(AnalyticsRecord.fromMap(message)));
       });
     });
 
@@ -385,7 +388,7 @@ void main() {
       test('Then should return correct view id', () async {
         final result = JsEvalResult('10', 'rawResult');
         when(() => jsRuntimeMock.evaluate(any())).thenReturn(result);
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
         when(() => jsRuntimeMock.evaluate('global.beagle.createBeagleView({})')).thenReturn(result);
 
@@ -397,7 +400,7 @@ void main() {
 
     group('When removeViewListeners is called by passing a view id', () {
       test('Then should remove the listeners bound to view id', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
         const viewId = '1';
 
@@ -437,7 +440,7 @@ void main() {
 
     group('When callJsFunction is called', () {
       test('Then should call JavascriptRuntime evaluate passing correct argument', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
         const functionId = '1';
         const argumentsMap = {'arg': 'argument'};
@@ -452,7 +455,7 @@ void main() {
 
     group('When respondHttpRequest is called', () {
       test('Then should call JavascriptRuntime evaluate passing correct argument', () async {
-        final beagleJSEngine = BeagleJSEngine(jsRuntimeMock);
+        final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
         const requestId = '1';
         final response = Response(200, '{}', {}, Uint8List(0));

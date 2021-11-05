@@ -20,9 +20,10 @@ import 'package:beagle/src/bridge_impl/utils.dart';
 import 'package:beagle/src/bridge_impl/js_runtime_wrapper.dart';
 
 class BeagleJSEngineAnalyticsHandler implements BeagleJSEngineBaseHandler {
-  final BeagleJsEngineJsHelpers _jsHelpers;
+  BeagleJSEngineAnalyticsHandler(JavascriptRuntimeWrapper jsRuntime, this._beagle) : _jsHelpers = BeagleJsEngineJsHelpers(jsRuntime);
 
-  BeagleJSEngineAnalyticsHandler(JavascriptRuntimeWrapper jsRuntime) : _jsHelpers = BeagleJsEngineJsHelpers(jsRuntime);
+  final BeagleService _beagle;
+  final BeagleJsEngineJsHelpers _jsHelpers;
 
   @override
   String get channelName => 'analytics.createRecord';
@@ -31,22 +32,20 @@ class BeagleJSEngineAnalyticsHandler implements BeagleJSEngineBaseHandler {
 
   @override
   void notify(dynamic map) {
-    if (beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
-      final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
+    if (_beagle.analyticsProvider != null) {
       final record = AnalyticsRecord.fromMap(map);
       /*
        * TODO find a way to extract x,y of the component that triggered the event. Example:
        *  final componentId = analyticsRecord[analytics.component['id']];
        *  final position = findPositionByComponentId(componentId); // position.x, position.y
        */
-      analyticsProvider.createRecord(record);
+      _beagle.analyticsProvider!.createRecord(record);
     }
   }
 
   void getConfig(dynamic map) {
-    if (beagleServiceLocator.isRegistered<AnalyticsProvider>()) {
-      final analyticsProvider = beagleServiceLocator<AnalyticsProvider>();
-      _jsHelpers.callJsFunction(map["functionId"], analyticsProvider.getConfig().toMap());
+    if (_beagle.analyticsProvider != null) {
+      _jsHelpers.callJsFunction(map["functionId"], _beagle.analyticsProvider!.getConfig().toMap());
     }
   }
 }

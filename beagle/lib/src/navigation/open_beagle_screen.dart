@@ -15,26 +15,19 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/handlers/base.dart';
+import 'package:flutter/material.dart';
 
-class BeagleJSEngineLoggerHandler implements BeagleJSEngineBaseHandler {
-  BeagleJSEngineLoggerHandler(this._beagle);
-
-  final BeagleService _beagle;
-  @override
-  String get channelName => 'logger';
-
-  @override
-  void notify(dynamic loggerMessage) {
-    final message = loggerMessage['message'];
-    final level = loggerMessage['level'];
-
-    if (level == 'info') {
-      _beagle.logger.info(message);
-    } else if (level == 'warning') {
-      _beagle.logger.warning(message);
-    } else if (level == 'error') {
-      _beagle.logger.error(message);
-    }
-  }
+void openBeagleScreen({
+  required BeagleRoute route,
+  required BuildContext context,
+  ScreenBuilder? screenBuilder,
+  NavigationController? initialController,
+}) {
+  final navigator = RootNavigator(
+    initialRoute: route,
+    screenBuilder: screenBuilder ?? (widget, _) => widget,
+    initialController: initialController,
+  );
+  final pageRoute = MaterialPageRoute<dynamic>(builder: (_) => navigator);
+  Navigator.push(context, pageRoute);
 }

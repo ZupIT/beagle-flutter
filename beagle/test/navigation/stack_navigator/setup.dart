@@ -37,13 +37,11 @@ Future<_SetupResult> setupStackNavigatorTests({
   dynamic expectedError,
 }) async {
   final navigator = StackNavigator(
+    beagle: mocks.beagle,
     initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:text'})),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
-    viewClient: mocks.viewClient,
     rootNavigator: mocks.rootNavigator,
-    logger: mocks.logger,
-    beagleWidgetFactory: mocks.beagleWidgetFactory,
     initialPages: mocks.initialPages,
     navigatorObservers: [mocks.navigatorObserver],
   );

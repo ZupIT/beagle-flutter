@@ -20,6 +20,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
 
 class _BeagleViewMock extends Mock implements BeagleView {
@@ -35,13 +37,10 @@ class _BeagleUIElementMock extends Mock implements BeagleUIElement {}
 
 class _BuildContextMock extends Mock implements BuildContext {}
 
-class _BeagleRouteMock extends Mock implements BeagleRoute {}
-
 void main() {
-  group("Given the action handlers for beagle navigation", () {
-    registerFallbackValue<BeagleRoute>(_BeagleRouteMock());
-    registerFallbackValue<BuildContext>(_BuildContextMock());
+  registerMocktailFallbacks();
 
+  group("Given the action handlers for beagle navigation", () {
     Map<String, String> remoteViewMap = {"url": "/test"};
     Map<String, dynamic> localViewMap = {
       "screen": {

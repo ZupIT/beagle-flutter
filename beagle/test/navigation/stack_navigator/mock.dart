@@ -36,9 +36,16 @@ class _LoggerMock extends Mock implements BeagleLogger {}
 
 class _BeagleViewMock extends Mock implements BeagleView {}
 
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final logger = _LoggerMock();
+  @override
+  final viewClient = _ViewClientMock();
+}
+
 class _NavigatorObserverMock extends Mock implements NavigatorObserver {}
 
-class _BeagleWidgetMock extends Mock implements UnsafeBeagleWidget {
+class _BeagleWidgetMock extends Mock implements BeagleWidget {
   @override
   final BeagleView view = _BeagleViewMock();
 
@@ -49,8 +56,7 @@ class _BeagleWidgetMock extends Mock implements UnsafeBeagleWidget {
 }
 
 abstract class _NavigationMocks {
-  Widget screenBuilder(UnsafeBeagleWidget beagleWidget, BuildContext context);
-  UnsafeBeagleWidget beagleWidgetFactory(BeagleNavigator navigator);
+  Widget screenBuilder(BeagleWidget beagleWidget, BuildContext context);
 }
 
 int _nextId = 0;
@@ -60,16 +66,15 @@ class _Ref<T> {
 }
 
 class NavigationMocks extends Mock implements _NavigationMocks {
+  final beagle = _BeagleServiceMock();
   final controller = _NavigationControllerMock();
-  final viewClient = _ViewClientMock();
   final rootNavigator = _RootNavigatorMock();
-  final logger = _LoggerMock();
   final navigatorObserver = _NavigatorObserverMock();
   final screenKey = Key('beagle_widget_${_nextId++}');
   final List<PageRoute<dynamic>> initialPages = [];
   final WidgetTester tester;
   late BuildContext lastBuildContext;
-  late UnsafeBeagleWidget lastWidget;
+  late BeagleWidget lastWidget;
 
   NavigationMocks(this.tester, [int numberOfInitialPages = 0]) {
     for (int i = 0; i < numberOfInitialPages; i++) {
@@ -90,21 +95,21 @@ class NavigationMocks extends Mock implements _NavigationMocks {
           return Container(key: screenKey);
         }));
 
-    when(() => beagleWidgetFactory(any())).thenAnswer((_) {
+    when(() => beagle.createView(any())).thenAnswer((_) {
       lastWidget = _BeagleWidgetMock();
-      return lastWidget;
+      return BeagleViewWidget(lastWidget.view, lastWidget);
     });
   }
 
   void mockSuccessfulRequest(RemoteView route, BeagleUIElement result) {
-    when(() => viewClient.fetch(route)).thenAnswer((_) async {
+    when(() => beagle.viewClient.fetch(route)).thenAnswer((_) async {
       await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
       return result;
     });
   }
 
   void mockUnsuccessfulRequest(RemoteView route, dynamic error) {
-    when(() => viewClient.fetch(route)).thenAnswer((_) async {
+    when(() => beagle.viewClient.fetch(route)).thenAnswer((_) async {
       await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
       throw error;
     });
@@ -125,7 +130,7 @@ class NavigationMocks extends Mock implements _NavigationMocks {
           completeNavigation: any(named: 'completeNavigation'),
           stackTrace: any(named: 'stackTrace'),
           retry: any(named: 'retry'),
-          error: any(named: 'error'),
+          error: any<dynamic>(named: 'error'),
         )).thenAnswer((realInvocation) {
       realInvocation.namedArguments[Symbol('completeNavigation')]();
     });
@@ -139,7 +144,7 @@ class NavigationMocks extends Mock implements _NavigationMocks {
           completeNavigation: any(named: 'completeNavigation'),
           stackTrace: any(named: 'stackTrace'),
           retry: any(named: 'retry'),
-          error: any(named: 'error'),
+          error: any<dynamic>(named: 'error'),
         )).thenAnswer((realInvocation) {
       retry.current = realInvocation.namedArguments[Symbol('retry')];
     });
@@ -164,13 +169,11 @@ StackNavigator createStackNavigator({
   }
 
   return StackNavigator(
+    beagle: mocks.beagle,
     initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:container'})),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
-    viewClient: mocks.viewClient,
     rootNavigator: mocks.rootNavigator,
-    logger: mocks.logger,
-    beagleWidgetFactory: mocks.beagleWidgetFactory,
     initialPages: initialNumberOfPages == 0 ? [] : pages,
   );
 }

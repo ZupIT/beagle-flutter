@@ -74,7 +74,7 @@ ComponentBuilder beagleScrollViewBuilder() {
 }
 
 ComponentBuilder beagleListViewBuilder() {
-  return (element, children, _) => BeagleDynamicList(
+  return (element, children, view) => BeagleDynamicList(
         key: element.getKey(),
         onInit: element.getAttributeValue('onInit'),
         direction: EnumUtils.fromString(BeagleDynamicListDirection.values, element.getAttributeValue('direction')),
@@ -87,12 +87,12 @@ ComponentBuilder beagleListViewBuilder() {
         onScrollEnd: element.getAttributeValue('onScrollEnd'),
         children: children,
         suffix: element.getAttributeValue('__suffix__'),
-        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
+        view: view,
       );
 }
 
 ComponentBuilder beagleGridViewBuilder() {
-  return (element, children, _) => BeagleDynamicList(
+  return (element, children, view) => BeagleDynamicList(
         key: element.getKey(),
         onInit: element.getAttributeValue('onInit'),
         direction: EnumUtils.fromString(BeagleDynamicListDirection.values, element.getAttributeValue('direction')),
@@ -106,7 +106,7 @@ ComponentBuilder beagleGridViewBuilder() {
         children: children,
         spanCount: element.getAttributeValue('spanCount'),
         suffix: element.getAttributeValue('__suffix__'),
-        beagleWidgetStateProvider: BeagleWidgetStateProvider(),
+        view: view,
       );
 }
 

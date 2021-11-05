@@ -16,20 +16,14 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_js/js_eval_result.dart';
+import 'package:mocktail/mocktail.dart';
 
-class BeagleWidgetStateProvider {
-  static final BeagleWidgetStateProvider _singleton =
-      BeagleWidgetStateProvider._internal();
+class _BuildContextMock extends Mock implements BuildContext {}
 
-  factory BeagleWidgetStateProvider() {
-    return _singleton;
-  }
+class _TemplateManagerMock extends Mock implements TemplateManager {}
 
-  BeagleWidgetStateProvider._internal();
-
-  BeagleWidgetState? of(
-    BuildContext context,
-  ) {
-    return context.findAncestorStateOfType<BeagleWidgetState>();
-  }
+void registerMocktailFallbacks() {
+  registerFallbackValue<BuildContext>(_BuildContextMock());
+  registerFallbackValue<TemplateManager>(_TemplateManagerMock());
 }

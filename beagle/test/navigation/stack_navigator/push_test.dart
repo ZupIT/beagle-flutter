@@ -17,41 +17,15 @@
 import 'dart:async';
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
-import 'package:mocktail/mocktail.dart';
+import '../../test-utils/mocktail.dart';
 import 'expectations.dart';
 import 'mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'setup.dart';
 
-class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
-
-class _BeagleViewJSMock extends Mock implements BeagleViewJS {}
-
-class _BuildContextMock extends Mock implements BuildContext {}
-
-class _BeagleViewMock extends Mock implements BeagleView {}
-
-class _StackTraceMock extends Mock implements StackTrace {}
-
-class _RouteMock extends Mock implements Route<dynamic> {}
-
 void main() {
-  setUpAll(() async {
-    await beagleServiceLocator.reset();
-
-    beagleServiceLocator.registerSingleton<BeagleViewJS>(_BeagleViewJSMock());
-
-    registerFallbackValue<BeagleView>(_BeagleViewMock());
-    registerFallbackValue<UnsafeBeagleWidget>(UnsafeBeagleWidget(null));
-    registerFallbackValue<BuildContext>(_BuildContextMock());
-    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
-    registerFallbackValue<StackTrace>(_StackTraceMock());
-    registerFallbackValue<Route<dynamic>>(_RouteMock());
-    registerFallbackValue<BeagleUIElement>(BeagleUIElement({}));
-    registerFallbackValue<RemoteView>(RemoteView(''));
-  });
+  registerMocktailFallbacks();
 
   group('Given a StackNavigator class', () {
     final remoteView = RemoteView('/test');

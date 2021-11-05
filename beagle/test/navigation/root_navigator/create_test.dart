@@ -15,38 +15,15 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
+import '../../test-utils/mocktail.dart';
 import 'expectations.dart';
 import 'mock.dart';
 import 'setup.dart';
 
-class _NavigationControllerMock extends Mock implements NavigationController {}
-
-class _BeagleLoggerMock extends Mock implements BeagleLogger {}
-
-class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
-
-class _ViewClientMock extends Mock implements ViewClient {}
-
-class _BeagleRouteMock extends Mock implements BeagleRoute {}
-
-class _BuildContextMock extends Mock implements BuildContext {}
-
-class _RouteDynamicMock extends Mock implements Route<dynamic> {}
-
 void main() {
-  setUpAll(() async {
-    registerFallbackValue<NavigationController>(_NavigationControllerMock());
-    registerFallbackValue<BeagleLogger>(_BeagleLoggerMock());
-    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
-    registerFallbackValue<ViewClient>(_ViewClientMock());
-    registerFallbackValue<BeagleRoute>(_BeagleRouteMock());
-    registerFallbackValue<BuildContext>(_BuildContextMock());
-    registerFallbackValue<Route<dynamic>>(_RouteDynamicMock());
-  });
+  registerMocktailFallbacks();
 
   group('Given a RootNavigator', () {
     Future<RootNavigatorExpectations> _setup(WidgetTester tester, [String? initialController]) async {

@@ -21,7 +21,7 @@ class UrlBuilder {
     _baseUrl = baseUrl.replaceFirst(RegExp(r'/$'), '');
   }
 
-  late String _baseUrl;
+  late final String _baseUrl;
 
   bool _shouldEncodeUrl(String url) {
     /* decode uri throws an error if the url has any kind of diacritics and if it has diacritics

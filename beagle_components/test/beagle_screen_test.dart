@@ -20,34 +20,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'service_locator/service_locator.dart';
+import 'test-utils/provider_mock.dart';
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
 
-class MockDesignSystem extends Mock implements BeagleDesignSystem {}
+class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class MockBeagleLogger extends Mock implements BeagleLogger {}
+class _BeagleYogaFactoryMock extends Mock implements BeagleYogaFactory {}
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final designSystem = _DesignSystemMock();
+  @override
+  final logger = _BeagleLoggerMock();
+  @override
+  final yoga = _BeagleYogaFactoryMock();
+}
 
 Widget createWidget({
+  required BeagleService beagle,
   required String identifier,
   required BeagleSafeArea safeArea,
   required BeagleNavigationBar navigationBar,
 }) {
-  return MaterialApp(
-    home: BeagleScreen(
-      key: Key('screenKey'),
-      identifier: identifier,
-      safeArea: safeArea,
-      navigationBar: navigationBar,
-      child: Text('Screen content'),
+  return BeagleProviderMock(
+    beagle: beagle,
+    child: MaterialApp(
+      home: BeagleScreen(
+        key: Key('screenKey'),
+        identifier: identifier,
+        safeArea: safeArea,
+        navigationBar: navigationBar,
+        child: Text('Screen content'),
+      ),
     ),
   );
 }
 
 void main() {
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  final designSystemMock = MockDesignSystem();
-  final beagleLoggerMock = MockBeagleLogger();
+  final beagle = _BeagleServiceMock();
   final navigationBarStyleId = 'navigationBarStyleId';
   final navigationBarStyle = BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
   final identifierDefault = 'widgetIdentifier';
@@ -63,8 +74,8 @@ void main() {
     navigationBarItems: [],
   );
 
-  setUpAll(() async {
-    when(() => beagleYogaFactoryMock.createYogaLayout(
+  setUpAll(() {
+    when(() => beagle.yoga.createYogaLayout(
           style: any(named: 'style'),
           children: any(named: 'children'),
         )).thenAnswer((realInvocation) {
@@ -72,19 +83,14 @@ void main() {
       return children.first;
     });
 
-    when(() => designSystemMock.navigationBarStyle(navigationBarStyleId)).thenReturn(navigationBarStyle);
-
-    await testSetupServiceLocator(
-      beagleYogaFactory: beagleYogaFactoryMock,
-      designSystem: designSystemMock,
-      logger: beagleLoggerMock,
-    );
+    when(() => beagle.designSystem.navigationBarStyle(navigationBarStyleId)).thenReturn(navigationBarStyle);
   });
 
   group('Given a BeagleScreen', () {
     group('When it is created', () {
       testWidgets('Then it should render a scaffold', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
+          beagle: beagle,
           identifier: identifierDefault,
           safeArea: safeAreaDefault,
           navigationBar: navigationBarDefault,
@@ -101,6 +107,7 @@ void main() {
           navigationBarItems: [],
         );
         await tester.pumpWidget(createWidget(
+          beagle: beagle,
           identifier: identifierDefault,
           safeArea: safeAreaDefault,
           navigationBar: navigationBar,
@@ -117,6 +124,7 @@ void main() {
           navigationBarItems: [],
         );
         await tester.pumpWidget(createWidget(
+          beagle: beagle,
           identifier: identifierDefault,
           safeArea: safeAreaDefault,
           navigationBar: navigationBar,
@@ -135,6 +143,7 @@ void main() {
         );
 
         await tester.pumpWidget(createWidget(
+          beagle: beagle,
           identifier: identifierDefault,
           safeArea: safeAreaDefault,
           navigationBar: navigationBar,
@@ -157,6 +166,7 @@ void main() {
         );
 
         await tester.pumpWidget(createWidget(
+          beagle: beagle,
           identifier: identifierDefault,
           safeArea: safeAreaDefault,
           navigationBar: navigationBar,
@@ -169,6 +179,7 @@ void main() {
     group('When it is created with a safeArea', () {
       testWidgets('Then it should render a safeArea widget', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(
+          beagle: beagle,
           identifier: identifierDefault,
           safeArea: safeAreaDefault,
           navigationBar: navigationBarDefault,

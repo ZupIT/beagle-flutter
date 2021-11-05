@@ -15,15 +15,16 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/service_locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class BeagleOpenExternalUrl {
-  static Future<void> launchURL(String url) async {
+  static Future<void> launchURL(BuildContext buildContext, String url) async {
     if (await launcher.canLaunch(url)) {
       await launcher.launch(url);
     } else {
-      beagleServiceLocator<BeagleLogger>().error('Could not launch $url');
+      final logger = findBeagleService(buildContext).logger;
+      logger.error('Could not launch $url');
     }
   }
 }

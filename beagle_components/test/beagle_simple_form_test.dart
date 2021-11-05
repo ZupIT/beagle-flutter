@@ -22,44 +22,52 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'beagle_image_test.dart';
-import 'service_locator/service_locator.dart';
+import 'test-utils/provider_mock.dart';
 
-class MockBeagleLogger extends Mock implements BeagleLogger {}
+class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+class _BeagleYogaFactoryMock extends Mock implements BeagleYogaFactory {}
+
+class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final logger = _BeagleLoggerMock();
+  @override
+  final yoga = _BeagleYogaFactoryMock();
+  @override
+  final designSystem = _DesignSystemMock();
+}
 
 Widget createWidget({
+  required BeagleService beagle,
   Function? onValidationError,
   Function? onSubmit,
 }) {
   return MaterialApp(
-    home: Scaffold(
-      body: BeagleSimpleForm(
-        key: Key('scrollKey'),
-        onValidationError: onValidationError,
-        onSubmit: onSubmit,
-        children: [
-          BeagleTextInput(
-            placeholder: 'Text input',
-          )
-        ],
+    home: BeagleProviderMock(
+      beagle: beagle,
+      child: Scaffold(
+        body: BeagleSimpleForm(
+          key: Key('scrollKey'),
+          onValidationError: onValidationError,
+          onSubmit: onSubmit,
+          children: [BeagleTextInput(placeholder: 'Text input')],
+        ),
       ),
     ),
   );
 }
 
 void main() {
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  final designSystemMock = MockDesignSystem();
-  final beagleLoggerMock = MockBeagleLogger();
+  final beagle = _BeagleServiceMock();
 
   final navigationBarStyleId = 'navigationBarStyleId';
   final navigationBarStyle =
       BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
 
-  setUpAll(() async {
-    when(() => beagleYogaFactoryMock.createYogaLayout(
+  setUpAll(() {
+    when(() => beagle.yoga.createYogaLayout(
           style: any(named: 'style'),
           children: any(named: 'children'),
         )).thenAnswer((realInvocation) {
@@ -67,14 +75,8 @@ void main() {
       return children.first;
     });
 
-    when(() => designSystemMock.navigationBarStyle(navigationBarStyleId))
+    when(() => beagle.designSystem.navigationBarStyle(navigationBarStyleId))
         .thenReturn(navigationBarStyle);
-
-    await testSetupServiceLocator(
-      beagleYogaFactory: beagleYogaFactoryMock,
-      designSystem: designSystemMock,
-      logger: beagleLoggerMock,
-    );
   });
 
   group('Given a BeagleSimpleForm', () {
@@ -82,10 +84,12 @@ void main() {
       testWidgets(
         'Then there should be a TextField as its content',
         (WidgetTester tester) async {
-          await tester.pumpWidget(createWidget());
+          await tester.pumpWidget(createWidget(beagle: beagle));
           expect(find.byType(TextField), findsOneWidget);
         },
       );
     });
   });
+
+  // TODO: test the form submission, including validation, with the real SimpleFormState.
 }

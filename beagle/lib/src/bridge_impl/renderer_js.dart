@@ -19,10 +19,10 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 
 class RendererJS implements Renderer {
-  final String _viewId;
-  final BeagleJSEngine _beagleJSEngine;
+  RendererJS(this._jsEngine, this._viewId);
 
-  RendererJS(this._beagleJSEngine, this._viewId);
+  final String _viewId;
+  final BeagleJSEngine _jsEngine;
 
   String _getJsTreeUpdateModeName(TreeUpdateMode mode) {
     /* When calling toString in an enum, it returns EnumName.EnumValue, we just need the part after
@@ -35,7 +35,7 @@ class RendererJS implements Renderer {
     final arguments = [jsonEncode(tree.properties)];
     if (anchor != null) arguments.add("'$anchor'");
     if (mode != null) arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
-    _beagleJSEngine
+    _jsEngine
         .evaluateJavascriptCode("global.beagle.getViewById('$_viewId').getRenderer().$method(${arguments.join(", ")})");
   }
 
@@ -64,7 +64,7 @@ class RendererJS implements Renderer {
     ];
     if (componentManager != null) {
       final componentManagerCallbackId = 'global.beagle.doTemplateRender.$anchor.componentManagerCallback';
-      _beagleJSEngine.addJsCallback(componentManagerCallbackId, (args) {
+      _jsEngine.addJsCallback(componentManagerCallbackId, (args) {
         return componentManager(BeagleUIElement(args['component']), args['index'] as int);
       });
       arguments.add(
@@ -74,7 +74,7 @@ class RendererJS implements Renderer {
       if (componentManager == null) arguments.add('null');
       arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
     }
-    _beagleJSEngine.evaluateJavascriptCode(
+    _jsEngine.evaluateJavascriptCode(
         "global.beagle.getViewById('$_viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
   }
 }

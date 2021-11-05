@@ -28,20 +28,20 @@ class GlobalContextSerializationError implements Exception {
 /// Access to the Global Context API. Use it to set persistent values that can be retrieved and
 /// manipulated by the widgets rendered by Beagle.
 class GlobalContextJS implements GlobalContext {
-  GlobalContextJS(this._beagleJSEngine);
+  GlobalContextJS(this._jsEngine);
 
-  final BeagleJSEngine _beagleJSEngine;
+  final BeagleJSEngine _jsEngine;
 
   @override
   void clear([String? path]) {
     final args = path == null ? '' : "'$path'";
-    _beagleJSEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.clear($args)');
+    _jsEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.clear($args)');
   }
 
   @override
   T get<T>([String? path]) {
     final args = path == null ? '' : "'$path'";
-    return _beagleJSEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.get($args)')?.rawResult;
+    return _jsEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.get($args)')?.rawResult;
   }
 
   @override
@@ -52,7 +52,7 @@ class GlobalContextJS implements GlobalContext {
 
     final jsonString = json.encode(value);
     final args = path == null ? jsonString : "$jsonString, '$path'";
-    _beagleJSEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.set($args)');
+    _jsEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.set($args)');
   }
 
   bool _isEncodable(dynamic value) => value is num || value is String || value is List || value is Map;

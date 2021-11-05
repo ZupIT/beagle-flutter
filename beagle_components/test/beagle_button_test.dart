@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
+import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'objects_fake/button_one_style.dart';
-import 'service_locator/service_locator.dart';
+import 'objects_fake/fake_design_system.dart';
+import 'test-utils/provider_mock.dart';
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final designSystem = FakeDesignSystem();
+}
 
 const buttonText = 'Beagle Button';
 const buttonKey = Key('BeagleButton');
@@ -31,26 +39,25 @@ void buttonOnPress() {}
 Widget createWidget({
   Key buttonKey = buttonKey,
   String buttonText = buttonText,
-  Function buttonOnPress = buttonOnPress,
+  void Function() buttonOnPress = buttonOnPress,
   bool buttonEnabled = true,
-  String styleId = '',
+  String? styleId,
 }) {
-  return MaterialApp(
-    home: BeagleButton(
-      key: buttonKey,
-      text: buttonText,
-      onPress: buttonOnPress,
-      enabled: buttonEnabled,
-      styleId: styleId,
+  return BeagleProviderMock(
+    beagle: _BeagleServiceMock(),
+    child: MaterialApp(
+      home: BeagleButton(
+        key: buttonKey,
+        text: buttonText,
+        onPress: buttonOnPress,
+        enabled: buttonEnabled,
+        styleId: styleId,
+      ),
     ),
   );
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleButton', () {
     group('When the widget is created', () {
       testWidgets('Then it should have a ElevatedButton child', (WidgetTester tester) async {
@@ -130,7 +137,7 @@ void main() {
     });
 
     group('When not set style', () {
-      testWidgets('Then it should have a correct style', (WidgetTester tester) async {
+      testWidgets('Then it should not have a style', (WidgetTester tester) async {
         // WHEN
         await tester.pumpWidget(createWidget());
 
@@ -140,7 +147,7 @@ void main() {
         final textCreated = tester.widget<Text>(find.text(buttonText));
 
         expect(buttonFinder, findsOneWidget);
-        expect(buttonCreated.style, ButtonStyle());
+        expect(buttonCreated.style, null);
         expect(textCreated.style, null);
 
         debugDefaultTargetPlatformOverride = null;

@@ -19,8 +19,15 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-import 'service_locator/service_locator.dart';
+import 'objects_fake/fake_design_system.dart';
+import 'test-utils/provider_mock.dart';
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final designSystem = FakeDesignSystem();
+}
 
 const text = 'Beagle Text';
 const textColor = '#00FF00';
@@ -38,22 +45,21 @@ Widget createWidget({
   TextAlignment? alignment = alignment,
   String? styleId,
 }) {
-  return MaterialApp(
-    home: BeagleText(
-      key: key,
-      text: text,
-      textColor: textColor,
-      alignment: alignment ?? TextAlignment.LEFT,
-      styleId: styleId ?? '',
+  return BeagleProviderMock(
+    beagle: _BeagleServiceMock(),
+    child: MaterialApp(
+      home: BeagleText(
+        key: key,
+        text: text,
+        textColor: textColor,
+        alignment: alignment ?? TextAlignment.LEFT,
+        styleId: styleId ?? '',
+      ),
     ),
   );
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleText', () {
     group('When the widget is rendered', () {
       testWidgets('Then it should have the correct text',

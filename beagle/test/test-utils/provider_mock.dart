@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
+
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/handlers/base.dart';
+import 'package:flutter/widgets.dart';
 
-class BeagleJSEngineLoggerHandler implements BeagleJSEngineBaseHandler {
-  BeagleJSEngineLoggerHandler(this._beagle);
-
-  final BeagleService _beagle;
-  @override
-  String get channelName => 'logger';
+class BeagleProviderMock extends BeagleProvider {
+  BeagleProviderMock({required BeagleService beagle, required Widget child}) : super(beagle: beagle, child: child);
 
   @override
-  void notify(dynamic loggerMessage) {
-    final message = loggerMessage['message'];
-    final level = loggerMessage['level'];
+  BeagleProviderState createState() => BeagleProviderStateMock(beagle);
+}
 
-    if (level == 'info') {
-      _beagle.logger.info(message);
-    } else if (level == 'warning') {
-      _beagle.logger.warning(message);
-    } else if (level == 'error') {
-      _beagle.logger.error(message);
-    }
+class BeagleProviderStateMock extends BeagleProviderState {
+  BeagleProviderStateMock(BeagleService beagle) : super(beagle);
+
+  @override
+  // ignore: must_call_super
+  void initState() {}
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

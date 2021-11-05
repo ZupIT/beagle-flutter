@@ -19,39 +19,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'test-utils/provider_mock.dart';
+
 const text = 'Undefined Component';
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
-
-Widget createWidget({String text = text, BeagleEnvironment environment = BeagleEnvironment.debug}) {
-  return MaterialApp(
-      home: BeagleFlexWidget(children: [
-    BeagleUndefinedWidget(
-      environment: environment,
-    )
-  ]));
+class _BeagleYogaFactoryMock extends Mock implements BeagleYogaFactory {}
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final yoga = _BeagleYogaFactoryMock();
 }
 
 void main() {
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
+  final beagle = _BeagleServiceMock();
+
+  Widget _createWidget({BeagleEnvironment environment = BeagleEnvironment.debug}) {
+    return BeagleProviderMock(
+      beagle: beagle,
+      child: MaterialApp(home: BeagleFlexWidget(children: [BeagleUndefinedWidget(environment: environment)])),
+    );
+  }
 
   setUpAll(() async {
-    when(() => beagleYogaFactoryMock.createYogaLayout(
+    when(() => beagle.yoga.createYogaLayout(
           style: any(named: 'style'),
           children: any(named: 'children'),
         )).thenAnswer((realInvocation) {
       final List<Widget> children = realInvocation.namedArguments.values.last;
       return children.first;
     });
-
-    await beagleServiceLocator.reset();
-
-    beagleServiceLocator.registerSingleton<BeagleYogaFactory>(beagleYogaFactoryMock);
   });
+
   group('Given a widget wrapped by a BeagleFlexWidget', () {
     group('When set debug environment', () {
       testWidgets('Then it should have the correct text', (WidgetTester tester) async {
-        await tester.pumpWidget(createWidget());
+        await tester.pumpWidget(_createWidget());
 
         final textFinder = find.text(text);
 
@@ -61,7 +62,7 @@ void main() {
 
     group('When set production environment', () {
       testWidgets('Then it should not have text widget', (WidgetTester tester) async {
-        await tester.pumpWidget(createWidget(environment: BeagleEnvironment.production));
+        await tester.pumpWidget(_createWidget(environment: BeagleEnvironment.production));
 
         final textFinder = find.text(text);
 
