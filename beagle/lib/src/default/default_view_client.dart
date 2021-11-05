@@ -43,12 +43,10 @@ class DefaultViewClient implements ViewClient {
       body: _convertBodyToString(route.httpAdditionalData?.body),
     ));
 
-    if (response.status >= 400) {
-      throw ErrorDescription(
-          "${route.httpAdditionalData?.method ?? "GET"} ${urlBuilder.build(route.url)}. Response status: ${response.status}");
-    }
-
-    return BeagleUIElement(json.decode(response.body));
+    if (response.status < 400) return BeagleUIElement(json.decode(response.body));
+    if (route.fallback != null) return route.fallback!;
+    throw ErrorDescription(
+        "${route.httpAdditionalData?.method ?? "GET"} ${urlBuilder.build(route.url)}. Response status: ${response.status}");
   }
 
   @override

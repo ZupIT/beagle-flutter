@@ -93,6 +93,13 @@ void main() {
             .thenAnswer((_) => Future.value(Response(500, "", {}, Uint8List.fromList([]))));
       });
 
+      test("Should fallback when a request failed", () async {
+        final fallbackElement = BeagleUIElement({'_beagleComponent_': 'beagle:text', 'text': 'Fallback Page'});
+        final response = await viewClient.fetch(RemoteView("/route", fallback: fallbackElement));
+
+        expect(response, fallbackElement);
+      });
+
       test("Then it should throw an error", () async {
         try {
           await viewClient.fetch(route);
