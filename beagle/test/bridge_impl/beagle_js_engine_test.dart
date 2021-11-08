@@ -270,7 +270,7 @@ void main() {
     });
 
     group('When an operation message is received', () {
-      test('Then should call registered operation listener', () async {
+      test('Then should call registered operation listener and obtain result', () async {
         final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
@@ -279,19 +279,17 @@ void main() {
           'params': ['paramA', 'paramB'],
         };
 
-        var operationListener = false;
-
         beagleJSEngine.onOperation((operation, params) {
-          operationListener = true;
           expect(operation, 'mockOperation');
           expect(params, ['paramA', 'paramB']);
+          return 'test';
         });
 
-        verify(() => jsRuntimeMock.onMessage('operation', captureAny<void Function(dynamic)>(that: isNotNull)))
-            .captured
-            .single(operationMessage);
+        final result = verify(
+          () => jsRuntimeMock.onMessage('operation', captureAny<void Function(dynamic)>(that: isNotNull)),
+        ).captured.single(operationMessage);
 
-        expect(operationListener, true);
+        expect(result, 'test');
       });
     });
 

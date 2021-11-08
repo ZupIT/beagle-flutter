@@ -16,6 +16,7 @@
 
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_js/flutter_js.dart';
 
 import 'beagle_js_engine.dart';
@@ -51,9 +52,15 @@ class BeagleJS {
     engine.onOperation((operationName, params) {
       final handler = _beagle.operations[operationName];
       if (handler == null) {
+        _beagle.logger.warning('Custom operation $operationName was not found. Are you sure you registered it in the config?');
         return;
       }
-      handler(params);
+      try {
+        return handler(params);
+      } catch (err, stackTrace) {
+        _beagle.logger.error('An error has been thrown while executing the custom operation $operationName. Please, check the log below for more details.');
+        debugPrintStack(stackTrace: stackTrace);
+      }
     });
   }
 

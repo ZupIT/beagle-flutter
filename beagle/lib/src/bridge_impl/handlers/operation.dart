@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/handlers/base.dart';
 
-typedef OperationListener = void Function(String operationName, List<dynamic> args);
+typedef OperationListener = dynamic Function(String operationName, List<dynamic> args);
 
 class BeagleJSEngineOperationHandler implements BeagleJSEngineBaseHandler {
+  BeagleJSEngineOperationHandler(this._beagle);
+
+  final BeagleService _beagle;
   OperationListener? _listener;
 
   void setListener(OperationListener listener) => _listener = listener;
@@ -27,10 +31,11 @@ class BeagleJSEngineOperationHandler implements BeagleJSEngineBaseHandler {
   String get channelName => 'operation';
 
   @override
-  void notify(dynamic message) {
+  dynamic notify(dynamic message) {
     if (_listener == null) {
-      return;
+      _beagle.logger.error('Could find a listener for operations. This is a problem within the Beagle library.');
+      return null;
     }
-    _listener!(message['operation'], message['params']);
+    return _listener!(message['operation'], message['params']);
   }
 }

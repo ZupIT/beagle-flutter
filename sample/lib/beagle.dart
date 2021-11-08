@@ -36,12 +36,18 @@ Map<String, ActionHandler> myCustomActions = {
     debugPrint(action.getAttributeValue('message'));
   }
 };
+Map<String, Operation> myCustomOperations = {
+  'sumAll': (List<dynamic> args) {
+    return args.reduce((value, element) => value + element);
+  },
+};
 
 final beagleService = BeagleService(
   baseUrl: 'http://$localhost:8080',
   environment: kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
   components: {...defaultComponents, ...myCustomComponents},
   actions: {...myCustomActions, ...defaultActions},
+  operations: myCustomOperations,
   analyticsProvider: AppAnalyticsProvider(),
   logger: DefaultLogger(),
   designSystem: AppDesignSystem(),

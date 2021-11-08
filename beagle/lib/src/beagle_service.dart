@@ -38,7 +38,7 @@ typedef ActionHandler = void Function({
   required BuildContext context,
 });
 
-typedef Operation = void Function(List<dynamic> args);
+typedef Operation = dynamic Function(List<dynamic> args);
 
 Map<String, T> _toLowercaseKeys<T>(Map<String, T> dictionary) {
   return dictionary.map((key, value) => MapEntry(key.toLowerCase(), value));

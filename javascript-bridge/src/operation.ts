@@ -16,13 +16,11 @@
 
 import { Operation } from '@zup-it/beagle-web'
 
-function handlerWrapper(operationName: string) {
-  
-  const flutterOperationHandler: Operation = (...args: any[]) => {
-    sendMessage('operation', JSON.stringify({ operation: operationName, params: args }))
-  }
-
-  return flutterOperationHandler
+function handlerWrapper(operationName: string): Operation {
+  return (...args: any[]) => sendMessage(
+    'operation',
+    JSON.stringify({ operation: operationName, params: args }),
+  )
 }
 
 export function createCustomOperationMap(operations: string[]): Record<string, Operation> {

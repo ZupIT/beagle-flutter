@@ -17,7 +17,7 @@
 abstract class BeagleJSEngineBaseHandler {
   String get channelName;
 
-  void notify(dynamic message);
+  dynamic notify(dynamic message);
 }
 
 abstract class BeagleJSEngineBaseHandlerWithListenersMap extends BeagleJSEngineBaseHandler {

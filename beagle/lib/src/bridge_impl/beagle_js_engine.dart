@@ -34,7 +34,7 @@ class BeagleJSEngine {
         _analyticsHandler = BeagleJSEngineAnalyticsHandler(jsRuntime, beagle),
         _httpHandler = BeagleJSEngineHttpHandler(),
         _loggerHandler = BeagleJSEngineLoggerHandler(beagle),
-        _operationHandler = BeagleJSEngineOperationHandler(),
+        _operationHandler = BeagleJSEngineOperationHandler(beagle),
         _viewUpdateHandler = BeagleJSEngineViewUpdateHandler(jsRuntime);
 
   final BeagleJSEngineActionHandler _actionHandler;
