@@ -4,9 +4,9 @@
 
 ### 1. [**About**](#about)
 ### 2. [**Usage**](#-usage)
->#### i. [**Installation**](#installation)
->#### ii. [**Configuration**](#configuration)
->#### iii. [**Configuration options**](#configuration-options)
+>#### 2.1. [**Installation**](#installation)
+>#### 2.2. [**Configuration**](#configuration)
+>#### 2.3. [**Configuration options**](#configuration-options)
 ### 3. [**Customization**](#customization)
 ### 4. [**Current state of development**](#current-state-of-development)
 ### 5. [**Documentation**](#documentation)
@@ -213,7 +213,7 @@ You can also manually sign your commits during GitHub reviews and suggestions, f
 Signed-off-by: Name < e-mail address >
 ```
 
-For this method, your name and e-mail must be the same registered to your GitHub account.
+For this method, your name and e-mail must be the same registered on your GitHub account.
 
 ## **Code of Conduct**
 
