@@ -19,10 +19,11 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
 
 class RendererJS implements Renderer {
-  RendererJS(this._jsEngine, this._viewId);
-
+  final globalBeagle = "global.beagle";
   final String _viewId;
   final BeagleJSEngine _jsEngine;
+
+  RendererJS(this._jsEngine, this._viewId);
 
   String _getJsTreeUpdateModeName(TreeUpdateMode mode) {
     /* When calling toString in an enum, it returns EnumName.EnumValue, we just need the part after
@@ -35,8 +36,7 @@ class RendererJS implements Renderer {
     final arguments = [jsonEncode(tree.properties)];
     if (anchor != null) arguments.add("'$anchor'");
     if (mode != null) arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
-    _jsEngine
-        .evaluateJavascriptCode("global.beagle.getViewById('$_viewId').getRenderer().$method(${arguments.join(", ")})");
+    _jsEngine.evaluateJsCode("$globalBeagle.getViewById('$_viewId').getRenderer().$method(${arguments.join(", ")})");
   }
 
   @override
@@ -57,24 +57,48 @@ class RendererJS implements Renderer {
     BeagleUIElement Function(BeagleUIElement, int)? componentManager,
     TreeUpdateMode? mode,
   }) {
-    final arguments = [
-      jsonEncode(templateManager.toJson()),
-      "'$anchor'",
-      jsonEncode(contexts.map((c) => c.map(((i) => i.toJson())).toList()).toList()),
-    ];
+    final globalRender = "$globalBeagle.render";
+    final templatesJs = jsonEncode(templateManager.toJson());
+    final modeJs = _getJsTreeUpdateModeName(mode ?? TreeUpdateMode.replace);
+
+    // ignore: prefer_function_declarations_over_variables
+    final evaluateRenderFn = (String functionName, String arguments) =>
+        json.decode(_jsEngine.evaluateJsCode("$globalRender.$functionName($arguments)")?.stringResult ?? "null");
+
+    // ignore: prefer_function_declarations_over_variables
+    final encodeContexts = (List<BeagleDataContext> contexts) => contexts.map(((i) => i.toJson())).toList();
+
     if (componentManager != null) {
-      final componentManagerCallbackId = 'global.beagle.doTemplateRender.$anchor.componentManagerCallback';
-      _jsEngine.addJsCallback(componentManagerCallbackId, (args) {
-        return componentManager(BeagleUIElement(args['component']), args['index'] as int);
-      });
-      arguments.add(
-          """function _componentManagerJs(c, i) { return sendMessage("$componentManagerCallbackId", JSON.stringify({ "component": c, "index": i })); }""");
+      final rawHierarchy = json
+          .decode(_jsEngine.evaluateJsCode("$globalRender.getTreeContextHierarchy('$_viewId')")?.stringResult ?? '[]');
+      final globalHierarchy = (rawHierarchy as List<dynamic>).map((raw) => BeagleDataContext.fromJson(raw)).toList();
+      final contextTemplates = List<Map<String, dynamic>>.empty(growable: true);
+
+      for (int i = 0; i < contexts.length; i++) {
+        final context = contexts[i];
+        final contextHierarchy = [...context, ...globalHierarchy];
+        final templateArgs = ["'$_viewId'", json.encode(encodeContexts(contextHierarchy)), templatesJs];
+        final template = evaluateRenderFn("getContextEvaluatedTemplate", templateArgs.join(', '));
+        final templateElement = BeagleUIElement(template);
+
+        var clonedTemplate = evaluateRenderFn("cloneTemplate", json.encode(templateElement.properties));
+        clonedTemplate = {
+          ...clonedTemplate,
+          ...componentManager(BeagleUIElement(clonedTemplate), i).properties,
+          "_implicitContexts_": context,
+        };
+
+        final preProcessedElement = evaluateRenderFn("preProcessTemplateTree", json.encode(clonedTemplate));
+        contextTemplates.add(preProcessedElement);
+      }
+
+      _jsEngine.evaluateJsCode(
+          "$globalRender.doTreeFullRender('$_viewId', '$anchor', ${json.encode(contextTemplates)}, '$modeJs')");
+    } else {
+      final contextsJs = jsonEncode(contexts.map((c) => encodeContexts(c)).toList()).trim();
+      final arguments = [templatesJs, "'$anchor'", contextsJs, "null", "'$modeJs'"];
+      _jsEngine.evaluateJsCode(
+          "$globalBeagle.getViewById('$_viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
     }
-    if (mode != null) {
-      if (componentManager == null) arguments.add('null');
-      arguments.add("'${_getJsTreeUpdateModeName(mode)}'");
-    }
-    _jsEngine.evaluateJavascriptCode(
-        "global.beagle.getViewById('$_viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
   }
 }

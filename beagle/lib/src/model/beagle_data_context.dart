@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 class BeagleDataContext {
   String id;
   dynamic value;
@@ -25,5 +23,8 @@ class BeagleDataContext {
     this.value,
   });
 
-  Map<String, dynamic> toJson() => {'id': id, 'value': jsonEncode(value)};
+  Map<String, dynamic> toJson() => {'id': id, 'value': value};
+
+  static BeagleDataContext fromJson(Map<String, dynamic> json) =>
+      BeagleDataContext(id: json['id'], value: json['value']);
 }

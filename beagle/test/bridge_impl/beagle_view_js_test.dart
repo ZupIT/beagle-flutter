@@ -62,7 +62,7 @@ void main() {
         };
 
         when(
-          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJsCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult(json.encode(properties), null),
         );
@@ -77,7 +77,7 @@ void main() {
 
       test('Then it should return null if no tree exists', () {
         when(
-          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJsCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult("null", null),
         );
@@ -87,7 +87,7 @@ void main() {
 
       test('Then it should return null if tree is invalid', () {
         when(
-          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJsCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult("{}", null),
         );

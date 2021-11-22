@@ -35,13 +35,13 @@ class GlobalContextJS implements GlobalContext {
   @override
   void clear([String? path]) {
     final args = path == null ? '' : "'$path'";
-    _jsEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.clear($args)');
+    _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.clear($args)');
   }
 
   @override
   T get<T>([String? path]) {
     final args = path == null ? '' : "'$path'";
-    return _jsEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.get($args)')?.rawResult;
+    return _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.get($args)')?.rawResult;
   }
 
   @override
@@ -52,7 +52,7 @@ class GlobalContextJS implements GlobalContext {
 
     final jsonString = json.encode(value);
     final args = path == null ? jsonString : "$jsonString, '$path'";
-    _jsEngine.evaluateJavascriptCode('global.beagle.getService().globalContext.set($args)');
+    _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.set($args)');
   }
 
   bool _isEncodable(dynamic value) => value is num || value is String || value is List || value is Map;

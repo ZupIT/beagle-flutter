@@ -56,7 +56,7 @@ void main() {
       test('Then should throw BeagleJSEngineException', () {
         final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
 
-        expect(() => beagleJSEngine.evaluateJavascriptCode('code'), throwsA(isInstanceOf<BeagleJSEngineException>()));
+        expect(() => beagleJSEngine.evaluateJsCode('code'), throwsA(isInstanceOf<BeagleJSEngineException>()));
 
         verifyNever(() => jsRuntimeMock.evaluate('code'));
       });
@@ -161,7 +161,7 @@ void main() {
         final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
-        beagleJSEngine.evaluateJavascriptCode('code');
+        beagleJSEngine.evaluateJsCode('code');
       });
 
       test('Then should execute code in javascriptRuntime', () async {
@@ -169,7 +169,7 @@ void main() {
         final beagleJSEngine = BeagleJSEngine(beagle, jsRuntimeMock);
         await beagleJSEngine.start();
 
-        beagleJSEngine.evaluateJavascriptCode(jsCode);
+        beagleJSEngine.evaluateJsCode(jsCode);
 
         verify(() => jsRuntimeMock.evaluate(jsCode)).called(1);
       });

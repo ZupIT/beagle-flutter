@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import createBeagleService, { BeagleService, logger } from '@zup-it/beagle-web'
+import createBeagleService, { BeagleService, BeagleUIElement, DataContext, IdentifiableBeagleUIElement, logger, TemplateManager, TreeInsertionMode } from '@zup-it/beagle-web'
 import { createCustomActionMap } from './action'
 import { createBeagleView, getView } from './view'
 import { callFunction } from './function'
@@ -23,6 +23,7 @@ import { resolvePromise, rejectPromise } from './promise'
 import { createCustomOperationMap } from './operation'
 import logToFlutter from './utils/flutter-js-logger'
 import { analytics } from './analytics'
+import { cloneTemplate, doTreeFullRender, getContextEvaluatedTemplate, getTreeContextHierarchy, preProcessTemplateTree } from './render'
 
 interface StartParams {
   baseUrl: string,
@@ -66,6 +67,15 @@ window.beagle = (() => {
     promise: {
       resolve: resolvePromise,
       reject: rejectPromise, 
+    },
+    render: {
+      getTreeContextHierarchy: (viewId: string) => JSON.stringify(getTreeContextHierarchy(viewId)),
+      getContextEvaluatedTemplate: (viewId: string, context: DataContext[], templateManager: TemplateManager) => 
+        JSON.stringify(getContextEvaluatedTemplate(viewId, context, templateManager, service)),
+      cloneTemplate: (template: BeagleUIElement) => JSON.stringify(cloneTemplate(template)),
+      preProcessTemplateTree: (viewTree: BeagleUIElement) => JSON.stringify(preProcessTemplateTree(viewTree, service)),
+      doTreeFullRender: (viewId: string, anchorId: string, children: IdentifiableBeagleUIElement[], mode: TreeInsertionMode = 'replace') => 
+        doTreeFullRender(viewId, anchorId, children, mode),
     },
   }
 

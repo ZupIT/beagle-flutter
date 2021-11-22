@@ -92,7 +92,7 @@ class BeagleJSEngine {
 
   /// Runs javascript [code].
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  JsEvalResult? evaluateJavascriptCode(String code) {
+  JsEvalResult? evaluateJsCode(String code) {
     _checkEngineIsStarted();
     return _jsRuntime.evaluate(code);
   }

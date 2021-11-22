@@ -89,14 +89,13 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
   @override
   void didUpdateWidget(covariant BeagleDynamicList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _doTemplateRender();
     _tryExecuteOnScrollEndActions();
   }
 
   @override
   void afterFirstLayout(BuildContext context) {
     if (widget.onInit != null) widget.onInit!();
-    _doTemplateRender();
+    if (mounted) _doTemplateRender();
   }
 
   @override
@@ -226,7 +225,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
       for (var indexComponent = 0; indexComponent < element.getChildren().length; indexComponent++) {
         final component = element.getChildren()[indexComponent];
         _changeIdAndAddSuffixIfNecessary(component, indexElement, indexComponent);
-
         _iterateComponent(component, indexElement);
       }
     }

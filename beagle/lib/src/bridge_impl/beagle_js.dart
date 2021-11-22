@@ -23,10 +23,11 @@ import 'beagle_js_engine.dart';
 import 'js_runtime_wrapper.dart';
 
 class BeagleJS {
-  BeagleJS(this._beagle) : engine = BeagleJSEngine(
-    _beagle,
-    JavascriptRuntimeWrapper(getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false)),
-  );
+  BeagleJS(this._beagle)
+      : engine = BeagleJSEngine(
+          _beagle,
+          JavascriptRuntimeWrapper(getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false)),
+        );
 
   final BeagleService _beagle;
   bool _hasStarted = false;
@@ -38,7 +39,7 @@ class BeagleJS {
       'actionKeys': _beagle.actions.keys.toList(),
       'customOperations': _beagle.operations.keys.toList(),
     };
-    engine.evaluateJavascriptCode('global.beagle.start(${json.encode(params)})');
+    engine.evaluateJsCode('global.beagle.start(${json.encode(params)})');
   }
 
   void _registerHttpListener() {
@@ -52,13 +53,15 @@ class BeagleJS {
     engine.onOperation((operationName, params) {
       final handler = _beagle.operations[operationName];
       if (handler == null) {
-        _beagle.logger.warning('Custom operation $operationName was not found. Are you sure you registered it in the config?');
+        _beagle.logger
+            .warning('Custom operation $operationName was not found. Are you sure you registered it in the config?');
         return;
       }
       try {
         return handler(params);
       } catch (err, stackTrace) {
-        _beagle.logger.error('An error has been thrown while executing the custom operation $operationName. Please, check the log below for more details.');
+        _beagle.logger.error(
+            'An error has been thrown while executing the custom operation $operationName. Please, check the log below for more details.');
         debugPrintStack(stackTrace: stackTrace);
       }
     });
