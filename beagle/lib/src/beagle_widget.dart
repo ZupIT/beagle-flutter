@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/accessibility/accessibility_helper.dart';
 import 'package:beagle/src/beagle_consumer.dart';
 import 'package:beagle/src/beagle_metadata_widget.dart';
 import 'package:beagle/src/model/beagle_metadata.dart';
@@ -51,7 +52,9 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
   }
 
   Widget _createWidget(BeagleUIElement tree, Widget widget) => BeagleMetadataWidget(
-    child: StylizationWidget().apply(widget, tree.getStyle()),
+    child: applyAccessibility(
+        StylizationWidget().apply(widget, tree.getStyle()), tree.getAccessibility()
+    ),
     beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()),
   );
 

@@ -51,6 +51,7 @@ export 'package:beagle/src/model/beagle_button_style.dart';
 export 'package:beagle/src/model/beagle_environment.dart';
 export 'package:beagle/src/model/beagle_navigation_bar_style.dart';
 export 'package:beagle/src/model/beagle_style.dart';
+export 'package:beagle/src/model/beagle_acessibility.dart';
 export 'package:beagle/src/model/beagle_ui_element.dart';
 export 'package:beagle/src/model/response.dart';
 export 'package:beagle/src/model/route.dart';

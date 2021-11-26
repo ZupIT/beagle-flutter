@@ -72,6 +72,10 @@ class BeagleUIElement {
     return properties.containsKey('style') ? BeagleStyle.fromMap(properties['style']) : null;
   }
 
+  BeagleAccessibility? getAccessibility() {
+    return properties.containsKey('accessibility') ? BeagleAccessibility.fromMap(properties['accessibility']) : null;
+  }
+
   static bool isBeagleUIElement(Map<String, dynamic>? json) {
     return json != null && json.containsKey("_beagleComponent_");
   }
