@@ -1,4 +1,5 @@
 # **Beagle Flutter**
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5409/badge)](https://bestpractices.coreinfrastructure.org/projects/5409)
 
 ## **Table of Contents**
 
