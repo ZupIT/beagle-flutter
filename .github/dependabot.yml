@@ -1,5 +1,5 @@
 #
-  # Copyright 2020, 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+  # Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
   #
   # Licensed under the Apache License, Version 2.0 (the "License");
   # you may not use this file except in compliance with the License.
@@ -14,23 +14,10 @@
   # limitations under the License.
 #
 
-name: Header license check
-
-on:
-  pull_request:
-    branches: [ main ]
-
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check License and license year on Pull Requests
-        uses: ZupIT/header-license-checker@5a298e502a93558685b014ee1177ef617aba5a39
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          FORCE_COLOR: 3
+version: 2
+updates:
+  - package-ecosystem: "bundler"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
