@@ -26,10 +26,15 @@ import 'app_design_system.dart';
 
 final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
 
-Map<String, ComponentBuilder> myCustomComponents = {
-  'custom:loading': (element, _, __) {
+class _MyCustomLoading extends ComponentBuilder {
+  @override
+  Widget buildForBeagle(element, _, __) {
     return Center(key: element.getKey(), child: Text('My custom loading.'));
   }
+}
+
+Map<String, ComponentBuilder Function()> myCustomComponents = {
+  'custom:loading': () => _MyCustomLoading(),
 };
 Map<String, ActionHandler> myCustomActions = {
   'custom:log': ({required action, required view, required element, required context}) {

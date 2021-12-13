@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
+class StyleConfig {
+  const StyleConfig({this.enabled = true, this.shouldExpand = true, this.shouldDecorate = true});
 
-class BeagleMetadata {
-  const BeagleMetadata({this.beagleStyle});
-  final BeagleStyle? beagleStyle;
+  final bool enabled;
+  final bool shouldExpand;
+  final bool shouldDecorate;
+
+  factory StyleConfig.disabled({bool shouldExpand = true}) =>
+      StyleConfig(enabled: false, shouldExpand: shouldExpand, shouldDecorate: false);
+
+  /// shouldDecorate tells whether or not to apply backgroundColor, border and cornerRadius
+  factory StyleConfig.enabled({bool shouldDecorate = true}) =>
+      StyleConfig(shouldExpand: false, shouldDecorate: shouldDecorate);
 }

@@ -58,7 +58,7 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
         ? createImageFromAsset(widget.path as LocalImagePath)
         : createImageFromNetwork(widget.path as RemoteImagePath);
     return ClipRRect(
-      borderRadius: widget.style?.cornerRadius?.getBorderRadius() ?? BorderRadius.zero,
+      borderRadius: StyleUtils.getBorderRadius(widget.style) ?? BorderRadius.zero,
       child: image,
     );
   }

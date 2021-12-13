@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import 'package:flutter/material.dart';
 import 'dart:core';
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:beagle_components/src/dynamic_list/flexible_list_view.dart';
 import 'package:collection/collection.dart';
 
 /// The component to generate GriView or ListView
@@ -39,6 +39,7 @@ class BeagleDynamicList extends StatefulWidget {
     this.spanCount,
     this.suffix,
     required this.view,
+    required this.beagleId,
   }) : super(key: key);
 
   /// Optional function to run once the container is created
@@ -74,8 +75,13 @@ class BeagleDynamicList extends StatefulWidget {
   /// Define a list of components to be displayed on this view.
   final List<Widget>? children;
 
+  /// BeagleView that spawns this component
   final BeagleView view;
 
+  /// id of the node that declares this component in Beagle
+  final String beagleId;
+
+  /// used for guaranteeing unique id's on multi leveled list/grid views
   final String? suffix;
 
   @override
@@ -107,49 +113,16 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (isScrollIndicatorEnabled()) {
-      return _getScrollBar();
-    }
-    return _getDynamicList();
-  }
-
-  Widget _getScrollBar() {
-    return Scrollbar(
-      child: _getDynamicList(),
-      isAlwaysShown: true,
-      controller: _scrollController,
-    );
-  }
-
-  Widget _getDynamicList() {
-    return _isNotGridView() ? _getListView() : _getGridView();
-  }
-
-  Widget _getListView() {
-    return ListView.builder(
-      controller: _scrollController,
-      scrollDirection: _getScrollDirection(),
-      itemBuilder: (buildContext, index) {
-        return widget.children![index];
-      },
-      itemCount: widget.children?.length ?? 0,
-    );
-  }
-
-  Widget _getGridView() {
-    return GridView.builder(
-      controller: _scrollController,
-      scrollDirection: _getScrollDirection(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: widget.spanCount ?? 0,
-      ),
-      itemBuilder: (buildContext, index) {
-        return widget.children![index];
-      },
-      itemCount: widget.children?.length ?? 0,
-    );
-  }
+  Widget build(BuildContext context) => FlexibleListView(
+    controller: _scrollController,
+    useScrollbar: widget.isScrollIndicatorVisible ?? false,
+    scrollDirection: _getScrollDirection(),
+    itemBuilder: (buildContext, index) {
+      return widget.children![index];
+    },
+    itemCount: widget.children?.length ?? 0,
+    spanCount: widget.spanCount ?? 1,
+  );
 
   void _doTemplateRender() {
     if (_isChildrenNotNullAndNotEmpty() || _isDataSourceNullOrEmpty()) {
@@ -158,11 +131,10 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
 
     final templateManager = _getTemplateManager();
     final contexts = _getListBeagleDataContext();
-    final anchor = _getAnchor();
 
     widget.view.getRenderer().doTemplateRender(
         templateManager: templateManager,
-        anchor: anchor,
+        anchor: widget.beagleId,
         contexts: contexts,
         componentManager: _iterateComponent,
         mode: TreeUpdateMode.replace);
@@ -198,13 +170,6 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
         .toList();
   }
 
-  String _getAnchor() {
-    final ValueKey<String> key = (widget.key != null && widget.key! is ValueKey<String>)
-        ? context.widget.key! as ValueKey<String>
-        : ValueKey<String>('');
-    return key.value;
-  }
-
   String _getIterationKey(int index) {
     String? valueInIteratorNameInDataSource;
     try {
@@ -217,7 +182,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
   }
 
   String _getBaseId(String componentId, int componentIndex, String suffix) {
-    return componentId.isNotEmpty ? "$componentId$suffix" : "${_getAnchor()}:$componentIndex";
+    return componentId.isNotEmpty ? "$componentId$suffix" : "${widget.beagleId}:$componentIndex";
   }
 
   BeagleUIElement _iterateComponent(BeagleUIElement element, int indexElement) {
@@ -294,15 +259,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
     return widget.scrollEndThreshold != null && widget.onScrollEnd != null;
   }
 
-  bool _isNotGridView() {
-    return widget.spanCount == null || widget.spanCount! <= 1;
-  }
-
   Axis _getScrollDirection() {
     return widget.direction?.axis ?? Axis.vertical;
-  }
-
-  bool isScrollIndicatorEnabled() {
-    return widget.isScrollIndicatorVisible != null && (widget.isScrollIndicatorVisible ?? true);
   }
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 
@@ -78,5 +80,10 @@ class BeagleUIElement {
 
   static bool isBeagleUIElement(Map<String, dynamic>? json) {
     return json != null && json.containsKey("_beagleComponent_");
+  }
+
+  @override
+  String toString() {
+    return jsonEncode(properties, toEncodable: (value) => '');
   }
 }

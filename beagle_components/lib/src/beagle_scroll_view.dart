@@ -39,8 +39,13 @@ class BeagleScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scrollView = ListView(
       scrollDirection: scrollDirection == ScrollAxis.HORIZONTAL ? Axis.horizontal : Axis.vertical,
+      /*children: [Flex(
+        direction: scrollDirection == ScrollAxis.HORIZONTAL ? Axis.horizontal : Axis.vertical,
+        children: children,
+      )],*/
       children: children,
     );
+
     return (scrollBarEnabled ?? false) == false ? scrollView : Scrollbar(child: scrollView);
   }
 }

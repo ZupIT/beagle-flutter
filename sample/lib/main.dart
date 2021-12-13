@@ -44,6 +44,7 @@ class BeagleSampleApp extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
+          // onPressed: () => openBeagleScreen(route: LocalView(textInput), context: context),
           onPressed: () => openBeagleScreen(route: RemoteView('/components'), context: context),
           child: Text('Start beagle flow'),
         ),

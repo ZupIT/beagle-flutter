@@ -32,8 +32,6 @@ class _BeagleImageDownloaderMock extends Mock implements BeagleImageDownloader {
 
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class _BeagleYogaFactoryMock extends Mock implements BeagleYogaFactory {}
-
 class _UrlBuilderMock extends Mock implements UrlBuilder {}
 
 class _BeagleServiceMock extends Mock implements BeagleService {
@@ -43,8 +41,6 @@ class _BeagleServiceMock extends Mock implements BeagleService {
   final imageDownloader = _BeagleImageDownloaderMock();
   @override
   final logger = _BeagleLoggerMock();
-  @override
-  final yoga = _BeagleYogaFactoryMock();
   @override
   final urlBuilder = _UrlBuilderMock();
 }
@@ -58,14 +54,6 @@ void main() {
   const invalidPlaceholder = 'asset_does_not_exist';
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
-
-  when(() => beagle.yoga.createYogaLayout(
-        style: any(named: 'style'),
-        children: any(named: 'children'),
-      )).thenAnswer((realInvocation) {
-    final List<Widget> children = realInvocation.namedArguments.values.last;
-    return children.first;
-  });
 
   when(() => beagle.designSystem.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');

@@ -24,13 +24,6 @@ import 'package:beagle/src/default/default_actions.dart';
 import 'bridge_impl/global_context_js.dart';
 
 ///TODO: NEEDS ADD DOCUMENTATION
-typedef ComponentBuilder = Widget Function(
-  BeagleUIElement element,
-  List<Widget> children,
-  BeagleView view,
-);
-
-///TODO: NEEDS ADD DOCUMENTATION
 typedef ActionHandler = void Function({
   required BeagleAction action,
   required BeagleView view,
@@ -58,7 +51,7 @@ class BeagleService {
     /// `_beagleComponent_` identifier and the value must be a ComponentBuilder, which is a function
     /// that transforms a BeagleUIElement into a Widget. The key must always start with `beagle:` or
     /// `custom:`.
-    required Map<String, ComponentBuilder> components,
+    required Map<String, ComponentBuilder Function ()> components,
     /// todo documentation
     UrlBuilder? urlBuilder,
     /// todo documentation
@@ -109,12 +102,11 @@ class BeagleService {
   final AnalyticsProvider? analyticsProvider;
   final HttpClient httpClient;
   late final ViewClient viewClient;
-  final yoga = BeagleYogaFactory();
   late final BeagleJS js;
 
   // other properties
   final String baseUrl;
-  final Map<String, ComponentBuilder> components;
+  final Map<String, ComponentBuilder Function()> components;
   final Map<String, ActionHandler> actions;
   late final NavigationController defaultNavigationController;
   final Map<String, NavigationController> navigationControllers;

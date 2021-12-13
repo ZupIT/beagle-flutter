@@ -33,11 +33,23 @@ class BeagleJS {
   bool _hasStarted = false;
   final BeagleJSEngine engine;
 
+  Map<String, bool> _getExpandedComponentsMap() {
+    final componentNames = _beagle.components.keys.toList();
+    final result = <String, bool>{};
+    for (String name in componentNames) {
+      // don't change to styleConfig.shouldExpand, it would break listviews inside containers without flex: 1.
+      result[name.toLowerCase()] = _beagle.components[name]!().getStyleConfig()?.enabled == false;
+    }
+    return result;
+  }
+
   void _registerBeagleService() {
     final params = {
       'baseUrl': _beagle.baseUrl,
       'actionKeys': _beagle.actions.keys.toList(),
       'customOperations': _beagle.operations.keys.toList(),
+      'enableStyling': true,
+      'expandedComponentsMap': _getExpandedComponentsMap(),
     };
     engine.evaluateJsCode('global.beagle.start(${json.encode(params)})');
   }

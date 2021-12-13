@@ -53,18 +53,37 @@ class BeagleButton extends StatefulWidget {
 class _BeagleButton extends State<BeagleButton> with BeagleConsumer {
   BeagleButtonStyle? _buttonStyle;
 
+  bool _hasStyle() => (widget.style?.backgroundColor ?? widget.style?.cornerRadius ?? widget.style?.borderWidth
+      ?? widget.style?.borderColor ?? widget.style?.padding) != null;
+
+  ButtonStyle? _getButtonStyle() =>  _hasStyle() ? ButtonStyle(
+    shape: _getShape(),
+    backgroundColor: _getBackgroundColor(),
+    foregroundColor: MaterialStateProperty.all(Colors.white),
+    side: _getBorderSide(),
+    padding: StyleUtils.hasEdgeValue(widget.style?.padding) ? MaterialStateProperty.all(
+      StyleUtils.getEdgeInsets(widget.style?.padding, BoxConstraints.tight(Size(100, 100))),
+    ) : null,
+  ) : null;
+
   @override
   Widget buildBeagleWidget(BuildContext context) {
-    _buttonStyle = widget.styleId == null ? null : beagle.designSystem.buttonStyle(widget.styleId!);
+    final shouldExpandFlex = widget.style?.size?.height?.value != null;
+    final shouldExpandBox = widget.style?.size?.width?.value != null;
+    Widget button = ElevatedButton(
+      onPressed: widget.enabled == false ? null : widget.onPress,
+      child: _buildButtonChild(),
+      style: _getButtonStyle(),
+    );
+    if (shouldExpandBox) {
+      button = ConstrainedBox(
+        constraints: BoxConstraints(minWidth: double.infinity, maxWidth: double.infinity),
+        child: button,
+      );
+    }
+    if (shouldExpandFlex) button = Expanded(child: button);
+    return button;
 
-    return ElevatedButton(
-        onPressed: widget.enabled == false ? null : widget.onPress,
-        child: _buildButtonChild(),
-        style: _buttonStyle?.buttonStyle?.copyWith(
-          shape: _getShape(),
-          backgroundColor: _getBackgroundColor(),
-          side: _getBorderSide(),
-        ));
   }
 
   Widget _buildButtonChild() => Text(widget.text, style: _buttonStyle?.buttonTextStyle);
@@ -76,24 +95,19 @@ class _BeagleButton extends State<BeagleButton> with BeagleConsumer {
     return color != null ? MaterialStateProperty.all(color) : null;
   }
 
-  MaterialStateProperty<BorderSide>? _getBorderSide() {
-    return widget.style?.borderWidth != null && widget.style?.borderColor != null
-        ? MaterialStateProperty.all(
-            BorderSide(
-              color: HexColor(widget.style!.borderColor!),
-              width: widget.style!.borderWidth!,
-            ),
-          )
-        : null;
-  }
+  MaterialStateProperty<BorderSide>? _getBorderSide() =>
+      (widget.style?.borderWidth ?? widget.style?.borderColor) == null ? null : MaterialStateProperty.all(
+        BorderSide(
+          color: HexColor(widget.style?.borderColor ?? "#000000"),
+          width: widget.style?.borderWidth ?? 1,
+        )
+      );
 
   MaterialStateProperty<OutlinedBorder>? _getShape() {
-    final borderRadius = widget.style?.cornerRadius?.getBorderRadius();
-
-    return borderRadius != null
+    return StyleUtils.hasBorderRadius(widget.style)
         ? MaterialStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: borderRadius,
+              borderRadius: StyleUtils.getBorderRadius(widget.style)!,
             ),
           )
         : null;

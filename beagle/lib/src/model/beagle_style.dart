@@ -94,16 +94,16 @@ class BeagleFlex {
     this.shrink,
   });
 
-  FlexDirection? flexDirection = FlexDirection.COLUMN;
-  FlexWrap? flexWrap = FlexWrap.NO_WRAP;
-  JustifyContent? justifyContent = JustifyContent.FLEX_START;
-  AlignItems? alignItems = AlignItems.STRETCH;
-  AlignSelf? alignSelf = AlignSelf.AUTO;
-  AlignContent? alignContent = AlignContent.FLEX_START;
-  UnitValue? basis = UnitValue(value: 0, type: UnitType.REAL);
-  num? flex = 0;
-  num? grow = 0;
-  num? shrink = 1;
+  FlexDirection? flexDirection;
+  FlexWrap? flexWrap;
+  JustifyContent? justifyContent;
+  AlignItems? alignItems;
+  AlignSelf? alignSelf;
+  AlignContent? alignContent;
+  UnitValue? basis;
+  num? flex;
+  num? grow;
+  num? shrink;
 
   BeagleFlex.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('flexDirection')) {
@@ -285,38 +285,11 @@ class CornerRadius {
   double? bottomRight;
 
   CornerRadius.fromMap(Map<String, dynamic> map) {
-    if (map.containsKey('radius')) {
-      radius = (map['radius'] as num?)?.toDouble();
-      bottomLeft = (map['bottomLeft'] as num?)?.toDouble();
-      bottomRight = (map['bottomRight'] as num?)?.toDouble();
-      topLeft = (map['topLeft'] as num?)?.toDouble();
-      topRight = (map['topRight'] as num?)?.toDouble();
-    }
-  }
-
-  BorderRadius? getBorderRadius() {
-    if (topLeft == null &&
-        topRight == null &&
-        bottomLeft == null &&
-        bottomRight == null &&
-        radius == null) {
-      return null;
-    }
-
-    return BorderRadius.only(
-      topLeft: _getBorderRadiusOrDefault(topLeft, radius),
-      topRight: _getBorderRadiusOrDefault(topRight, radius),
-      bottomLeft: _getBorderRadiusOrDefault(bottomLeft, radius),
-      bottomRight: _getBorderRadiusOrDefault(bottomRight, radius),
-    );
-  }
-
-  Radius _getBorderRadiusOrDefault(double? origin, double? defaultValue) {
-    if (origin == null) {
-      return defaultValue != null ? Radius.circular(defaultValue) : Radius.zero;
-    }
-
-    return Radius.circular(origin);
+    radius = (map['radius'] as num?)?.toDouble();
+    bottomLeft = (map['bottomLeft'] as num?)?.toDouble();
+    bottomRight = (map['bottomRight'] as num?)?.toDouble();
+    topLeft = (map['topLeft'] as num?)?.toDouble();
+    topRight = (map['topRight'] as num?)?.toDouble();
   }
 }
 
@@ -333,19 +306,23 @@ class BeagleStyle {
     this.position,
     this.positionType,
     this.size,
+    this.isStack,
   });
 
   String? backgroundColor;
   CornerRadius? cornerRadius;
   BeagleFlex? flex;
-  FlexPosition? positionType = FlexPosition.RELATIVE;
-  FlexDisplay? display = FlexDisplay.FLEX;
+  FlexPosition? positionType;
+  FlexDisplay? display;
   BeagleSize? size;
   EdgeValue? margin;
   EdgeValue? padding;
   EdgeValue? position;
   double? borderWidth;
   String? borderColor;
+  /* This is not part of the original Beagle contract, it's just an artifact for recreating the absolute positioning.
+  This field is automatically calculated by the Javascript bridge using a "beforeViewSnapshot" lifecycle. */
+  bool? isStack;
 
   BeagleStyle.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('backgroundColor')) {
@@ -381,6 +358,9 @@ class BeagleStyle {
     }
     if (map.containsKey('borderColor')) {
       borderColor = map['borderColor'];
+    }
+    if (map.containsKey('isStack')) {
+      isStack = map['isStack'];
     }
   }
 }

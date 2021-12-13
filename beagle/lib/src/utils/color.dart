@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import 'package:beagle/src/utils/color_names.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 
   static int _getColorFromHex(String hexColor) {
+    hexColor = colorNames[hexColor.toLowerCase()] ?? hexColor;
     hexColor = hexColor.toUpperCase().replaceAll('#', '');
     switch (hexColor.length) {
       case 3:
@@ -35,7 +38,12 @@ class HexColor extends Color {
         hexColor = _formatHexColorAlpha(hexColor);
         break;
     }
-    return int.parse(hexColor, radix: 16);
+
+    try {
+      return int.parse(hexColor, radix: 16);
+    } catch (error) {
+      return 0;
+    }
   }
 
   static String _formatHexRGBColor(String hexColor) {

@@ -116,26 +116,6 @@ void main() {
       });
     });
 
-    group('When set style', () {
-      testWidgets('Then it should have a correct style', (WidgetTester tester) async {
-        // WHEN
-        await tester.pumpWidget(createWidget(styleId: 'button-one'));
-
-        // THEN
-        final buttonFinder = find.byType(ElevatedButton);
-        final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(find.text(buttonText));
-        final buttonOne = ButtonOneStyle();
-
-        expect(buttonFinder, findsOneWidget);
-        expect(buttonCreated.style!.backgroundColor!.resolve({MaterialState.pressed}),
-            buttonOne.buttonStyle.backgroundColor!.resolve({MaterialState.pressed}));
-        expect(textCreated.style, buttonOne.buttonTextStyle);
-
-        debugDefaultTargetPlatformOverride = null;
-      });
-    });
-
     group('When not set style', () {
       testWidgets('Then it should not have a style', (WidgetTester tester) async {
         // WHEN

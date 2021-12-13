@@ -21,7 +21,7 @@ import 'package:flutter_test/flutter_test.dart';
 const keyPullToRefresh = Key('PullToRefresh');
 const keyContent = Key('Text');
 const color = "#123456";
-var childContent = ListView(children: [Text("Hello", key: keyContent)]);
+var childContent = ListView(shrinkWrap: true, children: [Text("Hello")]);
 
 Widget createWidget({
   Key key = keyPullToRefresh,
@@ -57,7 +57,7 @@ void main() {
         await tester.pumpWidget(
             createWidget(onPull: onPull, child: childContent, color: color));
 
-        await tester.drag(find.byKey(keyContent), const Offset(0.0, 300));
+        await tester.drag(find.byType(PullToRefresh), const Offset(0.0, 300));
         await tester.pumpAndSettle();
 
         expect(tapCount, 1);

@@ -22,8 +22,6 @@ import 'package:mocktail/mocktail.dart';
 
 const text = 'text';
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
-
 Widget createWidget({
   BeagleAccessibility? accessibility,
 }) {

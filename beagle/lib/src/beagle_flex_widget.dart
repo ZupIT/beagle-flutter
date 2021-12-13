@@ -13,29 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'package:beagle/beagle.dart';
+
 import 'package:flutter/widgets.dart';
 
-class BeagleFlexWidget extends StatefulWidget {
-  BeagleFlexWidget({
-    Key? key,
-    this.style,
-    required this.children,
-  }) : super(key: key);
-
-  final BeagleStyle? style;
-  final List<Widget> children;
-
-  @override
-  _BeagleFlexWidget createState() => _BeagleFlexWidget();
-}
-
-class _BeagleFlexWidget extends State<BeagleFlexWidget> with BeagleConsumer {
-  @override
-  Widget buildBeagleWidget(BuildContext context) {
-    return beagle.yoga.createYogaLayout(
-      style: widget.style,
-      children: widget.children,
-    );
-  }
+/// same as Flex from Flutter, but with the default values used by Beagle
+class BeagleFlexWidget extends Flex {
+  BeagleFlexWidget(List<Widget> children, {Axis direction = Axis.vertical}) : super(
+    children: children,
+    direction: direction,
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+  );
 }

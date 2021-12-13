@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
-import 'package:flutter/widgets.dart';
-import 'package:yoga_engine/yoga_engine.dart';
+import 'package:flutter/cupertino.dart';
 
-class BeagleYogaLayout extends YogaLayout {
-  BeagleYogaLayout({BeagleStyle? style, List<Widget>? children, required BeagleYogaFactory yoga})
-      : super(
-          nodeProperties: yoga.createNodeProperties(style),
-          children: children?.map(
-                (child) {
-                  return yoga.createYogaNode(child);
-                },
-              ).toList() ??
-              [],
-        );
+class BeagleNode extends InheritedWidget {
+  BeagleNode({required this.id, required Widget child}): super(child: child, key: Key(id));
+  final String id;
+
+  @override
+  bool updateShouldNotify(covariant BeagleNode oldWidget) => oldWidget.id != id;
+
+  static BeagleNode? of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<BeagleNode>();
 }

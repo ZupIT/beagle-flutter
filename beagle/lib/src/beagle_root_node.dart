@@ -17,37 +17,21 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/cupertino.dart';
 
-class BeagleProvider extends StatefulWidget {
-  BeagleProvider({required this.beagle, required this.child});
-
-  final BeagleService beagle;
-  final Widget child;
-
-  @override
-  BeagleProviderState createState() => BeagleProviderState(beagle);
+class BeagleNodeData {
+  BeagleNodeData(this.element, this.children, this.view);
+  final List<Widget> children;
+  final BeagleUIElement element;
+  final BeagleView view;
 }
 
-class BeagleProviderState extends State<BeagleProvider> {
-  BeagleProviderState(this.beagle);
+class BeagleRootNode extends InheritedWidget {
+  BeagleRootNode({required this.componentToNodeData, required Widget child}): super(child: child);
 
-  final BeagleService beagle;
-  bool _isReady = false;
-
-  Future<void> _start() async {
-    await beagle.js.start();
-    setState(() {
-      _isReady = true;
-    });
-  }
+  final Map<String, BeagleNodeData> componentToNodeData;
 
   @override
-  void initState() {
-    super.initState();
-    _start();
-  }
+  bool updateShouldNotify(covariant BeagleRootNode oldWidget) =>
+      oldWidget.componentToNodeData != componentToNodeData;
 
-  @override
-  Widget build(BuildContext context) {
-    return _isReady ? widget.child : const SizedBox.shrink();
-  }
+  static BeagleRootNode? of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<BeagleRootNode>();
 }

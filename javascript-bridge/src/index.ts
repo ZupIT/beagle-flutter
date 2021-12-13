@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import createBeagleService, { BeagleService, BeagleUIElement, DataContext, IdentifiableBeagleUIElement, logger, TemplateManager, TreeInsertionMode } from '@zup-it/beagle-web'
+import createBeagleService, {
+  BeagleService,
+  BeagleUIElement,
+  DataContext,
+  IdentifiableBeagleUIElement,
+  logger,
+  TemplateManager,
+  TreeInsertionMode,
+  Tree,
+} from '@zup-it/beagle-web'
 import { createCustomActionMap } from './action'
 import { createBeagleView, getView } from './view'
 import { callFunction } from './function'
@@ -24,11 +33,14 @@ import { createCustomOperationMap } from './operation'
 import logToFlutter from './utils/flutter-js-logger'
 import { analytics } from './analytics'
 import { cloneTemplate, doTreeFullRender, getContextEvaluatedTemplate, getTreeContextHierarchy, preProcessTemplateTree } from './render'
+import { manageStyles } from './styles'
 
 interface StartParams {
   baseUrl: string,
   actionKeys: string[],
-  customOperations: string[]
+  customOperations: string[],
+  enableStyling: boolean,
+  expandedComponentsMap: Record<string, boolean>,
 }
 
 // @ts-ignore
@@ -38,7 +50,7 @@ window.beagle = (() => {
   //Calls here to initialize the config before the first events 
   analyticsProvider.getConfig()
   const api = {
-    start: ({ actionKeys, customOperations, ...other }: StartParams) => {
+    start: ({ actionKeys, customOperations, enableStyling, expandedComponentsMap, ...other }: StartParams) => {
       service = createBeagleService({
         components: {},
         disableCssTransformation: true,
@@ -47,6 +59,7 @@ window.beagle = (() => {
         customOperations: createCustomOperationMap(customOperations),
         analyticsProvider: analyticsProvider,
         platform: "flutter",
+        lifecycles: enableStyling ? { beforeViewSnapshot: tree => manageStyles(tree, expandedComponentsMap) } : undefined,
         ...other,
       })
       

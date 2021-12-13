@@ -62,17 +62,16 @@ export 'package:beagle/src/networking/beagle_request.dart';
 
 export 'package:beagle/src/interface/beagle_design_system.dart';
 
-export 'package:beagle/src/style/beagle_yoga_factory.dart';
-
 export 'package:beagle/src/utils/color.dart';
 export 'package:beagle/src/utils/enum.dart';
 export 'package:beagle/src/utils/flutter_context.dart';
+export 'package:beagle/src/utils/style_utils.dart';
 
 export 'package:beagle/src/beagle_widget.dart';
-export 'package:beagle/src/beagle_flex_widget.dart';
 export 'package:beagle/src/beagle_provider.dart';
 export 'package:beagle/src/beagle_consumer.dart';
 export 'package:beagle/src/beagle_service.dart';
+export 'package:beagle/src/beagle_node.dart';
 
 export 'package:beagle/src/analytics/analytics_config.dart';
 export 'package:beagle/src/analytics/analytics_provider.dart';
@@ -82,8 +81,11 @@ export 'package:beagle/src/model/beagle_template_manager.dart';
 export 'package:beagle/src/model/beagle_ui_element.dart';
 export 'package:beagle/src/model/beagle_data_context.dart';
 
-export 'package:beagle/src/beagle_metadata_widget.dart';
 export 'package:beagle/src/empty_logger.dart';
-export 'package:beagle/src/model/beagle_metadata.dart';
-export 'package:beagle/src/style/stylization_widget.dart';
 export 'package:beagle/src/utils/color.dart';
+export 'package:beagle/src/component_builder.dart';
+export 'package:beagle/src/styled.dart';
+export 'package:beagle/src/beagle_root_node.dart';
+export 'package:beagle/src/beagle_node.dart';
+export 'package:beagle/src/beagle_flex_widget.dart';
+export 'package:beagle/src/style_config.dart';

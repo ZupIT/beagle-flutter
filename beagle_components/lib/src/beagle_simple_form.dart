@@ -20,23 +20,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 /// This component defines a submit handler for a form request.
-class BeagleSimpleForm extends StatefulWidget {
+class BeagleSimpleForm extends StatefulStyled {
   const BeagleSimpleForm(
       {Key? key,
       this.onSubmit,
-      this.children,
-      this.style,
+      List<Widget> children = const [],
+      BeagleStyle? style,
       this.onValidationError})
-      : super(key: key);
+      : super(key: key, children: children, style: style);
 
   /// Defines the actions you want to execute when action submit form
   final Function? onSubmit;
-
-  /// Defines the items on the simple form.
-  final List<Widget>? children;
-
-  /// Property responsible to customize all the flex attributes and general style configuration
-  final BeagleStyle? style;
 
   /// Defines the actions to be executed when the form has some field with validation error.
   final Function? onValidationError;
@@ -50,15 +44,7 @@ class BeagleSimpleForm extends StatefulWidget {
           : context.findAncestorStateOfType<BeagleSimpleFormState>();
 }
 
-class BeagleSimpleFormState extends State<BeagleSimpleForm> with BeagleConsumer {
-  @override
-  Widget buildBeagleWidget(BuildContext context) {
-    return BeagleFlexWidget(
-      style: widget.style,
-      children: widget.children ?? [],
-    );
-  }
-
+class BeagleSimpleFormState extends StyledState<BeagleSimpleForm> with BeagleConsumer {
   void submit() {
     final hasError = hasInputErrors();
     if (hasError) {
@@ -82,4 +68,7 @@ class BeagleSimpleFormState extends State<BeagleSimpleForm> with BeagleConsumer 
   bool hasInputErrors() {
     return context.searchInputErrors();
   }
+
+  @override
+  Widget buildBeagleWidget(BuildContext context) => buildStyled(context);
 }

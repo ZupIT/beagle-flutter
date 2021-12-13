@@ -26,15 +26,11 @@ import 'test-utils/provider_mock.dart';
 
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class _BeagleYogaFactoryMock extends Mock implements BeagleYogaFactory {}
-
 class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
 
 class _BeagleServiceMock extends Mock implements BeagleService {
   @override
   final logger = _BeagleLoggerMock();
-  @override
-  final yoga = _BeagleYogaFactoryMock();
   @override
   final designSystem = _DesignSystemMock();
 }
@@ -67,14 +63,6 @@ void main() {
       BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
 
   setUpAll(() {
-    when(() => beagle.yoga.createYogaLayout(
-          style: any(named: 'style'),
-          children: any(named: 'children'),
-        )).thenAnswer((realInvocation) {
-      final List<Widget> children = realInvocation.namedArguments.values.last;
-      return children.first;
-    });
-
     when(() => beagle.designSystem.navigationBarStyle(navigationBarStyleId))
         .thenReturn(navigationBarStyle);
   });

@@ -71,12 +71,8 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
   }
 
   Widget _buildScrollableContent() {
-    return _isScrollable(widget.child)
-        ? widget.child
-        : ListView(children: [widget.child], scrollDirection: Axis.vertical);
+    return ListView(children: [widget.child], scrollDirection: Axis.vertical);
   }
-
-  bool _isScrollable(Widget widget) => widget is ScrollView || widget is SingleChildScrollView;
 
   Future<void> _onRefreshHandler() async {
     if (widget.onPull != null) widget.onPull!();

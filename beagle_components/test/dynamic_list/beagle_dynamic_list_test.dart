@@ -16,7 +16,7 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/foundation.dart';
+import 'package:beagle_components/src/dynamic_list/flexible_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,6 +55,7 @@ Widget createWidget({
       spanCount: spanCount,
       children: children,
       view: view ?? _BeagleViewMock(),
+      beagleId: 'dynamicList',
     ),
   );
 }
@@ -90,6 +91,7 @@ void main() {
     group('When passing parameter spanCount with number two', () {
       testWidgets('Then it should have a GridView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 2));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
       });
@@ -113,6 +115,7 @@ void main() {
           direction: BeagleDynamicListDirection.HORIZONTAL,
           spanCount: null,
         ));
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _assertCorrectDirection(tester, Axis.horizontal);
@@ -123,6 +126,7 @@ void main() {
           direction: BeagleDynamicListDirection.HORIZONTAL,
           spanCount: 2,
         ));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _assertCorrectDirection(tester, Axis.horizontal);
@@ -134,6 +138,7 @@ void main() {
         await tester.pumpWidget(createWidget(
           direction: BeagleDynamicListDirection.VERTICAL,
         ));
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _assertCorrectDirection(tester, Axis.vertical);
@@ -144,6 +149,7 @@ void main() {
           direction: BeagleDynamicListDirection.VERTICAL,
           spanCount: 2,
         ));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _assertCorrectDirection(tester, Axis.vertical);
@@ -155,6 +161,7 @@ void main() {
         await tester.pumpWidget(createWidget(
           children: _getChildren(),
         ));
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _assertHasChildren(tester);
@@ -165,6 +172,7 @@ void main() {
           spanCount: 2,
           children: _getChildren(),
         ));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _assertHasChildren(tester);
@@ -205,6 +213,7 @@ void main() {
             });
 
         await tester.pumpWidget(widget);
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _scrollScreenToDown(tester);
@@ -224,6 +233,7 @@ void main() {
             });
 
         await tester.pumpWidget(widget);
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _scrollScreenToDown(tester);
@@ -235,6 +245,7 @@ void main() {
     group('When passing parameter isScrollIndicatorVisible with value true', () {
       testWidgets('Then it should have a Scrollbar component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(isScrollIndicatorVisible: true));
+        await tester.pump();
 
         final scrollbarFinder = find.byType(Scrollbar);
         expect(scrollbarFinder, findsOneWidget);
@@ -415,7 +426,7 @@ void _assertCorrectDirection(WidgetTester tester, Axis axis) {
 }
 
 void _assertHasListViewAndNotHasGridView() {
-  final listViewFinder = find.byType(ListView);
+  final listViewFinder = find.byType(FlexibleListView);
 
   final gridViewFinder = find.byType(GridView);
 

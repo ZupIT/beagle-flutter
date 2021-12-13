@@ -15,10 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/accessibility/accessibility_helper.dart';
-import 'package:beagle/src/beagle_consumer.dart';
-import 'package:beagle/src/beagle_metadata_widget.dart';
-import 'package:beagle/src/model/beagle_metadata.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 // TODO: THE UNIT TESTS WILL BE WRITTEN AFTER RESOLVING THE DEPENDENCY INJECTION
@@ -35,15 +32,21 @@ class BeagleWidget extends StatefulWidget {
 class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
   Widget? _widgetState;
 
-  Widget _buildViewFromTree(BeagleUIElement tree) {
-    final widgetChildren = tree.getChildren().map(_buildViewFromTree).toList();
+  /* this builds the widget tree while also filling a map (componentToNodeData) that links each component (by id) to
+  its NodeData.*/
+  Widget _buildViewFromTree(BeagleUIElement tree, Map<String, BeagleNodeData> componentToNodeData) {
+    final componentChildren = tree.getChildren().map((child) => _buildViewFromTree(child, componentToNodeData)).toList();
     final builder = beagle.components[tree.getType().toLowerCase()];
     if (builder == null) {
       beagle.logger.error("Can't find builder for component ${tree.getType()}");
       return BeagleUndefinedWidget(environment: beagle.environment);
     }
     try {
-      return _createWidget(tree, builder(tree, widgetChildren, widget.view));
+      if (componentToNodeData.containsKey(tree.getId())) {
+        throw ErrorDescription('Error: found replicated id in the UI tree: ${tree.getId()}.');
+      }
+      componentToNodeData[tree.getId()] = BeagleNodeData(tree, componentChildren, widget.view);
+      return BeagleNode(id: tree.getId(), child: builder());
     } catch (error) {
       beagle.logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       beagle.logger.error(error.toString());
@@ -51,16 +54,12 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
     }
   }
 
-  Widget _createWidget(BeagleUIElement tree, Widget widget) => BeagleMetadataWidget(
-    child: applyAccessibility(
-        StylizationWidget().apply(widget, tree.getStyle()), tree.getAccessibility()
-    ),
-    beagleMetadata: BeagleMetadata(beagleStyle: tree.getStyle()),
-  );
-
   void _updateCurrentUI(BeagleUIElement? tree) {
     if (tree != null) {
-      setState(() => _widgetState = _buildViewFromTree(tree));
+      final componentToNodeData = <String, BeagleNodeData>{};
+      final widgetTree = _buildViewFromTree(tree, componentToNodeData);
+      final flutterTree = BeagleRootNode(child: widgetTree, componentToNodeData: componentToNodeData);
+      setState(() => _widgetState = BeagleFlexWidget([flutterTree]));
     }
   }
 
@@ -93,7 +92,6 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
 
   @override
   Widget buildBeagleWidget(BuildContext context) {
-    return BeagleFlexWidget(
-        children: [_widgetState ?? const SizedBox.shrink()]);
+    return _widgetState ?? const SizedBox.shrink();
   }
 }

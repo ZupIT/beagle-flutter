@@ -29,25 +29,22 @@ class _BeagleServiceMock extends Mock implements BeagleService {
 
 void main() {
   late BeagleService beagle;
-  late bool isYogaStarted;
   late Widget child;
 
   setup(WidgetTester tester) async {
     beagle = _BeagleServiceMock();
-    isYogaStarted = false;
     child = Container();
     when(beagle.js.start).thenAnswer((_) => Future.value());
     await tester.pumpWidget(
-      BeagleProvider(beagle: beagle, child: child, yogaInitializer: () => isYogaStarted = true),
+      BeagleProvider(beagle: beagle, child: child),
     );
   }
 
   group('Given a Beagle Provider', () {
     group("When the it's started", () {
-      testWidgets('Then it should initialize both yoga and js engine', (WidgetTester tester) async {
+      testWidgets('Then it should initialize the js engine', (WidgetTester tester) async {
         await setup(tester);
         verify(beagle.js.start).called(1);
-        expect(isYogaStarted, true);
       });
     });
 

@@ -62,19 +62,15 @@ class _BeagleScreen extends State<BeagleScreen> with BeagleConsumer {
             titleTextStyle: navigationBarStyle?.titleTextStyle)
         : null;
 
-    final yogaChild = BeagleFlexWidget(
-      style: BeagleStyle(flex: BeagleFlex(grow: 1.0)),
-      children: [widget.child],
-    );
     final body = widget.safeArea != null
         ? SafeArea(
             top: widget.safeArea!.top ?? true,
             left: widget.safeArea!.leading ?? true,
             bottom: widget.safeArea!.bottom ?? true,
             right: widget.safeArea!.trailing ?? true,
-            child: yogaChild,
+            child: widget.child,
           )
-        : yogaChild;
+        : widget.child;
 
     return Scaffold(appBar: appBar, body: body);
   }
@@ -150,23 +146,18 @@ class ItemComponent extends StatelessWidget {
 
   ItemComponent({Key? key, required this.item}) : super(key: key);
 
-  static final style = BeagleStyle(
-    size: BeagleSize(
-      width: UnitValue(value: 32, type: UnitType.REAL),
-      height: UnitValue(value: 32, type: UnitType.REAL),
-    ),
-  );
+  static final double size = 32;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: item.action as void Function()? ?? () {},
-      icon: BeagleFlexWidget(
-        children: item.image.isNotEmpty
-            ? [BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER)]
-            : [],
-        style: style,
-      ),
+      icon: item.image.isEmpty
+        ? SizedBox.shrink()
+        : SizedBox.square(
+            dimension: size,
+            child: BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER),
+          ),
       tooltip: item.text,
     );
   }

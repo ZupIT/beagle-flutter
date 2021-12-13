@@ -19,20 +19,18 @@ import 'dart:io';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
-final Map<String, ComponentBuilder> myComponents = {
-  'custom:loading': (element, _, __) {
-    return Center(
-      key: element.getKey(),
-      child: const Text('My custom loading.'),
-    );
+class _MyCustomLoading extends ComponentBuilder {
+  @override
+  Widget buildForBeagle(element, _, __) {
+    return Center(key: element.getKey(), child: Text('My custom loading.'));
   }
-};
+}
 
 void main() {
   final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
   final beagleService = BeagleService(
     baseUrl: 'http://$localhost:8080',
-    components: myComponents,
+    components: {'custom:loading': () => _MyCustomLoading()},
   );
 
   runApp(BeagleProvider(beagle: beagleService, child: BeagleExample()));
