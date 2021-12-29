@@ -367,8 +367,8 @@ void main() {
 
         evaluateJsCodeCaptures.addAll(verify(() => beagleJSEngine.evaluateJsCode(captureAny())).captured);
 
-        test('Then it should have called beagleJSEngine.evaluateJsCode: 11 times', () {
-          expect(evaluateJsCodeCalledTimes, 11);
+        test('Then it should have called beagleJSEngine.evaluateJsCode: 8 times', () {
+          expect(evaluateJsCodeCalledTimes, 8);
         });
 
         test('Then it should have called the component manager: 3 times (one for each dataSource item)', () {
@@ -388,14 +388,6 @@ void main() {
             );
           });
 
-          test('Then it should clone the template, for the first context', () {
-            final template = getConditionalTemplate(dataSource[0][1].value).properties;
-            expect(
-              evaluateJsCodeCaptures.elementAt(2),
-              getEvaluateRenderJsCode('cloneTemplate', json.encode(template)),
-            );
-          });
-
           test('Then it should call the componentManager for the first context', () {
             final template = getConditionalTemplate(dataSource[0][1].value).properties;
             expect(componentManagerCalls[0].index, 0);
@@ -410,7 +402,7 @@ void main() {
             final template = getConditionalTemplate(dataSource[0][1].value).properties;
             final clonedTemplateToPreProcess = getClonedTemplateToPreProcess(template, 0);
             expect(
-              evaluateJsCodeCaptures.elementAt(3),
+              evaluateJsCodeCaptures.elementAt(2),
               getEvaluateRenderJsCode('preProcessTemplateTree', json.encode(clonedTemplateToPreProcess)),
             );
           });
@@ -418,16 +410,8 @@ void main() {
           //SECOND
           test('Then it should get the right template, evaluated, for the second context', () {
             expect(
-              evaluateJsCodeCaptures.elementAt(4),
+              evaluateJsCodeCaptures.elementAt(3),
               getEvaluateRenderJsCode('getContextEvaluatedTemplate', getTemplateArgs(1).join(', ')),
-            );
-          });
-
-          test('Then it should clone the template, for the second context', () {
-            final template = getConditionalTemplate(dataSource[1][1].value).properties;
-            expect(
-              evaluateJsCodeCaptures.elementAt(5),
-              getEvaluateRenderJsCode('cloneTemplate', json.encode(template)),
             );
           });
 
@@ -445,7 +429,7 @@ void main() {
             final template = getConditionalTemplate(dataSource[1][1].value).properties;
             final clonedTemplateToPreProcess = getClonedTemplateToPreProcess(template, 1);
             expect(
-              evaluateJsCodeCaptures.elementAt(6),
+              evaluateJsCodeCaptures.elementAt(4),
               getEvaluateRenderJsCode('preProcessTemplateTree', json.encode(clonedTemplateToPreProcess)),
             );
           });
@@ -453,16 +437,8 @@ void main() {
           //THIRD
           test('Then it should get the right template, evaluated, for the third context', () {
             expect(
-              evaluateJsCodeCaptures.elementAt(7),
+              evaluateJsCodeCaptures.elementAt(5),
               getEvaluateRenderJsCode('getContextEvaluatedTemplate', getTemplateArgs(2).join(', ')),
-            );
-          });
-
-          test('Then it should clone the template, for the third context', () {
-            final template = getConditionalTemplate(dataSource[2][1].value).properties;
-            expect(
-              evaluateJsCodeCaptures.elementAt(8),
-              getEvaluateRenderJsCode('cloneTemplate', json.encode(template)),
             );
           });
 
@@ -480,7 +456,7 @@ void main() {
             final template = getConditionalTemplate(dataSource[2][1].value).properties;
             final clonedTemplateToPreProcess = getClonedTemplateToPreProcess(template, 2);
             expect(
-              evaluateJsCodeCaptures.elementAt(9),
+              evaluateJsCodeCaptures.elementAt(6),
               getEvaluateRenderJsCode('preProcessTemplateTree', json.encode(clonedTemplateToPreProcess)),
             );
           });
@@ -500,7 +476,7 @@ void main() {
             "'${getJsTreeUpdateModeName(TreeUpdateMode.replace)}'",
           ];
           expect(
-            evaluateJsCodeCaptures.elementAt(10),
+            evaluateJsCodeCaptures.elementAt(7),
             getEvaluateRenderJsCode('doTreeFullRender', doTreeRenderArgs.join(', ')),
           );
         });

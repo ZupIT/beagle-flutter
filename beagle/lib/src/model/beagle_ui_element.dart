@@ -17,6 +17,7 @@
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/model/json_encodable.dart';
 import 'package:flutter/widgets.dart';
 
 class BeagleUIElement {
@@ -82,8 +83,23 @@ class BeagleUIElement {
     return json != null && json.containsKey("_beagleComponent_");
   }
 
-  @override
-  String toString() {
-    return jsonEncode(properties, toEncodable: (value) => '');
+  void forEach(void Function(Map<String, dynamic> node, int index) iteratee) {
+    if (properties.isEmpty) return;
+    int index = 0;
+
+    void run(Map<String, dynamic> node) {
+      iteratee(node, index++);
+      final children = node['children'];
+      if (children is List) {
+        for (var c in children) {
+          run(c);
+        }
+      }
+    }
+
+    run(properties);
   }
+
+  @override
+  String toString() => jsonEncode(properties, toEncodable: (value) => (value is JsonEncodable) ? value.toJson() : '');
 }

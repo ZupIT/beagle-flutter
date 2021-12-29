@@ -17,6 +17,7 @@
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/utils/map_utils.dart';
 
 class RendererJS implements Renderer {
   final globalBeagle = "global.beagle";
@@ -78,17 +79,11 @@ class RendererJS implements Renderer {
         final context = contexts[i];
         final contextHierarchy = [...context, ...globalHierarchy];
         final templateArgs = ["'$_viewId'", json.encode(encodeContexts(contextHierarchy)), templatesJs];
-        final template = evaluateRenderFn("getContextEvaluatedTemplate", templateArgs.join(', '));
-        final templateElement = BeagleUIElement(template);
+        final Map<String, dynamic> template = evaluateRenderFn("getContextEvaluatedTemplate", templateArgs.join(', '));
+        final adjusted = componentManager(BeagleUIElement(deepCloneMap(template)), i);
+        adjusted.properties['_implicitContexts_'] = context;
 
-        var clonedTemplate = evaluateRenderFn("cloneTemplate", json.encode(templateElement.properties));
-        clonedTemplate = {
-          ...clonedTemplate,
-          ...componentManager(BeagleUIElement(clonedTemplate), i).properties,
-          "_implicitContexts_": context,
-        };
-
-        final preProcessedElement = evaluateRenderFn("preProcessTemplateTree", json.encode(clonedTemplate));
+        final preProcessedElement = evaluateRenderFn("preProcessTemplateTree", adjusted.toString());
         contextTemplates.add(preProcessedElement);
       }
 

@@ -38,6 +38,7 @@ class BeagleDynamicList extends StatefulWidget {
     this.children,
     this.spanCount,
     this.suffix,
+    this.dataSourceKey,
     required this.view,
     required this.beagleId,
   }) : super(key: key);
@@ -83,6 +84,9 @@ class BeagleDynamicList extends StatefulWidget {
 
   /// used for guaranteeing unique id's on multi leveled list/grid views
   final String? suffix;
+
+  /// unique property in the data source to use as key for each element. The index will be used if not provided.
+  final String? dataSourceKey;
 
   @override
   _BeagleDynamicList createState() => _BeagleDynamicList();
@@ -170,47 +174,33 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
         .toList();
   }
 
-  String _getIterationKey(int index) {
-    String? valueInIteratorNameInDataSource;
-    try {
-      final value = widget.dataSource[index][widget.iteratorName];
-      valueInIteratorNameInDataSource = value ? value : null;
-    } catch (_) {}
-    final hasKey = widget.iteratorName != null && (widget.iteratorName?.isNotEmpty ?? true);
-
-    return hasKey && valueInIteratorNameInDataSource != null ? valueInIteratorNameInDataSource : index.toString();
-  }
+  String _getIterationKey(int index) => widget.dataSourceKey == null
+      ? '$index'
+      : '${widget.dataSource[index][widget.dataSourceKey]}';
 
   String _getBaseId(String componentId, int componentIndex, String suffix) {
     return componentId.isNotEmpty ? "$componentId$suffix" : "${widget.beagleId}:$componentIndex";
   }
 
   BeagleUIElement _iterateComponent(BeagleUIElement element, int indexElement) {
-    if (element.hasChildren()) {
-      for (var indexComponent = 0; indexComponent < element.getChildren().length; indexComponent++) {
-        final component = element.getChildren()[indexComponent];
-        _changeIdAndAddSuffixIfNecessary(component, indexElement, indexComponent);
-        _iterateComponent(component, indexElement);
-      }
-    }
-
+    element.forEach((node, indexComponent) => _changeIdAndAddSuffixIfNecessary(node, indexElement, indexComponent));
     return element;
   }
 
-  void _changeIdAndAddSuffixIfNecessary(BeagleUIElement component, int indexElement, int indexComponent) {
+  void _changeIdAndAddSuffixIfNecessary(Map<String, dynamic> component, int indexElement, int indexComponent) {
     final iterationKey = _getIterationKey(indexElement);
     final suffix = widget.suffix ?? '';
     final baseId = _getBaseId(
-      component.getId(),
+      component['id'] ?? '',
       indexComponent,
       suffix,
     );
-    final hasSuffix = ['beagle:listview', 'beagle:gridview'].contains(component.getType().toLowerCase());
+    final shouldAddSuffix = ['beagle:listview', 'beagle:gridview'].contains(component['_beagleComponent_'].toLowerCase());
 
-    component.setId("$baseId:$iterationKey");
+    component['id'] = '$baseId:$iterationKey';
 
-    if (hasSuffix) {
-      component.properties['__suffix__'] = "$suffix:$iterationKey";
+    if (shouldAddSuffix) {
+      component['__suffix__'] = '$suffix:$iterationKey';
     }
   }
 

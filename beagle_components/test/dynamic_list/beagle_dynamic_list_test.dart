@@ -368,12 +368,13 @@ BeagleUIElement _getBeagleUiElement() {
 Map<String, dynamic> _getPropertiesExpected() {
   return {
     "_beagleComponent_": "beagle:container",
+    "id": "dynamicList:0:0",
     "children": [
-      {"_beagleComponent_": "beagle:text", "id": "dynamicList:0:0"},
       {"_beagleComponent_": "beagle:text", "id": "dynamicList:1:0"},
-      {"_beagleComponent_": "beagle:listview", "id": "dynamicList:2:0", "__suffix__": ":0"},
-      {"_beagleComponent_": "beagle:gridview", "id": "dynamicList:3:0", "__suffix__": ":0"},
-      {"_beagleComponent_": "beagle:text", "id": "dynamicList:4:0"}
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:2:0"},
+      {"_beagleComponent_": "beagle:listview", "id": "dynamicList:3:0", "__suffix__": ":0"},
+      {"_beagleComponent_": "beagle:gridview", "id": "dynamicList:4:0", "__suffix__": ":0"},
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:5:0"}
     ]
   };
 }

@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:beagle/src/model/json_encodable.dart';
-
-class BeagleDataContext extends JsonEncodable {
-  String id;
-  dynamic value;
-
-  BeagleDataContext({
-    required this.id,
-    this.value,
-  });
-
-  @override
-  Map<String, dynamic> toJson() => {'id': id, 'value': value};
-
-  static BeagleDataContext fromJson(Map<String, dynamic> json) =>
-      BeagleDataContext(id: json['id'], value: json['value']);
+abstract class JsonEncodable {
+  dynamic toJson();
 }

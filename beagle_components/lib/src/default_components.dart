@@ -36,8 +36,8 @@ final Map<String, ComponentBuilder Function()> defaultComponents = {
   'beagle:pullToRefresh': () => _PullToRefreshBuilder(),
   'beagle:scrollView': () => _ScrollViewBuilder(),
   'beagle:simpleForm': () => _SimpleFormBuilder(),
-  'beagle:listView': () => _ListViewBuilder(),
-  'beagle:gridView': () => _ListViewBuilder(),
+  'beagle:listView': () => _DynamicListBuilder(),
+  'beagle:gridView': () => _DynamicListBuilder(),
 };
 
 class _LoadingBuilder extends ComponentBuilder {
@@ -90,26 +90,31 @@ class _ScrollViewBuilder extends ComponentBuilder {
   }
 }
 
-class _ListViewBuilder extends ComponentBuilder {
+class _DynamicListBuilder extends ComponentBuilder {
   @override
   StyleConfig getStyleConfig() => StyleConfig.disabled(shouldExpand: false);
 
   @override
-  Widget buildForBeagle(element, children, view) => BeagleDynamicList(
-    onInit: element.getAttributeValue('onInit'),
-    direction: EnumUtils.fromString(BeagleDynamicListDirection.values, element.getAttributeValue('direction')),
-    dataSource: element.getAttributeValue('dataSource'),
-    templates: TemplateManagerItem.fromJsonList(element.getAttributeValue('templates')),
-    isScrollIndicatorVisible: element.getAttributeValue('isScrollIndicatorVisible'),
-    scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
-    iteratorName: element.getAttributeValue('iteratorName'),
-    identifierItem: element.getAttributeValue('key'),
-    onScrollEnd: element.getAttributeValue('onScrollEnd'),
-    children: children,
-    spanCount: element.getAttributeValue('spanCount'),
-    view: view,
-    beagleId: element.getId(),
-  );
+  Widget buildForBeagle(element, children, view) {
+    element;
+    return BeagleDynamicList(
+      onInit: element.getAttributeValue('onInit'),
+      direction: EnumUtils.fromString(BeagleDynamicListDirection.values, element.getAttributeValue('direction')),
+      dataSource: element.getAttributeValue('dataSource'),
+      templates: TemplateManagerItem.fromJsonList(element.getAttributeValue('templates')),
+      isScrollIndicatorVisible: element.getAttributeValue('isScrollIndicatorVisible'),
+      scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
+      iteratorName: element.getAttributeValue('iteratorName'),
+      identifierItem: element.getAttributeValue('key'),
+      onScrollEnd: element.getAttributeValue('onScrollEnd'),
+      children: children,
+      spanCount: element.getAttributeValue('spanCount'),
+      view: view,
+      beagleId: element.getId(),
+      suffix: element.getAttributeValue('__suffix__'),
+      dataSourceKey: element.getAttributeValue('key'),
+    );
+  }
 }
 
 class _TextInputBuilder extends ComponentBuilder {
