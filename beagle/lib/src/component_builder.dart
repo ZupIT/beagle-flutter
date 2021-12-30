@@ -31,6 +31,7 @@ abstract class ComponentBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final beagleRootNode = BeagleRootNode.of(context);
     final beagleNode = BeagleNode.of(context);
+    final beagleService = findBeagleService(context);
     if (beagleRootNode == null || beagleNode == null) {
       throw ErrorDescription('Cannot find InheritedWidget for component. This is probably a problem within the Beagle library. Please contact support.');
     }
@@ -40,12 +41,16 @@ abstract class ComponentBuilder extends StatelessWidget {
       throw ErrorDescription('Cannot find data for component with id "${beagleNode.id}". This is probably a problem within the Beagle library itself. Please contact support.');
     }
 
-    final widget = buildForBeagle(data.element, data.children, data.view);
+    Widget widget = buildForBeagle(data.element, data.children, data.view);
+    if (beagleService.enableStyles) {
+      widget = _applyStyles(widget, data);
+    }
 
-    return applyAccessibility(_applyStyles(widget, data), data.element.getAccessibility());
+    return applyAccessibility(widget, data.element.getAccessibility());
   }
 
-  /// Return a StyleConfig to change the default behavior of the styling algorithm.
+  /// Return a StyleConfig to change the default behavior of the styling algorithm. This makes no difference if, in the
+  /// Beagle configuration, `enableStyles` is false.
   StyleConfig? getStyleConfig() => null;
 
   Widget buildForBeagle(BeagleUIElement tree, List<Widget> componentChildren, BeagleView view);

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'dart:collection';
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
@@ -48,8 +49,8 @@ class BeagleJS {
       'baseUrl': _beagle.baseUrl,
       'actionKeys': _beagle.actions.keys.toList(),
       'customOperations': _beagle.operations.keys.toList(),
-      'enableStyling': true,
-      'expandedComponentsMap': _getExpandedComponentsMap(),
+      'enableStyling': _beagle.enableStyles,
+      'expandedComponentsMap': _beagle.enableStyles ? _getExpandedComponentsMap() : <String, bool>{},
     };
     engine.evaluateJsCode('global.beagle.start(${json.encode(params)})');
   }

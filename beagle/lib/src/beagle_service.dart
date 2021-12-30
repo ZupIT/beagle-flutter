@@ -80,6 +80,10 @@ class BeagleService {
     this.operations = const {},
     /// todo documentation
     this.environment = BeagleEnvironment.debug,
+    /// Enables or disables the automatic styling of all components according to the "style" property. Be aware that
+    /// setting this to false will break most default Beagle components. Set this to false if you need to create your
+    /// own layout engine.
+    this.enableStyles = true,
 }) :
     urlBuilder = urlBuilder ?? UrlBuilder(baseUrl),
     components = _toLowercaseKeys(components),
@@ -112,6 +116,7 @@ class BeagleService {
   final Map<String, NavigationController> navigationControllers;
   final Map<String, Operation> operations;
   final BeagleEnvironment environment;
+  final bool enableStyles;
 
   // factory methods
   BeagleViewWidget createView(BeagleNavigator navigator) {
