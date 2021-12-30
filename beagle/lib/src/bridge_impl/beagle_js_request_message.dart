@@ -23,7 +23,7 @@ class BeagleJSRequestMessage {
   late String _url;
   late BeagleHttpMethod _method;
   late Map<String, String> _headers;
-  late String _body;
+  late String? _body;
 
   BeagleJSRequestMessage.fromJson(Map<String, dynamic> json) {
     _requestId = json['id'];

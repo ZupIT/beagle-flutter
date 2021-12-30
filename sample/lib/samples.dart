@@ -1013,3 +1013,32 @@ final textInput = BeagleUIElement({
     "borderColor": "#00AA00"
   }
 });
+
+final sendRequest = BeagleUIElement({
+  "_beagleComponent_": "beagle:container",
+  "style": {
+    "flex": {
+      "flex": 1,
+      "alignItems": "CENTER",
+      "justifyContent": "CENTER"
+    }
+  },
+  "children":[
+    {
+      "_beagleComponent_": "beagle:button",
+      "text": "Send",
+      "onPress": [{
+        "_beagleAction_": "beagle:sendRequest",
+        "url": "https://gist.githubusercontent.com/Tiagoperes/1779f11f2298b552e723767e88ed3bc9/raw/4eb3d974e9c87692be258f815720e98fce4fe778/simple_json_text.json",
+        "onSuccess": [{
+          "_beagleAction_": "beagle:alert",
+          "message": "@{onSuccess.data.message}"
+        }],
+        "onError": [{
+          "_beagleAction_": "beagle:alert",
+          "message": "> Error <"
+        }]
+      }]
+    }
+  ]
+});

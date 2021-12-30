@@ -34,5 +34,5 @@ class BeagleRequest {
   late Map<String, String> headers;
 
   /// Content that will be deliver with the request.
-  late String body;
+  late String? body;
 }
