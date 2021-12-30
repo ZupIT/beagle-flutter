@@ -24,16 +24,14 @@ import 'test-utils/provider_mock.dart';
 
 // FIXME: these tests don't pass when run all at once.
 
-class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
+class _BeagleThemeMock extends Mock implements BeagleTheme {}
 
-class _BeagleServiceMock extends Mock implements BeagleService {
-  @override
-  final designSystem = _DesignSystemMock();
-}
+class _BeagleServiceMock extends Mock implements BeagleService {}
 
 void main() {
   final beagle = _BeagleServiceMock();
-  when(() => beagle.designSystem.image(any())).thenReturn('images/beagle.png');
+  final theme = _BeagleThemeMock();
+  when(() => theme.image(any())).thenReturn('images/beagle.png');
   const tabBarKey = Key('BeagleTabBar');
   final tabBarItems = <TabBarItem>[
     TabBarItem('Tab 1', LocalImagePath('')),
@@ -43,20 +41,22 @@ void main() {
 
   Widget createWidget({
     Key key = tabBarKey,
-    BeagleDesignSystem? designSystem,
     List<TabBarItem> items = const [],
     int currentTab = 0,
     void Function(int)? onTabSelection,
   }) {
     return BeagleProviderMock(
       beagle: beagle,
-      child: MaterialApp(
-        home: Scaffold(
-          body: BeagleTabBar(
-            // key: tabBarKey,
-            items: items,
-            currentTab: currentTab,
-            onTabSelection: onTabSelection ?? (_) {},
+      child: BeagleThemeProvider(
+        theme: theme,
+        child: MaterialApp(
+          home: Scaffold(
+            body: BeagleTabBar(
+              // key: tabBarKey,
+              items: items,
+              currentTab: currentTab,
+              onTabSelection: onTabSelection ?? (_) {},
+            ),
           ),
         ),
       ),

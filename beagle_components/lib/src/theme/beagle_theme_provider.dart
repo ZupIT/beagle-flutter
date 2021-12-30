@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-class BeagleButtonStyle {
-  BeagleButtonStyle({
-    this.buttonStyle,
-    this.buttonTextStyle,
-  });
+import 'beagle_theme.dart';
 
-  /// Customizes the appearance of this button for the Android platform.
-  /// Null by default.
-  final ButtonStyle? buttonStyle;
+class BeagleThemeProvider extends InheritedWidget {
+  BeagleThemeProvider({required this.theme, required Widget child, Key? key}) : super(key: key, child: child);
 
-  /// If non-null, the style to use for this text.
-  ///
-  /// If the style's "inherit" property is true, the style will be merged with
-  /// the closest enclosing [DefaultTextStyle]. Otherwise, the style will
-  /// replace the closest enclosing [DefaultTextStyle].
-  final TextStyle? buttonTextStyle;
+  final BeagleTheme theme;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
+
+  static BeagleThemeProvider? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<BeagleThemeProvider>();
 }

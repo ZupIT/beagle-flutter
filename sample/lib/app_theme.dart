@@ -15,10 +15,10 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
-class AppDesignSystem extends BeagleDesignSystem {
+class AppTheme extends BeagleTheme {
   Map<String, String> imageMap = {
     'bus': 'images/bus.png',
     'car': 'images/car.png',
@@ -29,10 +29,11 @@ class AppDesignSystem extends BeagleDesignSystem {
     'imageBeagle': 'images/beagle.png',
   };
 
-  final Map<String, BeagleButtonStyle> buttonStyles = {
-    'DesignSystem.Stylish.Button': BeagleButtonStyle(
-        buttonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(HexColor("#FFFFFFFF"))),
-        buttonTextStyle: TextStyle(color: HexColor("#6F6F6F"))),
+  final Map<String, ButtonStyle> buttonStyles = {
+    'DesignSystem.Stylish.Button': ButtonStyle(
+      backgroundColor: MaterialStateProperty.all(HexColor("#FFFFFFFF")),
+      foregroundColor: MaterialStateProperty.all(HexColor("#6F6F6F")),
+    ),
   };
 
   @override
@@ -41,8 +42,8 @@ class AppDesignSystem extends BeagleDesignSystem {
   }
 
   @override
-  BeagleButtonStyle buttonStyle(String id) {
-    return buttonStyles[id] ?? BeagleButtonStyle();
+  ButtonStyle buttonStyle(String id) {
+    return buttonStyles[id] ?? ButtonStyle();
   }
 
   @override

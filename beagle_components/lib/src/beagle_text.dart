@@ -18,6 +18,9 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'theme/beagle_theme.dart';
+import 'theme/beagle_theme_provider.dart';
+
 class BeagleText extends StatefulWidget {
   const BeagleText({
     Key? key,
@@ -45,13 +48,14 @@ class BeagleText extends StatefulWidget {
 }
 
 /// A Text widget that displays a string of text with single style.
-class _BeagleText extends State<BeagleText> with BeagleConsumer {
+class _BeagleText extends State<BeagleText> {
   @override
-  Widget buildBeagleWidget(BuildContext context) {
+  Widget build(BuildContext context) {
+    final theme = BeagleThemeProvider.of(context)?.theme;
     final beagleText = Text(
       widget.text.toString(),
       textAlign: getTextAlign(widget.alignment ?? TextAlignment.LEFT),
-      style: getTextStyle(),
+      style: getTextStyle(theme),
     );
     return widget.alignment == TextAlignment.CENTER
         ? Center(child: beagleText)
@@ -73,14 +77,12 @@ class _BeagleText extends State<BeagleText> with BeagleConsumer {
     return color != null ? HexColor(color) : null;
   }
 
-  TextStyle getTextStyle() {
-    var textStyle = widget.styleId != null && widget.styleId!.isNotEmpty
-        ? beagle.designSystem.textStyle(widget.styleId!)
-        : TextStyle();
+  TextStyle getTextStyle(BeagleTheme? theme) {
+    var textStyle = (widget.styleId == null ? null : theme?.textStyle(widget.styleId!)) ?? TextStyle();
     if (widget.textColor != null && widget.textColor!.isNotEmpty) {
-      textStyle = textStyle!.copyWith(color: getTextColor(widget.textColor));
+      textStyle = textStyle.copyWith(color: getTextColor(widget.textColor));
     }
-    return textStyle!;
+    return textStyle;
   }
 }
 

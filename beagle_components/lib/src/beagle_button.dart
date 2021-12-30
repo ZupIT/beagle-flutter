@@ -16,7 +16,9 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+import '../beagle_components.dart';
+import 'theme/beagle_theme_provider.dart';
 
 class BeagleButton extends StatefulWidget {
   const BeagleButton({
@@ -50,13 +52,17 @@ class BeagleButton extends StatefulWidget {
 
 /// Defines a button widget that will be rendered according to the style of the
 /// running platform.
-class _BeagleButton extends State<BeagleButton> with BeagleConsumer {
-  BeagleButtonStyle? _buttonStyle;
-
+class _BeagleButton extends State<BeagleButton> {
   bool _hasStyle() => (widget.style?.backgroundColor ?? widget.style?.cornerRadius ?? widget.style?.borderWidth
       ?? widget.style?.borderColor ?? widget.style?.padding) != null;
 
-  ButtonStyle? _getButtonStyle() =>  _hasStyle() ? ButtonStyle(
+  ButtonStyle? _getStyleFromId(BuildContext context) {
+    if (widget.styleId == null) return null;
+    final themeProvider = BeagleThemeProvider.of(context);
+    return themeProvider?.theme.buttonStyle(widget.styleId!);
+  }
+
+  ButtonStyle? _getStyleFromProperties() =>  _hasStyle() ? ButtonStyle(
     shape: _getShape(),
     backgroundColor: _getBackgroundColor(),
     foregroundColor: MaterialStateProperty.all(Colors.white),
@@ -66,14 +72,22 @@ class _BeagleButton extends State<BeagleButton> with BeagleConsumer {
     ) : null,
   ) : null;
 
+  ButtonStyle? _getStyle(BuildContext context) {
+    final fromId = _getStyleFromId(context);
+    final fromProperties = _getStyleFromProperties();
+    if (fromId == null) return fromProperties;
+    if (fromProperties == null) return fromId;
+    return fromId.merge(fromProperties);
+  }
+
   @override
-  Widget buildBeagleWidget(BuildContext context) {
+  Widget build(BuildContext context) {
     final shouldExpandFlex = widget.style?.size?.height?.value != null;
     final shouldExpandBox = widget.style?.size?.width?.value != null;
     Widget button = ElevatedButton(
       onPressed: widget.enabled == false ? null : widget.onPress,
       child: _buildButtonChild(),
-      style: _getButtonStyle(),
+      style: _getStyle(context),
     );
     if (shouldExpandBox) {
       button = ConstrainedBox(
@@ -86,7 +100,7 @@ class _BeagleButton extends State<BeagleButton> with BeagleConsumer {
 
   }
 
-  Widget _buildButtonChild() => Text(widget.text, style: _buttonStyle?.buttonTextStyle);
+  Widget _buildButtonChild() => Text(widget.text);
 
   MaterialStateProperty<Color>? _getBackgroundColor() {
     final color = widget.style?.backgroundColor != null

@@ -22,7 +22,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'app_analytics_provider.dart';
-import 'app_design_system.dart';
 
 final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
 
@@ -55,5 +54,4 @@ final beagleService = BeagleService(
   operations: myCustomOperations,
   analyticsProvider: AppAnalyticsProvider(),
   logger: DefaultLogger(),
-  designSystem: AppDesignSystem(),
 );

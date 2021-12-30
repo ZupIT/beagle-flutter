@@ -26,13 +26,9 @@ import 'test-utils/provider_mock.dart';
 
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
-
 class _BeagleServiceMock extends Mock implements BeagleService {
   @override
   final logger = _BeagleLoggerMock();
-  @override
-  final designSystem = _DesignSystemMock();
 }
 
 Widget createWidget({
@@ -57,15 +53,6 @@ Widget createWidget({
 
 void main() {
   final beagle = _BeagleServiceMock();
-
-  final navigationBarStyleId = 'navigationBarStyleId';
-  final navigationBarStyle =
-      BeagleNavigationBarStyle(backgroundColor: Colors.blue, centerTitle: true);
-
-  setUpAll(() {
-    when(() => beagle.designSystem.navigationBarStyle(navigationBarStyleId))
-        .thenReturn(navigationBarStyle);
-  });
 
   group('Given a BeagleSimpleForm', () {
     group('When the widget is created', () {

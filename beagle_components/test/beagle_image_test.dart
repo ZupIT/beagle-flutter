@@ -26,7 +26,7 @@ import 'package:mocktail/mocktail.dart';
 import 'image/image_mock_data.dart';
 import 'test-utils/provider_mock.dart';
 
-class _DesignSystemMock extends Mock implements BeagleDesignSystem {}
+class _BeagleThemeMock extends Mock implements BeagleTheme {}
 
 class _BeagleImageDownloaderMock extends Mock implements BeagleImageDownloader {}
 
@@ -35,8 +35,6 @@ class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 class _UrlBuilderMock extends Mock implements UrlBuilder {}
 
 class _BeagleServiceMock extends Mock implements BeagleService {
-  @override
-  final designSystem = _DesignSystemMock();
   @override
   final imageDownloader = _BeagleImageDownloaderMock();
   @override
@@ -47,6 +45,7 @@ class _BeagleServiceMock extends Mock implements BeagleService {
 
 void main() {
   final beagle = _BeagleServiceMock();
+  final theme = _BeagleThemeMock();
 
   const imageUrl = 'https://test.com/beagle.png';
   const imageNotFoundUrl = 'https://notfound.com/beagle.png';
@@ -55,7 +54,7 @@ void main() {
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
 
-  when(() => beagle.designSystem.image(defaultPlaceholder))
+  when(() => theme.image(defaultPlaceholder))
       .thenReturn('images/beagle_dog.png');
 
   when(() => beagle.urlBuilder.build(imageUrl)).thenReturn(imageUrl);
@@ -63,7 +62,7 @@ void main() {
   when(() => beagle.urlBuilder.build(imageNotFoundUrl))
       .thenReturn(imageNotFoundUrl);
 
-  when(() => beagle.designSystem.image(invalidPlaceholder)).thenReturn('');
+  when(() => theme.image(invalidPlaceholder)).thenReturn('');
 
   when(() => beagle.imageDownloader.downloadImage(imageUrl))
       .thenAnswer((invocation) {
@@ -83,11 +82,14 @@ void main() {
   }) {
     return BeagleProviderMock(
       beagle: beagle,
-      child: MaterialApp(
-        home: BeagleImage(
-          key: key,
-          path: path,
-          mode: mode,
+      child: BeagleThemeProvider(
+        theme: theme,
+        child: MaterialApp(
+          home: BeagleImage(
+            key: key,
+            path: path,
+            mode: mode,
+          ),
         ),
       ),
     );

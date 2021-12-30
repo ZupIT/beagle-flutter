@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
-import 'objects_fake/button_one_style.dart';
-import 'objects_fake/fake_design_system.dart';
-import 'test-utils/provider_mock.dart';
-
-class _BeagleServiceMock extends Mock implements BeagleService {
-  @override
-  final designSystem = FakeDesignSystem();
-}
+import 'objects_fake/fake_theme.dart';
 
 const buttonText = 'Beagle Button';
 const buttonKey = Key('BeagleButton');
@@ -43,8 +34,8 @@ Widget createWidget({
   bool buttonEnabled = true,
   String? styleId,
 }) {
-  return BeagleProviderMock(
-    beagle: _BeagleServiceMock(),
+  return BeagleThemeProvider(
+    theme: FakeTheme(),
     child: MaterialApp(
       home: BeagleButton(
         key: buttonKey,

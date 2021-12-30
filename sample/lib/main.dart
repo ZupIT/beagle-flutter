@@ -15,24 +15,29 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/foundation.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:sample/beagle.dart';
+
+import 'app_theme.dart';
 
 void main() {
   runApp(BeagleProvider(
     beagle: beagleService,
-    child: MaterialApp(
-      title: 'Beagle Sample',
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        indicatorColor: Colors.white,
-        appBarTheme: AppBarTheme(
-          elevation: 0,
+    child: BeagleThemeProvider(
+      theme: AppTheme(),
+      child: MaterialApp(
+        title: 'Beagle Sample',
+        theme: ThemeData(
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          indicatorColor: Colors.white,
+          appBarTheme: AppBarTheme(
+            elevation: 0,
+          ),
         ),
+        home: BeagleSampleApp()
       ),
-      home: BeagleSampleApp()
-    )
+    ),
   ));
 }
 

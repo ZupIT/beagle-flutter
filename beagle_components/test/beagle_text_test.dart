@@ -19,15 +19,8 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
-import 'objects_fake/fake_design_system.dart';
-import 'test-utils/provider_mock.dart';
-
-class _BeagleServiceMock extends Mock implements BeagleService {
-  @override
-  final designSystem = FakeDesignSystem();
-}
+import 'objects_fake/fake_theme.dart';
 
 const text = 'Beagle Text';
 const textColor = '#00FF00';
@@ -45,8 +38,8 @@ Widget createWidget({
   TextAlignment? alignment = alignment,
   String? styleId,
 }) {
-  return BeagleProviderMock(
-    beagle: _BeagleServiceMock(),
+  return BeagleThemeProvider(
+    theme: FakeTheme(),
     child: MaterialApp(
       home: BeagleText(
         key: key,

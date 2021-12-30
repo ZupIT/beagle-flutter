@@ -40,9 +40,10 @@ class BeagleScreen extends StatefulWidget {
 class _BeagleScreen extends State<BeagleScreen> with BeagleConsumer {
   @override
   Widget buildBeagleWidget(BuildContext context) {
+    final theme = BeagleThemeProvider.of(context)?.theme;
     final navigationBarStyle = widget.navigationBar?.styleId == null
         ? null
-        : beagle.designSystem.navigationBarStyle(widget.navigationBar!.styleId!);
+        : theme?.navigationBarStyle(widget.navigationBar!.styleId!);
     final appBar = widget.navigationBar != null
         ? AppBar(
             leading: navigationBarStyle?.leading,

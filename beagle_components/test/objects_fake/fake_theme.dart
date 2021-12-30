@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/painting/text_style.dart';
 
-import 'button_one_style.dart';
+final buttonOneStyle = ButtonStyle(
+  backgroundColor: MaterialStateProperty.all(Colors.black),
+  textStyle: MaterialStateProperty.all(TextStyle(color: Colors.amber)),
+);
 
-class FakeDesignSystem extends BeagleDesignSystem {
+class FakeTheme extends BeagleTheme {
   @override
-  BeagleButtonStyle? buttonStyle(String id) {
-    BeagleButtonStyle? style;
-    switch (id) {
-      case 'button-one':
-        style = ButtonOneStyle();
-        break;
-    }
+  ButtonStyle? buttonStyle(String id) {
+    final map = {
+      'button-one': buttonOneStyle,
+    };
 
-    return style;
+    return map[id];
   }
 
   @override
@@ -40,17 +39,14 @@ class FakeDesignSystem extends BeagleDesignSystem {
 
   @override
   TextStyle? textStyle(String id) {
-    TextStyle? style;
-    switch (id) {
-      case 'text-one':
-        style = const TextStyle(
-          color: Colors.black,
-          backgroundColor: Colors.indigo,
-        );
-        break;
-    }
+    final map = {
+      'text-one': const TextStyle(
+        color: Colors.black,
+        backgroundColor: Colors.indigo,
+      ),
+    };
 
-    return style;
+    return map[id];
   }
 
   @override

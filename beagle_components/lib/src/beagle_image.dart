@@ -16,7 +16,7 @@
 
 import 'dart:typed_data';
 import 'package:beagle/beagle.dart';
-import 'package:flutter/foundation.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/widgets.dart';
 
 /// Defines an image widget that renders local or remote resource depending on
@@ -54,9 +54,10 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
 
   @override
   Widget buildBeagleWidget(BuildContext context) {
+    final theme = BeagleThemeProvider.of(context)?.theme;
     final image = isLocalImage()
-        ? createImageFromAsset(widget.path as LocalImagePath)
-        : createImageFromNetwork(widget.path as RemoteImagePath);
+        ? createImageFromAsset(widget.path as LocalImagePath, theme)
+        : createImageFromNetwork(widget.path as RemoteImagePath, theme);
     return ClipRRect(
       borderRadius: StyleUtils.getBorderRadius(widget.style) ?? BorderRadius.zero,
       child: image,
@@ -74,10 +75,10 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
 
   bool isLocalImage() => widget.path.runtimeType == LocalImagePath;
 
-  Widget createImageFromAsset(LocalImagePath? path) {
-    if (isPlaceHolderValid(path)) {
+  Widget createImageFromAsset(LocalImagePath? path, BeagleTheme? theme) {
+    if (isPlaceHolderValid(path, theme)) {
       return Image.asset(
-        getAssetName(path!) ?? '',
+        getAssetName(path!, theme) ?? '',
         fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
       );
     }
@@ -86,21 +87,21 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
     return Container();
   }
 
-  Widget createImageFromNetwork(RemoteImagePath path) {
+  Widget createImageFromNetwork(RemoteImagePath path, BeagleTheme? theme) {
     return FutureBuilder(
       future: imageBytes,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return createPlaceHolderWidget(path);
+          return createPlaceHolderWidget(path, theme);
         }
         return createImageFromMemory(snapshot.data as Uint8List);
       },
     );
   }
 
-  Widget createPlaceHolderWidget(RemoteImagePath path) {
-    if (isPlaceHolderValid(path.placeholder)) {
-      return createImageFromAsset(path.placeholder);
+  Widget createPlaceHolderWidget(RemoteImagePath path, BeagleTheme? theme) {
+    if (isPlaceHolderValid(path.placeholder, theme)) {
+      return createImageFromAsset(path.placeholder, theme);
     }
     return Container();
   }
@@ -114,14 +115,14 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
 
   bool isImageDownloaded() => imageBytes != null;
 
-  String? getAssetName(LocalImagePath imagePath) {
-    return beagle.designSystem.image(imagePath.mobileId);
+  String? getAssetName(LocalImagePath imagePath, BeagleTheme? theme) {
+    return theme?.image(imagePath.mobileId);
   }
 
-  bool isPlaceHolderValid(LocalImagePath? path) {
+  bool isPlaceHolderValid(LocalImagePath? path, BeagleTheme? theme) {
     if (path == null) return false;
 
-    final assetName = getAssetName(path);
+    final assetName = getAssetName(path, theme);
     return assetName != null && assetName.isNotEmpty;
   }
 

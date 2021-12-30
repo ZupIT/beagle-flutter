@@ -23,7 +23,6 @@ export 'package:beagle/src/action/beagle_open_native_route.dart';
 
 export 'package:beagle/src/components/beagle_undefined_widget.dart';
 
-export 'package:beagle/src/default/default_design_system.dart';
 export 'package:beagle/src/default/default_http_client.dart';
 export 'package:beagle/src/default/default_image_downloader.dart';
 export 'package:beagle/src/default/default_logger.dart';
@@ -47,9 +46,7 @@ export 'package:beagle/src/interface/view_client.dart';
 export 'package:beagle/src/interface/beagle_logger.dart';
 
 export 'package:beagle/src/model/beagle_action.dart';
-export 'package:beagle/src/model/beagle_button_style.dart';
 export 'package:beagle/src/model/beagle_environment.dart';
-export 'package:beagle/src/model/beagle_navigation_bar_style.dart';
 export 'package:beagle/src/model/beagle_style.dart';
 export 'package:beagle/src/model/beagle_acessibility.dart';
 export 'package:beagle/src/model/beagle_ui_element.dart';
@@ -60,7 +57,6 @@ export 'package:beagle/src/model/tree_update_mode.dart';
 export 'package:beagle/src/networking/beagle_http_method.dart';
 export 'package:beagle/src/networking/beagle_request.dart';
 
-export 'package:beagle/src/interface/beagle_design_system.dart';
 
 export 'package:beagle/src/utils/color.dart';
 export 'package:beagle/src/utils/enum.dart';

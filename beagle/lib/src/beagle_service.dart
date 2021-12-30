@@ -55,8 +55,6 @@ class BeagleService {
     /// todo documentation
     UrlBuilder? urlBuilder,
     /// todo documentation
-    BeagleDesignSystem? designSystem,
-    /// todo documentation
     BeagleImageDownloader? imageDownloader,
     /// todo documentation
     this.logger = const DefaultLogger(),
@@ -87,8 +85,7 @@ class BeagleService {
 }) :
     urlBuilder = urlBuilder ?? UrlBuilder(baseUrl),
     components = _toLowercaseKeys(components),
-    actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})}),
-    designSystem = designSystem ?? DefaultEmptyDesignSystem()
+    actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})})
   {
     this.imageDownloader = imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
     this.viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: this.urlBuilder);
@@ -100,7 +97,6 @@ class BeagleService {
   // services
   final UrlBuilder urlBuilder;
   late final GlobalContext globalContext;
-  final BeagleDesignSystem designSystem;
   late final BeagleImageDownloader imageDownloader;
   final BeagleLogger logger;
   final AnalyticsProvider? analyticsProvider;
