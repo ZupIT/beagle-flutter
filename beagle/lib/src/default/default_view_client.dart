@@ -15,9 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/interface/view_client.dart';
-import 'package:beagle/src/model/beagle_ui_element.dart';
-import 'package:beagle/src/model/route.dart';
+import 'package:beagle/src/default/utils/view_client.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
 
@@ -27,7 +25,8 @@ class DefaultViewClient implements ViewClient {
   final HttpClient httpClient;
   final BeagleLogger logger;
   final UrlBuilder urlBuilder;
-  final Map<String, BeagleUIElement> _preFetched = {};
+  final _preFetched = <String, BeagleUIElement>{};
+  final _defaultNavigateActions = ['beagle:pushView', 'beagle:pushStack', 'beagle:resetStack', 'beagle:resetApplication'];
 
   String? _convertBodyToString(dynamic body) {
     if (body is String) return body;
@@ -51,20 +50,33 @@ class DefaultViewClient implements ViewClient {
 
   @override
   Future<BeagleUIElement> fetch(RemoteView route) async {
+    BeagleUIElement view;
     if (_preFetched[route.url] != null) {
-      final result = _preFetched[route.url] as BeagleUIElement;
+      view = _preFetched[route.url]!;
       _preFetched.remove(route.url);
-      return result;
+    } else {
+      view = await fetchView(route);
     }
-    return await fetchView(route);
+    _processPrefetches(view);
+    return view;
   }
 
-  @override
-  Future<void> prefetch(RemoteView route) async {
-    try {
-      _preFetched[route.url] = await fetchView(route);
-    } catch (error) {
-      logger.error("Error while pre-fetching view: ${route.url}\n$error");
+Future<void> _requestPrefetch(String url) async {
+  final view = await fetchView(RemoteView(urlBuilder.build(url)));
+  _preFetched.addAll({url: view});
+}
+
+void _processPrefetches(BeagleUIElement view) async {
+    final actions = findActionsInView(view);
+    for (var action in actions) {
+      final isNavigationAction = _defaultNavigateActions.contains(action.values.first);
+      if (!isNavigationAction) continue;
+      final url = action['route']?['url'];
+      final hasValidUrl = validateUrl(url, logger);
+      final shouldPrefetch = action['route']?['shouldPrefetch'] == true;
+      if (hasValidUrl && shouldPrefetch) {
+        _requestPrefetch(url);
+      }
     }
   }
 }

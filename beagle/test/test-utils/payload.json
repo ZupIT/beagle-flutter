@@ -1,0 +1,228 @@
+{
+  "_beagleComponent_": "beagle:screenComponent",
+  "navigationBar": {
+    "title": "Beagle Touchable",
+    "showBackButton": true,
+    "navigationBarItems": [
+      {
+        "text": "",
+        "image": "informationImage",
+        "action": {
+          "_beagleAction_": "beagle:alert",
+          "title": "Touchable",
+          "message": "Applies click action on widgets that have no action.",
+          "labelOk": "OK"
+        }
+      }
+    ]
+  },
+  "child": {
+    "_beagleComponent_": "beagle:scrollView",
+    "children": [
+      {
+        "_beagleComponent_": "beagle:container",
+        "children": [
+          {
+            "_beagleComponent_": "beagle:text",
+            "text": "Text with Touchable",
+            "styleId": "DesignSystem.Text.helloWord",
+            "style": {
+              "cornerRadius": {},
+              "size": {},
+              "margin": {
+                "top": {
+                  "value": 8,
+                  "type": "REAL"
+                }
+              },
+              "flex": {
+                "alignSelf": "CENTER"
+              }
+            }
+          },
+          {
+            "_beagleComponent_": "beagle:touchable",
+            "onPress": [
+              {
+                "_beagleAction_": "beagle:condition",
+                "condition": "@{sum(user, 21)}",
+                "onTrue": [
+                  {
+                    "_beagleAction_": "beagle:alert",
+                    "title": "",
+                    "message": "onTrue"
+                  }
+                ],
+                "onFalse": [
+                  {
+                    "_beagleAction_": "beagle:alert",
+                    "title": "",
+                    "message": "onFalse"
+                  }
+                ]
+              }
+            ],
+            "child": {
+              "_beagleComponent_": "beagle:text",
+              "text": "Click here!",
+              "style": {
+                "cornerRadius": {},
+                "size": {},
+                "margin": {
+                  "top": {
+                    "value": 8,
+                    "type": "REAL"
+                  },
+                  "bottom": {
+                    "value": 8,
+                    "type": "REAL"
+                  }
+                },
+                "flex": {
+                  "alignSelf": "CENTER"
+                }
+              }
+            }
+          }
+        ],
+        "context": {
+          "id": "user",
+          "value": 18
+        }
+      },
+      {
+        "_beagleComponent_": "beagle:container",
+        "children": [
+          {
+            "_beagleComponent_": "beagle:text",
+            "text": "Image with Touchable",
+            "styleId": "DesignSystem.Text.helloWord",
+            "style": {
+              "cornerRadius": {},
+              "size": {},
+              "margin": {
+                "top": {
+                  "value": 8,
+                  "type": "REAL"
+                }
+              },
+              "flex": {
+                "alignSelf": "CENTER"
+              }
+            }
+          },
+          {
+            "_beagleComponent_": "beagle:touchable",
+            "onPress": [
+              {
+                "_beagleAction_": "beagle:condition",
+                "condition": "@{sum(user, 21)}",
+                "onTrue": [
+                  {
+                    "_beagleAction_": "beagle:alert",
+                    "title": "",
+                    "message": "onTrue"
+                  }
+                ],
+                "onFalse": [
+                  {
+                    "_beagleAction_": "beagle:alert",
+                    "title": "",
+                    "message": "onFalse"
+                  }
+                ]
+              }
+            ],
+            "child": {
+              "_beagleComponent_": "beagle:image",
+              "path": {
+                "_beagleImagePath_": "local",
+                "mobileId": "imageBeagle"
+              },
+              "style": {
+                "cornerRadius": {},
+                "size": {},
+                "margin": {
+                  "top": {
+                    "value": 8,
+                    "type": "REAL"
+                  },
+                  "bottom": {
+                    "value": 8,
+                    "type": "REAL"
+                  }
+                },
+                "flex": {
+                  "alignSelf": "CENTER"
+                }
+              }
+            }
+          }
+        ],
+        "context": {
+          "id": "user",
+          "value": 18
+        }
+      },
+      {
+        "_beagleComponent_": "beagle:container",
+        "children": [
+          {
+            "_beagleComponent_": "beagle:text",
+            "text": "NetworkImage with Touchable",
+            "styleId": "DesignSystem.Text.helloWord",
+            "style": {
+              "cornerRadius": {},
+              "size": {},
+              "margin": {
+                "top": {
+                  "value": 8,
+                  "type": "REAL"
+                }
+              },
+              "flex": {
+                "alignSelf": "CENTER"
+              }
+            }
+          },
+          {
+            "_beagleComponent_": "beagle:touchable",
+            "onPress": [
+              {
+                "_beagleAction_": "beagle:pushView",
+                "route": {
+                  "url": "https://test.com",
+                  "shouldPrefetch": true
+                }
+              }
+            ],
+            "child": {
+              "_beagleComponent_": "beagle:image",
+              "path": {
+                "_beagleImagePath_": "local",
+                "mobileId": "imageBeagle"
+              },
+              "style": {
+                "cornerRadius": {},
+                "size": {
+                  "width": {
+                    "value": 150,
+                    "type": "REAL"
+                  },
+                  "height": {
+                    "value": 130,
+                    "type": "REAL"
+                  }
+                },
+                "flex": {
+                  "alignSelf": "CENTER"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "scrollDirection": "VERTICAL"
+  }
+}
