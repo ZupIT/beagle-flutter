@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:async';
-
 import 'package:beagle/beagle.dart';
 import '../../test-utils/mocktail.dart';
 import 'setup.dart';
@@ -138,7 +136,7 @@ void main() {
         'Then it should render the screen immediately, without contacting the backend',
         (WidgetTester tester) async {
           final mocks = NavigationMocks(tester);
-          final initialLocalView = LocalView(screen);
+          final initialLocalView = LocalView(screen, null);
 
           final expectations = await _setup(tester: tester, mocks: mocks, initialRoute: initialLocalView);
           expectations.shouldNotFetchRoute();

@@ -16,7 +16,6 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 /// Defines a widget to indicate the number of pages and the current selected
 /// page of a [PageView].
@@ -50,9 +49,7 @@ class BeaglePageIndicator extends StatelessWidget {
       height: dotSpacing,
       child: Center(
         child: Material(
-          color: HexColor(index == (currentPage ?? 0)
-              ? (selectedColor ?? '#ffffff')
-              : (unselectedColor ?? '#ffffff')),
+          color: HexColor(index == (currentPage ?? 0) ? (selectedColor ?? '#ffffff') : (unselectedColor ?? '#ffffff')),
           type: MaterialType.circle,
           child: const SizedBox(
             width: dotSize,

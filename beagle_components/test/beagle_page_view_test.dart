@@ -16,7 +16,6 @@
 
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -60,16 +59,14 @@ void main() {
 
   group('Given a BeaglePageView', () {
     group('When the component is rendered', () {
-      testWidgets('Then it should have a PageView child',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a PageView child', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
         expect(find.byType(PageView), findsOneWidget);
       });
     });
 
     group('When it is swiped', () {
-      testWidgets('Then it should show pages correctly',
-          (WidgetTester tester) async {
+      testWidgets('Then it should show pages correctly', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(onPageChange: (int page) {}));
 
         // check first page
@@ -92,9 +89,7 @@ void main() {
         expect(find.text(pageOneText), findsOneWidget);
       });
 
-      testWidgets(
-          'Then it should call onPageChange callback with correct page number',
-          (WidgetTester tester) async {
+      testWidgets('Then it should call onPageChange callback with correct page number', (WidgetTester tester) async {
         var currentPage = 0;
         void onPageChange(int page) {
           currentPage = page;

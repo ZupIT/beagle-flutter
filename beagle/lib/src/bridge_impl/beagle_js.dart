@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:collection';
 import 'dart:convert';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';

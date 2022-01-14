@@ -17,7 +17,6 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import '../../test-utils/mocktail.dart';
 import 'expectations.dart';
 import 'setup.dart';

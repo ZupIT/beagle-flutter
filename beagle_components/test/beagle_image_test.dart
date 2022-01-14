@@ -15,11 +15,9 @@
  */
 
 import 'dart:typed_data';
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -54,24 +52,19 @@ void main() {
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
 
-  when(() => theme.image(defaultPlaceholder))
-      .thenReturn('images/beagle_dog.png');
+  when(() => theme.image(defaultPlaceholder)).thenReturn('images/beagle_dog.png');
 
   when(() => beagle.urlBuilder.build(imageUrl)).thenReturn(imageUrl);
 
-  when(() => beagle.urlBuilder.build(imageNotFoundUrl))
-      .thenReturn(imageNotFoundUrl);
+  when(() => beagle.urlBuilder.build(imageNotFoundUrl)).thenReturn(imageNotFoundUrl);
 
   when(() => theme.image(invalidPlaceholder)).thenReturn('');
 
-  when(() => beagle.imageDownloader.downloadImage(imageUrl))
-      .thenAnswer((invocation) {
+  when(() => beagle.imageDownloader.downloadImage(imageUrl)).thenAnswer((invocation) {
     return Future<Uint8List>.value(mockedBeagleImageData);
   });
-  when(() => beagle.imageDownloader.downloadImage(imageNotFoundUrl))
-      .thenAnswer((invocation) {
-    throw BeagleImageDownloaderException(
-        statusCode: errorStatusCode, url: imageNotFoundUrl);
+  when(() => beagle.imageDownloader.downloadImage(imageNotFoundUrl)).thenAnswer((invocation) {
+    throw BeagleImageDownloaderException(statusCode: errorStatusCode, url: imageNotFoundUrl);
   });
 
   Widget createWidget({
@@ -136,14 +129,12 @@ void main() {
     final localImage = createLocalWidget();
 
     group('When I set a valid path', () {
-      testWidgets('Then it should have a Image widget child',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a Image widget child', (WidgetTester tester) async {
         await tester.pumpWidget(localImage);
         expect(find.byType(Image), findsOneWidget);
       });
 
-      testWidgets('Then it should present the correct local image',
-          (WidgetTester tester) async {
+      testWidgets('Then it should present the correct local image', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(localImage);
           await precacheImageForTest(tester);
@@ -157,26 +148,21 @@ void main() {
     });
 
     group('When I set an invalid path', () {
-      testWidgets('Then it should render an empty container',
-          (WidgetTester tester) async {
-        await tester
-            .pumpWidget(createLocalWidget(placeholder: invalidPlaceholder));
+      testWidgets('Then it should render an empty container', (WidgetTester tester) async {
+        await tester.pumpWidget(createLocalWidget(placeholder: invalidPlaceholder));
         expect(find.byType(Container), findsOneWidget);
       });
     });
 
     group('When I set mode to ImageContentMode.CENTER', () {
-      testWidgets('Then the widget should have BoxFit.none',
-          (WidgetTester tester) async {
-        await tester
-            .pumpWidget(createLocalWidget(mode: ImageContentMode.CENTER));
+      testWidgets('Then the widget should have BoxFit.none', (WidgetTester tester) async {
+        await tester.pumpWidget(createLocalWidget(mode: ImageContentMode.CENTER));
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.none);
       });
     });
 
     group('When I set mode to ImageContentMode.CENTER_CROP', () {
-      testWidgets('Then the widget should have BoxFit.cover',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.cover', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.CENTER_CROP,
         ));
@@ -185,8 +171,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_CENTER', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_CENTER,
         ));
@@ -195,8 +180,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_XY', () {
-      testWidgets('Then the widget should have BoxFit.fill',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.fill', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_XY,
         ));
@@ -205,8 +189,7 @@ void main() {
     });
 
     group('When I do not set ImageContentMode', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget());
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
@@ -215,14 +198,12 @@ void main() {
 
   group('Given a BeagleImage with a RemoteImagePath', () {
     group('When the widget is rendered', () {
-      testWidgets('Then it should have a Image widget child',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a Image widget child', (WidgetTester tester) async {
         await tester.pumpWidget(createRemoteWidget());
         expect(find.byType(Image), findsOneWidget);
       });
 
-      testWidgets('Then it should present the correct remote image',
-          (WidgetTester tester) async {
+      testWidgets('Then it should present the correct remote image', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget());
           await precacheImageForTest(tester);
@@ -236,8 +217,7 @@ void main() {
     });
 
     group('When remote image url is not found', () {
-      testWidgets('Then it should present image placeholder',
-          (WidgetTester tester) async {
+      testWidgets('Then it should present image placeholder', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(url: imageNotFoundUrl));
           await precacheImageForTest(tester);
@@ -251,17 +231,14 @@ void main() {
     });
 
     group('When remote image url is not found and placeholder is invalid', () {
-      testWidgets('Then it should render an empty container',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(createRemoteWidget(
-            url: imageNotFoundUrl, placeholder: invalidPlaceholder));
+      testWidgets('Then it should render an empty container', (WidgetTester tester) async {
+        await tester.pumpWidget(createRemoteWidget(url: imageNotFoundUrl, placeholder: invalidPlaceholder));
         expect(find.byType(Container), findsOneWidget);
       });
     });
 
     group('When I set mode to ImageContentMode.CENTER', () {
-      testWidgets('Then the widget should have BoxFit.none',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.none', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(
             createRemoteWidget(mode: ImageContentMode.CENTER),
@@ -274,8 +251,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.CENTER_CROP', () {
-      testWidgets('Then the widget should have BoxFit.cover',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.cover', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(
             mode: ImageContentMode.CENTER_CROP,
@@ -287,8 +263,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_CENTER', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(
             mode: ImageContentMode.FIT_CENTER,
@@ -300,8 +275,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_XY', () {
-      testWidgets('Then the widget should have BoxFit.fill',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.fill', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(
             mode: ImageContentMode.FIT_XY,
@@ -313,8 +287,7 @@ void main() {
     });
 
     group('When I do not set ImageContentMode', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget());
           await precacheImageForTest(tester);

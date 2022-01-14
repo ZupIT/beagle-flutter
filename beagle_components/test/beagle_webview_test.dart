@@ -16,7 +16,6 @@
 
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -38,19 +37,16 @@ void main() {
 
   group('Given a BeagleWebView', () {
     group('When the component is rendered', () {
-      testWidgets('Then it should have a WebView child widget',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a WebView child widget', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
         expect(find.byType(WebView), findsOneWidget);
       });
     });
 
     group('When I pass an URL', () {
-      testWidgets('Then it should load the correct initial URL',
-          (WidgetTester tester) async {
+      testWidgets('Then it should load the correct initial URL', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-        expect(tester.widget<WebView>(find.byType(WebView)).initialUrl,
-            defaultUrl);
+        expect(tester.widget<WebView>(find.byType(WebView)).initialUrl, defaultUrl);
       });
     });
   });

@@ -47,48 +47,60 @@ class BeagleService {
   BeagleService({
     /// URL to the backend providing the views (JSON) for Beagle.
     required this.baseUrl,
+
     /// The map of components to be used when rendering a view. The key must be the
     /// `_beagleComponent_` identifier and the value must be a ComponentBuilder, which is a function
     /// that transforms a BeagleUIElement into a Widget. The key must always start with `beagle:` or
     /// `custom:`.
-    required Map<String, ComponentBuilder Function ()> components,
+    required Map<String, ComponentBuilder Function()> components,
+
     /// todo documentation
     UrlBuilder? urlBuilder,
+
     /// todo documentation
     BeagleImageDownloader? imageDownloader,
+
     /// todo documentation
     this.logger = const DefaultLogger(),
+
     /// todo documentation
     this.analyticsProvider,
+
     /// Custom client to make HTTP requests. You can use this to implement your own HTTP client,
     /// calculating your own headers, cookies, response transformation, etc. The client provided
     /// here must implement the HttpClient interface. By default, the DefaultHttpClient will be
     /// used.
     this.httpClient = const DefaultHttpClient(),
+
     /// todo documentation
     ViewClient? viewClient,
+
     /// The map of custom actions. The key must be the `_beagleAction_` identifier and the value
     /// must be the action handler. The key must always start with `beagle:` or `custom:`.
     Map<String, ActionHandler>? actions,
+
     /// Sets the default navigation controller.
     NavigationController? defaultNavigationController,
+
     /// Controls the behavior of the navigator when handling events like loading, error and success.
     this.navigationControllers = const {},
+
     /// todo documentation
     this.operations = const {},
+
     /// todo documentation
     this.environment = BeagleEnvironment.debug,
+
     /// Enables or disables the automatic styling of all components according to the "style" property. Be aware that
     /// setting this to false will break most default Beagle components. Set this to false if you need to create your
     /// own layout engine.
     this.enableStyles = true,
-}) :
-    urlBuilder = urlBuilder ?? UrlBuilder(baseUrl),
-    components = _toLowercaseKeys(components),
-    actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})})
-  {
+  })  : urlBuilder = urlBuilder ?? UrlBuilder(baseUrl),
+        components = _toLowercaseKeys(components),
+        actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})}) {
     this.imageDownloader = imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
-    this.viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: this.urlBuilder);
+    this.viewClient =
+        viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: this.urlBuilder);
     this.defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
     js = BeagleJS(this);
     globalContext = GlobalContextJS(js.engine);

@@ -33,7 +33,7 @@ abstract class BeagleNavigator {
   /// previous stack. Throws an error if there's only one navigation stack.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  void popStack();
+  void popStack([NavigationContext? navigationContext]);
 
   /// Navigates to [route] by pushing it to the navigation history of the current navigation stack.
   ///
@@ -44,7 +44,7 @@ abstract class BeagleNavigator {
   /// also pops the current stack. If only one stack and one view exist, it will throw an error.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  void popView();
+  void popView([NavigationContext? navigationContext]);
 
   /// Removes every navigation entry in the current stack until the route identified by
   /// [routeIdentifier] is found. A route is identified by a string if its url equals to the string
@@ -54,7 +54,7 @@ abstract class BeagleNavigator {
   /// the route isn't found in the current stack, an error is thrown.
   ///
   /// Returns a Future that resolves as soon as the navigation completes.
-  void popToView(String routeIdentifier);
+  void popToView(String routeIdentifier, [NavigationContext? navigationContext]);
 
   /// Removes the current navigation stack and navigates to the a new stack where the first [route]
   /// is the one passed as parameter.

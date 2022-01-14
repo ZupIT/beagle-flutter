@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/bridge_impl/handlers/action.dart';
+import 'package:beagle/src/bridge_impl/local_contexts_manager_js.dart';
 
 import 'beagle_js_engine.dart';
 import 'renderer_js.dart';
@@ -28,10 +29,12 @@ class BeagleViewJS implements BeagleView {
     _id = _jsEngine.createBeagleView();
     BeagleViewJS.views[_id] = this;
     _renderer = RendererJS(_jsEngine, _id);
+    _localContextsManager = LocalContextsManagerJS(_jsEngine, _id);
   }
 
   late String _id;
   late Renderer _renderer;
+  late LocalContextsManager _localContextsManager;
   final BeagleNavigator _parentNavigator;
   final BeagleJSEngine _jsEngine;
   static Map<String, BeagleViewJS> views = {};
@@ -44,6 +47,9 @@ class BeagleViewJS implements BeagleView {
 
   @override
   BeagleNavigator getNavigator() => _parentNavigator;
+
+  @override
+  LocalContextsManager getLocalContexts() => _localContextsManager;
 
   @override
   Renderer getRenderer() => _renderer;

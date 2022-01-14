@@ -16,7 +16,6 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -34,7 +33,20 @@ class _RootNavigatorMock extends Mock implements BeagleNavigator {}
 
 class _LoggerMock extends Mock implements BeagleLogger {}
 
-class _BeagleViewMock extends Mock implements BeagleView {}
+class LocalContextsManagerMock extends Mock implements LocalContextsManager {}
+
+class MockFunction extends Mock {
+  void fn();
+}
+
+class _BeagleViewMock extends Mock implements BeagleView {
+  final manager = LocalContextsManagerMock();
+
+  @override
+  LocalContextsManager getLocalContexts() {
+    return manager;
+  }
+}
 
 class _BeagleServiceMock extends Mock implements BeagleService {
   @override
@@ -45,7 +57,7 @@ class _BeagleServiceMock extends Mock implements BeagleService {
 
 class _NavigatorObserverMock extends Mock implements NavigatorObserver {}
 
-class _BeagleWidgetMock extends Mock implements BeagleWidget {
+class BeagleWidgetMock extends Mock implements BeagleWidget {
   @override
   final BeagleView view = _BeagleViewMock();
 
@@ -96,7 +108,7 @@ class NavigationMocks extends Mock implements _NavigationMocks {
         }));
 
     when(() => beagle.createView(any())).thenAnswer((_) {
-      lastWidget = _BeagleWidgetMock();
+      lastWidget = BeagleWidgetMock();
       return BeagleViewWidget(lastWidget.view, lastWidget);
     });
   }
@@ -170,10 +182,17 @@ StackNavigator createStackNavigator({
 
   return StackNavigator(
     beagle: mocks.beagle,
-    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:container'})),
+    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:container'}), null),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
     rootNavigator: mocks.rootNavigator,
     initialPages: initialNumberOfPages == 0 ? [] : pages,
   );
+}
+
+void mockHistoryLocalContextsManager(StackNavigator navigator) {
+  navigator.getHistory().forEach((history) {
+    history.viewLocalContextsManager = LocalContextsManagerMock();
+    history.render = MockFunction().fn;
+  });
 }

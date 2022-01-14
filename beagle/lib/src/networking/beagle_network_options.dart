@@ -15,9 +15,7 @@
  */
 
 import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
 
 class BeagleNetworkOptions {
   BeagleNetworkOptions({this.method, this.headers});

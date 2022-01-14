@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// A web view widget for showing html content.

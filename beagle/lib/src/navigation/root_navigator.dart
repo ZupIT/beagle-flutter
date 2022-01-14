@@ -116,23 +116,24 @@ class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implem
   }
 
   @override
-  void popStack() {
+  void popStack([NavigationContext? navigationContext]) {
     if (_history.length == 1) {
       // pops the whole RootNavigator from its parent navigator
       return Navigator.of(context).pop();
     }
     _thisNavigatorKey.currentState!.pop();
     _history.removeLast();
+    _history.last.setNavigationContext(navigationContext);
   }
 
   @override
-  void popToView(String routeIdentifier) {
-    _history.last.popToView(routeIdentifier);
+  void popToView(String routeIdentifier, [NavigationContext? navigationContext]) {
+    _history.last.popToView(routeIdentifier, navigationContext);
   }
 
   @override
-  void popView() {
-    _history.last.popView();
+  void popView([NavigationContext? navigationContext]) {
+    _history.last.popView(navigationContext);
   }
 
   @override

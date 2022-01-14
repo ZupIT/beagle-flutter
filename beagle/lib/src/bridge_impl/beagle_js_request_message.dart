@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
 
 /// Encapsulates a Beagle javascript HTTP request message.
 class BeagleJSRequestMessage {

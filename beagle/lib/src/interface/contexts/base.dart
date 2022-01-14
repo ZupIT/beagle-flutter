@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-import 'package:beagle/beagle.dart';
-import 'package:beagle/src/model/beagle_accessibility.dart';
-import 'package:flutter/widgets.dart';
+abstract class BaseContext {
+  T get<T>([String path]);
 
-Widget applyAccessibility(Widget origin, BeagleAccessibility? accessibility) {
-  if (accessibility == null) {
-    return origin;
-  }
+  void set<T>(T value, [String path]);
 
-  return _apply(origin, accessibility);
-}
-
-Widget _apply(Widget origin, BeagleAccessibility accessibility) {
-  if (accessibility.accessible) {
-    return Semantics(
-        child: origin, excludeSemantics: true, header: accessibility.isHeader, label: accessibility.accessibilityLabel);
-  } else {
-    return ExcludeSemantics(child: origin);
-  }
+  void clear([String path]);
 }

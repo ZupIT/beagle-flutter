@@ -17,7 +17,6 @@
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class BeagleScreen extends StatefulWidget {
   const BeagleScreen({
@@ -41,15 +40,16 @@ class _BeagleScreen extends State<BeagleScreen> with BeagleConsumer {
   @override
   Widget buildBeagleWidget(BuildContext context) {
     final theme = BeagleThemeProvider.of(context)?.theme;
-    final navigationBarStyle = widget.navigationBar?.styleId == null
-        ? null
-        : theme?.navigationBarStyle(widget.navigationBar!.styleId!);
+    final navigationBarStyle =
+        widget.navigationBar?.styleId == null ? null : theme?.navigationBarStyle(widget.navigationBar!.styleId!);
     final appBar = widget.navigationBar != null
         ? AppBar(
             leading: navigationBarStyle?.leading,
             automaticallyImplyLeading: widget.navigationBar?.showBackButton == true,
             title: Text(widget.navigationBar?.title ?? ''),
-            actions: widget.navigationBar?.navigationBarItems?.map((e) => ItemComponent(item: e)).toList(growable: false) ?? [],
+            actions:
+                widget.navigationBar?.navigationBarItems?.map((e) => ItemComponent(item: e)).toList(growable: false) ??
+                    [],
             elevation: navigationBarStyle?.elevation,
             shadowColor: navigationBarStyle?.shadowColor,
             backgroundColor: navigationBarStyle?.backgroundColor,
@@ -154,11 +154,11 @@ class ItemComponent extends StatelessWidget {
     return IconButton(
       onPressed: item.action as void Function()? ?? () {},
       icon: item.image.isEmpty
-        ? SizedBox.shrink()
-        : SizedBox.square(
-            dimension: size,
-            child: BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER),
-          ),
+          ? SizedBox.shrink()
+          : SizedBox.square(
+              dimension: size,
+              child: BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER),
+            ),
       tooltip: item.text,
     );
   }

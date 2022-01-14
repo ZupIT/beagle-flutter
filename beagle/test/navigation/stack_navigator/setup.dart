@@ -38,7 +38,7 @@ Future<_SetupResult> setupStackNavigatorTests({
 }) async {
   final navigator = StackNavigator(
     beagle: mocks.beagle,
-    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:text'})),
+    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:text'}), null),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
     rootNavigator: mocks.rootNavigator,

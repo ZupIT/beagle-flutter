@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 /// Defines a container that makes its content scrollable
 class BeagleScrollView extends StatelessWidget {

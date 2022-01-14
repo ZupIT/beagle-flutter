@@ -18,8 +18,6 @@ import 'dart:async';
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'internal/beagle_refresh_indicator.dart';
 
 /// Defines a pull down to refresh for its child

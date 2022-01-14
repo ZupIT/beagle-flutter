@@ -16,7 +16,6 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_js/js_eval_result.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _BuildContextMock extends Mock implements BuildContext {}

@@ -15,8 +15,8 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/navigation/stack_navigator_history.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mocktail/mocktail.dart';
 
 const String CUSTOM_CONTROLLER_NAME = 'myCustomController';
@@ -65,7 +65,7 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   NavigationController get controller => navigator.controller;
 
   @override
-  List<String> getHistory() {
+  List<StackNavigatorHistory> getHistory() {
     return navigator.getHistory();
   }
 
@@ -76,13 +76,13 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   BeagleRoute get initialRoute => navigator.initialRoute;
 
   @override
-  void popToView(String routeIdentifier) {
-    navigator.popToView(routeIdentifier);
+  void popToView(String routeIdentifier, [NavigationContext? navigationContext]) {
+    navigator.popToView(routeIdentifier, navigationContext);
   }
 
   @override
-  void popView() {
-    navigator.popView();
+  void popView([NavigationContext? navigationContext]) {
+    navigator.popView(navigationContext);
   }
 
   @override
@@ -126,6 +126,10 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
 
   @override
   BeagleService get beagle => navigator.beagle;
+
+  @override
+  void setNavigationContext(NavigationContext? navigationContext,
+      [LocalContextsManager? manager, bool render = true]) {}
 }
 
 class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {
@@ -142,11 +146,11 @@ class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {
 
   RootNavigatorMocks([int numberOfInitialPages = 0]) {
     when(() => beagle.createStackNavigator(
-      controller: any(named: 'controller'),
-      initialRoute: any(named: 'initialRoute'),
-      rootNavigator: any(named: 'rootNavigator'),
-      screenBuilder: any(named: 'screenBuilder'),
-    )).thenAnswer((_) => _newStackNavigator());
+          controller: any(named: 'controller'),
+          initialRoute: any(named: 'initialRoute'),
+          rootNavigator: any(named: 'rootNavigator'),
+          screenBuilder: any(named: 'screenBuilder'),
+        )).thenAnswer((_) => _newStackNavigator());
 
     for (int i = 0; i < numberOfInitialPages; i++) {
       initialPages.add(_newStackNavigator());

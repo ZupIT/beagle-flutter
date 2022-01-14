@@ -24,6 +24,9 @@ abstract class BeagleView {
   /// when called, undoes the subscription (removes the listener).
   RemoveListener onChange(ViewChangeListener listener);
 
+  /// Gets the local context manager of the current BeagleView, which manage each local context.
+  LocalContextsManager getLocalContexts();
+
   /// Gets the renderer of the current BeagleView. Can be used to control the rendering directly.
   Renderer getRenderer();
 

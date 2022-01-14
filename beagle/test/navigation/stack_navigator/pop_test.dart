@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:async';
 import 'package:beagle/beagle.dart';
 import '../../test-utils/mocktail.dart';
 import 'package:flutter/widgets.dart';
@@ -30,10 +29,7 @@ void main() {
     late NavigationMocks mocks;
     late StackNavigator navigator;
 
-    Future<StackNavigatorExpectations> _setup(
-      WidgetTester tester,
-      int numberOfInitialPages,
-    ) async {
+    Future<StackNavigatorExpectations> _setup(WidgetTester tester, int numberOfInitialPages) async {
       mocks = NavigationMocks(tester, numberOfInitialPages);
       final result = await setupStackNavigatorTests(tester: tester, mocks: mocks, expectedRoute: RemoteView(''));
       navigator = result.navigator;
@@ -50,6 +46,22 @@ void main() {
         expectations.shouldPopRoute();
         expectations.shouldRenderInitialPage(1);
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            'Then it should pop the last page and render the previous, setting the navigation context on a local context and rendering',
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 3);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popView(navigationContext);
+          await tester.pump();
+
+          expectations.shouldUpdateHistoryByRemovingRoute();
+          expectations.shouldPopRouteAndSetNavigationContext(navigationContext);
+          expectations.shouldRenderInitialPage(1);
+        });
+      });
     });
 
     group('When a view is popped from a StackNavigator with 1 page', () {
@@ -59,6 +71,20 @@ void main() {
         await tester.pump();
 
         expectations.shouldPopStack();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            'Then it should pop the rootNavigator\'s stack, setting the navigation context on a local context and rendering',
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 1);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popView(navigationContext);
+          await tester.pump();
+
+          expectations.shouldPopStackWithNavigationContext(navigationContext);
+        });
       });
     });
 
@@ -82,6 +108,22 @@ void main() {
         expectations.shouldPopRoute(2);
         expectations.shouldRenderInitialPage(1);
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            "Then it should pop pages until the one we're looking for is found, setting the navigation context on a local context and rendering",
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 4);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popToView(createPageName(1), navigationContext);
+          await tester.pump();
+
+          expectations.shouldUpdateHistoryByRemovingRoute(2);
+          expectations.shouldPopRouteAndSetNavigationContext(navigationContext, 2);
+          expectations.shouldRenderInitialPage(1);
+        });
+      });
     });
 
     group("When a popToView is called for view that doesn't exist", () {
@@ -94,6 +136,23 @@ void main() {
         expectations.shouldNotUpdateHistory();
         expectations.shouldNotPopRoute();
         expectations.shouldNotChangeRenderedPage();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            'Then it should not navigate and log error, and not set the navigation context on a local context and not rendering',
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 4);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popToView('/fake_view', navigationContext);
+          await tester.pump();
+
+          expectations.shouldLogError();
+          expectations.shouldNotUpdateHistory();
+          expectations.shouldNotPopRouteAndNotSetContext();
+          expectations.shouldNotChangeRenderedPage();
+        });
       });
     });
   });

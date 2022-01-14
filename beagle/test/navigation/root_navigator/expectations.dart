@@ -121,15 +121,21 @@ class RootNavigatorExpectations {
     expect(find.byWidget(mocks.initialPages.elementAt(mocks.initialPages.length - 2)), findsOneWidget);
   }
 
+  void shouldRenderPreviousStackNavigatorAndSetNavigationContextOnTheLastItem(NavigationContext navigationContext) {
+    final widgetAtPosition = mocks.initialPages.elementAt(mocks.initialPages.length - 2);
+    expect(find.byWidget(widgetAtPosition), findsOneWidget);
+    verify(() => widgetAtPosition.setNavigationContext(navigationContext)).called(1);
+  }
+
   void shouldPushViewToCurrentStack(BeagleRoute route) {
     verify(() => mocks.initialPages.last.pushView(route, mocks.lastStackNavigator.buildContext)).called(1);
   }
 
-  void shouldPopViewFromCurrentStack() {
-    verify(() => mocks.initialPages.last.popView()).called(1);
+  void shouldPopViewFromCurrentStack([NavigationContext? navigationContext]) {
+    verify(() => mocks.initialPages.last.popView(navigationContext)).called(1);
   }
 
-  void shouldPopToViewOfCurrentStack(String viewName) {
-    verify(() => mocks.initialPages.last.popToView(viewName)).called(1);
+  void shouldPopToViewOfCurrentStack(String viewName, [NavigationContext? navigationContext]) {
+    verify(() => mocks.initialPages.last.popToView(viewName, navigationContext)).called(1);
   }
 }

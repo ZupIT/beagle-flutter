@@ -15,9 +15,7 @@
  */
 
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Widget createWidget({
@@ -57,19 +55,15 @@ void main() {
     });
 
     group('When the widget is created with a horizontal scroll', () {
-      testWidgets('Then the list view orientation should be horizontal',
-          (WidgetTester tester) async {
-        await tester
-            .pumpWidget(createWidget(scrollDirection: ScrollAxis.HORIZONTAL));
-        final ListView listView =
-            tester.widget<ListView>(find.byType(ListView));
+      testWidgets('Then the list view orientation should be horizontal', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(scrollDirection: ScrollAxis.HORIZONTAL));
+        final ListView listView = tester.widget<ListView>(find.byType(ListView));
         expect(listView.scrollDirection == Axis.horizontal, isTrue);
       });
     });
 
     group('When the widget is created with a hidden scroll bar', () {
-      testWidgets('Then there should be a ListView, but no ScrollBar',
-          (WidgetTester tester) async {
+      testWidgets('Then there should be a ListView, but no ScrollBar', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(scrollBarEnabled: false));
         expect(find.byType(ListView), findsOneWidget);
         expect(find.byType(Scrollbar), findsNothing);

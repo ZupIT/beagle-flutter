@@ -15,11 +15,13 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/action/beagle_confirm.dart';
 
 BeagleRoute _getRoute(BeagleAction action) {
-  final json = action.getAttributeValue("route");
-  return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
+  final routeJson = action.getAttributeValue("route");
+  final navigationContextJson = action.getAttributeValue("navigationContext");
+  return RemoteView.isRemoteView(routeJson)
+      ? RemoteView.fromJson(routeJson, navigationContextJson)
+      : LocalView.fromJson(routeJson, navigationContextJson);
 }
 
 final Map<String, ActionHandler> defaultActions = {
@@ -55,16 +57,17 @@ final Map<String, ActionHandler> defaultActions = {
     view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({required action, required element, required view, required context}) {
-    view.getNavigator().popView();
+    view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
-    view.getNavigator().popToView(action.getAttributeValue("route"));
+    view.getNavigator().popToView(
+        action.getAttributeValue("route"), NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
     view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:popStack': ({required action, required element, required view, required context}) {
-    view.getNavigator().popStack();
+    view.getNavigator().popStack(NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
   },
   'beagle:resetStack': ({required action, required element, required view, required context}) {
     view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId"));

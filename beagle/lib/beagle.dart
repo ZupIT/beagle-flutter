@@ -38,17 +38,19 @@ export 'package:beagle/src/interface/beagle_navigator.dart';
 export 'package:beagle/src/interface/beagle_view.dart';
 export 'package:beagle/src/interface/global_context.dart';
 export 'package:beagle/src/interface/http_client.dart';
+export 'package:beagle/src/interface/local_context.dart';
+export 'package:beagle/src/interface/local_contexts_manager.dart';
 export 'package:beagle/src/interface/navigation_controller.dart';
 export 'package:beagle/src/interface/renderer.dart';
 export 'package:beagle/src/interface/types.dart';
 export 'package:beagle/src/interface/view_client.dart';
-
 export 'package:beagle/src/interface/beagle_logger.dart';
+export 'package:beagle/src/interface/contexts/navigation.dart';
 
 export 'package:beagle/src/model/beagle_action.dart';
 export 'package:beagle/src/model/beagle_environment.dart';
 export 'package:beagle/src/model/beagle_style.dart';
-export 'package:beagle/src/model/beagle_acessibility.dart';
+export 'package:beagle/src/model/beagle_accessibility.dart';
 export 'package:beagle/src/model/beagle_ui_element.dart';
 export 'package:beagle/src/model/response.dart';
 export 'package:beagle/src/model/route.dart';
