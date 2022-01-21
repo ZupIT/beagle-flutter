@@ -45,7 +45,6 @@ class _LoadingBuilder extends ComponentBuilder {
   Widget buildForBeagle(_, __, ___) => Text('Loading...');
 }
 
-
 class _ErrorBuilder extends ComponentBuilder {
   @override
   Widget buildForBeagle(_, __, ___) => Text('Error!');
@@ -96,7 +95,6 @@ class _DynamicListBuilder extends ComponentBuilder {
 
   @override
   Widget buildForBeagle(element, children, view) {
-    element;
     return BeagleDynamicList(
       onInit: element.getAttributeValue('onInit'),
       direction: EnumUtils.fromString(BeagleDynamicListDirection.values, element.getAttributeValue('direction')),

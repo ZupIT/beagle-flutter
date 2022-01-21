@@ -62,12 +62,13 @@ class RendererJS implements Renderer {
     final templatesJs = jsonEncode(templateManager.toJson());
     final modeJs = _getJsTreeUpdateModeName(mode ?? TreeUpdateMode.replace);
 
-    // ignore: prefer_function_declarations_over_variables
-    final evaluateRenderFn = (String functionName, String arguments) =>
-        json.decode(_jsEngine.evaluateJsCode("$globalRender.$functionName($arguments)")?.stringResult ?? "null");
+    dynamic evaluateRenderFn(String functionName, String arguments) {
+      return json.decode(_jsEngine.evaluateJsCode("$globalRender.$functionName($arguments)")?.stringResult ?? "null");
+    }
 
-    // ignore: prefer_function_declarations_over_variables
-    final encodeContexts = (List<BeagleDataContext> contexts) => contexts.map(((i) => i.toJson())).toList();
+    List<Map<String, dynamic>> encodeContexts(List<BeagleDataContext> contexts) {
+      return contexts.map(((i) => i.toJson())).toList();
+    }
 
     if (componentManager != null) {
       final rawHierarchy = json

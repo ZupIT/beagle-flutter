@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:core';
 
@@ -98,8 +100,17 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
 
   @override
   void didUpdateWidget(covariant BeagleDynamicList oldWidget) {
-    super.didUpdateWidget(oldWidget);
     _tryExecuteOnScrollEndActions();
+
+    final oldDataSource = json.encode(oldWidget.dataSource);
+    final newDataSource = json.encode(widget.dataSource);
+    if (oldDataSource != newDataSource && mounted) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        _doTemplateRender();
+      });
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -117,36 +128,35 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
   }
 
   @override
-  Widget build(BuildContext context) => FlexibleListView(
-    controller: _scrollController,
-    useScrollbar: widget.isScrollIndicatorVisible ?? false,
-    scrollDirection: _getScrollDirection(),
-    itemBuilder: (buildContext, index) {
-      return widget.children![index];
-    },
-    itemCount: widget.children?.length ?? 0,
-    spanCount: widget.spanCount ?? 1,
-  );
+  Widget build(BuildContext context) {
+    return FlexibleListView(
+      controller: _scrollController,
+      useScrollbar: widget.isScrollIndicatorVisible ?? false,
+      scrollDirection: _getScrollDirection(),
+      itemBuilder: (buildContext, index) => widget.children![index],
+      itemCount: widget.children?.length ?? 0,
+      spanCount: widget.spanCount ?? 1,
+    );
+  }
 
   void _doTemplateRender() {
-    if (_isChildrenNotNullAndNotEmpty() || _isDataSourceNullOrEmpty()) {
-      return;
-    }
+    if (_isDataSourceNullOrEmpty()) return;
 
     final templateManager = _getTemplateManager();
     final contexts = _getListBeagleDataContext();
+    final renderer = widget.view.getRenderer();
 
-    widget.view.getRenderer().doTemplateRender(
-        templateManager: templateManager,
-        anchor: widget.beagleId,
-        contexts: contexts,
-        componentManager: _iterateComponent,
-        mode: TreeUpdateMode.replace);
+    renderer.doTemplateRender(
+      templateManager: templateManager,
+      anchor: widget.beagleId,
+      contexts: contexts,
+      componentManager: _iterateComponent,
+      mode: TreeUpdateMode.replace,
+    );
   }
 
-  TemplateManagerItem? _getDefaultTemplate() {
-    return widget.templates.firstWhereOrNull((element) => element.condition == null || element.condition!.isEmpty);
-  }
+  TemplateManagerItem? _getDefaultTemplate() =>
+      widget.templates.firstWhereOrNull((element) => element.condition == null || element.condition!.isEmpty);
 
   List<TemplateManagerItem> _getTemplatesWithoutDefault(TemplateManagerItem? templateDefault) {
     var templates = widget.templates;
@@ -174,28 +184,25 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
         .toList();
   }
 
-  String _getIterationKey(int index) => widget.dataSourceKey == null
-      ? '$index'
-      : '${widget.dataSource[index][widget.dataSourceKey]}';
+  String _getIterationKey(int index) =>
+      widget.dataSourceKey == null ? '$index' : '${widget.dataSource[index][widget.dataSourceKey]}';
 
-  String _getBaseId(String componentId, int componentIndex, String suffix) {
-    return componentId.isNotEmpty ? "$componentId$suffix" : "${widget.beagleId}:$componentIndex";
-  }
+  String _getBaseId(String componentId, int componentIndex, String suffix) =>
+      componentId.isNotEmpty ? "$componentId$suffix" : "${widget.beagleId}:$componentIndex";
 
   BeagleUIElement _iterateComponent(BeagleUIElement element, int indexElement) {
     element.forEach((node, indexComponent) => _changeIdAndAddSuffixIfNecessary(node, indexElement, indexComponent));
     return element;
   }
 
+  bool _shouldAddSuffix(String beagleComponent) =>
+      ['beagle:listview', 'beagle:gridview'].contains(beagleComponent.toLowerCase());
+
   void _changeIdAndAddSuffixIfNecessary(Map<String, dynamic> component, int indexElement, int indexComponent) {
     final iterationKey = _getIterationKey(indexElement);
     final suffix = widget.suffix ?? '';
-    final baseId = _getBaseId(
-      component['id'] ?? '',
-      indexComponent,
-      suffix,
-    );
-    final shouldAddSuffix = ['beagle:listview', 'beagle:gridview'].contains(component['_beagleComponent_'].toLowerCase());
+    final baseId = _getBaseId(component['id'] ?? '', indexComponent, suffix);
+    final shouldAddSuffix = _shouldAddSuffix(component['_beagleComponent_']);
 
     component['id'] = '$baseId:$iterationKey';
 
@@ -204,13 +211,9 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
     }
   }
 
-  bool _isChildrenNotNullAndNotEmpty() {
-    return widget.children != null && (widget.children?.isNotEmpty ?? false);
-  }
+  bool _isChildrenNotNullAndNotEmpty() => widget.children != null && (widget.children?.isNotEmpty ?? false);
 
-  bool _isDataSourceNullOrEmpty() {
-    return widget.dataSource.isEmpty;
-  }
+  bool _isDataSourceNullOrEmpty() => widget.dataSource.isEmpty;
 
   void _checkIfNeedToCallScrollEndActions() {
     if (!(_isExecutedActions ?? false) && _getPercentageScrolled() >= (widget.scrollEndThreshold ?? 0)) {
@@ -230,26 +233,16 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
   }
 
   void _addListenerToScrollController() {
-    if (_hasScrollEnd()) {
-      _scrollController?.addListener(() {
-        _checkIfNeedToCallScrollEndActions();
-      });
-    }
+    if (_hasScrollEnd()) _scrollController?.addListener(() => _checkIfNeedToCallScrollEndActions());
   }
 
   void _tryExecuteOnScrollEndActions() {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      if (_hasScrollEnd() && _isChildrenNotNullAndNotEmpty()) {
-        _checkIfNeedToCallScrollEndActions();
-      }
+      if (_hasScrollEnd() && _isChildrenNotNullAndNotEmpty()) _checkIfNeedToCallScrollEndActions();
     });
   }
 
-  bool _hasScrollEnd() {
-    return widget.scrollEndThreshold != null && widget.onScrollEnd != null;
-  }
+  bool _hasScrollEnd() => widget.scrollEndThreshold != null && widget.onScrollEnd != null;
 
-  Axis _getScrollDirection() {
-    return widget.direction?.axis ?? Axis.vertical;
-  }
+  Axis _getScrollDirection() => widget.direction?.axis ?? Axis.vertical;
 }
