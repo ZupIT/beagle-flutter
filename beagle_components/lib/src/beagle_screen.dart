@@ -101,18 +101,18 @@ class NavigationBarItem {
   NavigationBarItem({
     required this.text,
     required this.image,
-    this.action,
+    this.onPress,
   });
 
   final String text;
   final String image;
-  final Function? action;
+  final Function? onPress;
 
   factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
     return NavigationBarItem(
       text: json['text'] ?? '',
       image: json['image'] ?? '',
-      action: json['action'],
+      onPress: json['onPress'],
     );
   }
 }
@@ -152,7 +152,7 @@ class ItemComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: item.action as void Function()? ?? () {},
+      onPressed: item.onPress as void Function()? ?? () {},
       icon: item.image.isEmpty
           ? SizedBox.shrink()
           : SizedBox.square(

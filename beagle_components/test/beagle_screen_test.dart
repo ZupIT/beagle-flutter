@@ -152,7 +152,7 @@ void main() {
 
     group('When it is created with a item in navigationBar', () {
       testWidgets('Then it should render an ItemComponent with the given properties', (WidgetTester tester) async {
-        final item = NavigationBarItem(text: 'Item', image: 'images/beagle_dog.png', action: () {});
+        final item = NavigationBarItem(text: 'Item', image: 'images/beagle_dog.png', onPress: () {});
         final navigationBar = BeagleNavigationBar(
           title: 'Title',
           showBackButton: true,
