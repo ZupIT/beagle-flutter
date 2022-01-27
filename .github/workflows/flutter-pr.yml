@@ -40,6 +40,5 @@ jobs:
                     restore-keys: ${{ runner.os }}-build-${{ env.pub-cache-key }}
             -   name: Run pr check
                 env:
-                    GITHUB_USER: ${{ secrets.GITHUB_USER  }}
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 run: bundle exec fastlane flutter pull_request_verification
