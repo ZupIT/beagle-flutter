@@ -47,7 +47,8 @@
     ".metadata",
     ".gitignore",
     ".gitkeep",
-    ".sed"
+    ".sed",
+    "Podfile.lock"
   ],
   "startDateLicense": 2020
 }
