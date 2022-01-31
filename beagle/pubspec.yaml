@@ -15,7 +15,7 @@
 
 name: beagle
 description: Beagle is an open source framework for multiplatform development using the concept of Server-Driven UI.
-version: 0.9.4-alpha
+version: 2.0.0-rc1
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle
 
 environment:
@@ -25,12 +25,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  #todo: replace with pubdev as soon as a new version with the corrections of this fork is published
-  flutter_js:
-    git: https://github.com/Tiagoperes/flutter_js.git
+  flutter_js: ^0.5.0+5
   http: ^0.13.3
   meta: ^1.7.0
   url_launcher: ^6.0.9
+  collection: ^1.15.0
 
 dev_dependencies:
   flutter_test:

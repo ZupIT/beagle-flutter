@@ -1,3 +1,6 @@
+## 2.0.0-rc1
+* Adds all missing components
+
 ## 0.9.4-alpha
 
 * Adds SimpleForm widget
