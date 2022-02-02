@@ -43,6 +43,7 @@ class BeagleDynamicList extends StatefulWidget {
     this.dataSourceKey,
     required this.view,
     required this.beagleId,
+    this.itemAspectRatio,
   }) : super(key: key);
 
   /// Optional function to run once the container is created
@@ -90,6 +91,10 @@ class BeagleDynamicList extends StatefulWidget {
   /// unique property in the data source to use as key for each element. The index will be used if not provided.
   final String? dataSourceKey;
 
+  /// the height of each item in a vertical grid view or the width in a horizontal grid view. If left unset, each
+  /// item will be a square.
+  final num? itemAspectRatio;
+
   @override
   _BeagleDynamicList createState() => _BeagleDynamicList();
 }
@@ -136,6 +141,7 @@ class _BeagleDynamicList extends State<BeagleDynamicList> with AfterLayoutMixin<
       itemBuilder: (buildContext, index) => widget.children![index],
       itemCount: widget.children?.length ?? 0,
       spanCount: widget.spanCount ?? 1,
+      itemAspectRatio: widget.itemAspectRatio,
     );
   }
 

@@ -30,6 +30,7 @@ class FlexibleListView extends StatefulWidget {
     /// if spanCount is greater than 1, it renders a grid instead of a list
     this.spanCount = 1,
     this.useScrollbar = false,
+    this.itemAspectRatio,
     Key? key
   }) : super(key: key);
 
@@ -39,6 +40,7 @@ class FlexibleListView extends StatefulWidget {
   final int itemCount;
   final bool useScrollbar;
   final int spanCount;
+  final num? itemAspectRatio;
 
   @override
   _FlexibleListView createState() => _FlexibleListView();
@@ -60,7 +62,10 @@ class _FlexibleListView extends State<FlexibleListView> with AfterLayoutMixin {
     scrollDirection: widget.scrollDirection,
     itemCount: widget.itemCount,
     shrinkWrap: !isFlex!,
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: widget.spanCount),
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: widget.spanCount,
+      childAspectRatio: widget.itemAspectRatio?.toDouble() ?? 1,
+    ),
   );
 
   Widget _buildListView() => ListView.builder(

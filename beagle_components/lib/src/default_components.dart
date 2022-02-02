@@ -111,6 +111,7 @@ class _DynamicListBuilder extends ComponentBuilder {
       beagleId: element.getId(),
       suffix: element.getAttributeValue('__suffix__'),
       dataSourceKey: element.getAttributeValue('key'),
+      itemAspectRatio: element.getAttributeValue('itemAspectRatio'),
     );
   }
 }

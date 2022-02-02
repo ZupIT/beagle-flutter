@@ -41,7 +41,9 @@ class GlobalContextJS implements GlobalContext {
   @override
   T get<T>([String? path]) {
     final args = path == null ? '' : "'$path'";
-    return _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.get($args)')?.rawResult;
+    final stringResult = _jsEngine
+      .evaluateJsCode('JSON.stringify(global.beagle.getService().globalContext.get($args) || null)')?.stringResult;
+    return stringResult == null ? null : json.decode(stringResult);
   }
 
   @override
