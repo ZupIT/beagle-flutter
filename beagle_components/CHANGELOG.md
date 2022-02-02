@@ -1,3 +1,6 @@
+## 2.0.0-rc2
+* Adds itemAspectRatio property to the grid view
+
 ## 2.0.0-rc1
 * Adds all missing components
 

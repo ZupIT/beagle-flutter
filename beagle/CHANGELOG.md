@@ -1,3 +1,6 @@
+## 2.0.0-rc2
+* Fixes beagleService.globalContext.get
+
 ## 2.0.0-rc1
 * Stable version compatible with the version 2.0.0 of Beagle.
 * Added every missing feature.
