@@ -1,3 +1,7 @@
+## 2.0.0-rc3
+* Fixes the action openNativeRoute
+* Allows exceptions during the execution of an action to be logged
+
 ## 2.0.0-rc2
 * Fixes beagleService.globalContext.get
 
