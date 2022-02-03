@@ -80,8 +80,8 @@ void main() {
             }
           }
         };
-        when(() => beagleJSEngineMock.evaluateJsCode('global.beagle.getService().globalContext.get()'))
-            .thenReturn(JsEvalResult(value.toString(), value));
+        when(() => beagleJSEngineMock.evaluateJsCode('JSON.stringify(global.beagle.getService().globalContext.get() || null)'))
+            .thenReturn(JsEvalResult(json.encode(value), null));
         // ignore: inference_failure_on_function_invocation
         final result = GlobalContextJS(beagleJSEngineMock).get();
         expect(result, value);
@@ -91,8 +91,8 @@ void main() {
     group('When I call get method for a specific path', () {
       test('Then it should get value in global context at specific path', () {
         const value = 'Flutter test';
-        when(() => beagleJSEngineMock.evaluateJsCode("global.beagle.getService().globalContext.get('order.cart.name')"))
-            .thenReturn(JsEvalResult(value, value));
+        when(() => beagleJSEngineMock.evaluateJsCode("JSON.stringify(global.beagle.getService().globalContext.get('order.cart.name') || null)"))
+            .thenReturn(JsEvalResult(json.encode(value), null));
         final result =
             // ignore: inference_failure_on_function_invocation
             GlobalContextJS(beagleJSEngineMock).get('order.cart.name');
