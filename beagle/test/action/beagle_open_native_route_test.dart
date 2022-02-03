@@ -44,7 +44,7 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         routes: {mockRoute: (context) => const Text('Test')},
         home: ElevatedButton(
-          onPressed: () => {mockOpenNativeRoute.navigate(_mockContext, mockRoute)},
+          onPressed: () => {mockOpenNativeRoute.navigate(_mockContext, mockRoute, {})},
           child: const SizedBox.shrink(),
         ),
         navigatorObservers: [mockObserver],

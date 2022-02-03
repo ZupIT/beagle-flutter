@@ -50,7 +50,12 @@ class BeagleJSEngineActionHandler implements BeagleJSEngineBaseHandlerWithListen
     final element = BeagleUIElement(message['element'] ?? {});
 
     for (ActionListener listener in (listenersMap[viewId] ?? [])) {
-      listener(action: action, view: view, element: element);
+      try {
+        listener(action: action, view: view, element: element);
+      } catch (err, st) {
+        print(err);
+        print(st);
+      }
     }
   }
 }

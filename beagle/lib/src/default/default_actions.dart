@@ -47,7 +47,11 @@ final Map<String, ActionHandler> defaultActions = {
   },
   // Native navigation
   'beagle:openNativeRoute': ({required action, required element, required view, required context}) {
-    BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'));
+    final rawData = action.getAttributeValue('data');
+    final data = rawData == null
+      ? <String, String>{}
+      : (rawData as Map<String, dynamic>).map((key, value) => MapEntry(key, value.toString()));
+    BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'), data);
   },
   'beagle:openExternalURL': ({required action, required element, required view, required context}) {
     BeagleOpenExternalUrl.launchURL(context, action.getAttributeValue('url'));
