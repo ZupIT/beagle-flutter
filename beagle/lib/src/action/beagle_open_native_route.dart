@@ -28,7 +28,11 @@ class BeagleOpenNativeRoute {
 
   void navigate(BuildContext buildContext, String routeName) {
     try {
-      Navigator.pushNamed(buildContext, routeName);
+      // we need to add this route to the first navigator above the root Beagle navigator
+      final rootNavigator = buildContext.findAncestorStateOfType<RootNavigatorState>();
+      // if, for some reason, the root Beagle navigator is not available, use the first navigator in the context
+      final targetNavigator = Navigator.of(rootNavigator == null ? buildContext : rootNavigator.context);
+      targetNavigator.pushNamed(routeName);
     } catch (err) {
       final logger = findBeagleService(buildContext).logger;
       logger.error('Error: $err while trying to navigate to $routeName');
