@@ -1,3 +1,7 @@
+## 2.0.0-rc4
+* Fixes problem where flex 1 on rows would make they expand in their parent column.
+* Fixes problem where flex containers with display: none would occupy space.
+
 ## 2.0.0-rc3
 * Fixes the action openNativeRoute
 * Allows exceptions during the execution of an action to be logged

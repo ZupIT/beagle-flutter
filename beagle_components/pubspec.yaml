@@ -15,7 +15,7 @@
 
 name: beagle_components
 description: Beagle Components is a set of tools and components to be used with the Beagle package.
-version: 2.0.0-rc2
+version: 2.0.0-rc3
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle_components
 
 environment:
