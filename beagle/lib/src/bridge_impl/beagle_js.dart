@@ -73,7 +73,8 @@ class BeagleJS {
         return handler(params);
       } catch (err, stackTrace) {
         _beagle.logger.error(
-            'An error has been thrown while executing the custom operation $operationName. Please, check the log below for more details.');
+          'An error has been thrown while executing the custom operation $operationName. Please, check the log below for more details.\n$err'
+        );
         debugPrintStack(stackTrace: stackTrace);
       }
     });

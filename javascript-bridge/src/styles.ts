@@ -85,6 +85,11 @@ const isBoundedInFlexDirection = (node: IdentifiableBeagleUIElement, parent: Ide
   || (parent?.style?.flex?.flexDirection != 'ROW' && node.style?.size?.height)
 )
 
+const isColumn = (node: IdentifiableBeagleUIElement | null) => 
+  !node || !node.style?.flex?.flexDirection || node.style?.flex?.flexDirection === 'COLUMN'
+
+const isRow = (node: IdentifiableBeagleUIElement | null) => !isColumn(node)
+
 /* In Flutter we can't have a tree where a parent is a Flex with a flex factor (style.flex.flex) of zero and a child is a Flex with a Flex factor
 greater than zero. In most of these cases, the parent flex will have an unrestricted height and Flutter won't know how to expand the child. Notice
 that no flex factor is the same of flex factor 0. To fix this, whenever we find this scenario, we must set the flex factor of the parent to 1. */
@@ -93,7 +98,9 @@ function fixFlexFactors(
   parent: IdentifiableBeagleUIElement | null,
   expandedComponentsMap: Record<string, boolean>,
 ) {
-  const shouldForceFlex1 = !isBoundedInFlexDirection(node, parent) && hasExpandedChild(node, expandedComponentsMap)
+  const shouldForceFlex1 = !isBoundedInFlexDirection(node, parent)
+    && hasExpandedChild(node, expandedComponentsMap)
+    && ((isRow(node) && isRow(parent)) || (isColumn(node)) && isColumn(parent))
   if (shouldForceFlex1) {
     node.style ??= {}
     node.style.flex ??= {}

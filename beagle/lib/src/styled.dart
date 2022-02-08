@@ -44,10 +44,9 @@ class _StyleCalculator {
   BeagleStyle? style;
   StyleConfig? styleConfig;
 
-  Widget _applyFlexFactor(Widget child) => style?.flex?.flex == null ? child : Expanded(
-    flex: (style!.flex!.flex! * FLEX_PRECISION).round(),
-    child: child,
-  );
+  Widget _applyFlexFactor(Widget child) => style?.flex?.flex == null || style?.display == FlexDisplay.NONE
+    ? child
+    : Expanded(flex: (style!.flex!.flex! * FLEX_PRECISION).round(), child: child);
 
   BoxConstraints _findConstraints(BuildContext context, BoxConstraints thisConstraints) {
     // if there are no percentage values, we don't even need these constraints, let's just return thisConstraints

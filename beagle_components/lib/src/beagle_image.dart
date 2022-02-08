@@ -54,10 +54,19 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
 
   @override
   Widget buildBeagleWidget(BuildContext context) {
+    /* Suppose the immediate parent of this widget is a container 50x50. For some reason, Flutter can't figure out
+    that the maximum height for the image is 50. It makes it so the content overflows. I have no idea why it happens,
+    I checked and the constraints in the immediate parent says maxHeight 50, but if I measure it here, maxHeight is
+    Infinity. Somehow, Flutter forgets what the constraints should be. As a workaround, we used the style to set the
+    image size when its created. Unfortunately, this will not cover the cases where a percentage is used. */
+    final width = (widget.style?.size?.width?.type == UnitType.REAL ?  widget.style?.size?.width?.value : null)
+        ?.toDouble();
+    final height = (widget.style?.size?.height?.type == UnitType.REAL ?  widget.style?.size?.height?.value : null)
+        ?.toDouble();
     final theme = BeagleThemeProvider.of(context)?.theme;
     final image = isLocalImage()
-        ? createImageFromAsset(widget.path as LocalImagePath, theme)
-        : createImageFromNetwork(widget.path as RemoteImagePath, theme);
+        ? createImageFromAsset(widget.path as LocalImagePath, theme, width, height)
+        : createImageFromNetwork(widget.path as RemoteImagePath, theme, width, height);
     return ClipRRect(
       borderRadius: StyleUtils.getBorderRadius(widget.style) ?? BorderRadius.zero,
       child: image,
@@ -75,10 +84,12 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
 
   bool isLocalImage() => widget.path.runtimeType == LocalImagePath;
 
-  Widget createImageFromAsset(LocalImagePath? path, BeagleTheme? theme) {
+  Widget createImageFromAsset(LocalImagePath? path, BeagleTheme? theme, double? width, double? height) {
     if (isPlaceHolderValid(path, theme)) {
       return Image.asset(
         getAssetName(path!, theme) ?? '',
+        width: width,
+        height: height,
         fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
       );
     }
@@ -87,28 +98,30 @@ class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
     return Container();
   }
 
-  Widget createImageFromNetwork(RemoteImagePath path, BeagleTheme? theme) {
+  Widget createImageFromNetwork(RemoteImagePath path, BeagleTheme? theme, double? width, double? height) {
     return FutureBuilder(
       future: imageBytes,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return createPlaceHolderWidget(path, theme);
+          return createPlaceHolderWidget(path, theme, width, height);
         }
-        return createImageFromMemory(snapshot.data as Uint8List);
+        return createImageFromMemory(snapshot.data as Uint8List, width, height);
       },
     );
   }
 
-  Widget createPlaceHolderWidget(RemoteImagePath path, BeagleTheme? theme) {
+  Widget createPlaceHolderWidget(RemoteImagePath path, BeagleTheme? theme, double? width, double? height) {
     if (isPlaceHolderValid(path.placeholder, theme)) {
-      return createImageFromAsset(path.placeholder, theme);
+      return createImageFromAsset(path.placeholder, theme, width, height);
     }
     return Container();
   }
 
-  Image createImageFromMemory(Uint8List bytes) {
+  Image createImageFromMemory(Uint8List bytes, double? width, double? height) {
     return Image.memory(
       bytes,
+      width: width,
+      height: height,
       fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
     );
   }

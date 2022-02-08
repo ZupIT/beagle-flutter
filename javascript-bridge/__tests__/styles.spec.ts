@@ -156,10 +156,10 @@ describe('styles', () => {
       expect(tree.style?.flex?.flex).toBe(1)
     })
 
-    it('should change flex factor because, although height is defined, it\'s a row layout', () => {
+    it('should not change flex factor because it is inside a row and not a column', () => {
       const tree = createRowWithBoundedHeightAndExpandedChild()
       manageStyles(tree, {})
-      expect(tree.style?.flex?.flex).toBe(1)
+      expect(tree.style?.flex?.flex).toBe(undefined)
     })
   })
 })
