@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'bridge_impl/beagle_js.dart';
 import 'bridge_impl/beagle_view_js.dart';
@@ -88,13 +89,29 @@ class BeagleService {
     /// todo documentation
     this.operations = const {},
 
-    /// todo documentation
-    this.environment = BeagleEnvironment.debug,
+    /// Sets the environment: debug or production. Beagle will log more data and also enables hot reloading
+    /// when the environment is BeagleEnvironment.debug. The hot reloading also depends on the property watchInterval,
+    /// which by default, disables it.
+    ///
+    /// If not set, the environment is determined by Flutter's global constant kDebugMode.
+    this.environment = kDebugMode ? BeagleEnvironment.debug : BeagleEnvironment.production,
 
     /// Enables or disables the automatic styling of all components according to the "style" property. Be aware that
     /// setting this to false will break most default Beagle components. Set this to false if you need to create your
     /// own layout engine.
     this.enableStyles = true,
+
+    /// Allows Beagle's hot reloading. This setting is only valid when the environment is BeagleEnvironment.debug.
+    ///
+    /// This sets an interval for checking if there's a new version of the backend available. If there is, the current
+    /// page is updated with the new content.
+    ///
+    /// This interval is given in milliseconds and must be greater than 0. When 0, Beagle understands that it should't
+    /// hot reload. The default value is 0 (disabled). Any value lower than 100, but 0, is rounded to 100.
+    ///
+    /// Attention: this feature only works in conjunction with the backend-typescript for Beagle. It doesn't work
+    /// for any other type of backend.
+    this.watchInterval = 0,
   })  : urlBuilder = urlBuilder ?? UrlBuilder(baseUrl),
         components = _toLowercaseKeys(components),
         actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})}) {
@@ -125,6 +142,7 @@ class BeagleService {
   final Map<String, Operation> operations;
   final BeagleEnvironment environment;
   final bool enableStyles;
+  final int watchInterval;
 
   // factory methods
   BeagleViewWidget createView(BeagleNavigator navigator) {

@@ -15,6 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/navigation/watcher.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
@@ -50,6 +51,7 @@ class RootNavigator extends StatefulWidget {
 class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implements BeagleNavigator {
   List<StackNavigator> _history = [];
   final GlobalKey<NavigatorState> _thisNavigatorKey = GlobalKey();
+  Watcher? watcher;
 
   StackNavigator _createStackNavigator(BeagleRoute route, NavigationController controller) {
     return beagle.createStackNavigator(
@@ -95,6 +97,31 @@ class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implem
   /// Gets a copy of the navigation history. Useful for testing.
   List<StackNavigator> getHistory() {
     return [..._history];
+  }
+
+  /// Watches the backend for updates and hot-reloads the UI if the environment is BeagleEnvironment.debug
+  void _startWatch() {
+    if (beagle.environment != BeagleEnvironment.debug || beagle.watchInterval == 0) return;
+    watcher = Watcher(
+      intervalMS: beagle.watchInterval,
+      httpClient: beagle.httpClient,
+      baseUrl: beagle.baseUrl,
+      onUpdate: () {
+        if (_history.isNotEmpty) _history.last.reloadCurrentPage();
+      },
+    )..start();
+  }
+
+  @override
+  void dispose() {
+    watcher?.stop();
+    super.dispose();
+  }
+
+  @override
+  void initBeagleState() {
+    _startWatch();
+    super.initBeagleState();
   }
 
   @override

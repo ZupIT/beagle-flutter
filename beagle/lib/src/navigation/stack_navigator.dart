@@ -57,12 +57,29 @@ class StackNavigator extends StatelessWidget {
   }
 
   void _addHistory(String routeName, BeagleView view) {
-    void render() {
-      final tree = view.getTree();
-      if (tree != null) view.getRenderer().doPartialRender(tree);
+    void render([BeagleUIElement? tree]) {
+      if (tree == null) {
+        final currentTree = view.getTree();
+        if (currentTree != null) view.getRenderer().doPartialRender(currentTree);
+      } else {
+        view.getRenderer().doFullRender(tree);
+      }
     }
 
     _history.add(StackNavigatorHistory(routeName, view.getLocalContexts(), render));
+  }
+
+  /// Remakes the request to the current page and updates its content.
+  /// It only works if the current page is a RemoteView, it does nothing for LocalViews.
+  void reloadCurrentPage() async {
+    final currentRoute = _history.last.routeName;
+    if (!currentRoute.startsWith('/')) return;
+    try {
+      final tree = await beagle.viewClient.fetch(RemoteView(beagle.urlBuilder.build(currentRoute)));
+      _history.last.render(tree);
+    } catch(e) {
+      beagle.logger.error('Could not reload the view. See the error below for more details.\n$e');
+    }
   }
 
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
@@ -70,7 +87,7 @@ class StackNavigator extends StatelessWidget {
     if (initialPages.isNotEmpty) {
       for (Route<dynamic> page in initialPages) {
         if (page.settings.name != null && page.settings.name!.isNotEmpty) {
-          _history.add(StackNavigatorHistory(page.settings.name!, _TestPurposeLocalContextsManager(), () {}));
+          _history.add(StackNavigatorHistory(page.settings.name!, _TestPurposeLocalContextsManager(), ([_]) {}));
         }
       }
       _firstLoadCompleter.complete();

@@ -44,6 +44,10 @@ class _BeagleServiceMock extends Mock implements BeagleService {
   };
   @override
   final logger = _LoggerMock();
+  @override
+  BeagleEnvironment get environment => BeagleEnvironment.debug;
+  @override
+  int get watchInterval => 0;
 }
 
 class _StackNavigatorStructureMock extends Mock implements StackNavigator {
@@ -130,6 +134,9 @@ class StackNavigatorMock extends StatelessWidget implements StackNavigator {
   @override
   void setNavigationContext(NavigationContext? navigationContext,
       [LocalContextsManager? manager, bool render = true]) {}
+
+  @override
+  void reloadCurrentPage() {}
 }
 
 class RootNavigatorMocks extends Mock implements _RootNavigatorMocks {

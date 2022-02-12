@@ -36,7 +36,7 @@ class _LoggerMock extends Mock implements BeagleLogger {}
 class LocalContextsManagerMock extends Mock implements LocalContextsManager {}
 
 class MockFunction extends Mock {
-  void fn();
+  void fn([dynamic _]);
 }
 
 class _BeagleViewMock extends Mock implements BeagleView {
