@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/model/json_encodable.dart';
 import 'package:flutter/widgets.dart';
 
 class BeagleUIElement {
@@ -72,7 +75,31 @@ class BeagleUIElement {
     return properties.containsKey('style') ? BeagleStyle.fromMap(properties['style']) : null;
   }
 
+  BeagleAccessibility? getAccessibility() {
+    return properties.containsKey('accessibility') ? BeagleAccessibility.fromMap(properties['accessibility']) : null;
+  }
+
   static bool isBeagleUIElement(Map<String, dynamic>? json) {
     return json != null && json.containsKey("_beagleComponent_");
   }
+
+  void forEach(void Function(Map<String, dynamic> node, int index) iteratee) {
+    if (properties.isEmpty) return;
+    int index = 0;
+
+    void run(Map<String, dynamic> node) {
+      iteratee(node, index++);
+      final children = node['children'];
+      if (children is List) {
+        for (var c in children) {
+          run(c);
+        }
+      }
+    }
+
+    run(properties);
+  }
+
+  @override
+  String toString() => jsonEncode(properties, toEncodable: (value) => (value is JsonEncodable) ? value.toJson() : '');
 }

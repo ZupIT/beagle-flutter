@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import createBeagleService, { BeagleService, logger } from '@zup-it/beagle-web'
+import createBeagleService, {
+  BeagleService,
+  BeagleUIElement,
+  DataContext,
+  IdentifiableBeagleUIElement,
+  logger,
+  TemplateManager,
+  TreeInsertionMode,
+  Tree,
+} from '@zup-it/beagle-web'
 import { createCustomActionMap } from './action'
 import { createBeagleView, getView } from './view'
 import { callFunction } from './function'
@@ -23,11 +32,15 @@ import { resolvePromise, rejectPromise } from './promise'
 import { createCustomOperationMap } from './operation'
 import logToFlutter from './utils/flutter-js-logger'
 import { analytics } from './analytics'
+import { cloneTemplate, doTreeFullRender, getContextEvaluatedTemplate, getTreeContextHierarchy, preProcessTemplateTree } from './render'
+import { manageStyles } from './styles'
 
 interface StartParams {
   baseUrl: string,
   actionKeys: string[],
-  customOperations: string[]
+  customOperations: string[],
+  enableStyling: boolean,
+  expandedComponentsMap: Record<string, boolean>,
 }
 
 // @ts-ignore
@@ -37,7 +50,7 @@ window.beagle = (() => {
   //Calls here to initialize the config before the first events 
   analyticsProvider.getConfig()
   const api = {
-    start: ({ actionKeys, customOperations, ...other }: StartParams) => {
+    start: ({ actionKeys, customOperations, enableStyling, expandedComponentsMap, ...other }: StartParams) => {
       service = createBeagleService({
         components: {},
         disableCssTransformation: true,
@@ -46,6 +59,7 @@ window.beagle = (() => {
         customOperations: createCustomOperationMap(customOperations),
         analyticsProvider: analyticsProvider,
         platform: "flutter",
+        lifecycles: enableStyling ? { beforeViewSnapshot: tree => manageStyles(tree, expandedComponentsMap) } : undefined,
         ...other,
       })
       
@@ -66,6 +80,15 @@ window.beagle = (() => {
     promise: {
       resolve: resolvePromise,
       reject: rejectPromise, 
+    },
+    render: {
+      getTreeContextHierarchy: (viewId: string) => JSON.stringify(getTreeContextHierarchy(viewId)),
+      getContextEvaluatedTemplate: (viewId: string, context: DataContext[], templateManager: TemplateManager) => 
+        JSON.stringify(getContextEvaluatedTemplate(viewId, context, templateManager, service)),
+      cloneTemplate: (template: BeagleUIElement) => JSON.stringify(cloneTemplate(template)),
+      preProcessTemplateTree: (viewTree: BeagleUIElement) => JSON.stringify(preProcessTemplateTree(viewTree, service)),
+      doTreeFullRender: (viewId: string, anchorId: string, children: IdentifiableBeagleUIElement[], mode: TreeInsertionMode = 'replace') => 
+        doTreeFullRender(viewId, anchorId, children, mode),
     },
   }
 

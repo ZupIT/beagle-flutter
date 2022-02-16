@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter/src/widgets/navigator.dart' as flutter;
+
+import '../test-utils/mocktail.dart';
 
 class ContextMock extends Mock implements BuildContext {}
 
@@ -26,15 +27,12 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 class MockOpenNativeRoute extends Mock implements BeagleOpenNativeRoute {}
 
-class MockRoute extends flutter.Route<dynamic> {
-  MockRoute();
-}
-
 void main() {
+  registerMocktailFallbacks();
+
   group('Given Beagle Open Native Route Action ', () {
     ContextMock _mockContext = ContextMock();
     const mockRoute = '/route';
-    registerFallbackValue<flutter.Route<dynamic>>(MockRoute());
     NavigatorObserver mockObserver = NavigatorObserver();
     final BeagleOpenNativeRoute mockOpenNativeRoute = MockOpenNativeRoute();
 
@@ -46,7 +44,7 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         routes: {mockRoute: (context) => const Text('Test')},
         home: ElevatedButton(
-          onPressed: () => {mockOpenNativeRoute.navigate(_mockContext, mockRoute)},
+          onPressed: () => {mockOpenNativeRoute.navigate(_mockContext, mockRoute, {})},
           child: const SizedBox.shrink(),
         ),
         navigatorObservers: [mockObserver],

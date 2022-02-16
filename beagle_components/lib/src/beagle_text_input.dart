@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:beagle/beagle.dart';
 import 'package:beagle_components/src/protocol/input_validation.dart';
 import 'package:flutter/material.dart';
 import 'text_input_type.dart';
@@ -32,6 +33,7 @@ class BeagleTextInput extends StatefulWidget implements InputValidation {
     this.onChange,
     this.onBlur,
     this.onFocus,
+    this.style,
   }) : super(key: key);
 
   /// Initial text displayed.
@@ -66,6 +68,8 @@ class BeagleTextInput extends StatefulWidget implements InputValidation {
 
   /// Action that will be performed when the widget acquire focus.
   final Function? onFocus;
+
+  final BeagleStyle? style;
 
   @override
   _BeagleTextInput createState() => _BeagleTextInput();
@@ -118,12 +122,24 @@ class _BeagleTextInput extends State<BeagleTextInput> {
 
   @override
   Widget build(BuildContext context) {
+    final shouldExpandFlex = widget.style?.size?.height?.value != null;
+
     if (_controller != null &&
         widget.value != null &&
         widget.value != _controller?.text) {
       _controller?.text = widget.value ?? '';
     }
-    return TextField(
+
+    InputBorder _getBorder(Color defaultColor) => OutlineInputBorder(
+      borderRadius: StyleUtils.hasBorderRadius(widget.style)
+          ? StyleUtils.getBorderRadius(widget.style)! : BorderRadius.all(Radius.circular(4.0)),
+      borderSide: BorderSide(
+        color: widget.style?.borderColor == null ? defaultColor : HexColor(widget.style!.borderColor!),
+        width: widget.style?.borderWidth ?? 1,
+      ),
+    );
+
+    final textField = TextField(
       controller: _controller,
       focusNode: _focus,
       enabled: widget.enabled != false,
@@ -131,11 +147,23 @@ class _BeagleTextInput extends State<BeagleTextInput> {
           getMaterialInputType(widget.type ?? BeagleTextInputType.TEXT),
       obscureText: widget.type == BeagleTextInputType.PASSWORD,
       readOnly: widget.readOnly == true,
+      maxLines: shouldExpandFlex ? null : 1,
+      expands: shouldExpandFlex,
       decoration: InputDecoration(
-        border: const OutlineInputBorder(),
+        // we won't support percentage paddings in the TextInput for now
+        contentPadding: StyleUtils.hasEdgeValue(widget.style?.padding)
+            ? StyleUtils.getEdgeInsets(widget.style?.padding, BoxConstraints.tight(Size(100, 100))) : null,
+        enabledBorder: _getBorder(Colors.black38),
+        focusedBorder: _getBorder(Colors.blueAccent),
+        errorBorder: _getBorder(Colors.redAccent),
+        disabledBorder: _getBorder(Colors.grey),
+        fillColor: widget.style?.backgroundColor == null ? null : HexColor(widget.style!.backgroundColor!),
+        filled: widget.style?.backgroundColor != null,
         errorText: widget.showError == true ? widget.error : null,
         labelText: widget.placeholder ?? '',
       ),
     );
+
+    return shouldExpandFlex ? Expanded(child: textField) : textField;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ import 'dart:async';
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'internal/beagle_refresh_indicator.dart';
 
 /// Defines a pull down to refresh for its child
@@ -71,12 +69,8 @@ class _BeaglePullToRefresh extends State<PullToRefresh> {
   }
 
   Widget _buildScrollableContent() {
-    return _isScrollable(widget.child)
-        ? widget.child
-        : ListView(children: [widget.child], scrollDirection: Axis.vertical);
+    return ListView(children: [widget.child], scrollDirection: Axis.vertical);
   }
-
-  bool _isScrollable(Widget widget) => widget is ScrollView || widget is SingleChildScrollView;
 
   Future<void> _onRefreshHandler() async {
     if (widget.onPull != null) widget.onPull!();

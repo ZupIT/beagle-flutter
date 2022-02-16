@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
 
 /// Encapsulates a Beagle javascript HTTP request message.
 class BeagleJSRequestMessage {
@@ -23,14 +22,14 @@ class BeagleJSRequestMessage {
   late String _url;
   late BeagleHttpMethod _method;
   late Map<String, String> _headers;
-  late String _body;
+  late String? _body;
 
   BeagleJSRequestMessage.fromJson(Map<String, dynamic> json) {
-    _requestId = BeagleCaster.castToString(json['id']);
-    _url = BeagleCaster.castToString(json['url']);
-    _method = BeagleCaster.cast<BeagleHttpMethod>(_getHttpMethod(json), BeagleHttpMethod.get);
-    _headers = BeagleCaster.castToMap<String, String>(_getHeaders(json));
-    _body = BeagleCaster.castToString(json['body']);
+    _requestId = json['id'];
+    _url = json['url'];
+    _method = _getHttpMethod(json);
+    _headers = _getHeaders(json);
+    _body = json['body'];
   }
 
   BeagleHttpMethod _getHttpMethod(Map<String, dynamic> json) {
@@ -39,13 +38,10 @@ class BeagleJSRequestMessage {
     return beagleHttpMethod as BeagleHttpMethod;
   }
 
-  Map<String, String> _getHeaders(Map<String, dynamic> json) {
-    return json.containsKey('headers') ? (json['headers'] as Map<String, dynamic>).cast<String, String>() : {};
-  }
+  Map<String, String> _getHeaders(Map<String, dynamic> json) =>
+      json.containsKey('headers') ? (json['headers'] as Map<String, dynamic>).cast<String, String>() : {};
 
   String get requestId => _requestId;
 
-  BeagleRequest toRequest() {
-    return BeagleRequest(_url, method: _method, headers: _headers, body: _body);
-  }
+  BeagleRequest toRequest() => BeagleRequest(_url, method: _method, headers: _headers, body: _body);
 }

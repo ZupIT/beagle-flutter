@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,23 +21,14 @@ class JavascriptRuntimeWrapper {
 
   final JavascriptRuntime _jsRuntime;
 
-  JsEvalResult? evaluate(String code) {
-    return _jsRuntime.evaluate(code);
-  }
+  JsEvalResult? evaluate(String code) => _jsRuntime.evaluate(code);
 
-  Future<JsEvalResult>? evaluateAsync(String code) {
-    return _jsRuntime.evaluateAsync(code);
-  }
+  Future<JsEvalResult>? evaluateAsync(String code) => _jsRuntime.evaluateAsync(code);
 
-  dynamic onMessage(String channelName, void Function(dynamic args) fn) {
-    return _jsRuntime.onMessage(channelName, fn);
-  }
+  dynamic onMessage(String channelName, void Function(dynamic args) fn) => _jsRuntime.onMessage(channelName, fn);
 
-  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration? timeout}) {
-    return _jsRuntime.handlePromise(value, timeout: timeout);
-  }
+  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration? timeout}) =>
+      _jsRuntime.handlePromise(value, timeout: timeout);
 
-  dynamic enableHandlePromises() {
-    return _jsRuntime.enableHandlePromises();
-  }
+  dynamic enableHandlePromises() => _jsRuntime.enableHandlePromises();
 }

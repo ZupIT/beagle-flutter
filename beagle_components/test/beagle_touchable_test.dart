@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'service_locator/service_locator.dart';
-
 const touchableKey = Key('BeagleTouchable');
 
 Widget createWidget({
@@ -37,10 +35,6 @@ Widget createWidget({
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleTouchable', () {
     group('When I click on it', () {
       testWidgets('Then it should call onPress callback',

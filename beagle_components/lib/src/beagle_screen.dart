@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,67 +17,63 @@
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class BeagleScreen extends StatelessWidget {
+class BeagleScreen extends StatefulWidget {
   const BeagleScreen({
     Key? key,
-    required this.identifier,
-    required this.safeArea,
-    required this.navigationBar,
+    this.identifier,
+    this.safeArea,
+    this.navigationBar,
     required this.child,
   }) : super(key: key);
 
-  final String identifier;
-  final BeagleSafeArea safeArea;
-  final BeagleNavigationBar navigationBar;
+  final String? identifier;
+  final BeagleSafeArea? safeArea;
+  final BeagleNavigationBar? navigationBar;
   final Widget child;
 
-  BeagleNavigationBarStyle? get _navigationBarStyle =>
-      beagleServiceLocator<BeagleDesignSystem>().navigationBarStyle(navigationBar.styleId ?? '');
-
   @override
-  Widget build(BuildContext context) {
-    // ignore: unnecessary_null_comparison
-    final appBar = navigationBar != null
+  _BeagleScreen createState() => _BeagleScreen();
+}
+
+class _BeagleScreen extends State<BeagleScreen> with BeagleConsumer {
+  @override
+  Widget buildBeagleWidget(BuildContext context) {
+    final theme = BeagleThemeProvider.of(context)?.theme;
+    final navigationBarStyle =
+        widget.navigationBar?.styleId == null ? null : theme?.navigationBarStyle(widget.navigationBar!.styleId!);
+    final appBar = widget.navigationBar != null
         ? AppBar(
-            leading: _navigationBarStyle?.leading,
-            automaticallyImplyLeading: navigationBar.showBackButton,
-            title: Text(navigationBar.title),
-            actions: navigationBar.navigationBarItems?.map((e) => ItemComponent(item: e)).toList(growable: false) ?? [],
-            elevation: _navigationBarStyle?.elevation,
-            shadowColor: _navigationBarStyle?.shadowColor,
-            backgroundColor: _navigationBarStyle?.backgroundColor,
-            iconTheme: _navigationBarStyle?.iconTheme,
-            actionsIconTheme: _navigationBarStyle?.actionsIconTheme,
-            centerTitle: _navigationBarStyle?.centerTitle,
-            titleSpacing: _navigationBarStyle?.titleSpacing,
-            toolbarHeight: _navigationBarStyle?.toolbarHeight,
-            leadingWidth: _navigationBarStyle?.leadingWidth,
-            toolbarTextStyle: _navigationBarStyle?.toolbarTextStyle,
-            titleTextStyle: _navigationBarStyle?.titleTextStyle)
+            leading: navigationBarStyle?.leading,
+            automaticallyImplyLeading: widget.navigationBar?.showBackButton == true,
+            title: Text(widget.navigationBar?.title ?? ''),
+            actions:
+                widget.navigationBar?.navigationBarItems?.map((e) => ItemComponent(item: e)).toList(growable: false) ??
+                    [],
+            elevation: navigationBarStyle?.elevation,
+            shadowColor: navigationBarStyle?.shadowColor,
+            backgroundColor: navigationBarStyle?.backgroundColor,
+            iconTheme: navigationBarStyle?.iconTheme,
+            actionsIconTheme: navigationBarStyle?.actionsIconTheme,
+            centerTitle: navigationBarStyle?.centerTitle,
+            titleSpacing: navigationBarStyle?.titleSpacing,
+            toolbarHeight: navigationBarStyle?.toolbarHeight,
+            leadingWidth: navigationBarStyle?.leadingWidth,
+            toolbarTextStyle: navigationBarStyle?.toolbarTextStyle,
+            titleTextStyle: navigationBarStyle?.titleTextStyle)
         : null;
 
-    final yogaChild = BeagleFlexWidget(
-      style: BeagleStyle(flex: BeagleFlex(grow: 1.0)),
-      // ignore: unnecessary_null_comparison
-      children: child != null ? [child] : [],
-    );
-    // ignore: unnecessary_null_comparison
-    final body = safeArea != null
+    final body = widget.safeArea != null
         ? SafeArea(
-            top: safeArea.top ?? true,
-            left: safeArea.leading ?? true,
-            bottom: safeArea.bottom ?? true,
-            right: safeArea.trailing ?? true,
-            child: yogaChild,
+            top: widget.safeArea!.top ?? true,
+            left: widget.safeArea!.leading ?? true,
+            bottom: widget.safeArea!.bottom ?? true,
+            right: widget.safeArea!.trailing ?? true,
+            child: widget.child,
           )
-        : yogaChild;
+        : widget.child;
 
-    return Scaffold(
-      appBar: appBar,
-      body: body,
-    );
+    return Scaffold(appBar: appBar, body: body);
   }
 }
 
@@ -95,28 +91,28 @@ class BeagleSafeArea {
   final bool? trailing;
 
   BeagleSafeArea.fromJson(Map<String, dynamic> json)
-      : top = BeagleCaster.castToBool(json['top']),
-        leading = BeagleCaster.castToBool(json['leading']),
-        bottom = BeagleCaster.castToBool(json['bottom']),
-        trailing = BeagleCaster.castToBool(json['trailing']);
+      : top = json['top'],
+        leading = json['leading'],
+        bottom = json['bottom'],
+        trailing = json['trailing'];
 }
 
 class NavigationBarItem {
   NavigationBarItem({
     required this.text,
     required this.image,
-    this.action,
+    this.onPress,
   });
 
   final String text;
   final String image;
-  final Function? action;
+  final Function? onPress;
 
   factory NavigationBarItem.fromJson(Map<String, dynamic> json) {
     return NavigationBarItem(
-      text: BeagleCaster.castToString(json['text']),
-      image: BeagleCaster.castToString(json['image']?['mobileId']),
-      action: BeagleCaster.castToFunction(json['action']),
+      text: json['text'] ?? '',
+      image: json['image'] ?? '',
+      onPress: json['onPress'],
     );
   }
 }
@@ -135,13 +131,14 @@ class BeagleNavigationBar {
   final List<NavigationBarItem>? navigationBarItems;
 
   factory BeagleNavigationBar.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> itemsJsonArray = BeagleCaster.castToList(json['navigationBarItems']);
+    final List<dynamic> itemsJsonArray = json['navigationBarItems'] ?? [];
     final List<NavigationBarItem> items = itemsJsonArray.map((e) => NavigationBarItem.fromJson(e)).toList();
     return BeagleNavigationBar(
-        title: BeagleCaster.castToString(json['title']),
-        showBackButton: BeagleCaster.castToBool(json['showBackButton']),
-        styleId: BeagleCaster.castToString(json['styleId']),
-        navigationBarItems: items);
+      title: json['title'] ?? '',
+      showBackButton: json['showBackButton'] ?? true,
+      styleId: json['styleId'],
+      navigationBarItems: items,
+    );
   }
 }
 
@@ -150,21 +147,18 @@ class ItemComponent extends StatelessWidget {
 
   ItemComponent({Key? key, required this.item}) : super(key: key);
 
-  static final style = BeagleStyle(
-    size: BeagleSize(
-      width: UnitValue(value: 32, type: UnitType.REAL),
-      height: UnitValue(value: 32, type: UnitType.REAL),
-    ),
-  );
+  static final double size = 32;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: BeagleCaster.cast<void Function()?>(item.action, () {}),
-      icon: BeagleFlexWidget(
-        children: item.image.isNotEmpty ? [BeagleImage(path: ImagePath.local(item.image))] : [],
-        style: style,
-      ),
+      onPressed: item.onPress as void Function()? ?? () {},
+      icon: item.image.isEmpty
+          ? SizedBox.shrink()
+          : SizedBox.square(
+              dimension: size,
+              child: BeagleImage(path: ImagePath.local(item.image), mode: ImageContentMode.FIT_CENTER),
+            ),
       tooltip: item.text,
     );
   }

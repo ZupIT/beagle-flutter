@@ -14,10 +14,11 @@ jobs:
         runs-on: macos-latest
         steps:
             -   uses: actions/checkout@v2
+                with:
+                    fetch-depth: 0
             -   uses: subosito/flutter-action@v1
                 with:
                   channel: 'stable' # or: 'dev' or 'beta'
-
             # Gems for Fastlane
             -   name: Cache ruby gems dependencies
                 uses: actions/cache@v2

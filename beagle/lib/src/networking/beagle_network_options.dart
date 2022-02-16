@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  */
 
 import 'dart:convert';
-
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/utils/enum.dart';
 
 class BeagleNetworkOptions {
   BeagleNetworkOptions({this.method, this.headers});

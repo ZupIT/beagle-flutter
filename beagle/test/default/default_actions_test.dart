@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,24 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
+
+class _LocalContextsManagerMock extends Mock implements LocalContextsManager {}
 
 class _BeagleViewMock extends Mock implements BeagleView {
   final navigator = _BeagleNavigatorMock();
+  final manager = _LocalContextsManagerMock();
 
   @override
   BeagleNavigator getNavigator() {
     return navigator;
+  }
+
+  @override
+  LocalContextsManager getLocalContexts() {
+    return manager;
   }
 }
 
@@ -35,18 +45,21 @@ class _BeagleUIElementMock extends Mock implements BeagleUIElement {}
 
 class _BuildContextMock extends Mock implements BuildContext {}
 
-class _BeagleRouteMock extends Mock implements BeagleRoute {}
-
 void main() {
-  group("Given the action handlers for beagle navigation", () {
-    registerFallbackValue<BeagleRoute>(_BeagleRouteMock());
-    registerFallbackValue<BuildContext>(_BuildContextMock());
+  registerMocktailFallbacks();
 
+  group("Given the action handlers for beagle navigation", () {
     Map<String, String> remoteViewMap = {"url": "/test"};
     Map<String, dynamic> localViewMap = {
       "screen": {
         "id": "local",
         "_beagleComponent_": "beagle:container",
+      },
+    };
+    Map<String, dynamic> navigationContextMap = {
+      "path": "nav-ctx-path",
+      "value": {
+        "obj-attr": "my navigation context value",
       },
     };
     final element = _BeagleUIElementMock();
@@ -74,8 +87,47 @@ void main() {
         final verified = verify(() => view.navigator.pushView(captureAny(), any()));
         verified.called(1);
 
-        expect(verified.captured[0], isA<RemoteView>());
-        expect((verified.captured[0] as RemoteView).url, "/test");
+        final remoteView = verified.captured.first;
+        expect(remoteView, isA<RemoteView>());
+        expect((remoteView as RemoteView).url, "/test");
+      });
+
+      group("When it has a navigation context", () {
+        test("Then it should call the BeagleNavigator's pushView with the deserialized RemoteView", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:pushView",
+            "route": remoteViewMap,
+            "navigationContext": navigationContextMap,
+          }));
+
+          final verified = verify(() => view.navigator.pushView(captureAny(), any()));
+          verified.called(1);
+
+          final remoteView = verified.captured.first;
+          expect(remoteView, isA<RemoteView>());
+          expect((remoteView as RemoteView).url, "/test");
+          expect(remoteView.navigationContext, isA<NavigationContext>());
+          expect(remoteView.navigationContext!.path, navigationContextMap["path"]);
+          expect(remoteView.navigationContext!.value, navigationContextMap["value"]);
+        });
+      });
+
+      group("When it has a navigation context but is null", () {
+        test("Then it should call the BeagleNavigator's pushView with the deserialized RemoteView", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:pushView",
+            "route": remoteViewMap,
+            "navigationContext": null,
+          }));
+
+          final verified = verify(() => view.navigator.pushView(captureAny(), any()));
+          verified.called(1);
+
+          final remoteView = verified.captured.first;
+          expect(remoteView, isA<RemoteView>());
+          expect((remoteView as RemoteView).url, "/test");
+          expect(remoteView.navigationContext, null);
+        });
       });
     });
 
@@ -89,9 +141,50 @@ void main() {
         final verified = verify(() => view.getNavigator().pushView(captureAny(), context));
         verified.called(1);
 
-        expect(verified.captured[0], isA<LocalView>());
-        expect((verified.captured[0] as LocalView).screen.getId(), "local");
-        expect((verified.captured[0] as LocalView).screen.getType(), "beagle:container");
+        final localView = verified.captured.first;
+        expect(localView, isA<LocalView>());
+        expect((localView as LocalView).screen.getId(), "local");
+        expect(localView.screen.getType(), "beagle:container");
+      });
+
+      group("When it has a navigation context", () {
+        test("Then it should call the BeagleNavigator's pushView with the deserialized LocalView", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:pushView",
+            "route": localViewMap,
+            "navigationContext": navigationContextMap,
+          }));
+
+          final verified = verify(() => view.getNavigator().pushView(captureAny(), context));
+          verified.called(1);
+
+          final localView = verified.captured.first;
+          expect(localView, isA<LocalView>());
+          expect((localView as LocalView).screen.getId(), "local");
+          expect(localView.screen.getType(), "beagle:container");
+          expect(localView.navigationContext, isA<NavigationContext>());
+          expect(localView.navigationContext!.path, navigationContextMap["path"]);
+          expect(localView.navigationContext!.value, navigationContextMap["value"]);
+        });
+      });
+
+      group("When it has a navigation context but is null", () {
+        test("Then it should call the BeagleNavigator's pushView with the deserialized LocalView", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:pushView",
+            "route": localViewMap,
+            "navigationContext": null,
+          }));
+
+          final verified = verify(() => view.getNavigator().pushView(captureAny(), context));
+          verified.called(1);
+
+          final localView = verified.captured.first;
+          expect(localView, isA<LocalView>());
+          expect((localView as LocalView).screen.getId(), "local");
+          expect(localView.screen.getType(), "beagle:container");
+          expect(localView.navigationContext, null);
+        });
       });
     });
 
@@ -99,7 +192,24 @@ void main() {
       test("Then it should call the BeagleNavigator's popView", () {
         _setup(BeagleAction({"_beagleAction_": "beagle:popView"}));
 
-        verify(() => view.getNavigator().popView()).called(1);
+        verify(() => view.getNavigator().popView(any())).called(1);
+      });
+
+      group("When it has a navigation context", () {
+        test("Then it should call the BeagleNavigator's popView with the navigation context as a parameter", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:popView",
+            "navigationContext": navigationContextMap,
+          }));
+
+          final verified = verify(() => view.getNavigator().popView(captureAny()));
+          verified.called(1);
+
+          final popViewArg = verified.captured.first;
+          expect(popViewArg, isA<NavigationContext>());
+          expect(popViewArg!.path, navigationContextMap["path"]);
+          expect(popViewArg!.value, navigationContextMap["value"]);
+        });
       });
     });
 
@@ -110,14 +220,49 @@ void main() {
           "route": "/test",
         }));
 
-        verify(() => view.getNavigator().popToView("/test")).called(1);
+        verify(() => view.getNavigator().popToView("/test", any())).called(1);
+      });
+
+      group("When it has a navigation context", () {
+        test("Then it should call the BeagleNavigator's popToView with the navigation context as a parameter", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:popToView",
+            "route": "/test",
+            "navigationContext": navigationContextMap,
+          }));
+
+          final verified = verify(() => view.getNavigator().popToView("/test", captureAny()));
+          verified.called(1);
+
+          final popToViewArg = verified.captured.first;
+          expect(popToViewArg, isA<NavigationContext>());
+          expect(popToViewArg!.path, navigationContextMap["path"]);
+          expect(popToViewArg!.value, navigationContextMap["value"]);
+        });
       });
     });
 
     group("When popStack is called", () {
       test("Then it should call the BeagleNavigator's popStack", () {
         _setup(BeagleAction({"_beagleAction_": "beagle:popStack"}));
-        verify(() => view.getNavigator().popStack()).called(1);
+        verify(() => view.getNavigator().popStack(any())).called(1);
+      });
+
+      group("When it has a navigation context", () {
+        test("Then it should call the BeagleNavigator's popToView with the navigation context as a parameter", () {
+          _setup(BeagleAction({
+            "_beagleAction_": "beagle:popStack",
+            "navigationContext": navigationContextMap,
+          }));
+
+          final verified = verify(() => view.getNavigator().popStack(captureAny()));
+          verified.called(1);
+
+          final popStackArg = verified.captured.first;
+          expect(popStackArg, isA<NavigationContext>());
+          expect(popStackArg!.path, navigationContextMap["path"]);
+          expect(popStackArg!.value, navigationContextMap["value"]);
+        });
       });
     });
 

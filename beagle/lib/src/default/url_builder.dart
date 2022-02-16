@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ class UrlBuilder {
     _baseUrl = baseUrl.replaceFirst(RegExp(r'/$'), '');
   }
 
-  late String _baseUrl;
+  late final String _baseUrl;
 
   bool _shouldEncodeUrl(String url) {
     /* decode uri throws an error if the url has any kind of diacritics and if it has diacritics

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import 'package:flutter_test/flutter_test.dart';
 const keyPullToRefresh = Key('PullToRefresh');
 const keyContent = Key('Text');
 const color = "#123456";
-var childContent = ListView(children: [Text("Hello", key: keyContent)]);
+var childContent = ListView(shrinkWrap: true, children: [Text("Hello")]);
 
 Widget createWidget({
   Key key = keyPullToRefresh,
@@ -57,7 +57,7 @@ void main() {
         await tester.pumpWidget(
             createWidget(onPull: onPull, child: childContent, color: color));
 
-        await tester.drag(find.byKey(keyContent), const Offset(0.0, 300));
+        await tester.drag(find.byType(PullToRefresh), const Offset(0.0, 300));
         await tester.pumpAndSettle();
 
         expect(tapCount, 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,96 +17,129 @@
 import 'dart:async';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/navigation/stack_navigator_history.dart';
 import 'package:flutter/material.dart';
-
-typedef _BeagleWidgetFactory = UnsafeBeagleWidget Function(BeagleNavigator rootNavigator);
-
-UnsafeBeagleWidget _defaultBeagleWidgetFactory(BeagleNavigator navigator) {
-  return UnsafeBeagleWidget(navigator);
-}
+import 'history_observer.dart';
 
 /// This Navigator is internally used by the RootNavigator. It should never be used outside a RootNavigator.
+// ignore: must_be_immutable
 class StackNavigator extends StatelessWidget {
   StackNavigator({
     required this.initialRoute,
     required this.screenBuilder,
     required this.controller,
-    required this.viewClient,
+    required this.beagle,
     required this.rootNavigator,
-    required this.logger,
-    _BeagleWidgetFactory? beagleWidgetFactory,
     this.initialPages = const [],
     this.navigatorObservers = const [],
-  }) : _beagleWidgetFactory = beagleWidgetFactory ?? _defaultBeagleWidgetFactory;
+  });
 
   final BeagleRoute initialRoute;
   final ScreenBuilder screenBuilder;
   final NavigationController controller;
-  final ViewClient viewClient;
   final BeagleNavigator rootNavigator;
-  final BeagleLogger logger;
-  final List<String> _history = [];
+  final BeagleService beagle;
+  NavigationContext? _poppedNavigationContext;
+  final List<StackNavigatorHistory> _history = [];
+  late final _historyObserver = HistoryObserver(_history, _onPopLast);
 
   // The following attributes are only used for testing purposes
   final _firstLoadCompleter = Completer();
-  final _BeagleWidgetFactory _beagleWidgetFactory;
   final List<Route<dynamic>> initialPages;
   final List<NavigatorObserver> navigatorObservers;
   final GlobalKey<NavigatorState> _thisNavigatorKey = GlobalKey();
 
-  Route<dynamic> _buildRoute(UnsafeBeagleWidget beagleWidget, String routeName) {
+  Route<dynamic> _buildRoute(BeagleWidget beagleWidget, String routeName) {
     return MaterialPageRoute(
       builder: (context) => screenBuilder(beagleWidget, context),
       settings: RouteSettings(name: routeName),
     );
   }
 
+  void _addHistory(String routeName, BeagleView view) {
+    void render([BeagleUIElement? tree]) {
+      if (tree == null) {
+        final currentTree = view.getTree();
+        if (currentTree != null) view.getRenderer().doPartialRender(currentTree);
+      } else {
+        view.getRenderer().doFullRender(tree);
+      }
+    }
+
+    _history.add(StackNavigatorHistory(routeName, view.getLocalContexts(), render));
+  }
+
+  /// Remakes the request to the current page and updates its content.
+  /// It only works if the current page is a RemoteView, it does nothing for LocalViews.
+  void reloadCurrentPage() async {
+    final currentRoute = _history.last.routeName;
+    if (!currentRoute.startsWith('/')) return;
+    try {
+      final tree = await beagle.viewClient.fetch(RemoteView(beagle.urlBuilder.build(currentRoute)));
+      _history.last.render(tree);
+    } catch(e) {
+      beagle.logger.error('Could not reload the view. See the error below for more details.\n$e');
+    }
+  }
+
   List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
-    // for testing purposes
+    // start testing purposes
     if (initialPages.isNotEmpty) {
       for (Route<dynamic> page in initialPages) {
-        if (page.settings.name != null && page.settings.name!.isNotEmpty) _history.add(page.settings.name!);
+        if (page.settings.name != null && page.settings.name!.isNotEmpty) {
+          _history.add(StackNavigatorHistory(page.settings.name!, _TestPurposeLocalContextsManager(), ([_]) {}));
+        }
       }
       _firstLoadCompleter.complete();
       return initialPages;
     }
+    // end testing purposes
 
-    final beagleWidget = _beagleWidgetFactory(rootNavigator);
-
+    final beagleViewWidget = beagle.createView(rootNavigator);
     if (initialRoute is LocalView) {
-      controller.onSuccess(view: beagleWidget.view, context: state.context, screen: (initialRoute as LocalView).screen);
+      setNavigationContext(initialRoute.navigationContext, beagleViewWidget.view.getLocalContexts(), false);
+      controller.onSuccess(
+        view: beagleViewWidget.view,
+        context: state.context,
+        screen: (initialRoute as LocalView).screen,
+      );
       _firstLoadCompleter.complete();
     } else {
       () async {
         await _fetchContentAndUpdateView(
-          view: beagleWidget.view,
+          view: beagleViewWidget.view,
           context: state.context,
           completeNavigation: () => null,
           route: initialRoute,
+          navigationContext: initialRoute.navigationContext,
         );
         _firstLoadCompleter.complete();
       }();
     }
 
-    _history.add(routeName);
-    return [_buildRoute(beagleWidget, routeName)];
+    _addHistory(routeName, beagleViewWidget.view);
+    return [_buildRoute(beagleViewWidget.widget, routeName)];
   }
 
-  String _getRouteId(BeagleRoute route) {
-    return route is LocalView ? route.screen.getId() : (route as RemoteView).url;
-  }
+  String _getRouteId(BeagleRoute route) => route is LocalView ? route.screen.getId() : (route as RemoteView).url;
 
   Future<void> _fetchContentAndUpdateView({
     dynamic route,
     required BuildContext context,
     required BeagleView view,
     required Function completeNavigation,
+    required NavigationContext? navigationContext,
   }) async {
-    try {
-      controller.onLoading(view: view, context: context, completeNavigation: completeNavigation);
-      final screen = await viewClient.fetch(route);
-      controller.onSuccess(view: view, context: context, screen: screen);
+    void setNavigationContextAndCompleteNavigation() {
+      setNavigationContext(navigationContext, view.getLocalContexts(), false);
       completeNavigation();
+    }
+
+    try {
+      controller.onLoading(view: view, context: context, completeNavigation: setNavigationContextAndCompleteNavigation);
+      final screen = await beagle.viewClient.fetch(route);
+      controller.onSuccess(view: view, context: context, screen: screen);
+      setNavigationContextAndCompleteNavigation();
     } catch (error, stackTrace) {
       Future<void> retry() {
         return _fetchContentAndUpdateView(
@@ -114,6 +147,7 @@ class StackNavigator extends StatelessWidget {
           context: context,
           view: view,
           completeNavigation: completeNavigation,
+          navigationContext: navigationContext,
         );
       }
 
@@ -123,76 +157,125 @@ class StackNavigator extends StatelessWidget {
         error: error,
         stackTrace: stackTrace,
         retry: retry,
-        completeNavigation: completeNavigation,
+        completeNavigation: setNavigationContextAndCompleteNavigation,
       );
     }
   }
 
-  Future<void> untilFirstLoadCompletes() {
-    return _firstLoadCompleter.future;
+  Future<void> untilFirstLoadCompletes() => _firstLoadCompleter.future;
+
+  void setNavigationContext(NavigationContext? navigationContext, [LocalContextsManager? manager, bool render = true]) {
+    if (navigationContext != null && (_history.isNotEmpty || manager != null)) {
+      final localContextsManager = manager ?? _history.last.viewLocalContextsManager;
+      localContextsManager.setContext('navigationContext', navigationContext.value, navigationContext.path);
+      if (render) _history.last.render();
+    }
   }
 
-  void popToView(String routeIdentifier) {
-    if (!_history.contains(routeIdentifier)) {
-      return logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
+  void _onPopLast() {
+    rootNavigator.popStack(_poppedNavigationContext);
+  }
+
+  void popToView(String routeIdentifier, [NavigationContext? navigationContext]) {
+    _poppedNavigationContext = navigationContext;
+
+    if (!_history.map((h) => h.routeName).contains(routeIdentifier)) {
+      return beagle.logger
+          .error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
-    _thisNavigatorKey.currentState?.popUntil((route) => route.settings.name == routeIdentifier);
-    while (_history.last != routeIdentifier) {
+    _thisNavigatorKey.currentState!.popUntil((route) => route.settings.name == routeIdentifier);
+    while (_history.last.routeName != routeIdentifier) {
       _history.removeLast();
     }
+
+    if (_history.isNotEmpty) {
+      /* It has already popped at this time */
+      setNavigationContext(navigationContext);
+      _poppedNavigationContext = null;
+    }
   }
 
-  void popView() {
-    if (_history.length == 1) {
-      return rootNavigator.popStack();
+  void popView([NavigationContext? navigationContext]) {
+    _poppedNavigationContext = navigationContext;
+
+    /* We only call the default pop from the navigator because the popView operation can also be triggered by the back
+    button of the navigation bar and the systems's back function. The full popView behavior can be found in the
+    _historyObserver. */
+    _thisNavigatorKey.currentState!.pop();
+
+    if (_history.isNotEmpty) {
+      /* It has already popped at this time */
+      setNavigationContext(navigationContext);
+      _poppedNavigationContext = null;
     }
-    _thisNavigatorKey.currentState?.pop();
-    _history.removeLast();
   }
 
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
     final routeId = _getRouteId(route);
-    final beagleWidget = _beagleWidgetFactory(rootNavigator);
+    final beagleViewWidget = beagle.createView(rootNavigator);
     bool completed = false;
 
     void complete() {
       if (completed) return;
-      final Route<dynamic> materialRoute = _buildRoute(beagleWidget, routeId);
-      _thisNavigatorKey.currentState?.push(materialRoute);
-      _history.add(routeId);
+      final Route<dynamic> materialRoute = _buildRoute(beagleViewWidget.widget, routeId);
+      _thisNavigatorKey.currentState!.push(materialRoute);
+
+      _addHistory(routeId, beagleViewWidget.view);
+
       completed = true;
     }
 
     if (route is LocalView) {
-      controller.onSuccess(view: beagleWidget.view, context: context, screen: route.screen);
+      setNavigationContext(route.navigationContext, beagleViewWidget.view.getLocalContexts(), false);
+      controller.onSuccess(view: beagleViewWidget.view, context: context, screen: route.screen);
       complete();
     } else {
       await _fetchContentAndUpdateView(
         route: route,
         context: context,
-        view: beagleWidget.view,
+        view: beagleViewWidget.view,
         completeNavigation: complete,
+        navigationContext: route.navigationContext,
       );
     }
   }
 
   /// Returns a copy of the navigation history. Used for testing purposes.
-  List<String> getHistory() {
-    return [..._history];
-  }
+  List<StackNavigatorHistory> getHistory() => [..._history];
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => true,
-      child: Scaffold(
-        body: Navigator(
-          initialRoute: _getRouteId(initialRoute),
-          onGenerateInitialRoutes: _onGenerateInitialRoutes,
-          observers: navigatorObservers,
-          key: _thisNavigatorKey,
-        ),
+    return Scaffold(
+      body: Navigator(
+        initialRoute: _getRouteId(initialRoute),
+        onGenerateInitialRoutes: _onGenerateInitialRoutes,
+        observers: [_historyObserver, ...navigatorObservers],
+        key: _thisNavigatorKey,
       ),
     );
   }
+}
+
+class _TestPurposeLocalContextsManager implements LocalContextsManager {
+  @override
+  void clearAll() {}
+
+  @override
+  List<BeagleDataContext> getAllAsDataContext() {
+    return [];
+  }
+
+  @override
+  LocalContext? getContext(String id) {
+    return null;
+  }
+
+  @override
+  BeagleDataContext? getContextAsDataContext(String id) {}
+
+  @override
+  void removeContext(String id) {}
+
+  @override
+  void setContext(String id, value, [String? path]) {}
 }

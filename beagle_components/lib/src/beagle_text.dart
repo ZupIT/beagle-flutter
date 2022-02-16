@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-/// A Text widget that displays a string of text with single style.
-class BeagleText extends StatelessWidget {
+import 'theme/beagle_theme.dart';
+import 'theme/beagle_theme_provider.dart';
+
+class BeagleText extends StatefulWidget {
   const BeagleText({
     Key? key,
     this.text,
@@ -42,13 +44,20 @@ class BeagleText extends StatelessWidget {
   final String? styleId;
 
   @override
+  _BeagleText createState() => _BeagleText();
+}
+
+/// A Text widget that displays a string of text with single style.
+class _BeagleText extends State<BeagleText> {
+  @override
   Widget build(BuildContext context) {
+    final theme = BeagleThemeProvider.of(context)?.theme;
     final beagleText = Text(
-      text.toString(),
-      textAlign: getTextAlign(alignment ?? TextAlignment.LEFT),
-      style: getTextStyle(),
+      widget.text.toString(),
+      textAlign: getTextAlign(widget.alignment ?? TextAlignment.LEFT),
+      style: getTextStyle(theme),
     );
-    return alignment == TextAlignment.CENTER
+    return widget.alignment == TextAlignment.CENTER
         ? Center(child: beagleText)
         : beagleText;
   }
@@ -68,15 +77,12 @@ class BeagleText extends StatelessWidget {
     return color != null ? HexColor(color) : null;
   }
 
-  TextStyle getTextStyle() {
-    final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-    var textStyle = styleId != null && styleId!.isNotEmpty
-        ? designSystem.textStyle(styleId!)
-        : TextStyle();
-    if (textColor != null && textColor!.isNotEmpty) {
-      textStyle = textStyle!.copyWith(color: getTextColor(textColor));
+  TextStyle getTextStyle(BeagleTheme? theme) {
+    var textStyle = (widget.styleId == null ? null : theme?.textStyle(widget.styleId!)) ?? TextStyle();
+    if (widget.textColor != null && widget.textColor!.isNotEmpty) {
+      textStyle = textStyle.copyWith(color: getTextColor(widget.textColor));
     }
-    return textStyle!;
+    return textStyle;
   }
 }
 

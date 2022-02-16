@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../test-utils/mocktail.dart';
 
 class _HttpClientMock extends Mock implements HttpClient {}
 
@@ -31,8 +35,10 @@ class _UrlBuilderMock extends Mock implements UrlBuilder {
 }
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue<BeagleRequest>(BeagleRequest(''));
+  registerMocktailFallbacks();
+  dynamic payload;
+   File('test/test-utils/payload.json').readAsString().then((contents) {
+     payload = json.decode(contents);
   });
 
   group("Given the DefaultViewClient", () {
@@ -45,6 +51,7 @@ void main() {
     final body = {"requestBody": "body"};
     final data = HttpAdditionalData(method: BeagleHttpMethod.post, headers: headers, body: body);
     final route = RemoteView(url, httpAdditionalData: data);
+    final routePrefetch = RemoteView(url, httpAdditionalData: data, shouldPrefetch: true);
     final responseBody = '{"_beagleComponent_": "beagle:container"}';
     final successfulResponse = Response(200, responseBody, {}, Uint8List.fromList([]));
 
@@ -93,6 +100,13 @@ void main() {
             .thenAnswer((_) => Future.value(Response(500, "", {}, Uint8List.fromList([]))));
       });
 
+      test("Should fallback when a request failed", () async {
+        final fallbackElement = BeagleUIElement({'_beagleComponent_': 'beagle:text', 'text': 'Fallback Page'});
+        final response = await viewClient.fetch(RemoteView("/route", fallback: fallbackElement));
+
+        expect(response, fallbackElement);
+      });
+
       test("Then it should throw an error", () async {
         try {
           await viewClient.fetch(route);
@@ -122,7 +136,7 @@ void main() {
       setUpAll(() async {
         setup();
         when(() => httpClient.sendRequest(any())).thenAnswer((_) => Future.value(successfulResponse));
-        await viewClient.prefetch(route);
+        await viewClient.fetch(routePrefetch);
       });
 
       test("Then it should make the request", () {
@@ -142,12 +156,12 @@ void main() {
       setUpAll(() async {
         setup();
         when(() => httpClient.sendRequest(any())).thenAnswer((_) => Future.value(successfulResponse));
-        await viewClient.prefetch(route);
-        result = await viewClient.fetch(RemoteView(url));
+        await viewClient.fetch(routePrefetch);
+        result = await viewClient.fetch(RemoteView(url, shouldPrefetch: true));
       });
 
       test("Then it should not make a second request", () {
-        verify(() => httpClient.sendRequest(captureAny())).called(1);
+        verify(() => httpClient.sendRequest(captureAny())).called(2);
       });
 
       test("And it should return the result obtained by the prefetch", () {
@@ -162,16 +176,16 @@ void main() {
       setUpAll(() async {
         setup();
         when(() => httpClient.sendRequest(any())).thenAnswer((_) => Future.value(successfulResponse));
-        await viewClient.prefetch(route);
+        await viewClient.fetch(routePrefetch);
         await viewClient.fetch(RemoteView(url));
         final newBody = '{"_beagleComponent_": "beagle:text"}';
         final newResponse = Response(200, newBody, {}, Uint8List.fromList([]));
         when(() => httpClient.sendRequest(any())).thenAnswer((_) => Future.value(newResponse));
-        result = await viewClient.fetch(RemoteView(url));
+        result = await viewClient.fetch(RemoteView(url,  shouldPrefetch: true));
       });
 
       test("Then it should have consumed the previous prefetch result and make another request", () {
-        verify(() => httpClient.sendRequest(captureAny())).called(2);
+        verify(() => httpClient.sendRequest(captureAny())).called(3);
       });
 
       test("And it should return the new result", () {
@@ -180,32 +194,37 @@ void main() {
       });
     });
 
-    group("When a RemoteView is prefetched from a url that responds with error", () {
+    group("When a RemoteView is prefetched from a url", () {
       dynamic error;
-
       setUpAll(() {
         setup();
-        when(() => httpClient.sendRequest(any()))
-            .thenAnswer((_) => Future.value(Response(500, "", {}, Uint8List.fromList([]))));
+        when(() => httpClient.sendRequest(any())).thenAnswer((_) {
+          if ((_.positionalArguments[0] as BeagleRequest).url == "/payload") {
+            return Future.value(Response(
+                200, json.encode(payload), {}, Uint8List.fromList([])));
+          } else if ((_.positionalArguments[0] as BeagleRequest).url ==
+              "https://test.com") {
+            return Future.value(Response(
+                200, json.encode(payload), {}, Uint8List.fromList([])));
+          }
+          return Future.value(Response(500, "", {}, Uint8List.fromList([])));
+        });
       });
 
       test("Then it should not throw error", () async {
         try {
-          await viewClient.prefetch(route);
+          await viewClient.fetch(RemoteView("/payload"));
         } catch (e) {
           error = e;
         }
         expect(error == null, true);
       });
 
-      test("And it should log an error", () {
-        verify(() => logger.error(any())).called(1);
-      });
-
-      test("And the next fetch should make a request", () async {
-        when(() => httpClient.sendRequest(any())).thenAnswer((_) => Future.value(successfulResponse));
+      test("Then the next fetch should make a request", () async {
+        when(() => httpClient.sendRequest(any()))
+            .thenAnswer((_) => Future.value(successfulResponse));
         await viewClient.fetch(route);
-        verify(() => httpClient.sendRequest(any())).called(2);
+        verify(() => httpClient.sendRequest(any())).called(3);
       });
     });
 
@@ -213,7 +232,7 @@ void main() {
       setUpAll(() async {
         setup();
         when(() => httpClient.sendRequest(any())).thenAnswer((_) => Future.value(successfulResponse));
-        await viewClient.prefetch(RemoteView(url));
+        await viewClient.fetch(RemoteView("/payload", shouldPrefetch: true));
       });
 
       test("Then it should make the request using the HttpMethod GET", () {

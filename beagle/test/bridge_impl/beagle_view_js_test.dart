@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,16 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class BeagleJSEngineMock extends Mock implements BeagleJSEngine {}
 
 class BuildContextMock extends Mock implements BuildContext {}
 
+class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
+
 void main() {
+  registerMocktailFallbacks();
   const createdViewId = 'viewId';
   final jsEngineMock = BeagleJSEngineMock();
 
@@ -39,7 +44,7 @@ void main() {
   });
 
   group('Given a BeagleViewJS', () {
-    final beagleView = BeagleViewJS(jsEngineMock);
+    final beagleView = BeagleViewJS(jsEngineMock, _BeagleNavigatorMock());
 
     group('When destroy is called', () {
       test('Then should remove all view listeners for this view id at BeagleJSEngine', () {
@@ -57,7 +62,7 @@ void main() {
         };
 
         when(
-          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJsCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult(json.encode(properties), null),
         );
@@ -72,7 +77,7 @@ void main() {
 
       test('Then it should return null if no tree exists', () {
         when(
-          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJsCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult("null", null),
         );
@@ -82,7 +87,7 @@ void main() {
 
       test('Then it should return null if tree is invalid', () {
         when(
-          () => jsEngineMock.evaluateJavascriptCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
+          () => jsEngineMock.evaluateJsCode("global.beagle.getViewById('$createdViewId').getTreeAsJson()"),
         ).thenReturn(
           JsEvalResult("{}", null),
         );
@@ -103,12 +108,6 @@ void main() {
 
     group('When onAction is called', () {
       test('Then should register the view action listener at BeagleJSEngine', () {
-        registerFallbackValue<
-            void Function({
-          BeagleAction? action,
-          BeagleUIElement? element,
-          BeagleView? view,
-        })>(({BeagleAction? action, BeagleUIElement? element, BeagleView? view}) => {});
         void onActionListener({BeagleAction? action, BeagleView? view, BeagleUIElement? element}) {}
         when(() => beagleView.onAction(any())).thenReturn(() {});
         beagleView.onAction(onActionListener);

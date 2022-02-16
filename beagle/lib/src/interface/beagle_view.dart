@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/bridge_impl/handlers/action.dart';
 
 typedef ViewChangeListener = void Function(BeagleUIElement tree);
 
@@ -24,6 +24,9 @@ abstract class BeagleView {
   /// when called, undoes the subscription (removes the listener).
   RemoveListener onChange(ViewChangeListener listener);
 
+  /// Gets the local context manager of the current BeagleView, which manage each local context.
+  LocalContextsManager getLocalContexts();
+
   /// Gets the renderer of the current BeagleView. Can be used to control the rendering directly.
   Renderer getRenderer();
 
@@ -31,7 +34,7 @@ abstract class BeagleView {
   BeagleUIElement? getTree();
 
   /// Gets the navigator that spawned this Beagle View, if any.
-  BeagleNavigator? getNavigator();
+  BeagleNavigator getNavigator();
 
   /// Destroys the current view. Should be used when the BeagleView won't be used anymore. Avoids
   /// memory leaks and calls to objects that don't exist any longer.

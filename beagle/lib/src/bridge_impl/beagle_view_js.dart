@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,44 +17,46 @@
 import 'dart:convert';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/bridge_impl/handlers/action.dart';
+import 'package:beagle/src/bridge_impl/local_contexts_manager_js.dart';
 
 import 'beagle_js_engine.dart';
 import 'renderer_js.dart';
 
 /// Creates a new Beagle View. If this view is created by a navigator, it must be specified in the constructor.
 class BeagleViewJS implements BeagleView {
-  BeagleViewJS(this._beagleJSEngine, [this.parentNavigator]) {
-    _id = _beagleJSEngine.createBeagleView();
+  BeagleViewJS(this._jsEngine, this._parentNavigator) {
+    _id = _jsEngine.createBeagleView();
     BeagleViewJS.views[_id] = this;
-    _renderer = RendererJS(_beagleJSEngine, _id);
+    _renderer = RendererJS(_jsEngine, _id);
+    _localContextsManager = LocalContextsManagerJS(_jsEngine, _id);
   }
 
   late String _id;
   late Renderer _renderer;
-  BeagleNavigator? parentNavigator;
+  late LocalContextsManager _localContextsManager;
+  final BeagleNavigator _parentNavigator;
+  final BeagleJSEngine _jsEngine;
   static Map<String, BeagleViewJS> views = {};
-  final BeagleJSEngine _beagleJSEngine;
 
   @override
   void destroy() {
-    _beagleJSEngine.removeViewListeners(_id);
+    _jsEngine.removeViewListeners(_id);
     views.remove(_id);
   }
 
   @override
-  BeagleNavigator? getNavigator() {
-    return parentNavigator;
-  }
+  BeagleNavigator getNavigator() => _parentNavigator;
 
   @override
-  Renderer getRenderer() {
-    return _renderer;
-  }
+  LocalContextsManager getLocalContexts() => _localContextsManager;
+
+  @override
+  Renderer getRenderer() => _renderer;
 
   @override
   BeagleUIElement? getTree() {
-    final result =
-        _beagleJSEngine.evaluateJavascriptCode("global.beagle.getViewById('$_id').getTreeAsJson()")?.stringResult;
+    final result = _jsEngine.evaluateJsCode("global.beagle.getViewById('$_id').getTreeAsJson()")?.stringResult;
 
     if (result == null) return null;
 
@@ -63,12 +65,8 @@ class BeagleViewJS implements BeagleView {
   }
 
   @override
-  void Function() onChange(ViewChangeListener listener) {
-    return _beagleJSEngine.onViewUpdate(_id, listener);
-  }
+  void Function() onChange(ViewChangeListener listener) => _jsEngine.onViewUpdate(_id, listener);
 
   @override
-  void Function() onAction(ActionListener listener) {
-    return _beagleJSEngine.onAction(_id, listener);
-  }
+  void Function() onAction(ActionListener listener) => _jsEngine.onAction(_id, listener);
 }

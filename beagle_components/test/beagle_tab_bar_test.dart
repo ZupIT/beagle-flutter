@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'service_locator/service_locator.dart';
+import 'test-utils/provider_mock.dart';
 
-class MockDesignSystem extends Mock implements BeagleDesignSystem {}
+// FIXME: these tests don't pass when run all at once.
 
-class MockBeagleLogger extends Mock implements BeagleLogger {}
+class _BeagleThemeMock extends Mock implements BeagleTheme {}
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+class _BeagleServiceMock extends Mock implements BeagleService {}
 
 void main() {
-  final designSystemMock = MockDesignSystem();
-  final beagleLoggerMock = MockBeagleLogger();
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
-
-  when(() => designSystemMock.image(any())).thenReturn('images/beagle.png');
-
+  final beagle = _BeagleServiceMock();
+  final theme = _BeagleThemeMock();
+  when(() => theme.image(any())).thenReturn('images/beagle.png');
   const tabBarKey = Key('BeagleTabBar');
   final tabBarItems = <TabBarItem>[
     TabBarItem('Tab 1', LocalImagePath('')),
@@ -42,34 +39,25 @@ void main() {
     TabBarItem('Tab 3', LocalImagePath('')),
   ];
 
-  Future<Widget> createWidget({
+  Widget createWidget({
     Key key = tabBarKey,
-    BeagleDesignSystem? designSystem,
     List<TabBarItem> items = const [],
     int currentTab = 0,
     void Function(int)? onTabSelection,
-  }) async {
-    await testSetupServiceLocator(
-      designSystem: designSystem,
-      logger: beagleLoggerMock,
-      beagleYogaFactory: beagleYogaFactoryMock,
-    );
-
-    when(() => beagleYogaFactoryMock.createYogaLayout(
-          style: any(named: 'style'),
-          children: any(named: 'children'),
-        )).thenAnswer((realInvocation) {
-      final List<Widget> children = realInvocation.namedArguments.values.last;
-      return children.first;
-    });
-
-    return MaterialApp(
-      home: Scaffold(
-        body: BeagleTabBar(
-          key: tabBarKey,
-          items: items,
-          currentTab: currentTab,
-          onTabSelection: onTabSelection ?? (_) {},
+  }) {
+    return BeagleProviderMock(
+      beagle: beagle,
+      child: BeagleThemeProvider(
+        theme: theme,
+        child: MaterialApp(
+          home: Scaffold(
+            body: BeagleTabBar(
+              // key: tabBarKey,
+              items: items,
+              currentTab: currentTab,
+              onTabSelection: onTabSelection ?? (_) {},
+            ),
+          ),
         ),
       ),
     );
@@ -81,18 +69,18 @@ void main() {
     group('When the platform is android', () {
       testWidgets('Then it should have a TabBar child',
           (WidgetTester tester) async {
-        await tester.pumpWidget(await createWidget());
+        await tester.pumpWidget(createWidget());
         expect(find.byType(TabBar), findsOneWidget);
       });
 
       testWidgets('Then it should have the correct number of Tabs',
           (WidgetTester tester) async {
-        await tester.pumpWidget(await createWidget(items: tabBarItems));
+        await tester.pumpWidget(createWidget(items: tabBarItems));
         expect(find.byType(Tab), findsNWidgets(tabBarItems.length));
       });
 
       testWidgets('Then it should have icons', (WidgetTester tester) async {
-        await tester.pumpWidget(await createWidget(items: tabBarItems));
+        await tester.pumpWidget(createWidget(items: tabBarItems));
         expect(find.byType(BeagleImage), findsNWidgets(tabBarItems.length));
       });
     });
@@ -101,7 +89,7 @@ void main() {
       testWidgets('Then it should have a TabBar child',
           (WidgetTester tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        await tester.pumpWidget(await createWidget(items: tabBarItems));
+        await tester.pumpWidget(createWidget(items: tabBarItems));
 
         expect(find.byType(TabBar), findsOneWidget);
         debugDefaultTargetPlatformOverride = null;
@@ -110,7 +98,7 @@ void main() {
       testWidgets('Then it should have correct number of tabs',
           (WidgetTester tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        await tester.pumpWidget(await createWidget(items: tabBarItems));
+        await tester.pumpWidget(createWidget(items: tabBarItems));
 
         expect(find.byType(Tab), findsNWidgets(tabBarItems.length));
 
@@ -121,7 +109,7 @@ void main() {
     group('When it has tabs', () {
       testWidgets('Then it should show correct tabs text',
           (WidgetTester tester) async {
-        await tester.pumpWidget(await createWidget(items: tabBarItems));
+        await tester.pumpWidget(createWidget(items: tabBarItems));
 
         expect(find.text('Tab 1'), findsOneWidget);
         expect(find.text('Tab 2'), findsOneWidget);
@@ -137,7 +125,7 @@ void main() {
           log.add(0);
         }
 
-        await tester.pumpWidget(await createWidget(
+        await tester.pumpWidget(createWidget(
           items: tabBarItems,
           onTabSelection: onTabSelection,
         ));
@@ -166,7 +154,7 @@ void main() {
           currentTab = tabIndex;
         }
 
-        final widget = await createWidget(
+        final widget = createWidget(
           items: tabBarItems,
           onTabSelection: onTabSelection,
         );

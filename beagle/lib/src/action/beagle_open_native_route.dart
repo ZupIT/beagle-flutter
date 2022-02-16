@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import 'package:beagle/src/logger/beagle_logger.dart';
-import 'package:beagle/src/service_locator.dart';
+import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
 class BeagleOpenNativeRoute {
@@ -27,11 +26,16 @@ class BeagleOpenNativeRoute {
 
   static final BeagleOpenNativeRoute _instance = BeagleOpenNativeRoute._constructor();
 
-  void navigate(BuildContext buildContext, String routeName) {
+  void navigate(BuildContext buildContext, String routeName, Map<String, String> data) {
     try {
-      Navigator.pushNamed(buildContext, routeName);
+      // we need to add this route to the first navigator above the root Beagle navigator
+      final rootNavigator = buildContext.findAncestorStateOfType<RootNavigatorState>();
+      // if, for some reason, the root Beagle navigator is not available, use the first navigator in the context
+      final targetNavigator = Navigator.of(rootNavigator == null ? buildContext : rootNavigator.context);
+      targetNavigator.pushNamed(routeName, arguments: data);
     } catch (err) {
-      beagleServiceLocator<BeagleLogger>().error('Error: $err while trying to navigate to $routeName');
+      final logger = findBeagleService(buildContext).logger;
+      logger.error('Error: $err while trying to navigate to $routeName');
     }
   }
 }

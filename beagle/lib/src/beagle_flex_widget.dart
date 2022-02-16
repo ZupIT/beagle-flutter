@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'package:beagle/beagle.dart';
+
 import 'package:flutter/widgets.dart';
 
-class BeagleFlexWidget extends StatelessWidget {
-  BeagleFlexWidget({
-    Key? key,
-    this.style,
-    required this.children,
-  }) : super(key: key);
-
-  final BeagleStyle? style;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return beagleServiceLocator<BeagleYogaFactory>().createYogaLayout(
-      style: style,
-      children: children,
-    );
-  }
+/// same as Flex from Flutter, but with the default values used by Beagle
+class BeagleFlexWidget extends Flex {
+  BeagleFlexWidget(List<Widget> children, {Axis direction = Axis.vertical}) : super(
+    children: children,
+    direction: direction,
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+  );
 }

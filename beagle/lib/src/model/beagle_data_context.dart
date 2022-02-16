@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
+import 'package:beagle/src/model/json_encodable.dart';
 
-class BeagleDataContext {
+class BeagleDataContext extends JsonEncodable {
   String id;
   dynamic value;
 
@@ -25,5 +25,9 @@ class BeagleDataContext {
     this.value,
   });
 
-  Map<String, dynamic> toJson() => {'id': id, 'value': jsonEncode(value)};
+  @override
+  Map<String, dynamic> toJson() => {'id': id, 'value': value};
+
+  static BeagleDataContext fromJson(Map<String, dynamic> json) =>
+      BeagleDataContext(id: json['id'], value: json['value']);
 }

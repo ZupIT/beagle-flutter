@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,11 @@ Future<_SetupResult> setupStackNavigatorTests({
   dynamic expectedError,
 }) async {
   final navigator = StackNavigator(
-    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:text'})),
+    beagle: mocks.beagle,
+    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:text'}), null),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
-    viewClient: mocks.viewClient,
     rootNavigator: mocks.rootNavigator,
-    logger: mocks.logger,
-    beagleWidgetFactory: mocks.beagleWidgetFactory,
     initialPages: mocks.initialPages,
     navigatorObservers: [mocks.navigatorObserver],
   );

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,44 +14,16 @@
  * limitations under the License.
  */
 
-import 'dart:async';
-
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
-import 'package:mocktail/mocktail.dart';
+import '../../test-utils/mocktail.dart';
 import 'expectations.dart';
 import 'mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'setup.dart';
 
-class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
-
-class _BeagleViewJSMock extends Mock implements BeagleViewJS {}
-
-class _BuildContextMock extends Mock implements BuildContext {}
-
-class _BeagleViewMock extends Mock implements BeagleView {}
-
-class _StackTraceMock extends Mock implements StackTrace {}
-
-class _RouteMock extends Mock implements Route<dynamic> {}
-
 void main() {
-  setUpAll(() async {
-    await beagleServiceLocator.reset();
-
-    beagleServiceLocator.registerSingleton<BeagleViewJS>(_BeagleViewJSMock());
-
-    registerFallbackValue<BeagleView>(_BeagleViewMock());
-    registerFallbackValue<UnsafeBeagleWidget>(UnsafeBeagleWidget(null));
-    registerFallbackValue<BuildContext>(_BuildContextMock());
-    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
-    registerFallbackValue<StackTrace>(_StackTraceMock());
-    registerFallbackValue<Route<dynamic>>(_RouteMock());
-    registerFallbackValue<BeagleUIElement>(BeagleUIElement({}));
-    registerFallbackValue<RemoteView>(RemoteView(''));
-  });
+  registerMocktailFallbacks();
 
   group('Given a StackNavigator class', () {
     final remoteView = RemoteView('/test');
@@ -93,6 +65,30 @@ void main() {
         expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should fetch and render the new route, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            final mocks = NavigationMocks(tester, 1);
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final remoteViewWithNavigationContext = RemoteView('/test', navigationContext: navigationContext);
+            final expectations = await _setup(tester: tester, mocks: mocks, route: remoteViewWithNavigationContext);
+            mocks.mockSuccessfulRequest(remoteViewWithNavigationContext, screen);
+            await navigator.pushView(remoteViewWithNavigationContext, mocks.lastBuildContext);
+            await tester.pump();
+
+            expectations.shouldFetchRoute();
+            expectations.shouldCreateBeagleWidget();
+            expectations.shouldHandleOnLoading();
+            expectations.shouldNotHandleOnError();
+            expectations.shouldHandleOnSuccess();
+            expectations.shouldUpdateHistoryByAddingRoute();
+            expectations.shouldPushNewRouteAndSetNavigationContext(navigationContext);
+            expectations.shouldRenderScreen();
+          },
+        );
+      });
     });
 
     group("When a RemoteView is pushed and the navigation completes inside the onLoading handler", () {
@@ -110,6 +106,28 @@ void main() {
         expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should render the Beagle screen as soon as pushView is called, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            final mocks = NavigationMocks(tester, 1);
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final remoteViewWithNavigationContext = RemoteView('/test', navigationContext: navigationContext);
+            final expectations = await _setup(tester: tester, mocks: mocks, route: remoteViewWithNavigationContext);
+            mocks.mockSuccessfulRequest(remoteViewWithNavigationContext, screen);
+            mocks.mockCompletionOnLoading();
+            // It's important not to await the next line
+            navigator.pushView(remoteViewWithNavigationContext, mocks.lastBuildContext);
+            await tester.pump();
+
+            expectations.shouldHandleOnLoading();
+            expectations.shouldUpdateHistoryByAddingRoute();
+            expectations.shouldPushNewRouteAndSetNavigationContext(navigationContext);
+            expectations.shouldRenderScreen();
+          },
+        );
+      });
     });
 
     group("When a RemoteView is pushed, but the fetch fails", () {
@@ -126,6 +144,32 @@ void main() {
         expectations.shouldNotPushNewRoute();
         expectations.shouldNotRenderScreen();
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should call error and not render anything, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            final mocks = NavigationMocks(tester, 1);
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final remoteViewWithNavigationContext = RemoteView('/test', navigationContext: navigationContext);
+            final expectations = await _setup(
+              tester: tester,
+              mocks: mocks,
+              expectedError: error,
+              route: remoteViewWithNavigationContext,
+            );
+            mocks.mockUnsuccessfulRequest(remoteViewWithNavigationContext, error);
+            await navigator.pushView(remoteViewWithNavigationContext, mocks.lastBuildContext);
+            await tester.pump();
+
+            expectations.shouldHandleOnError();
+            expectations.shouldNotHandleOnSuccess();
+            expectations.shouldNotUpdateHistory();
+            expectations.shouldNotPushNewRouteAndNotSetNavigationContext();
+            expectations.shouldNotRenderScreen();
+          },
+        );
+      });
     });
 
     group("When a RemoteView is pushed, the fetch fails and the onError handler completes the navigation", () {
@@ -140,6 +184,26 @@ void main() {
         expectations.shouldUpdateHistoryByAddingRoute();
         expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should render even with an error, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            final mocks = NavigationMocks(tester, 1);
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final remoteViewWithNavigationContext = RemoteView('/test', navigationContext: navigationContext);
+            final expectations = await _setup(tester: tester, mocks: mocks, route: remoteViewWithNavigationContext);
+            mocks.mockUnsuccessfulRequest(remoteViewWithNavigationContext, error);
+            mocks.mockCompletionOnError();
+            await navigator.pushView(remoteViewWithNavigationContext, mocks.lastBuildContext);
+            await tester.pump();
+
+            expectations.shouldUpdateHistoryByAddingRoute();
+            expectations.shouldPushNewRouteAndSetNavigationContext(navigationContext);
+            expectations.shouldRenderScreen();
+          },
+        );
       });
     });
 
@@ -161,6 +225,32 @@ void main() {
         expectations.shouldUpdateHistoryByAddingRoute();
         expectations.shouldPushNewRoute();
         expectations.shouldRenderScreen();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should render the resulting screen, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            final mocks = NavigationMocks(tester, 1);
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final remoteViewWithNavigationContext = RemoteView('/test', navigationContext: navigationContext);
+            final expectations = await _setup(tester: tester, mocks: mocks, route: remoteViewWithNavigationContext);
+            mocks.mockUnsuccessfulRequest(remoteViewWithNavigationContext, error);
+            final retryRef = mocks.mockRetryOnError();
+            await navigator.pushView(remoteViewWithNavigationContext, mocks.lastBuildContext);
+            await tester.pump();
+            mocks.mockSuccessfulRequest(remoteViewWithNavigationContext, screen);
+            await retryRef.current();
+            await tester.pump();
+
+            expectations.shouldFetchRoute(2);
+            expectations.shouldHandleOnLoading(2);
+            expectations.shouldHandleOnSuccess();
+            expectations.shouldUpdateHistoryByAddingRoute();
+            expectations.shouldPushNewRouteAndSetNavigationContext(navigationContext);
+            expectations.shouldRenderScreen();
+          },
+        );
       });
     });
 
@@ -185,28 +275,52 @@ void main() {
           expectations.shouldRenderScreen();
         },
       );
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should render the screen immediately, without contacting the backend, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final localView = LocalView(screen, navigationContext);
+            final mocks = NavigationMocks(tester, 1);
+            final expectations = await _setup(tester: tester, mocks: mocks, route: localView);
+            // It's important not to await the next line
+            navigator.pushView(localView, mocks.lastBuildContext);
+            await tester.pump();
+
+            expectations.shouldNotFetchRoute();
+            expectations.shouldCreateBeagleWidget();
+            expectations.shouldNotHandleOnLoading();
+            expectations.shouldNotHandleOnError();
+            expectations.shouldHandleOnSuccess();
+            expectations.shouldUpdateHistoryByAddingRoute();
+            expectations.shouldPushNewRouteAndSetNavigationContext(navigationContext);
+            expectations.shouldRenderScreen();
+          },
+        );
+      });
     });
 
     /* This is an uncommon scenario where a custom Beagle component would create another navigator. This test ensures
     the correct navigator will be used no matter what. */
     group("When a view is pushed from a context where another navigator is the closest ancestor", () {
-      late BuildContext buildContext;
-
-      final initialPageOfAnotherNavigator = MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) {
-          buildContext = context;
-          return Container();
-        },
-        settings: RouteSettings(name: 'test'),
-      );
-
-      final pageContainingAnotherNavigator = MaterialPageRoute<dynamic>(
-        builder: (_) => Navigator(
-          onGenerateInitialRoutes: (NavigatorState state, String routeName) => [initialPageOfAnotherNavigator],
-        ),
-      );
-
       testWidgets('Then it should push the view to the StackNavigator anyway', (WidgetTester tester) async {
+        late BuildContext buildContext;
+
+        final initialPageOfAnotherNavigator = MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) {
+            buildContext = context;
+            return Container();
+          },
+          settings: RouteSettings(name: 'test'),
+        );
+
+        final pageContainingAnotherNavigator = MaterialPageRoute<dynamic>(
+          builder: (_) => Navigator(
+            onGenerateInitialRoutes: (NavigatorState state, String routeName) => [initialPageOfAnotherNavigator],
+          ),
+        );
+
         final localView = LocalView(screen);
         final mocks = NavigationMocks(tester);
         mocks.initialPages.add(pageContainingAnotherNavigator);
@@ -215,6 +329,39 @@ void main() {
         await tester.pump();
 
         expectations.shouldPushNewRoute();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+          'Then it should push the view to the StackNavigator anyway, setting the navigation context on a local context',
+          (WidgetTester tester) async {
+            late BuildContext buildContext;
+
+            final initialPageOfAnotherNavigator = MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) {
+                buildContext = context;
+                return Container();
+              },
+              settings: RouteSettings(name: 'test'),
+            );
+
+            final pageContainingAnotherNavigator = MaterialPageRoute<dynamic>(
+              builder: (_) => Navigator(
+                onGenerateInitialRoutes: (NavigatorState state, String routeName) => [initialPageOfAnotherNavigator],
+              ),
+            );
+
+            final navigationContext = NavigationContext("context value", "ctxPath");
+            final localView = LocalView(screen, navigationContext);
+            final mocks = NavigationMocks(tester);
+            mocks.initialPages.add(pageContainingAnotherNavigator);
+            final expectations = await _setup(tester: tester, mocks: mocks, route: localView);
+            await navigator.pushView(localView, buildContext);
+            await tester.pump();
+
+            expectations.shouldPushNewRouteAndSetNavigationContext(navigationContext);
+          },
+        );
       });
     });
   });

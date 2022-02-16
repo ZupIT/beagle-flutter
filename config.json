@@ -47,7 +47,9 @@
     ".metadata",
     ".gitignore",
     ".gitkeep",
-    ".sed"
+    ".sed",
+    "**/Podfile.lock",
+    "**/AndroidManifest.xml"
   ],
   "startDateLicense": 2020
 }

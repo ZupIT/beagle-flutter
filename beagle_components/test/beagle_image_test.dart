@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,43 +15,35 @@
  */
 
 import 'dart:typed_data';
-
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'image/image_mock_data.dart';
-import 'service_locator/service_locator.dart';
+import 'test-utils/provider_mock.dart';
 
-class MockDesignSystem extends Mock implements BeagleDesignSystem {}
+class _BeagleThemeMock extends Mock implements BeagleTheme {}
 
-class MockBeagleImageDownloader extends Mock implements BeagleImageDownloader {}
+class _BeagleImageDownloaderMock extends Mock implements BeagleImageDownloader {}
 
-class MockBeagleLogger extends Mock implements BeagleLogger {}
+class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
-class MockBeagleYogaFactory extends Mock implements BeagleYogaFactory {}
+class _UrlBuilderMock extends Mock implements UrlBuilder {}
 
-class MockUrlBuilder extends Mock implements UrlBuilder {}
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final imageDownloader = _BeagleImageDownloaderMock();
+  @override
+  final logger = _BeagleLoggerMock();
+  @override
+  final urlBuilder = _UrlBuilderMock();
+}
 
 void main() {
-  final designSystemMock = MockDesignSystem();
-  final imageDownloaderMock = MockBeagleImageDownloader();
-  final beagleLoggerMock = MockBeagleLogger();
-  final beagleYogaFactoryMock = MockBeagleYogaFactory();
-  final urlBuilderMock = MockUrlBuilder();
-
-  setUpAll(() async {
-    await testSetupServiceLocator(
-      designSystem: designSystemMock,
-      imageDownloader: imageDownloaderMock,
-      logger: beagleLoggerMock,
-      beagleYogaFactory: beagleYogaFactoryMock,
-      urlBuilder: urlBuilderMock,
-    );
-  });
+  final beagle = _BeagleServiceMock();
+  final theme = _BeagleThemeMock();
 
   const imageUrl = 'https://test.com/beagle.png';
   const imageNotFoundUrl = 'https://notfound.com/beagle.png';
@@ -60,32 +52,19 @@ void main() {
   const errorStatusCode = 404;
   const imageKey = Key('BeagleImage');
 
-  when(() => beagleYogaFactoryMock.createYogaLayout(
-        style: any(named: 'style'),
-        children: any(named: 'children'),
-      )).thenAnswer((realInvocation) {
-    final List<Widget> children = realInvocation.namedArguments.values.last;
-    return children.first;
-  });
+  when(() => theme.image(defaultPlaceholder)).thenReturn('images/beagle_dog.png');
 
-  when(() => designSystemMock.image(defaultPlaceholder))
-      .thenReturn('images/beagle_dog.png');
+  when(() => beagle.urlBuilder.build(imageUrl)).thenReturn(imageUrl);
 
-  when(() => urlBuilderMock.build(imageUrl)).thenReturn(imageUrl);
+  when(() => beagle.urlBuilder.build(imageNotFoundUrl)).thenReturn(imageNotFoundUrl);
 
-  when(() => urlBuilderMock.build(imageNotFoundUrl))
-      .thenReturn(imageNotFoundUrl);
+  when(() => theme.image(invalidPlaceholder)).thenReturn('');
 
-  when(() => designSystemMock.image(invalidPlaceholder)).thenReturn('');
-
-  when(() => imageDownloaderMock.downloadImage(imageUrl))
-      .thenAnswer((invocation) {
+  when(() => beagle.imageDownloader.downloadImage(imageUrl)).thenAnswer((invocation) {
     return Future<Uint8List>.value(mockedBeagleImageData);
   });
-  when(() => imageDownloaderMock.downloadImage(imageNotFoundUrl))
-      .thenAnswer((invocation) {
-    throw BeagleImageDownloaderException(
-        statusCode: errorStatusCode, url: imageNotFoundUrl);
+  when(() => beagle.imageDownloader.downloadImage(imageNotFoundUrl)).thenAnswer((invocation) {
+    throw BeagleImageDownloaderException(statusCode: errorStatusCode, url: imageNotFoundUrl);
   });
 
   Widget createWidget({
@@ -94,11 +73,17 @@ void main() {
     required ImagePath path,
     required ImageContentMode mode,
   }) {
-    return MaterialApp(
-      home: BeagleImage(
-        key: key,
-        path: path,
-        mode: mode,
+    return BeagleProviderMock(
+      beagle: beagle,
+      child: BeagleThemeProvider(
+        theme: theme,
+        child: MaterialApp(
+          home: BeagleImage(
+            key: key,
+            path: path,
+            mode: mode,
+          ),
+        ),
       ),
     );
   }
@@ -119,7 +104,7 @@ void main() {
     ImageContentMode mode = ImageContentMode.FIT_CENTER,
   }) {
     return createWidget(
-      imageDownloader: imageDownloaderMock,
+      imageDownloader: beagle.imageDownloader,
       path: ImagePath.remote(
         url,
         ImagePath.local(placeholder) as LocalImagePath,
@@ -144,14 +129,12 @@ void main() {
     final localImage = createLocalWidget();
 
     group('When I set a valid path', () {
-      testWidgets('Then it should have a Image widget child',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a Image widget child', (WidgetTester tester) async {
         await tester.pumpWidget(localImage);
         expect(find.byType(Image), findsOneWidget);
       });
 
-      testWidgets('Then it should present the correct local image',
-          (WidgetTester tester) async {
+      testWidgets('Then it should present the correct local image', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(localImage);
           await precacheImageForTest(tester);
@@ -165,26 +148,21 @@ void main() {
     });
 
     group('When I set an invalid path', () {
-      testWidgets('Then it should render an empty container',
-          (WidgetTester tester) async {
-        await tester
-            .pumpWidget(createLocalWidget(placeholder: invalidPlaceholder));
+      testWidgets('Then it should render an empty container', (WidgetTester tester) async {
+        await tester.pumpWidget(createLocalWidget(placeholder: invalidPlaceholder));
         expect(find.byType(Container), findsOneWidget);
       });
     });
 
     group('When I set mode to ImageContentMode.CENTER', () {
-      testWidgets('Then the widget should have BoxFit.none',
-          (WidgetTester tester) async {
-        await tester
-            .pumpWidget(createLocalWidget(mode: ImageContentMode.CENTER));
+      testWidgets('Then the widget should have BoxFit.none', (WidgetTester tester) async {
+        await tester.pumpWidget(createLocalWidget(mode: ImageContentMode.CENTER));
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.none);
       });
     });
 
     group('When I set mode to ImageContentMode.CENTER_CROP', () {
-      testWidgets('Then the widget should have BoxFit.cover',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.cover', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.CENTER_CROP,
         ));
@@ -193,8 +171,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_CENTER', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_CENTER,
         ));
@@ -203,8 +180,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_XY', () {
-      testWidgets('Then the widget should have BoxFit.fill',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.fill', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget(
           mode: ImageContentMode.FIT_XY,
         ));
@@ -213,8 +189,7 @@ void main() {
     });
 
     group('When I do not set ImageContentMode', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.pumpWidget(createLocalWidget());
         expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
       });
@@ -223,14 +198,12 @@ void main() {
 
   group('Given a BeagleImage with a RemoteImagePath', () {
     group('When the widget is rendered', () {
-      testWidgets('Then it should have a Image widget child',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have a Image widget child', (WidgetTester tester) async {
         await tester.pumpWidget(createRemoteWidget());
         expect(find.byType(Image), findsOneWidget);
       });
 
-      testWidgets('Then it should present the correct remote image',
-          (WidgetTester tester) async {
+      testWidgets('Then it should present the correct remote image', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget());
           await precacheImageForTest(tester);
@@ -244,8 +217,7 @@ void main() {
     });
 
     group('When remote image url is not found', () {
-      testWidgets('Then it should present image placeholder',
-          (WidgetTester tester) async {
+      testWidgets('Then it should present image placeholder', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(url: imageNotFoundUrl));
           await precacheImageForTest(tester);
@@ -259,17 +231,14 @@ void main() {
     });
 
     group('When remote image url is not found and placeholder is invalid', () {
-      testWidgets('Then it should render an empty container',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(createRemoteWidget(
-            url: imageNotFoundUrl, placeholder: invalidPlaceholder));
+      testWidgets('Then it should render an empty container', (WidgetTester tester) async {
+        await tester.pumpWidget(createRemoteWidget(url: imageNotFoundUrl, placeholder: invalidPlaceholder));
         expect(find.byType(Container), findsOneWidget);
       });
     });
 
     group('When I set mode to ImageContentMode.CENTER', () {
-      testWidgets('Then the widget should have BoxFit.none',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.none', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(
             createRemoteWidget(mode: ImageContentMode.CENTER),
@@ -282,8 +251,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.CENTER_CROP', () {
-      testWidgets('Then the widget should have BoxFit.cover',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.cover', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(
             mode: ImageContentMode.CENTER_CROP,
@@ -295,8 +263,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_CENTER', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(
             mode: ImageContentMode.FIT_CENTER,
@@ -308,8 +275,7 @@ void main() {
     });
 
     group('When I set mode to ImageContentMode.FIT_XY', () {
-      testWidgets('Then the widget should have BoxFit.fill',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.fill', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget(
             mode: ImageContentMode.FIT_XY,
@@ -321,8 +287,7 @@ void main() {
     });
 
     group('When I do not set ImageContentMode', () {
-      testWidgets('Then the widget should have BoxFit.contain',
-          (WidgetTester tester) async {
+      testWidgets('Then the widget should have BoxFit.contain', (WidgetTester tester) async {
         await tester.runAsync(() async {
           await tester.pumpWidget(createRemoteWidget());
           await precacheImageForTest(tester);

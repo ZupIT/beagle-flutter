@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,13 @@ class DefaultHttpClient implements HttpClient {
   @override
   Future<Response> sendRequest(BeagleRequest req) async {
     final uri = Uri.parse(req.url);
+    final headers = { 'content-type': 'application/json', ...req.headers };
     final handlers = {
       BeagleHttpMethod.get: () => http.get(uri, headers: req.headers),
-      BeagleHttpMethod.post: () => http.post(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.put: () => http.put(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.patch: () => http.patch(uri, headers: req.headers, body: req.body),
-      BeagleHttpMethod.delete: () => http.delete(uri, headers: req.headers),
+      BeagleHttpMethod.post: () => http.post(uri, headers: headers, body: req.body),
+      BeagleHttpMethod.put: () => http.put(uri, headers: headers, body: req.body),
+      BeagleHttpMethod.patch: () => http.patch(uri, headers: headers, body: req.body),
+      BeagleHttpMethod.delete: () => http.delete(uri, headers: headers, body: req.body),
     };
     final response = await handlers[req.method]!();
     return Response(response.statusCode, response.body, response.headers, response.bodyBytes);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,8 @@
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'objects_fake/button_one_style.dart';
-import 'service_locator/service_locator.dart';
+import 'objects_fake/fake_theme.dart';
 
 const buttonText = 'Beagle Button';
 const buttonKey = Key('BeagleButton');
@@ -31,26 +28,25 @@ void buttonOnPress() {}
 Widget createWidget({
   Key buttonKey = buttonKey,
   String buttonText = buttonText,
-  Function buttonOnPress = buttonOnPress,
+  void Function() buttonOnPress = buttonOnPress,
   bool buttonEnabled = true,
-  String styleId = '',
+  String? styleId,
 }) {
-  return MaterialApp(
-    home: BeagleButton(
-      key: buttonKey,
-      text: buttonText,
-      onPress: buttonOnPress,
-      enabled: buttonEnabled,
-      styleId: styleId,
+  return BeagleThemeProvider(
+    theme: FakeTheme(),
+    child: MaterialApp(
+      home: BeagleButton(
+        key: buttonKey,
+        text: buttonText,
+        onPress: buttonOnPress,
+        enabled: buttonEnabled,
+        styleId: styleId,
+      ),
     ),
   );
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleButton', () {
     group('When the widget is created', () {
       testWidgets('Then it should have a ElevatedButton child', (WidgetTester tester) async {
@@ -109,28 +105,8 @@ void main() {
       });
     });
 
-    group('When set style', () {
-      testWidgets('Then it should have a correct style', (WidgetTester tester) async {
-        // WHEN
-        await tester.pumpWidget(createWidget(styleId: 'button-one'));
-
-        // THEN
-        final buttonFinder = find.byType(ElevatedButton);
-        final buttonCreated = tester.widget<ElevatedButton>(buttonFinder);
-        final textCreated = tester.widget<Text>(find.text(buttonText));
-        final buttonOne = ButtonOneStyle();
-
-        expect(buttonFinder, findsOneWidget);
-        expect(buttonCreated.style!.backgroundColor!.resolve({MaterialState.pressed}),
-            buttonOne.buttonStyle.backgroundColor!.resolve({MaterialState.pressed}));
-        expect(textCreated.style, buttonOne.buttonTextStyle);
-
-        debugDefaultTargetPlatformOverride = null;
-      });
-    });
-
     group('When not set style', () {
-      testWidgets('Then it should have a correct style', (WidgetTester tester) async {
+      testWidgets('Then it should not have a style', (WidgetTester tester) async {
         // WHEN
         await tester.pumpWidget(createWidget());
 

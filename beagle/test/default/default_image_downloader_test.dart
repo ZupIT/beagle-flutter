@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class MockHttpClient extends Mock implements HttpClient {}
 
-class FakeBeagleRequest extends Fake implements BeagleRequest {}
-
 void main() {
+  registerMocktailFallbacks();
+
   group('Given a DefaultBeagleImageDownloader', () {
     group('When downloadImage is called and http response is different than 200', () {
-      registerFallbackValue(FakeBeagleRequest());
-
       test('Then it should throw BeagleImageDownloaderException', () {
         final fakeResponse = Response(404, '', {}, Uint8List(0));
         final httpClientMock = MockHttpClient();

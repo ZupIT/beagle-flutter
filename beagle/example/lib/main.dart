@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,21 @@ import 'dart:io';
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 
-final Map<String, ComponentBuilder> myComponents = {
-  'custom:loading': (element, _, __) {
-    return Center(
-      key: element.getKey(),
-      child: const Text('My custom loading.'),
-    );
+class _MyCustomLoading extends ComponentBuilder {
+  @override
+  Widget buildForBeagle(element, _, __) {
+    return Center(key: element.getKey(), child: Text('My custom loading.'));
   }
-};
+}
 
 void main() {
   final localhost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
-
-  BeagleSdk.init(
+  final beagleService = BeagleService(
     baseUrl: 'http://$localhost:8080',
-    components: myComponents,
+    components: {'custom:loading': () => _MyCustomLoading()},
   );
-  runApp(BeagleExample());
+
+  runApp(BeagleProvider(beagle: beagleService, child: BeagleExample()));
 }
 
 class BeagleExample extends StatelessWidget {
@@ -49,7 +47,7 @@ class BeagleExample extends StatelessWidget {
           title: const Text('Beagle example'),
         ),
         body: ElevatedButton(
-          onPressed: () => BeagleSdk.openScreen(route: RemoteView('components'), context: context),
+          onPressed: () => openBeagleScreen(route: RemoteView('/components'), context: context),
           child: Text("Start Beagle flow"),
         ),
       ),

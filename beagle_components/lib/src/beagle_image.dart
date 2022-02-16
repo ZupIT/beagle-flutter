@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 import 'dart:typed_data';
 import 'package:beagle/beagle.dart';
-import 'package:flutter/foundation.dart';
+import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/widgets.dart';
 
 /// Defines an image widget that renders local or remote resource depending on
@@ -26,6 +26,7 @@ class BeagleImage extends StatefulWidget {
     Key? key,
     required this.path,
     this.mode,
+    this.style,
   }) : super(key: key);
 
   /// Defines the location of the image resource.
@@ -34,93 +35,107 @@ class BeagleImage extends StatefulWidget {
   /// Defines how the declared image will fit the view.
   final ImageContentMode? mode;
 
+  /// Property responsible to customize all the flex attributes and general style configuration
+  final BeagleStyle? style;
+
   @override
   _BeagleImageState createState() => _BeagleImageState();
 }
 
-class _BeagleImageState extends State<BeagleImage> {
+class _BeagleImageState extends State<BeagleImage> with BeagleConsumer {
   Future<Uint8List>? imageBytes;
-  BeagleLogger logger = beagleServiceLocator<BeagleLogger>();
 
   @override
-  void initState() {
+  void initBeagleState() {
     if (!isLocalImage()) {
       downloadImage();
     }
-
-    super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildBeagleWidget(BuildContext context) {
+    /* Suppose the immediate parent of this widget is a container 50x50. For some reason, Flutter can't figure out
+    that the maximum height for the image is 50. It makes it so the content overflows. I have no idea why it happens,
+    I checked and the constraints in the immediate parent says maxHeight 50, but if I measure it here, maxHeight is
+    Infinity. Somehow, Flutter forgets what the constraints should be. As a workaround, we used the style to set the
+    image size when its created. Unfortunately, this will not cover the cases where a percentage is used. */
+    final width = (widget.style?.size?.width?.type == UnitType.REAL ?  widget.style?.size?.width?.value : null)
+        ?.toDouble();
+    final height = (widget.style?.size?.height?.type == UnitType.REAL ?  widget.style?.size?.height?.value : null)
+        ?.toDouble();
+    final theme = BeagleThemeProvider.of(context)?.theme;
     final image = isLocalImage()
-        ? createImageFromAsset(widget.path as LocalImagePath)
-        : createImageFromNetwork(widget.path as RemoteImagePath);
-    return image;
+        ? createImageFromAsset(widget.path as LocalImagePath, theme, width, height)
+        : createImageFromNetwork(widget.path as RemoteImagePath, theme, width, height);
+    return ClipRRect(
+      borderRadius: StyleUtils.getBorderRadius(widget.style) ?? BorderRadius.zero,
+      child: image,
+    );
   }
 
   Future<void> downloadImage() async {
     try {
       final RemoteImagePath path = widget.path as RemoteImagePath;
-      final imageDownloader = beagleServiceLocator<BeagleImageDownloader>();
-      final urlBuilder = beagleServiceLocator<UrlBuilder>();
-      imageBytes = imageDownloader.downloadImage(urlBuilder.build(path.url));
+      imageBytes = beagle.imageDownloader.downloadImage(beagle.urlBuilder.build(path.url));
     } catch (e) {
-      logger.errorWithException(e.toString(), e as Exception);
+      beagle.logger.errorWithException(e.toString(), e as Exception);
     }
   }
 
   bool isLocalImage() => widget.path.runtimeType == LocalImagePath;
 
-  Widget createImageFromAsset(LocalImagePath? path) {
-    if (isPlaceHolderValid(path)) {
+  Widget createImageFromAsset(LocalImagePath? path, BeagleTheme? theme, double? width, double? height) {
+    if (isPlaceHolderValid(path, theme)) {
       return Image.asset(
-        getAssetName(path!) ?? '',
+        getAssetName(path!, theme) ?? '',
+        width: width,
+        height: height,
         fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
       );
     }
-    logger.error(
+    beagle.logger.error(
         'Invalid local image: "${path?.mobileId ?? 'null'}". Have you declared this id in your DesignSystem class?');
     return Container();
   }
 
-  Widget createImageFromNetwork(RemoteImagePath path) {
+  Widget createImageFromNetwork(RemoteImagePath path, BeagleTheme? theme, double? width, double? height) {
     return FutureBuilder(
       future: imageBytes,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return createPlaceHolderWidget(path);
+          return createPlaceHolderWidget(path, theme, width, height);
         }
-        return createImageFromMemory(snapshot.data as Uint8List);
+        return createImageFromMemory(snapshot.data as Uint8List, width, height);
       },
     );
   }
 
-  Widget createPlaceHolderWidget(RemoteImagePath path) {
-    if (isPlaceHolderValid(path.placeholder)) {
-      return createImageFromAsset(path.placeholder);
+  Widget createPlaceHolderWidget(RemoteImagePath path, BeagleTheme? theme, double? width, double? height) {
+    if (isPlaceHolderValid(path.placeholder, theme)) {
+      return createImageFromAsset(path.placeholder, theme, width, height);
     }
     return Container();
   }
 
-  Image createImageFromMemory(Uint8List bytes) {
+  Image createImageFromMemory(Uint8List bytes, double? width, double? height) {
     return Image.memory(
       bytes,
+      width: width,
+      height: height,
       fit: getBoxFit(widget.mode ?? ImageContentMode.CENTER),
     );
   }
 
   bool isImageDownloaded() => imageBytes != null;
 
-  String? getAssetName(LocalImagePath imagePath) {
-    final designSystem = beagleServiceLocator<BeagleDesignSystem>();
-    return designSystem.image(imagePath.mobileId);
+  String? getAssetName(LocalImagePath imagePath, BeagleTheme? theme) {
+    return theme?.image(imagePath.mobileId);
   }
 
-  bool isPlaceHolderValid(LocalImagePath? path) {
+  bool isPlaceHolderValid(LocalImagePath? path, BeagleTheme? theme) {
     if (path == null) return false;
 
-    final assetName = getAssetName(path);
+    final assetName = getAssetName(path, theme);
     return assetName != null && assetName.isNotEmpty;
   }
 
@@ -143,7 +158,8 @@ abstract class ImagePath {
 
   factory ImagePath.local(String mobileId) = LocalImagePath;
 
-  factory ImagePath.remote(String url, LocalImagePath placeholder) = RemoteImagePath;
+  factory ImagePath.remote(String url, LocalImagePath placeholder) =
+      RemoteImagePath;
 
   factory ImagePath.fromJson(Map<String, dynamic> json) {
     if (json[_jsonBeagleImagePathKey] == 'local') {
@@ -172,7 +188,9 @@ class RemoteImagePath extends ImagePath {
 
   RemoteImagePath.fromJson(Map<String, dynamic> json)
       : url = json[_jsonUrlKey],
-        placeholder = json[_jsonPlaceholderKey] != null ? LocalImagePath.fromJson(json[_jsonPlaceholderKey]) : null,
+        placeholder = json[_jsonPlaceholderKey] != null
+            ? LocalImagePath.fromJson(json[_jsonPlaceholderKey])
+            : null,
         super._();
 
   final String url;

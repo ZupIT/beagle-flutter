@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'service_locator/service_locator.dart';
+import 'objects_fake/fake_theme.dart';
 
 const text = 'Beagle Text';
 const textColor = '#00FF00';
@@ -38,66 +37,57 @@ Widget createWidget({
   TextAlignment? alignment = alignment,
   String? styleId,
 }) {
-  return MaterialApp(
-    home: BeagleText(
-      key: key,
-      text: text,
-      textColor: textColor,
-      alignment: alignment ?? TextAlignment.LEFT,
-      styleId: styleId ?? '',
+  return BeagleThemeProvider(
+    theme: FakeTheme(),
+    child: MaterialApp(
+      home: BeagleText(
+        key: key,
+        text: text,
+        textColor: textColor,
+        alignment: alignment ?? TextAlignment.LEFT,
+        styleId: styleId ?? '',
+      ),
     ),
   );
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleText', () {
     group('When the widget is rendered', () {
-      testWidgets('Then it should have the correct text',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct text', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
         expect(find.text(text), findsOneWidget);
       });
 
-      testWidgets('Then it should have the correct text color',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct text color', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
-        expect(tester.widget<Text>(find.text(text)).style!.color,
-            HexColor(textColor));
+        expect(tester.widget<Text>(find.text(text)).style!.color, HexColor(textColor));
       });
 
-      testWidgets('Then it should have the correct text alignment',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct text alignment', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget());
         expect(tester.widget<Text>(find.text(text)).textAlign, TextAlign.right);
       });
     });
 
     group('When a text color is not specified', () {
-      testWidgets('Then it should not set text color',
-          (WidgetTester tester) async {
+      testWidgets('Then it should not set text color', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(textColor: null));
         expect(tester.widget<Text>(find.text(text)).style!.color, null);
       });
     });
 
     group('When a text alignment is not specified', () {
-      testWidgets('Then it should set the alignment as left',
-          (WidgetTester tester) async {
+      testWidgets('Then it should set the alignment as left', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(alignment: null));
         expect(tester.widget<Text>(find.text(text)).textAlign, TextAlign.left);
       });
     });
 
     group('When set style', () {
-      testWidgets('Then it should have the correct style',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have the correct style', (WidgetTester tester) async {
         // WHEN
-        await tester
-            .pumpWidget(createWidget(styleId: 'text-one', textColor: null));
+        await tester.pumpWidget(createWidget(styleId: 'text-one', textColor: null));
 
         //THEN
         final textCreated = tester.widget<Text>(find.text(text));
@@ -110,8 +100,7 @@ void main() {
   });
 
   group('When set style with text color', () {
-    testWidgets('Then it should have the correct style',
-        (WidgetTester tester) async {
+    testWidgets('Then it should have the correct style', (WidgetTester tester) async {
       // WHEN
       await tester.pumpWidget(createWidget(styleId: 'text-one'));
 
@@ -125,8 +114,7 @@ void main() {
   });
 
   group('When set alignment to CENTER ', () {
-    testWidgets('Then it should be a Center Widget with text aligned to center',
-        (WidgetTester tester) async {
+    testWidgets('Then it should be a Center Widget with text aligned to center', (WidgetTester tester) async {
       // WHEN
       await tester.pumpWidget(createWidget(alignment: TextAlignment.CENTER));
 

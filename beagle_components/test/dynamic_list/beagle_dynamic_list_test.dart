@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/foundation.dart';
+import 'package:beagle_components/src/dynamic_list/flexible_list_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import '../service_locator/service_locator.dart';
+import '../test-utils/mocktail.dart';
 
-class MockBuildContext extends Mock implements BuildContext {}
+class _BeagleViewMock extends Mock implements BeagleView {}
 
 Widget createWidget({
   final List<dynamic>? dataSource,
@@ -37,7 +36,7 @@ Widget createWidget({
   final Function? onScrollEnd,
   final int? spanCount,
   final List<Widget>? children,
-  final BeagleWidgetStateProvider? provider,
+  final BeagleView? view,
 }) {
   return MaterialApp(
     key: Key('materialApp'),
@@ -54,17 +53,14 @@ Widget createWidget({
       onScrollEnd: onScrollEnd,
       spanCount: spanCount,
       children: children,
-      beagleWidgetStateProvider: provider,
+      view: view ?? _BeagleViewMock(),
+      beagleId: 'dynamicList',
     ),
   );
 }
 
 void main() {
-  setUpAll(() async {
-    registerFallbackValue<BuildContext>(MockBuildContext());
-    registerFallbackValue<TemplateManager>(TemplateManager());
-    await testSetupServiceLocator();
-  });
+  registerMocktailFallbacks();
 
   group('Given a BeagleDynamicList', () {
     group('When passing parameter spanCount with number one', () {
@@ -94,6 +90,7 @@ void main() {
     group('When passing parameter spanCount with number two', () {
       testWidgets('Then it should have a GridView component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(spanCount: 2));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
       });
@@ -117,6 +114,7 @@ void main() {
           direction: BeagleDynamicListDirection.HORIZONTAL,
           spanCount: null,
         ));
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _assertCorrectDirection(tester, Axis.horizontal);
@@ -127,6 +125,7 @@ void main() {
           direction: BeagleDynamicListDirection.HORIZONTAL,
           spanCount: 2,
         ));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _assertCorrectDirection(tester, Axis.horizontal);
@@ -138,6 +137,7 @@ void main() {
         await tester.pumpWidget(createWidget(
           direction: BeagleDynamicListDirection.VERTICAL,
         ));
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _assertCorrectDirection(tester, Axis.vertical);
@@ -148,6 +148,7 @@ void main() {
           direction: BeagleDynamicListDirection.VERTICAL,
           spanCount: 2,
         ));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _assertCorrectDirection(tester, Axis.vertical);
@@ -159,6 +160,7 @@ void main() {
         await tester.pumpWidget(createWidget(
           children: _getChildren(),
         ));
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _assertHasChildren(tester);
@@ -169,6 +171,7 @@ void main() {
           spanCount: 2,
           children: _getChildren(),
         ));
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _assertHasChildren(tester);
@@ -209,6 +212,7 @@ void main() {
             });
 
         await tester.pumpWidget(widget);
+        await tester.pump();
 
         _assertHasListViewAndNotHasGridView();
         _scrollScreenToDown(tester);
@@ -228,6 +232,7 @@ void main() {
             });
 
         await tester.pumpWidget(widget);
+        await tester.pump();
 
         _assertHasGridViewAndNotHasListView();
         _scrollScreenToDown(tester);
@@ -239,6 +244,7 @@ void main() {
     group('When passing parameter isScrollIndicatorVisible with value true', () {
       testWidgets('Then it should have a Scrollbar component', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(isScrollIndicatorVisible: true));
+        await tester.pump();
 
         final scrollbarFinder = find.byType(Scrollbar);
         expect(scrollbarFinder, findsOneWidget);
@@ -258,20 +264,16 @@ void main() {
       testWidgets('Then it should call doTemplateRender with correct parameter', (WidgetTester tester) async {
         final templates = _getTemplates();
         final dataSource = _getDataSource();
-        final providerMock = BeagleWidgetStateProviderMock();
-        final beagleWidgetStateMock = BeagleWidgetStateMock();
-        final beagleViewMock = BeagleViewMock();
         final renderMock = RendererMock();
+        final view = _BeagleViewMock();
 
-        when(() => providerMock.of(any())).thenReturn(beagleWidgetStateMock);
-        when(() => beagleWidgetStateMock.getView()).thenReturn(beagleViewMock);
-        when(() => beagleViewMock.getRenderer()).thenReturn(renderMock);
+        when(() => view.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
           iteratorName: 'name',
           templates: templates,
           dataSource: dataSource,
-          provider: providerMock,
+          view: view,
         ));
 
         final capturedValues = verify(() => renderMock.doTemplateRender(
@@ -311,20 +313,16 @@ void main() {
       testWidgets('Then it should generate id correct', (WidgetTester tester) async {
         final templates = _getTemplates();
         final dataSource = _getDataSource();
-        final providerMock = BeagleWidgetStateProviderMock();
-        final beagleWidgetStateMock = BeagleWidgetStateMock();
-        final beagleViewMock = BeagleViewMock();
         final renderMock = RendererMock();
+        final view = _BeagleViewMock();
 
-        when(() => providerMock.of(any())).thenReturn(beagleWidgetStateMock);
-        when(() => beagleWidgetStateMock.getView()).thenReturn(beagleViewMock);
-        when(() => beagleViewMock.getRenderer()).thenReturn(renderMock);
+        when(() => view.getRenderer()).thenReturn(renderMock);
 
         await tester.pumpWidget(createWidget(
           iteratorName: 'name',
           templates: templates,
           dataSource: dataSource,
-          provider: providerMock,
+          view: view,
         ));
 
         final capturedValues = verify(() => renderMock.doTemplateRender(
@@ -369,12 +367,13 @@ BeagleUIElement _getBeagleUiElement() {
 Map<String, dynamic> _getPropertiesExpected() {
   return {
     "_beagleComponent_": "beagle:container",
+    "id": "dynamicList:0:0",
     "children": [
-      {"_beagleComponent_": "beagle:text", "id": "dynamicList:0:0"},
       {"_beagleComponent_": "beagle:text", "id": "dynamicList:1:0"},
-      {"_beagleComponent_": "beagle:listview", "id": "dynamicList:2:0", "__suffix__": ":0"},
-      {"_beagleComponent_": "beagle:gridview", "id": "dynamicList:3:0", "__suffix__": ":0"},
-      {"_beagleComponent_": "beagle:text", "id": "dynamicList:4:0"}
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:2:0"},
+      {"_beagleComponent_": "beagle:listview", "id": "dynamicList:3:0", "__suffix__": ":0"},
+      {"_beagleComponent_": "beagle:gridview", "id": "dynamicList:4:0", "__suffix__": ":0"},
+      {"_beagleComponent_": "beagle:text", "id": "dynamicList:5:0"}
     ]
   };
 }
@@ -427,7 +426,7 @@ void _assertCorrectDirection(WidgetTester tester, Axis axis) {
 }
 
 void _assertHasListViewAndNotHasGridView() {
-  final listViewFinder = find.byType(ListView);
+  final listViewFinder = find.byType(FlexibleListView);
 
   final gridViewFinder = find.byType(GridView);
 
@@ -469,5 +468,3 @@ class BeagleWidgetStateMock extends Mock implements BeagleWidgetState {
     return '';
   }
 }
-
-class BeagleWidgetStateProviderMock extends Mock implements BeagleWidgetStateProvider {}

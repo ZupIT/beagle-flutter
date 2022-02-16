@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test-utils/provider_mock.dart';
 import 'expectations.dart';
 import 'mock.dart';
 
@@ -39,16 +40,19 @@ Future<_SetupResult> setupRootNavigatorTests({
   final rootNavigator = RootNavigator(
     initialRoute: initialRoute ?? RemoteView('https://it.doesnt-matter.com'),
     screenBuilder: mocks.screenBuilder,
-    stackNavigatorFactory: mocks.stackNavigatorFactory,
     navigatorObservers: [mocks.rootNavigatorObserver],
     initialPages: mocks.initialPages,
-    initialController: initialController == null ? null : mocks.beagleService.navigationControllers[initialController],
+    initialController: initialController == null ? null : mocks.beagle.navigationControllers[initialController],
   );
-  await tester.pumpWidget(MaterialApp(
-    home: Material(child: rootNavigator),
-    navigatorObservers: [mocks.topNavigatorObserver],
-  ));
-  await beagleServiceLocator.allReady();
+  await tester.pumpWidget(
+    BeagleProviderMock(
+      beagle: mocks.beagle,
+      child: MaterialApp(
+        home: Material(child: rootNavigator),
+        navigatorObservers: [mocks.topNavigatorObserver],
+      ),
+    ),
+  );
   await tester.pump();
   final navigator = tester.state<RootNavigatorState>(find.byType(RootNavigator));
   return _SetupResult(RootNavigatorExpectations(mocks: mocks, route: expectedRoute, tester: tester), navigator);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 /// Defines a container that makes its content scrollable
 class BeagleScrollView extends StatelessWidget {
@@ -39,8 +38,13 @@ class BeagleScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scrollView = ListView(
       scrollDirection: scrollDirection == ScrollAxis.HORIZONTAL ? Axis.horizontal : Axis.vertical,
+      /*children: [Flex(
+        direction: scrollDirection == ScrollAxis.HORIZONTAL ? Axis.horizontal : Axis.vertical,
+        children: children,
+      )],*/
       children: children,
     );
+
     return (scrollBarEnabled ?? false) == false ? scrollView : Scrollbar(child: scrollView);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,61 @@
 
 import 'package:beagle/src/utils/enum.dart';
 
-enum UnitType { REAL, PERCENT }
+enum UnitType {
+  REAL,
+  PERCENT,
+}
 
-enum FlexDirection { COLUMN, ROW, COLUMN_REVERSE, ROW_REVERSE }
+enum FlexDirection {
+  COLUMN,
+  ROW,
+  COLUMN_REVERSE,
+  ROW_REVERSE,
+}
 
-enum FlexWrap { NO_WRAP, WRAP, WRAP_REVERSE }
+enum FlexWrap {
+  NO_WRAP,
+  WRAP,
+  WRAP_REVERSE,
+}
 
 enum JustifyContent { FLEX_START, CENTER, FLEX_END, SPACE_BETWEEN, SPACE_AROUND, SPACE_EVENLY }
 
-enum AlignContent { FLEX_START, CENTER, FLEX_END, SPACE_BETWEEN, SPACE_AROUND, STRETCH }
+enum AlignContent {
+  FLEX_START,
+  CENTER,
+  FLEX_END,
+  SPACE_BETWEEN,
+  SPACE_AROUND,
+  STRETCH,
+}
 
-enum AlignItems { FLEX_START, CENTER, FLEX_END, BASELINE, STRETCH }
+enum AlignItems {
+  FLEX_START,
+  CENTER,
+  FLEX_END,
+  BASELINE,
+  STRETCH,
+}
 
-enum AlignSelf { FLEX_START, CENTER, FLEX_END, BASELINE, STRETCH, AUTO }
+enum AlignSelf {
+  FLEX_START,
+  CENTER,
+  FLEX_END,
+  BASELINE,
+  STRETCH,
+  AUTO,
+}
 
-enum FlexDisplay { FLEX, NONE }
+enum FlexDisplay {
+  FLEX,
+  NONE,
+}
 
-enum FlexPosition { ABSOLUTE, RELATIVE }
+enum FlexPosition {
+  ABSOLUTE,
+  RELATIVE,
+}
 
 class BeagleFlex {
   BeagleFlex({
@@ -47,6 +85,17 @@ class BeagleFlex {
     this.justifyContent,
     this.shrink,
   });
+
+  FlexDirection? flexDirection;
+  FlexWrap? flexWrap;
+  JustifyContent? justifyContent;
+  AlignItems? alignItems;
+  AlignSelf? alignSelf;
+  AlignContent? alignContent;
+  UnitValue? basis;
+  num? flex;
+  num? grow;
+  num? shrink;
 
   BeagleFlex.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('flexDirection')) {
@@ -80,29 +129,21 @@ class BeagleFlex {
       shrink = map['shrink'];
     }
   }
-
-  FlexDirection? flexDirection = FlexDirection.COLUMN;
-  FlexWrap? flexWrap = FlexWrap.NO_WRAP;
-  JustifyContent? justifyContent = JustifyContent.FLEX_START;
-  AlignItems? alignItems = AlignItems.STRETCH;
-  AlignSelf? alignSelf = AlignSelf.AUTO;
-  AlignContent? alignContent = AlignContent.FLEX_START;
-  UnitValue? basis = UnitValue(value: 0, type: UnitType.REAL);
-  num? flex = 0;
-  num? grow = 0;
-  num? shrink = 1;
 }
 
 class UnitValue {
-  UnitValue({this.value, this.type});
+  UnitValue({
+    this.value,
+    this.type,
+  });
+
+  num? value;
+  UnitType? type;
 
   UnitValue.fromMap(Map<String, dynamic> map) {
     value = map['value'];
     type = EnumUtils.fromString(UnitType.values, map['type']);
   }
-
-  num? value;
-  UnitType? type;
 }
 
 class BeagleSize {
@@ -115,6 +156,14 @@ class BeagleSize {
     this.minHeight,
     this.aspectRatio,
   });
+
+  UnitValue? width;
+  UnitValue? height;
+  UnitValue? maxWidth;
+  UnitValue? maxHeight;
+  UnitValue? minWidth;
+  UnitValue? minHeight;
+  num? aspectRatio;
 
   BeagleSize.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('width')) {
@@ -139,14 +188,6 @@ class BeagleSize {
       aspectRatio = map['aspectRatio'];
     }
   }
-
-  UnitValue? width;
-  UnitValue? height;
-  UnitValue? maxWidth;
-  UnitValue? maxHeight;
-  UnitValue? minWidth;
-  UnitValue? minHeight;
-  num? aspectRatio;
 }
 
 class EdgeValue {
@@ -161,6 +202,16 @@ class EdgeValue {
     this.top,
     this.vertical,
   });
+
+  UnitValue? left;
+  UnitValue? top;
+  UnitValue? right;
+  UnitValue? bottom;
+  UnitValue? start;
+  UnitValue? end;
+  UnitValue? horizontal;
+  UnitValue? vertical;
+  UnitValue? all;
 
   Map<String, dynamic> toMap() {
     return {
@@ -205,28 +256,30 @@ class EdgeValue {
       all = UnitValue.fromMap(map['all']);
     }
   }
-
-  UnitValue? left;
-  UnitValue? top;
-  UnitValue? right;
-  UnitValue? bottom;
-  UnitValue? start;
-  UnitValue? end;
-  UnitValue? horizontal;
-  UnitValue? vertical;
-  UnitValue? all;
 }
 
 class CornerRadius {
-  CornerRadius({this.radius});
+  CornerRadius({
+    this.radius,
+    this.bottomLeft,
+    this.bottomRight,
+    this.topLeft,
+    this.topRight,
+  });
+
+  double? radius;
+  double? topLeft;
+  double? topRight;
+  double? bottomLeft;
+  double? bottomRight;
 
   CornerRadius.fromMap(Map<String, dynamic> map) {
-    if (map.containsKey('radius')) {
-      radius = map['radius'];
-    }
+    radius = (map['radius'] as num?)?.toDouble();
+    bottomLeft = (map['bottomLeft'] as num?)?.toDouble();
+    bottomRight = (map['bottomRight'] as num?)?.toDouble();
+    topLeft = (map['topLeft'] as num?)?.toDouble();
+    topRight = (map['topRight'] as num?)?.toDouble();
   }
-
-  late num? radius;
 }
 
 class BeagleStyle {
@@ -242,7 +295,23 @@ class BeagleStyle {
     this.position,
     this.positionType,
     this.size,
+    this.isStack,
   });
+
+  String? backgroundColor;
+  CornerRadius? cornerRadius;
+  BeagleFlex? flex;
+  FlexPosition? positionType;
+  FlexDisplay? display;
+  BeagleSize? size;
+  EdgeValue? margin;
+  EdgeValue? padding;
+  EdgeValue? position;
+  double? borderWidth;
+  String? borderColor;
+  /* This is not part of the original Beagle contract, it's just an artifact for recreating the absolute positioning.
+  This field is automatically calculated by the Javascript bridge using a "beforeViewSnapshot" lifecycle. */
+  bool? isStack;
 
   BeagleStyle.fromMap(Map<String, dynamic> map) {
     if (map.containsKey('backgroundColor')) {
@@ -273,22 +342,13 @@ class BeagleStyle {
       position = EdgeValue.fromMap(map['position']);
     }
     if (map.containsKey('borderWidth')) {
-      borderWidth = map['borderWidth'];
+      borderWidth = (map['borderWidth'] as num?)?.toDouble();
     }
     if (map.containsKey('borderColor')) {
       borderColor = map['borderColor'];
     }
+    if (map.containsKey('isStack')) {
+      isStack = map['isStack'];
+    }
   }
-
-  String? backgroundColor;
-  CornerRadius? cornerRadius;
-  BeagleFlex? flex;
-  FlexPosition? positionType = FlexPosition.RELATIVE;
-  FlexDisplay? display = FlexDisplay.FLEX;
-  BeagleSize? size;
-  EdgeValue? margin;
-  EdgeValue? padding;
-  EdgeValue? position;
-  num? borderWidth;
-  String? borderColor;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,12 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
+import '../../test-utils/mocktail.dart';
 import 'expectations.dart';
 import 'setup.dart';
 
-class _NavigationControllerMock extends Mock implements NavigationController {}
-
-class _BeagleLoggerMock extends Mock implements BeagleLogger {}
-
-class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
-
-class _ViewClientMock extends Mock implements ViewClient {}
-
-class _RouteMock extends Mock implements Route<dynamic> {}
-
-class _BeagleRouteMock extends Mock implements BeagleRoute {}
-
-class _BuildContextMock extends Mock implements BuildContext {}
-
 void main() {
-  setUpAll(() async {
-    registerFallbackValue<NavigationController>(_NavigationControllerMock());
-    registerFallbackValue<BeagleLogger>(_BeagleLoggerMock());
-    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
-    registerFallbackValue<ViewClient>(_ViewClientMock());
-    registerFallbackValue<Route<dynamic>>(_RouteMock());
-    registerFallbackValue<BeagleRoute>(_BeagleRouteMock());
-    registerFallbackValue<BuildContext>(_BuildContextMock());
-  });
+  registerMocktailFallbacks();
 
   group('Given a RootNavigator', () {
     late RootNavigatorState navigator;
@@ -89,6 +66,19 @@ void main() {
         final expectations = await _setup(tester, 1);
         navigator.popToView('/test');
         expectations.shouldPopToViewOfCurrentStack('/test');
+      });
+    });
+
+    group("When we run the system's back action", () {
+      testWidgets('Then it should call the popView method of the current stack', (WidgetTester tester) async {
+        final expectations = await _setup(tester, 1);
+        final willPopFinder = find.byType(WillPopScope);
+        expect(willPopFinder, findsOneWidget);
+        final onWillPop = tester.widget<WillPopScope>(willPopFinder).onWillPop;
+        expect(onWillPop == null, false);
+        final result = await onWillPop!();
+        expect(result, false);
+        expectations.shouldPopViewFromCurrentStack();
       });
     });
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,39 +20,25 @@ import 'package:flutter/material.dart';
 import 'after_layout.dart';
 
 /// A simple container that can execute an action as soon as it gets created
-class BeagleContainer extends StatefulWidget {
+class BeagleContainer extends StatefulStyled {
   const BeagleContainer({
     Key? key,
     this.onInit,
-    this.style,
-    this.children,
-  }) : super(key: key);
+    BeagleStyle? style,
+    List<Widget> children = const [],
+  }) : super(key: key, style: style, children: children);
 
   /// Optional function to run once the container is created
   final Function? onInit;
 
-  /// Property responsible to customize all the flex attributes and general style configuration
-  final BeagleStyle? style;
-
-  /// Define a list of components to be displayed on this view.
-  final List<Widget>? children;
 
   @override
   _BeagleContainer createState() => _BeagleContainer();
 }
 
-class _BeagleContainer extends State<BeagleContainer>
-    with AfterLayoutMixin<BeagleContainer> {
+class _BeagleContainer extends StyledState<BeagleContainer> with AfterLayoutMixin<BeagleContainer> {
   @override
   void afterFirstLayout(BuildContext context) {
     if (widget.onInit != null) widget.onInit!();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BeagleFlexWidget(
-      style: widget.style,
-      children: widget.children ?? [],
-    );
   }
 }

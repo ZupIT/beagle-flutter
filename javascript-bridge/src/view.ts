@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ function serializeFunctions(value: any, path = '__beagleFn:'): any {
     return path
   }
 
-  if (value instanceof Array) {
+  if (Array.isArray(value)) {
     return value.map((item, index) => serializeFunctions(item, `${path}[${index}]`))
   }
 

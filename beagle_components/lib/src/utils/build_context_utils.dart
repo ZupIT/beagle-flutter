@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ import 'package:beagle_components/src/protocol/input_validation.dart';
 import 'package:flutter/widgets.dart';
 
 extension BuildContextUtils on BuildContext {
-  BuildContext findBuildContextForWidgetKey(String widgetKey) {
+  BuildContext? findBuildContextForWidgetKey(String widgetKey) {
     if (_compareWidgetKey(this, widgetKey)) {
       return this;
     }
 
-    late BuildContext widgetContext;
+    BuildContext? widgetContext;
 
     void visitor(Element element) {
       if (_compareWidgetKey(element, widgetKey)) {

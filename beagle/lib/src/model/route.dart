@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 import 'package:beagle/beagle.dart';
 
-abstract class BeagleRoute {}
+abstract class BeagleRoute {
+  NavigationContext? navigationContext;
+}
 
 class HttpAdditionalData {
   const HttpAdditionalData({
@@ -34,38 +36,47 @@ class HttpAdditionalData {
   final dynamic body;
 }
 
-class RemoteView extends BeagleRoute {
-  RemoteView(this.url, {this.fallback, this.shouldPrefetch, this.httpAdditionalData});
+class RemoteView implements BeagleRoute {
+  RemoteView(this.url, {this.fallback, this.shouldPrefetch, this.httpAdditionalData, this.navigationContext});
 
   final String url;
   final BeagleUIElement? fallback;
   final bool? shouldPrefetch;
   final HttpAdditionalData? httpAdditionalData;
+  @override
+  NavigationContext? navigationContext;
 
   static bool isRemoteView(Map<String, dynamic> json) {
     return json.containsKey("url");
   }
 
-  factory RemoteView.fromJson(Map<String, dynamic> json) {
+  factory RemoteView.fromJson(Map<String, dynamic> elementJson, Map<String, dynamic>? navigationContextJson) {
     return RemoteView(
-      json["url"],
-      fallback: json.containsKey("fallback") ? BeagleUIElement(json["fallback"]) : null,
-      httpAdditionalData:
-          json.containsKey("httpAdditionalData") ? HttpAdditionalData.fromJson(json["httpAdditionalData"]) : null,
+      elementJson["url"],
+      fallback: elementJson.containsKey("fallback") ? BeagleUIElement(elementJson["fallback"]) : null,
+      httpAdditionalData: elementJson.containsKey("httpAdditionalData")
+          ? HttpAdditionalData.fromJson(elementJson["httpAdditionalData"])
+          : null,
+      navigationContext: navigationContextJson != null ? NavigationContext.fromJson(navigationContextJson) : null,
     );
   }
 }
 
-class LocalView extends BeagleRoute {
-  LocalView(this.screen);
+class LocalView implements BeagleRoute {
+  LocalView(this.screen, [this.navigationContext]);
 
   static bool isLocalView(Map<String, dynamic> json) {
     return json.containsKey("screen");
   }
 
-  factory LocalView.fromJson(Map<String, dynamic> json) {
-    return LocalView(BeagleUIElement(json["screen"]));
+  factory LocalView.fromJson(Map<String, dynamic> elementJson, Map<String, dynamic>? navigationContextJson) {
+    return LocalView(
+      BeagleUIElement(elementJson["screen"]),
+      navigationContextJson != null ? NavigationContext.fromJson(navigationContextJson) : null,
+    );
   }
 
   final BeagleUIElement screen;
+  @override
+  NavigationContext? navigationContext;
 }

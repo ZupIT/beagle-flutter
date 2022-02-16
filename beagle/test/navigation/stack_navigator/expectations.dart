@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,17 +39,21 @@ class StackNavigatorExpectations {
   final StackNavigator navigator;
 
   void shouldFetchRoute([int times = 1]) {
-    verify(() => mocks.viewClient.fetch(route)).called(times);
+    verify(() => mocks.beagle.viewClient.fetch(route)).called(times);
   }
 
   void shouldNotFetchRoute([int times = 1]) {
-    verifyNever(() => mocks.viewClient.fetch(any()));
+    verifyNever(() => mocks.beagle.viewClient.fetch(any()));
   }
 
   void shouldCreateBeagleWidget() {
-    verify(() => mocks.beagleWidgetFactory(mocks.rootNavigator)).called(1);
-    // ignore: unnecessary_null_comparison
-    expect(mocks.lastWidget == null, false);
+    verify(() => mocks.beagle.createView(mocks.rootNavigator)).called(1);
+    // the following try-catch makes sure lastWidget has been initialized (it's been marked as late)
+    try {
+      mocks.lastWidget.view;
+    } catch (e) {
+      expect(true, false);
+    }
   }
 
   void shouldHandleOnLoading([int times = 1]) {
@@ -95,7 +99,7 @@ class StackNavigatorExpectations {
           stackTrace: any(named: 'stackTrace'),
           view: any(named: 'view'),
           retry: any(named: 'retry'),
-          error: any(named: 'error'),
+          error: any<dynamic>(named: 'error'),
         ));
   }
 
@@ -122,7 +126,7 @@ class StackNavigatorExpectations {
     for (int i = 0; i < mocks.initialPages.length; i++) {
       initialPageNames.add(createPageName(i));
     }
-    expect(navigator.getHistory(), initialPageNames);
+    expect(navigator.getHistory().map((h) => h.routeName).toList(), initialPageNames);
   }
 
   void shouldUpdateHistoryByAddingRoute() {
@@ -131,7 +135,7 @@ class StackNavigatorExpectations {
     for (int i = 0; i < mocks.initialPages.length; i++) {
       initialPageNames.add(createPageName(i));
     }
-    expect(navigator.getHistory(), [...initialPageNames, routeId]);
+    expect(navigator.getHistory().map((h) => h.routeName).toList(), [...initialPageNames, routeId]);
   }
 
   void shouldUpdateHistoryByRemovingRoute([int numberOfRoutes = 1]) {
@@ -139,7 +143,7 @@ class StackNavigatorExpectations {
     for (int i = 0; i < mocks.initialPages.length - numberOfRoutes; i++) {
       initialPageNames.add(createPageName(i));
     }
-    expect(navigator.getHistory(), [...initialPageNames]);
+    expect(navigator.getHistory().map((h) => h.routeName).toList(), [...initialPageNames]);
   }
 
   void shouldRenderScreen() {
@@ -162,8 +166,19 @@ class StackNavigatorExpectations {
     verify(() => mocks.rootNavigator.popStack()).called(1);
   }
 
+  void shouldPopStackWithNavigationContext(NavigationContext context) {
+    verify(() => mocks.rootNavigator.popStack(context)).called(1);
+  }
+
   void shouldPushNewRoute() {
     verify(() => mocks.navigatorObserver.didPush(any(), any())).called(mocks.initialPages.length + 1);
+  }
+
+  void shouldPushNewRouteAndSetNavigationContext(NavigationContext context) {
+    verify(() => mocks.navigatorObserver.didPush(any(), any())).called(mocks.initialPages.length + 1);
+
+    final manager = mocks.lastWidget.view.getLocalContexts();
+    verify(() => manager.setContext('navigationContext', context.value, context.path)).called(1);
   }
 
   void shouldNotPushNewRoute() {
@@ -174,16 +189,45 @@ class StackNavigatorExpectations {
     }
   }
 
+  void shouldNotPushNewRouteAndNotSetNavigationContext() {
+    if (mocks.initialPages.isEmpty) {
+      verifyNever(() => mocks.navigatorObserver.didPush(any(), any()));
+    } else {
+      verify(() => mocks.navigatorObserver.didPush(any(), any())).called(mocks.initialPages.length);
+    }
+
+    final manager = mocks.lastWidget.view.getLocalContexts();
+    verifyNever(() => manager.setContext('navigationContext', any<dynamic>(), any()));
+  }
+
   void shouldPopRoute([int times = 1]) {
     verify(() => mocks.navigatorObserver.didPop(any(), any())).called(times);
+  }
+
+  void shouldPopRouteAndSetNavigationContext(NavigationContext context, [int times = 1]) {
+    verify(() => mocks.navigatorObserver.didPop(any(), any())).called(times);
+
+    final lastHistory = navigator.getHistory().last;
+    final manager = lastHistory.viewLocalContextsManager;
+    verify(() => manager.setContext('navigationContext', context.value, context.path)).called(1);
+    verify(() => lastHistory.render()).called(1);
   }
 
   void shouldNotPopRoute() {
     verifyNever(() => mocks.navigatorObserver.didPop(any(), any()));
   }
 
+  void shouldNotPopRouteAndNotSetContext() {
+    verifyNever(() => mocks.navigatorObserver.didPop(any(), any()));
+
+    final lastHistory = navigator.getHistory().last;
+    final manager = lastHistory.viewLocalContextsManager;
+    verifyNever(() => manager.setContext('navigationContext', any<dynamic>(), any()));
+    verifyNever(() => lastHistory.render());
+  }
+
   void shouldLogError() {
-    verify(() => mocks.logger.error(any())).called(1);
+    verify(() => mocks.beagle.logger.error(any())).called(1);
   }
 
   void shouldNotChangeRenderedPage() {

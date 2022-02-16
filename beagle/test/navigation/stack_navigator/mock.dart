@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import 'package:beagle/beagle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -34,11 +33,31 @@ class _RootNavigatorMock extends Mock implements BeagleNavigator {}
 
 class _LoggerMock extends Mock implements BeagleLogger {}
 
-class _BeagleViewMock extends Mock implements BeagleView {}
+class LocalContextsManagerMock extends Mock implements LocalContextsManager {}
+
+class MockFunction extends Mock {
+  void fn([dynamic _]);
+}
+
+class _BeagleViewMock extends Mock implements BeagleView {
+  final manager = LocalContextsManagerMock();
+
+  @override
+  LocalContextsManager getLocalContexts() {
+    return manager;
+  }
+}
+
+class _BeagleServiceMock extends Mock implements BeagleService {
+  @override
+  final logger = _LoggerMock();
+  @override
+  final viewClient = _ViewClientMock();
+}
 
 class _NavigatorObserverMock extends Mock implements NavigatorObserver {}
 
-class _BeagleWidgetMock extends Mock implements UnsafeBeagleWidget {
+class BeagleWidgetMock extends Mock implements BeagleWidget {
   @override
   final BeagleView view = _BeagleViewMock();
 
@@ -49,8 +68,7 @@ class _BeagleWidgetMock extends Mock implements UnsafeBeagleWidget {
 }
 
 abstract class _NavigationMocks {
-  Widget screenBuilder(UnsafeBeagleWidget beagleWidget, BuildContext context);
-  UnsafeBeagleWidget beagleWidgetFactory(BeagleNavigator navigator);
+  Widget screenBuilder(BeagleWidget beagleWidget, BuildContext context);
 }
 
 int _nextId = 0;
@@ -60,16 +78,15 @@ class _Ref<T> {
 }
 
 class NavigationMocks extends Mock implements _NavigationMocks {
+  final beagle = _BeagleServiceMock();
   final controller = _NavigationControllerMock();
-  final viewClient = _ViewClientMock();
   final rootNavigator = _RootNavigatorMock();
-  final logger = _LoggerMock();
   final navigatorObserver = _NavigatorObserverMock();
   final screenKey = Key('beagle_widget_${_nextId++}');
   final List<PageRoute<dynamic>> initialPages = [];
   final WidgetTester tester;
   late BuildContext lastBuildContext;
-  late UnsafeBeagleWidget lastWidget;
+  late BeagleWidget lastWidget;
 
   NavigationMocks(this.tester, [int numberOfInitialPages = 0]) {
     for (int i = 0; i < numberOfInitialPages; i++) {
@@ -90,21 +107,21 @@ class NavigationMocks extends Mock implements _NavigationMocks {
           return Container(key: screenKey);
         }));
 
-    when(() => beagleWidgetFactory(any())).thenAnswer((_) {
-      lastWidget = _BeagleWidgetMock();
-      return lastWidget;
+    when(() => beagle.createView(any())).thenAnswer((_) {
+      lastWidget = BeagleWidgetMock();
+      return BeagleViewWidget(lastWidget.view, lastWidget);
     });
   }
 
   void mockSuccessfulRequest(RemoteView route, BeagleUIElement result) {
-    when(() => viewClient.fetch(route)).thenAnswer((_) async {
+    when(() => beagle.viewClient.fetch(route)).thenAnswer((_) async {
       await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
       return result;
     });
   }
 
   void mockUnsuccessfulRequest(RemoteView route, dynamic error) {
-    when(() => viewClient.fetch(route)).thenAnswer((_) async {
+    when(() => beagle.viewClient.fetch(route)).thenAnswer((_) async {
       await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: SERVER_DELAY_MS)));
       throw error;
     });
@@ -125,7 +142,7 @@ class NavigationMocks extends Mock implements _NavigationMocks {
           completeNavigation: any(named: 'completeNavigation'),
           stackTrace: any(named: 'stackTrace'),
           retry: any(named: 'retry'),
-          error: any(named: 'error'),
+          error: any<dynamic>(named: 'error'),
         )).thenAnswer((realInvocation) {
       realInvocation.namedArguments[Symbol('completeNavigation')]();
     });
@@ -139,7 +156,7 @@ class NavigationMocks extends Mock implements _NavigationMocks {
           completeNavigation: any(named: 'completeNavigation'),
           stackTrace: any(named: 'stackTrace'),
           retry: any(named: 'retry'),
-          error: any(named: 'error'),
+          error: any<dynamic>(named: 'error'),
         )).thenAnswer((realInvocation) {
       retry.current = realInvocation.namedArguments[Symbol('retry')];
     });
@@ -164,13 +181,18 @@ StackNavigator createStackNavigator({
   }
 
   return StackNavigator(
-    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:container'})),
+    beagle: mocks.beagle,
+    initialRoute: initialRoute ?? LocalView(BeagleUIElement({'_beagleComponent_': 'beagle:container'}), null),
     screenBuilder: mocks.screenBuilder,
     controller: mocks.controller,
-    viewClient: mocks.viewClient,
     rootNavigator: mocks.rootNavigator,
-    logger: mocks.logger,
-    beagleWidgetFactory: mocks.beagleWidgetFactory,
     initialPages: initialNumberOfPages == 0 ? [] : pages,
   );
+}
+
+void mockHistoryLocalContextsManager(StackNavigator navigator) {
+  navigator.getHistory().forEach((history) {
+    history.viewLocalContextsManager = LocalContextsManagerMock();
+    history.render = MockFunction().fn;
+  });
 }

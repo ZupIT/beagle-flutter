@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 import 'package:beagle/beagle.dart';
 import 'package:beagle_components/src/beagle_page_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -46,8 +45,7 @@ void main() {
   group('Given a BeaglePageIndicator with two pages', () {
     group('When it is rendered', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 0);
-      testWidgets('Then it should have two material widgets',
-          (WidgetTester tester) async {
+      testWidgets('Then it should have two material widgets', (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
         expect(find.byType(Material), findsNWidgets(2));
       });
@@ -55,8 +53,7 @@ void main() {
 
     group('When currentPage is 0', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 0);
-      testWidgets(
-          'Then it should paint first dot with selectedColor and second dot with unselectedColor ',
+      testWidgets('Then it should paint first dot with selectedColor and second dot with unselectedColor ',
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
 
@@ -68,8 +65,7 @@ void main() {
 
     group('When currentPage is 1', () {
       final pageIndicator = createWidget(numberOfPages: 2, currentPage: 1);
-      testWidgets(
-          'Then it should paint second dot with selectedColor and first dot with unselectedColor ',
+      testWidgets('Then it should paint second dot with selectedColor and first dot with unselectedColor ',
           (WidgetTester tester) async {
         await tester.pumpWidget(pageIndicator);
 

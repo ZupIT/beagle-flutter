@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,15 +35,13 @@ class RootNavigatorExpectations {
   final RootNavigatorState navigatorState;
 
   void _shouldCreateStackNavigator([String? customController]) {
-    verify(() => mocks.stackNavigatorFactory(
-          initialRoute: route,
+    verify(() => mocks.beagle.createStackNavigator(
+          initialRoute: route!,
           screenBuilder: mocks.screenBuilder,
           rootNavigator: navigatorState,
-          logger: mocks.logger,
-          viewClient: mocks.beagleService.viewClient,
           controller: customController == null
-              ? mocks.beagleService.defaultNavigationController
-              : mocks.beagleService.navigationControllers[customController] as NavigationController,
+              ? mocks.beagle.defaultNavigationController
+              : mocks.beagle.navigationControllers[customController] as NavigationController,
         )).called(1);
   }
 
@@ -123,15 +121,21 @@ class RootNavigatorExpectations {
     expect(find.byWidget(mocks.initialPages.elementAt(mocks.initialPages.length - 2)), findsOneWidget);
   }
 
+  void shouldRenderPreviousStackNavigatorAndSetNavigationContextOnTheLastItem(NavigationContext navigationContext) {
+    final widgetAtPosition = mocks.initialPages.elementAt(mocks.initialPages.length - 2);
+    expect(find.byWidget(widgetAtPosition), findsOneWidget);
+    verify(() => widgetAtPosition.setNavigationContext(navigationContext)).called(1);
+  }
+
   void shouldPushViewToCurrentStack(BeagleRoute route) {
     verify(() => mocks.initialPages.last.pushView(route, mocks.lastStackNavigator.buildContext)).called(1);
   }
 
-  void shouldPopViewFromCurrentStack() {
-    verify(() => mocks.initialPages.last.popView()).called(1);
+  void shouldPopViewFromCurrentStack([NavigationContext? navigationContext]) {
+    verify(() => mocks.initialPages.last.popView(navigationContext)).called(1);
   }
 
-  void shouldPopToViewOfCurrentStack(String viewName) {
-    verify(() => mocks.initialPages.last.popToView(viewName)).called(1);
+  void shouldPopToViewOfCurrentStack(String viewName, [NavigationContext? navigationContext]) {
+    verify(() => mocks.initialPages.last.popToView(viewName, navigationContext)).called(1);
   }
 }

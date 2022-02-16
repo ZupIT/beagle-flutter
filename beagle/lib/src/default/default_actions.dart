@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/action/beagle_confirm.dart';
 
 BeagleRoute _getRoute(BeagleAction action) {
-  final json = action.getAttributeValue("route");
-  return RemoteView.isRemoteView(json) ? RemoteView.fromJson(json) : LocalView.fromJson(json);
+  final routeJson = action.getAttributeValue("route");
+  final navigationContextJson = action.getAttributeValue("navigationContext");
+  return RemoteView.isRemoteView(routeJson)
+      ? RemoteView.fromJson(routeJson, navigationContextJson)
+      : LocalView.fromJson(routeJson, navigationContextJson);
 }
 
 final Map<String, ActionHandler> defaultActions = {
@@ -45,31 +47,36 @@ final Map<String, ActionHandler> defaultActions = {
   },
   // Native navigation
   'beagle:openNativeRoute': ({required action, required element, required view, required context}) {
-    BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'));
+    final rawData = action.getAttributeValue('data');
+    final data = rawData == null
+      ? <String, String>{}
+      : (rawData as Map<String, dynamic>).map((key, value) => MapEntry(key, value.toString()));
+    BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'), data);
   },
   'beagle:openExternalURL': ({required action, required element, required view, required context}) {
-    BeagleOpenExternalUrl.launchURL(action.getAttributeValue('url'));
+    BeagleOpenExternalUrl.launchURL(context, action.getAttributeValue('url'));
   },
   // Beagle Navigation
   'beagle:pushView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.pushView(_getRoute(action), context);
+    view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popView();
+    view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popToView(action.getAttributeValue("route"));
+    view.getNavigator().popToView(
+        action.getAttributeValue("route"), NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:popStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.popStack();
+    view.getNavigator().popStack(NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
   },
   'beagle:resetStack': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
   },
   'beagle:resetApplication': ({required action, required element, required view, required context}) {
-    view.getNavigator()?.resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
   },
 };

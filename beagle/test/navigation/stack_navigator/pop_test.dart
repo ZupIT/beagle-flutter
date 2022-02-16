@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,47 +14,22 @@
  * limitations under the License.
  */
 
-import 'dart:async';
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/beagle_view_js.dart';
+import '../../test-utils/mocktail.dart';
 import 'package:flutter/widgets.dart';
 import 'expectations.dart';
 import 'mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'setup.dart';
-import 'package:mocktail/mocktail.dart';
-
-class _BeagleNavigatorMock extends Mock implements BeagleNavigator {}
-
-class _BeagleViewJSMock extends Mock implements BeagleViewJS {}
-
-class _BuildContextMock extends Mock implements BuildContext {}
-
-class _BeagleViewMock extends Mock implements BeagleView {}
-
-class _RouteMock extends Mock implements Route<dynamic> {}
 
 void main() {
-  setUpAll(() async {
-    await beagleServiceLocator.reset();
-
-    beagleServiceLocator.registerSingleton<BeagleViewJS>(_BeagleViewJSMock());
-
-    registerFallbackValue<BeagleView>(_BeagleViewMock());
-    registerFallbackValue<UnsafeBeagleWidget>(UnsafeBeagleWidget(null));
-    registerFallbackValue<BuildContext>(_BuildContextMock());
-    registerFallbackValue<BeagleNavigator>(_BeagleNavigatorMock());
-    registerFallbackValue<Route<dynamic>>(_RouteMock());
-  });
+  registerMocktailFallbacks();
 
   group('Given a StackNavigator class', () {
-    NavigationMocks mocks;
+    late NavigationMocks mocks;
     late StackNavigator navigator;
 
-    Future<StackNavigatorExpectations> _setup(
-      WidgetTester tester,
-      int numberOfInitialPages,
-    ) async {
+    Future<StackNavigatorExpectations> _setup(WidgetTester tester, int numberOfInitialPages) async {
       mocks = NavigationMocks(tester, numberOfInitialPages);
       final result = await setupStackNavigatorTests(tester: tester, mocks: mocks, expectedRoute: RemoteView(''));
       navigator = result.navigator;
@@ -71,6 +46,22 @@ void main() {
         expectations.shouldPopRoute();
         expectations.shouldRenderInitialPage(1);
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            'Then it should pop the last page and render the previous, setting the navigation context on a local context and rendering',
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 3);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popView(navigationContext);
+          await tester.pump();
+
+          expectations.shouldUpdateHistoryByRemovingRoute();
+          expectations.shouldPopRouteAndSetNavigationContext(navigationContext);
+          expectations.shouldRenderInitialPage(1);
+        });
+      });
     });
 
     group('When a view is popped from a StackNavigator with 1 page', () {
@@ -80,6 +71,30 @@ void main() {
         await tester.pump();
 
         expectations.shouldPopStack();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            'Then it should pop the rootNavigator\'s stack, setting the navigation context on a local context and rendering',
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 1);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popView(navigationContext);
+          await tester.pump();
+
+          expectations.shouldPopStackWithNavigationContext(navigationContext);
+        });
+      });
+    });
+
+    group("When a view is popped from a StackNavigator through the system's navigation interface", () {
+      testWidgets('Then it should update the history', (WidgetTester tester) async {
+        final expectations = await _setup(tester, 3);
+        Navigator.of(mocks.lastBuildContext).pop();
+        await tester.pump();
+
+        expectations.shouldUpdateHistoryByRemovingRoute();
       });
     });
 
@@ -93,6 +108,22 @@ void main() {
         expectations.shouldPopRoute(2);
         expectations.shouldRenderInitialPage(1);
       });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            "Then it should pop pages until the one we're looking for is found, setting the navigation context on a local context and rendering",
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 4);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popToView(createPageName(1), navigationContext);
+          await tester.pump();
+
+          expectations.shouldUpdateHistoryByRemovingRoute(2);
+          expectations.shouldPopRouteAndSetNavigationContext(navigationContext, 2);
+          expectations.shouldRenderInitialPage(1);
+        });
+      });
     });
 
     group("When a popToView is called for view that doesn't exist", () {
@@ -105,6 +136,23 @@ void main() {
         expectations.shouldNotUpdateHistory();
         expectations.shouldNotPopRoute();
         expectations.shouldNotChangeRenderedPage();
+      });
+
+      group("When it has a navigation context", () {
+        testWidgets(
+            'Then it should not navigate and log error, and not set the navigation context on a local context and not rendering',
+            (WidgetTester tester) async {
+          final navigationContext = NavigationContext("context value", "ctxPath");
+          final expectations = await _setup(tester, 4);
+          mockHistoryLocalContextsManager(navigator);
+          navigator.popToView('/fake_view', navigationContext);
+          await tester.pump();
+
+          expectations.shouldLogError();
+          expectations.shouldNotUpdateHistory();
+          expectations.shouldNotPopRouteAndNotSetContext();
+          expectations.shouldNotChangeRenderedPage();
+        });
       });
     });
   });

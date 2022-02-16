@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 
 import { Operation } from '@zup-it/beagle-web'
 
-function handlerWrapper(operationName: string) {
-  
-  const flutterOperationHandler: Operation = (...args: any[]) => {
-    sendMessage('operation', JSON.stringify({ operation: operationName, params: args }))
-  }
-
-  return flutterOperationHandler
+function handlerWrapper(operationName: string): Operation {
+  return (...args: any[]) => sendMessage(
+    'operation',
+    JSON.stringify({ operation: operationName, params: args }),
+  )
 }
 
 export function createCustomOperationMap(operations: string[]): Record<string, Operation> {

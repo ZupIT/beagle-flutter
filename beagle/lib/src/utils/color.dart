@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import 'package:beagle/src/utils/color_names.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 
   static int _getColorFromHex(String hexColor) {
+    hexColor = colorNames[hexColor.toLowerCase()] ?? hexColor;
     hexColor = hexColor.toUpperCase().replaceAll('#', '');
     switch (hexColor.length) {
       case 3:
@@ -35,7 +38,12 @@ class HexColor extends Color {
         hexColor = _formatHexColorAlpha(hexColor);
         break;
     }
-    return int.parse(hexColor, radix: 16);
+
+    try {
+      return int.parse(hexColor, radix: 16);
+    } catch (error) {
+      return 0;
+    }
   }
 
   static String _formatHexRGBColor(String hexColor) {

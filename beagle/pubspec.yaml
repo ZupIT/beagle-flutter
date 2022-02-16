@@ -1,4 +1,4 @@
-# Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+# Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 name: beagle
 description: Beagle is an open source framework for multiplatform development using the concept of Server-Driven UI.
-version: 0.9.4-alpha
+version: 2.0.0-rc5
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle
 
 environment:
@@ -25,12 +25,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_js: ^0.5.0+3
-  get_it: ^7.2.0
+  flutter_js: ^0.5.0+5
   http: ^0.13.3
   meta: ^1.7.0
   url_launcher: ^6.0.9
-  yoga_engine: ^0.0.7
+  collection: ^1.15.0
 
 dev_dependencies:
   flutter_test:
@@ -49,3 +48,4 @@ flutter:
 
   assets:
     - assets/js/beagle.js
+    - test/test-utils/payload.json

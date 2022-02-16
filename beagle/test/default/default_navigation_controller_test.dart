@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../test-utils/mocktail.dart';
+
 class _RendererMock extends Mock implements Renderer {}
 
 class _BeagleViewMock extends Mock implements BeagleView {
@@ -35,9 +37,7 @@ class _BuildContextMock extends Mock implements BuildContext {}
 class _BeagleLoggerMock extends Mock implements BeagleLogger {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue<BeagleUIElement>(BeagleUIElement({}));
-  });
+  registerMocktailFallbacks();
 
   group("Given the DefaultNavigationController", () {
     final logger = _BeagleLoggerMock();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ * Copyright 2020, 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,8 @@
  */
 
 import 'package:beagle_components/beagle_components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'service_locator/service_locator.dart';
 
 Widget createWidget({
   ScrollAxis scrollDirection = ScrollAxis.VERTICAL,
@@ -37,10 +33,6 @@ Widget createWidget({
 }
 
 void main() {
-  setUpAll(() async {
-    await testSetupServiceLocator();
-  });
-
   group('Given a BeagleScrollView', () {
     group('When the widget is created', () {
       testWidgets(
@@ -63,19 +55,15 @@ void main() {
     });
 
     group('When the widget is created with a horizontal scroll', () {
-      testWidgets('Then the list view orientation should be horizontal',
-          (WidgetTester tester) async {
-        await tester
-            .pumpWidget(createWidget(scrollDirection: ScrollAxis.HORIZONTAL));
-        final ListView listView =
-            tester.widget<ListView>(find.byType(ListView));
+      testWidgets('Then the list view orientation should be horizontal', (WidgetTester tester) async {
+        await tester.pumpWidget(createWidget(scrollDirection: ScrollAxis.HORIZONTAL));
+        final ListView listView = tester.widget<ListView>(find.byType(ListView));
         expect(listView.scrollDirection == Axis.horizontal, isTrue);
       });
     });
 
     group('When the widget is created with a hidden scroll bar', () {
-      testWidgets('Then there should be a ListView, but no ScrollBar',
-          (WidgetTester tester) async {
+      testWidgets('Then there should be a ListView, but no ScrollBar', (WidgetTester tester) async {
         await tester.pumpWidget(createWidget(scrollBarEnabled: false));
         expect(find.byType(ListView), findsOneWidget);
         expect(find.byType(Scrollbar), findsNothing);
