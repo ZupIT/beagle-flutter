@@ -98,7 +98,7 @@ class _DynamicListBuilder extends ComponentBuilder {
     return BeagleDynamicList(
       onInit: element.getAttributeValue('onInit'),
       direction: EnumUtils.fromString(BeagleDynamicListDirection.values, element.getAttributeValue('direction')),
-      dataSource: element.getAttributeValue('dataSource'),
+      dataSource: element.getAttributeValue('dataSource') ?? [],
       templates: TemplateManagerItem.fromJsonList(element.getAttributeValue('templates')),
       isScrollIndicatorVisible: element.getAttributeValue('isScrollIndicatorVisible'),
       scrollEndThreshold: element.getAttributeValue('scrollEndThreshold'),
