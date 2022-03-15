@@ -58,7 +58,7 @@ window.beagle = (() => {
         customActions: createCustomActionMap(actionKeys),
         customOperations: createCustomOperationMap(customOperations),
         analyticsProvider: analyticsProvider,
-        platform: "flutter",
+        platform: "MOBILE",
         lifecycles: enableStyling ? { beforeViewSnapshot: tree => manageStyles(tree, expandedComponentsMap) } : undefined,
         ...other,
       })
