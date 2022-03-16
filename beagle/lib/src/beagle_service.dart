@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:beagle/beagle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -101,17 +103,20 @@ class BeagleService {
     /// own layout engine.
     this.enableStyles = true,
 
-    /// Allows Beagle's hot reloading. This setting is only valid when the environment is BeagleEnvironment.debug.
-    ///
-    /// This sets an interval for checking if there's a new version of the backend available. If there is, the current
-    /// page is updated with the new content.
-    ///
-    /// This interval is given in milliseconds and must be greater than 0. When 0, Beagle understands that it should't
-    /// hot reload. The default value is 0 (disabled). Any value lower than 100, but 0, is rounded to 100.
+    /// Enables/disables Beagle's hot reloading. This setting is only valid when the environment is
+    /// BeagleEnvironment.debug.
     ///
     /// Attention: this feature only works in conjunction with the backend-typescript for Beagle. It doesn't work
     /// for any other type of backend.
-    this.watchInterval = 0,
+    ///
+    /// Default value: false
+    this.enableHotReloading = false,
+
+    /// URL for the Hot Reloading websocket server. This setting is taken into account only if enableHotReloading is
+    /// true.
+    ///
+    /// Default value: "ws://localhost:3001" for iOS and "ws://10.0.2.2:3001" for Android.
+    String? hotReloadingUrl,
   })  : urlBuilder = urlBuilder ?? UrlBuilder(baseUrl),
         components = _toLowercaseKeys(components),
         actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})}) {
@@ -121,6 +126,7 @@ class BeagleService {
     this.defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
     js = BeagleJS(this);
     globalContext = GlobalContextJS(js.engine);
+    this.hotReloadingUrl = hotReloadingUrl ?? 'ws://${(Platform.isAndroid ? '10.0.2.2' : 'localhost')}:3001';
   }
 
   // services
@@ -142,7 +148,10 @@ class BeagleService {
   final Map<String, Operation> operations;
   final BeagleEnvironment environment;
   final bool enableStyles;
-  final int watchInterval;
+
+  // hot reloading
+  final bool enableHotReloading;
+  late final String hotReloadingUrl;
 
   // factory methods
   BeagleViewWidget createView(BeagleNavigator navigator) {
