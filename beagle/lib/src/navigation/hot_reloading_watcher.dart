@@ -45,7 +45,6 @@ class HotReloadingWatcher {
     channel.sink.add(_STARTUP_MESSAGE);
     channel.stream.listen(
       (data) {
-        print('message received: $data');
         if (data == _RELOAD_MESSAGE) _runListeners();
       },
       onError: (_) => print('[Beagle Hot Reloading] Can\'t connect to the hot reloading server.'),
