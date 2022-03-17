@@ -15,6 +15,7 @@ common/gradle*
 schema/gradle*
 *.orig
 /fastlane/kdocs/public/
+**/nclude-dependencies/*
 
 ### STS ###
 .apt_generated

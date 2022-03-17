@@ -47,5 +47,6 @@ flutter:
         pluginClass: BeaglePlugin
 
   assets:
+    - assets/js/
     - assets/js/beagle.js
     - test/test-utils/payload.json

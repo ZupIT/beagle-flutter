@@ -18,7 +18,7 @@ group 'br.com.zup.beagle.beagle'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.5.21'
+    ext.kotlin_version = '1.6.10'
     repositories {
         google()
         mavenCentral()
@@ -41,7 +41,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    ndkVersion "21.3.6528147"
+    compileSdkVersion 31
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -55,5 +56,5 @@ android {
 }
 
 dependencies {
-    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.0"
+    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.9"
 }
