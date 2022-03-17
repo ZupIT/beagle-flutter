@@ -19,6 +19,7 @@ jobs:
             -   uses: subosito/flutter-action@v1
                 with:
                   channel: 'stable' # or: 'dev' or 'beta'
+                  flutter-version: '2.5.1'
             # Gems for Fastlane
             -   name: Cache ruby gems dependencies
                 uses: actions/cache@v2
