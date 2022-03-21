@@ -15,7 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/navigation/watcher.dart';
+import 'package:beagle/src/navigation/hot_reloading_watcher.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
@@ -51,7 +51,7 @@ class RootNavigator extends StatefulWidget {
 class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implements BeagleNavigator {
   List<StackNavigator> _history = [];
   final GlobalKey<NavigatorState> _thisNavigatorKey = GlobalKey();
-  Watcher? watcher;
+  void Function()? removeHotReloadingListener;
 
   StackNavigator _createStackNavigator(BeagleRoute route, NavigationController controller) {
     return beagle.createStackNavigator(
@@ -99,22 +99,21 @@ class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implem
     return [..._history];
   }
 
-  /// Watches the backend for updates and hot-reloads the UI if the environment is BeagleEnvironment.debug
+  /// Watches the backend for updates and hot-reloads the UI.
+  /// This will only take place if the program is running in development mode and if enableHotReloading, in the Beagle
+  /// Service, is true.
   void _startWatch() {
-    if (beagle.environment != BeagleEnvironment.debug || beagle.watchInterval == 0) return;
-    watcher = Watcher(
-      intervalMS: beagle.watchInterval,
-      httpClient: beagle.httpClient,
-      baseUrl: beagle.baseUrl,
-      onUpdate: () {
-        if (_history.isNotEmpty) _history.last.reloadCurrentPage();
-      },
-    )..start();
+    if (beagle.environment != BeagleEnvironment.debug || !beagle.enableHotReloading) return;
+    final watcher = HotReloadingWatcher();
+    watcher.start(beagle.hotReloadingUrl);
+    removeHotReloadingListener = watcher.addListener(() {
+      if (_history.isNotEmpty) _history.last.reloadCurrentPage();
+    });
   }
 
   @override
   void dispose() {
-    watcher?.stop();
+    if (removeHotReloadingListener != null) removeHotReloadingListener!();
     super.dispose();
   }
 

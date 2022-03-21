@@ -47,7 +47,7 @@ class _BeagleServiceMock extends Mock implements BeagleService {
   @override
   BeagleEnvironment get environment => BeagleEnvironment.debug;
   @override
-  int get watchInterval => 0;
+  bool get enableHotReloading => false;
 }
 
 class _StackNavigatorStructureMock extends Mock implements StackNavigator {
