@@ -15,7 +15,7 @@
 
 name: beagle
 description: Beagle is an open source framework for multiplatform development using the concept of Server-Driven UI.
-version: 2.0.0-rc5
+version: 1.0.0
 homepage: https://github.com/ZupIT/beagle-flutter/tree/main/beagle
 
 environment:
