@@ -1,3 +1,5 @@
+> Attention: this project is no longer mantained by its original developers. If you want to use this, feel free to fork this repository and keep it going!
+
 # **Beagle Flutter**
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5409/badge)](https://bestpractices.coreinfrastructure.org/projects/5409)
 
