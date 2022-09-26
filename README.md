@@ -1,3 +1,13 @@
+# Archived
+This repository is archived as of 09/26/2022.
+
+Although Beagle continues to be mantained for Android, iOS, React and Angular. We're discontinuing Beagle for Flutter. The resons are:
+1. Lack of interest from within the company.
+2. Lack of interest from the community.
+3. Not enough people to reliably mantain the codebase.
+
+This is an Open Source project and everyone is free to fork and mantain it if they wish to. The core Beagle library, used as a dependency by Beagle Flutter, is still mantained at: https://github.com/ZupIT/beagle-web-core.
+
 # **Beagle Flutter**
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5409/badge)](https://bestpractices.coreinfrastructure.org/projects/5409)
 
